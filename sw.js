@@ -1,4 +1,5 @@
-const CACHE = 'ccr-site-app';
+// Network first: when online, always take the newest files from GitHub; when offline, use the saved copy.
+const CACHE = 'ccr-site-app-v3';
 const FILES = ['./', './index.html', './manifest.json', './icon-192.png', './icon-512.png'];
 self.addEventListener('install', e => { e.waitUntil(caches.open(CACHE).then(c => c.addAll(FILES)).then(() => self.skipWaiting())); });
 self.addEventListener('activate', e => { e.waitUntil(self.clients.claim()); });
