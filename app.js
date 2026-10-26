@@ -1,4 +1,15 @@
-const D = window.__D;
+const D = (window.__D && typeof window.__D === 'object') ? window.__D : {};
+// ---- safe defaults: the app must load even when data.json is missing keys or has another shape
+const arr = v => Array.isArray(v) ? v : [], obj = v => (v && typeof v === 'object' && !Array.isArray(v)) ? v : {};
+['items', 'cables', 'panels', 'drums', 'mat', 'mrf', 'reg', 'sf', 'rv', 'IK', 'CK'].forEach(k => D[k] = arr(D[k]));
+if (D.items.length && !Array.isArray(D.items[0])) D.items = []; if (D.cables.length && !Array.isArray(D.cables[0])) D.cables = []; if (D.panels.length && !Array.isArray(D.panels[0])) D.panels = [];
+D.meta = Object.assign({date: '', src: '', ver: ''}, obj(D.meta)); D.tabs = obj(D.tabs); ['grp', 'map', 'unit', 'desc', 'dwg', 'sub', 'sys', 'co', 'resp', 'it'].forEach(k => D.tabs[k] = arr(D.tabs[k]));
+D.punch = obj(D.punch); D.punch.K = arr(D.punch.K); D.punch.rows = arr(D.punch.rows).filter(Array.isArray); D.punch.tabs = obj(D.punch.tabs); D.punch.date = D.punch.date || '';
+['tit', 'sys', 'sub', 'subn', 'disc', 'sec', 'stg', 'by', 'org', 'epc', 'resp', 'dept', 'subnE', 'discE', 'stgE', 'secE'].forEach(k => D.punch.tabs[k] = arr(D.punch.tabs[k]));
+D.sg = obj(D.sg); D.lr = obj(D.lr); D.tq = obj(D.tq); D.tq.ctq = arr(D.tq.ctq).filter(Array.isArray); D.tq.ptq = arr(D.tq.ptq).filter(Array.isArray);
+['drums', 'mat', 'mrf', 'reg', 'sf'].forEach(k => D[k] = D[k].filter(Array.isArray)); D.panels.forEach(p => { p[3] = arr(p[3]); }); D.drums.forEach(d => { d[10] = arr(d[10]); d[12] = arr(d[12]); }); D.mrf.forEach(m => { m[5] = arr(m[5]); m[6] = arr(m[6]); }); D.reg.forEach(r => { r[0] = String(r[0] || ''); r[1] = String(r[1] || ''); });
+D.rv = D.rv.filter(r => r && typeof r === 'object').map(r => Object.assign({doc: '', from: '', to: '', date: '', files: [], ch: []}, r, {ch: arr(r.ch), files: arr(r.files)}));
+Object.keys(D.sg).forEach(k => { const g = obj(D.sg[k]); g.e = arr(g.e); g.n = arr(g.n); D.sg[k] = g; }); Object.keys(D.lr).forEach(k => { D.lr[k] = arr(D.lr[k]).filter(Array.isArray); });
 const T = D.tabs;
 const LAT = {'А':'A','В':'B','Е':'E','К':'K','М':'M','Н':'H','О':'O','Р':'P','С':'C','Т':'T','Х':'X','У':'Y','а':'A','в':'B','е':'E','к':'K','м':'M','н':'H','о':'O','р':'P','с':'C','т':'T','х':'X','у':'Y'};
 const N = s => String(s || '').replace(/[А-Яа-я]/g, ch => LAT[ch] || ch).toUpperCase().replace(/[\s\-_.\/]/g, '');
@@ -116,11 +127,11 @@ function home() {
   const pend = progLines(true).length, ppend = punchLines(true).length; const icd = ICX.filter(c => cst(c).ok).length, ist_ = gstat(INST);
   const T2 = (h, b, n, pc, cls) => `<button class="tile ${cls || ''}" onclick="go('${h}')"><b>${b}</b><div><span class="n">${n}</span>${pc != null ? `<div class="pc">${pc}%</div><div class="pbar"><i style="width:${pc}%"></i></div>` : ''}</div></button>`;
   const r = PU.filter(p => p.rhi), o = r.filter(p => p.st === 'Open').length;
-  main.innerHTML = `<div class="kpi"><div><b>${all.n}</b><span>IWP lines</span></div><div><b style="color:var(--ok)">${Math.round(100 * all.d / all.n)}%</b><span>lines done</span></div><div><b>${cc}/${C.length}</b><span>cables complete</span></div></div>
+  main.innerHTML = `${D.__fb ? `<div class="card" style="border-left:5px solid #e0a100;background:#fff8e6;font-size:13px"><b>⚠ Showing last good data (${esc(D.meta.date)})</b><div style="margin-top:4px">Today's automatic update${D.__fb.date && D.__fb.date !== '?' ? ' (' + esc(D.__fb.date) + ')' : ''} has a different file format, so the app is using the last good data. All screens work normally.</div></div>` : ''}<div class="kpi"><div><b>${all.n}</b><span>IWP lines</span></div><div><b style="color:var(--ok)">${(all.n ? Math.round(100 * all.d / all.n) : 0)}%</b><span>lines done</span></div><div><b>${cc}/${C.length}</b><span>cables complete</span></div></div>
    ${S2.owner ? (() => { const n = alCount(); return `<button class="tile main" style="width:100%;min-height:auto;margin-bottom:8px;background:${n ? '#b42318' : '#2b2f36'};border-color:${n ? '#b42318' : '#2b2f36'}" onclick="go('#/al')"><b>🔔 Alerts from site · ${n} new</b><span class="n" style="color:#f3d6d2">issues · permits · revisions · TQ</span></button>`; })() : ''}
    <button class="tile main" style="width:100%;min-height:auto;margin-bottom:4px;background:${pend ? '#c55a11' : 'var(--pri)'};border-color:${pend ? '#c55a11' : 'var(--pri)'}" onclick="openReport('prog')"><b>📤 Send report to Paul · ${pend} new progress lines</b><span class="n">👷 ${esc(PS_.name || 'tap to set your name')} · MAX progress group</span></button>
    <div class="sect">🏗️ Construction</div><div class="grid">
-    ${T2('#/p', 'Panel cable check<br><span style="font-weight:400;font-size:12px">pulled / terminated per panel</span>', `${PAN.length} panels · ${pcomp} complete`, Math.round(100 * pcomp / PAN.length), 'main')}
+    ${T2('#/p', 'Panel cable check<br><span style="font-weight:400;font-size:12px">pulled / terminated per panel</span>', `${PAN.length} panels · ${pcomp} complete`, (PAN.length ? Math.round(100 * pcomp / PAN.length) : 0), 'main')}
     ${T2('#/ic', 'Interconnection cables<br><span style="font-weight:400;font-size:12px">to/from other buildings</span>', `${icd}/${ICX.length} complete`, ICX.length ? Math.round(100 * icd / ICX.length) : 0, 'main')}
     ${T2('#/in', 'Installation check<br><span style="font-weight:400;font-size:12px">panels, devices, trays, earthing</span>', `${ist_.d}/${ist_.n} lines`, ist_.pc, 'main')}
     ${T2('#/pl', `Punch list (RHI)<br><span style="font-weight:400;font-size:12px">⚡🖥️🎛️📡❄️ · ${PJ.date}</span>`, `${o} open · ${r.length - o} closed${ppend ? ' · ' + ppend + ' to send' : ''}`, r.length ? Math.round(100 * (r.length - o) / r.length) : 0, 'main')}
@@ -566,7 +577,7 @@ function ownPunch() { const d = VS.OW.d; const one = {}; (S2.rx || []).filter(r 
   copyText(Object.values(one).map(r => [r.no, r.v === 'F' ? 'Fixed' : 'Not fixed', d.split('-').reverse().join('.'), r.tag, r.by].join('\t')).join('\n')).then(() => toast('Punch list copied')); }
 
 // ======== v3.2 modules ========
-const APPV = '3.5';
+const APPV = '3.6';
 const shortT = t => String(t || '').replace(/^G0-D1810BX0-/, '').replace(/^G0-D1801FX0-/, 'FX0-');
 const SYSN = {'EL-ESPS': ['Substation 10/0.4 kV & power supply', 'Подстанция 10/0,4 кВ'], 'EL-EMSV': ['Power installation (boards, UPS, motors)', 'Силовое электрооборудование'], 'EL-ESBZ': ['Power supply from utility substation', 'Электроснабжение от ПС'], 'EL-ELOV': ['Indoor lighting', 'Внутреннее освещение'], 'EL-EG02': ['Earthing & lightning protection', 'Заземление и молниезащита'], 'EL-EG01': ['Area earthing', 'Заземление площадки'], 'EH-EOES': ['Electric heating', 'Электрообогрев'], 'EH-AEOG': ['Heat tracing', 'Электрообогрев (кабель)'], 'EH-EOBK': ['Electric heating (other)', 'Электрообогрев'],
   'IN-DCS': ['Distributed Control System (DCS)', 'РСУ'], 'IN-ESD': ['Emergency Shutdown (ESD)', 'ПАЗ'], 'IN-SPAP': ['Fire alarm & fire fighting control (AFA&FFS)', 'АСПС и ПТ'], 'IN-GDSS': ['Gas detection', 'Контроль загазованности'], 'IN-ASUE': ['Utilities control system', 'АСУ ЭО (утилиты)'], 'IN-ASUS': ['Power supply control system', 'АСУ ЭС'], 'IN-ASKU': ['Utility metering (AUMS)', 'АСКУ ЭР'], 'IN-MAEC': ['Rotating equipment monitoring (CMS)', 'МСО и ВО'], 'IN-MFMS': ['Material flow metering (MFMS)', 'СУМП'], 'IN-AKVS': ['Emission monitoring (CEMS)', 'АКВС'], 'IN-INTS': ['Operator training simulator', 'Тренажёр оператора'], 'IN-INSS': ['Information security', 'СОИБ'], 'IN-AOVK': ['HVAC automation', 'Автоматизация ОВиК'], 'IN-AKMP': ['Analyzer system', 'Анализаторы'],
