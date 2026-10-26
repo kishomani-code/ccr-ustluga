@@ -116,6 +116,8 @@ function route() {
   if (k === 'calc') return calcHome();
   if (k === 'nt') return ntHome();
   if (k === 'owner') { go('#/'); return ownerLogin(); }
+  if (k === 'rf') return rfiHome();
+  if (k === 'ri') return riHome();
   if (k === 'mg') { if (S2.mgr || S2.owner) return mgHome(); home(); return mgrLogin(); }
   home();
 }
@@ -139,6 +141,7 @@ function home() {
     ${T2('#/pl', `Punch list (RHI)<br><span style="font-weight:400;font-size:12px">⚡🖥️🎛️📡❄️ · ${PJ.date}</span>`, `${o} open · ${r.length - o} closed${ppend ? ' · ' + ppend + ' to send' : ''}`, r.length ? Math.round(100 * (r.length - o) / r.length) : 0, 'main')}
     ${T2('#/rm', '🚪 Rooms<br><span style="font-weight:400;font-size:12px">room number → panels & cables</span>', `${new Set(PAN.map(p => p.room).filter(Boolean)).size} rooms`)}${tile('Cable pulling')}${tile('Cable termination')}</div>
    <div class="grid" style="margin-top:9px">${T2('#/is', '🚩 Issues found<br><span style="font-weight:400;font-size:12px">report to engineer</span>', `${S2.is.filter(x => !x.s).length} not sent · ${S2.is.length} total`)}${T2('#/pm', '📝 Work permits<br><span style="font-weight:400;font-size:12px">request from engineer</span>', `${S2.pr.filter(x => !x.s).length} not sent · ${S2.pr.length} total`)}</div>
+   <div class="sect">🔍 Inspection (RFI)</div><div class="grid">${(() => { const n = RFC.length, la = RFC.filter(r => r.l === 'acc').length, ri = riLists(); return T2('#/rf', '📋 RFI Progress<br><span style="font-weight:400;font-size:12px">cables & equipment RFI status</span>', `laying RFI accepted ${la}/${n}`, pct(la, n), 'main') + T2('#/ri', '🔔 Ready for inspection<br><span style="font-weight:400;font-size:12px">work done · RFI not accepted</span>', `${ri.A.length + ri.B.length} cables to call`, null, 'main'); })()}</div>
    <div class="sect">📦 Materials</div><div class="grid">
     ${T2('#/dr', '🧵 Cable drums', `${DR.length} drums · used / remaining`)}${T2('#/mt', '📋 Material tracking', `${D.mat.length} ident codes by system`)}${T2('#/mr', '🏬 MRF status', `${MRF.length} warehouse requests`)}</div>
    <div class="sect">🧭 Systems</div><div class="grid">${(() => { const st = Object.keys(SG).map(sysStat).filter(Boolean); const rd = st.filter(x => x.ok).length; return T2('#/bd', '🧭 System block diagrams<br><span style="font-weight:400;font-size:12px">how systems work · ready to start?</span>', `${rd} ready · ${st.length - rd} with issues`, st.length ? Math.round(100 * rd / st.length) : 0, 'main'); })()}${T2('#/gl', '🔩 Cable glands', 'size · type RU/EN · sleeve · earthing')}</div>
@@ -579,7 +582,7 @@ function ownPunch() { const d = VS.OW.d; const one = {}; (S2.rx || []).filter(r 
   copyText(Object.values(one).map(r => [r.no, r.v === 'F' ? 'Fixed' : 'Not fixed', d.split('-').reverse().join('.'), r.tag, r.by].join('\t')).join('\n')).then(() => toast('Punch list copied')); }
 
 // ======== v3.2 modules ========
-const APPV = '3.7';
+const APPV = '3.8';
 const shortT = t => String(t || '').replace(/^G0-D1810BX0-/, '').replace(/^G0-D1801FX0-/, 'FX0-');
 const SYSN = {'EL-ESPS': ['Substation 10/0.4 kV & power supply', 'Подстанция 10/0,4 кВ'], 'EL-EMSV': ['Power installation (boards, UPS, motors)', 'Силовое электрооборудование'], 'EL-ESBZ': ['Power supply from utility substation', 'Электроснабжение от ПС'], 'EL-ELOV': ['Indoor lighting', 'Внутреннее освещение'], 'EL-EG02': ['Earthing & lightning protection', 'Заземление и молниезащита'], 'EL-EG01': ['Area earthing', 'Заземление площадки'], 'EH-EOES': ['Electric heating', 'Электрообогрев'], 'EH-AEOG': ['Heat tracing', 'Электрообогрев (кабель)'], 'EH-EOBK': ['Electric heating (other)', 'Электрообогрев'],
   'IN-DCS': ['Distributed Control System (DCS)', 'РСУ'], 'IN-ESD': ['Emergency Shutdown (ESD)', 'ПАЗ'], 'IN-SPAP': ['Fire alarm & fire fighting control (AFA&FFS)', 'АСПС и ПТ'], 'IN-GDSS': ['Gas detection', 'Контроль загазованности'], 'IN-ASUE': ['Utilities control system', 'АСУ ЭО (утилиты)'], 'IN-ASUS': ['Power supply control system', 'АСУ ЭС'], 'IN-ASKU': ['Utility metering (AUMS)', 'АСКУ ЭР'], 'IN-MAEC': ['Rotating equipment monitoring (CMS)', 'МСО и ВО'], 'IN-MFMS': ['Material flow metering (MFMS)', 'СУМП'], 'IN-AKVS': ['Emission monitoring (CEMS)', 'АКВС'], 'IN-INTS': ['Operator training simulator', 'Тренажёр оператора'], 'IN-INSS': ['Information security', 'СОИБ'], 'IN-AOVK': ['HVAC automation', 'Автоматизация ОВиК'], 'IN-AKMP': ['Analyzer system', 'Анализаторы'],
@@ -1132,6 +1135,107 @@ function openXPunch() { const r = xPunchText(); REP = {kind: 'xpunch', L: [], te
    <button class="tile main" style="width:100%;min-height:auto;margin-bottom:8px" onclick="copyText(REP.text).then(ok=>{toast(ok?'Copied ✓ – in MAX press and hold, Paste, Send':'Copy the text, then paste in MAX');setTimeout(()=>{window.location.href=MAX_PUNCH},600)})"><b>📤 Send report to Paul</b><span class="n">copies the text and opens the MAX punch group</span></button>
    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><button class="tile" style="min-height:auto" onclick="copyText(REP.text).then(ok=>toast(ok?'Copied for Paul':'Select the text and copy'))"><b>📋 Copy for Paul</b></button>
    <button class="tile" style="min-height:auto" onclick="navigator.share?navigator.share({text:REP.text}).catch(()=>{}):copyText(REP.text).then(()=>toast('Copied for Paul'))"><b>↗ Share…</b></button></div>`); }
+// ===== v3.8 RFI progress + Ready for inspection (from RAWP in cable "cm" and Equipment Control in IWP "notes")
+const rfiSt = s => { s = String(s || '').trim(); return !s ? 'none' : /accepted/i.test(s) ? 'acc' : /reject/i.test(s) ? 'rej' : 'sub'; };
+const RFIL = {acc: 'Accepted', rej: 'Rejected', sub: 'Submitted', none: 'No RFI'}, RFIC = {acc: 'b-ok', rej: 'b-no', sub: 'b-part', none: 'b-na'};
+const rfiB = (k, raw) => `<span class="badge ${RFIC[k]}">${k === 'acc' && /comment/i.test(raw || '') ? 'Accepted w/c' : RFIL[k]}</span>`;
+const CPAN = {}; PAN.forEach(p => p.cs.forEach(([d, t]) => { if (!CPAN[t] || (d === 'OUT' && CPAN[t].d !== 'OUT')) CPAN[t] = {d, p: p.tag}; }));
+const cPanel = t => CPAN[t] ? CPAN[t].p : '';
+const RFC = C.map(c => { const m = String(c.cm || '').match(/\[RAWP:([^\]]*)\]/), s = m ? m[1] : '';
+  const L = s.match(/Laying RFI (\S+) ([^;]+)/), T = s.match(/Term\. RFI (\S+) ([^;]+)/);
+  return {c, ln: L ? L[1] : '', lr: L ? L[2].trim() : '', l: rfiSt(L && L[2]), tn: T ? T[1] : '', tr: T ? T[2].trim() : '', t: rfiSt(T && T[2]), pan: cPanel(c.t)}; });
+const RFE = INST.map(x => { const m = String(x.notes || '').match(/RFI (\S+) · ([^·]+?) · (\d\d\.\d\d\.\d{4})/); return {x, no: m ? m[1] : '', raw: m ? m[2] : '', dt: m ? m[3] : '', s: rfiSt(m && m[2])}; });
+const panOpts = (L, sel) => { const ps = [...new Set(L.map(r => r.pan).filter(Boolean))].sort(); return `<option value="">All panels (${ps.length})</option><option value="-" ${sel === '-' ? 'selected' : ''}>— no panel</option>` + ps.map(p => `<option value="${esc(p)}" ${sel === p ? 'selected' : ''}>${esc(shortT(p))}</option>`).join(''); };
+const stOpts = sel => [['', 'All'], ['acc', 'Accepted'], ['sub', 'Submitted (pending)'], ['rej', 'Rejected'], ['none', 'No RFI']].map(([k, l]) => `<option value="${k}" ${sel === k ? 'selected' : ''}>${l}</option>`).join('');
+function rfiStrip(cells) { return `<div class="mgs">${cells.map(([v, l, s, bad]) => `<div class="mgk ${bad ? 'bad' : ''}"><b>${v}</b><span>${l}</span>${s ? `<i>${s}</i>` : ''}</div>`).join('')}</div>`; }
+function rfiHome() {
+  VS.RF = VS.RF || {tab: 'c', pan: '', l: '', t: '', q: '', sk: 'no', sd: 1, lim: 200, g: '', e: '', eq: '', esk: 'tag', esd: 1, elim: 200}; const v = VS.RF;
+  setHead('RFI progress', `CCR inspection status · data ${D.meta.date}`); qbox.value = '';
+  const n = RFC.length, ls = RFC.filter(r => r.l !== 'none').length, la = RFC.filter(r => r.l === 'acc').length, ts = RFC.filter(r => r.t !== 'none').length, ta = RFC.filter(r => r.t === 'acc').length;
+  const en = RFE.length, es = RFE.filter(r => r.s !== 'none').length, ea = RFE.filter(r => r.s === 'acc').length;
+  const tabs = `<div class="chips">${[['c', `🧵 Cables RFI (${n})`], ['e', `🎛️ Equipment RFI (${en})`]].map(([k, l]) => `<button class="chip ${v.tab === k ? 'on' : ''}" onclick="VS.RF.tab='${k}';rfiHome()">${l}</button>`).join('')}</div>`;
+  if (v.tab === 'c') {
+    main.innerHTML = tabs + rfiStrip([[n, 'Total cables', 'RAWP scope'], [`${pct(ls, n)}%`, 'Laying RFI submitted', `${ls} cables`, pct(ls, n) < 50], [`${pct(la, n)}%`, 'Laying RFI accepted', `${la} cables`, pct(la, n) < 50], [`${pct(ts, n)}%`, 'Term. RFI submitted', `${ts} cables`, pct(ts, n) < 50], [`${pct(ta, n)}%`, 'Term. RFI accepted', `${ta} cables`, pct(ta, n) < 50]]) +
+      `<div class="mgf" style="margin-top:10px"><input class="fin" placeholder="Search cable number…" value="${esc(v.q)}" oninput="VS.RF.q=this.value;VS.RF.lim=200;rfcTable()"><select onchange="VS.RF.pan=this.value;VS.RF.lim=200;rfcTable()">${panOpts(RFC, v.pan)}</select>
+       <select onchange="VS.RF.l=this.value;VS.RF.lim=200;rfcTable()">${stOpts(v.l).replace('>All<', '>Laying RFI – all<')}</select><select onchange="VS.RF.t=this.value;VS.RF.lim=200;rfcTable()">${stOpts(v.t).replace('>All<', '>Term. RFI – all<')}</select></div><div id="rft"></div>
+       <div class="foot">Source: Cable RAWP inspection progress. Submitted = RFI raised, inspection pending (New task). Accepted includes "accepted with comments". Panel = panel where the cable starts (else where it ends).</div>`;
+    rfcTable();
+  } else {
+    const grps = [...new Set(RFE.map(r => r.x.g))].sort();
+    main.innerHTML = tabs + rfiStrip([[en, 'Installation lines', 'equipment, devices, trays, earthing'], [`${pct(es, en)}%`, 'Install. RFI submitted', `${es} lines`, pct(es, en) < 50], [`${pct(ea, en)}%`, 'Install. RFI accepted', `${ea} lines`, pct(ea, en) < 50]]) +
+      `<div class="mgf" style="margin-top:10px"><input class="fin" placeholder="Search tag / Access ID…" value="${esc(v.eq)}" oninput="VS.RF.eq=this.value;VS.RF.elim=200;rfeTable()"><select onchange="VS.RF.g=this.value;VS.RF.elim=200;rfeTable()"><option value="">All activities (${grps.length})</option>${grps.map(g => `<option ${v.g === g ? 'selected' : ''}>${esc(g)}</option>`).join('')}</select>
+       <select onchange="VS.RF.e=this.value;VS.RF.elim=200;rfeTable()">${stOpts(v.e).replace('>All<', '>RFI status – all<')}</select></div><div id="rft"></div>
+       <div class="foot">Source: E&I equipment control (CCR RFI records) matched to IWP installation lines.</div>`;
+    rfeTable();
+  }
+}
+const sortTh = (cols, sk, sd, fn) => `<tr>${cols.map(([k, l]) => `<th style="cursor:pointer" onclick="${fn}('${k}')">${l}${sk === k ? (sd > 0 ? ' ▲' : ' ▼') : ''}</th>`).join('')}</tr>`;
+const RFO = {acc: 3, sub: 2, rej: 1, none: 0};
+function rfcSort(k) { const v = VS.RF; v.sd = v.sk === k ? -v.sd : 1; v.sk = k; rfcTable(); }
+function rfeSort(k) { const v = VS.RF; v.esd = v.esk === k ? -v.esd : 1; v.esk = k; rfeTable(); }
+function rfcTable() {
+  const v = VS.RF, nq = N(v.q);
+  const L = RFC.filter(r => (!nq || r.c._n.includes(nq)) && (!v.pan || (v.pan === '-' ? !r.pan : r.pan === v.pan)) && (!v.l || r.l === v.l) && (!v.t || r.t === v.t));
+  const key = {no: r => r.c.t, ty: r => (r.c.ty || '') + ' ' + (r.c.c || ''), pan: r => r.pan || '~', l: r => RFO[r.l], t: r => RFO[r.t]}[v.sk];
+  L.sort((a, b) => { const x = key(a), y = key(b); return (typeof x === 'number' ? x - y : String(x).localeCompare(String(y), undefined, {numeric: true})) * v.sd; });
+  document.getElementById('rft').innerHTML = L.length ? `<div class="mgw"><table class="mgtb"><thead>${sortTh([['no', 'Cable No.'], ['ty', 'Type'], ['pan', 'Panel'], ['l', 'Laying RFI'], ['t', 'Term. RFI']], v.sk, v.sd, 'rfcSort')}</thead><tbody>${L.slice(0, v.lim).map(r => `<tr>
+    <td><span class="link" onclick="go('#/c/${enc(r.c.t)}')">${esc(r.c.t)}</span></td><td style="white-space:normal">${esc(r.c.ty)} ${esc(r.c.c)}</td><td style="white-space:normal">${r.pan ? `<span class="link" onclick="go('#/p/${enc(r.pan)}')">${esc(shortT(r.pan))}</span>` : '—'}</td><td>${rfiB(r.l, r.lr)}</td><td>${rfiB(r.t, r.tr)}</td></tr>`).join('')}</tbody></table></div>
+    <div class="s2" style="margin-top:4px">${Math.min(L.length, v.lim)} of ${L.length} shown (${RFC.length} total)</div>${L.length > v.lim ? `<button class="more" onclick="VS.RF.lim+=400;rfcTable()">Show more (${L.length - v.lim})</button>` : ''}` : '<div class="empty">No cables match the filter</div>';
+}
+function rfeTable() {
+  const v = VS.RF, nq = N(v.eq);
+  const L = RFE.filter(r => (!nq || r.x._n.includes(nq) || N(r.x.acc).includes(nq) || N(r.x.uid).includes(nq)) && (!v.g || r.x.g === v.g) && (!v.e || r.s === v.e));
+  const key = {it: r => r.x.g + ' ' + (T.desc[r.x.desc] || ''), tag: r => r.x.tag || '', iwp: r => String(r.x.acc || '~'), s: r => RFO[r.s]}[v.esk];
+  L.sort((a, b) => { const x = key(a), y = key(b); return (typeof x === 'number' ? x - y : String(x).localeCompare(String(y), undefined, {numeric: true})) * v.esd; });
+  document.getElementById('rft').innerHTML = L.length ? `<div class="mgw"><table class="mgtb"><thead>${sortTh([['it', 'Item'], ['tag', 'Tag'], ['iwp', 'IWP'], ['s', 'RFI status']], v.esk, v.esd, 'rfeSort')}</thead><tbody>${L.slice(0, v.elim).map(r => `<tr>
+    <td style="white-space:normal;min-width:120px"><b>${esc(r.x.g)}</b><div class="s2">${esc(String(T.desc[r.x.desc] || '').slice(0, 80))}</div></td><td style="white-space:normal;word-break:break-all"><span class="link" onclick="go('#/i/${r.x.i}')">${esc(r.x.tag)}</span></td><td>${esc(r.x.acc)}</td><td>${rfiB(r.s, r.raw)}${r.dt ? `<div class="s2">${esc(r.dt)}</div>` : ''}</td></tr>`).join('')}</tbody></table></div>
+    <div class="s2" style="margin-top:4px">${Math.min(L.length, v.elim)} of ${L.length} shown (${RFE.length} total)</div>${L.length > v.elim ? `<button class="more" onclick="VS.RF.elim+=400;rfeTable()">Show more (${L.length - v.elim})</button>` : ''}` : '<div class="empty">No items match the filter</div>';
+}
+// Ready for inspection: physical work done (site status incl. phone entries) but RHI RFI not accepted
+function riLists() {
+  const A = [], B = [];
+  RFC.forEach(r => { const s = cst(r.c); if (s.p !== true || r.l === 'acc') { if (s.p === true && s.t === true && r.t !== 'acc') A.push(Object.assign({tOnly: true}, r)); return; }
+    (s.t === true ? A : B).push(r); });
+  return {A, B}; // A: pulled + terminated (laying and/or termination RFI open) · B: pulled only, laying RFI open
+}
+const riNeed = (r, grp) => grp === 'B' ? 'laying inspection needed' : r.tOnly ? 'termination inspection needed' : (r.t === 'acc' ? 'laying inspection needed' : 'laying + termination inspection needed');
+const riLine = (r, grp) => `${r.c.t} · ${r.pan ? shortT(r.pan) : 'no panel'} · ${riNeed(r, grp)}`;
+function riFilter(L, grp) { const v = VS.RI, nq = N(v.q);
+  return L.filter(r => (!nq || r.c._n.includes(nq)) && (!v.pan || (v.pan === '-' ? !r.pan : r.pan === v.pan)) &&
+    (!v.w || (v.w === 'lay' ? !r.tOnly : (grp === 'A' && r.t !== 'acc')))); }
+function riHome() {
+  VS.RI = VS.RI || {pan: '', w: '', q: '', limA: 150, limB: 150}; const v = VS.RI;
+  setHead('Ready for inspection', 'work done · RHI RFI not accepted'); qbox.value = '';
+  const {A, B} = riLists(); const nLay = A.filter(r => !r.tOnly).length + B.length, nTerm = A.filter(r => r.t !== 'acc').length;
+  main.innerHTML = rfiStrip([[nLay, 'Ready for laying inspection', 'pulled · laying RFI not accepted', nLay > 0], [nTerm, 'Ready for term. inspection', 'pulled + terminated · term. RFI not accepted', nTerm > 0], [A.length + B.length, 'Cables to call', `${A.length} complete · ${B.length} pulled only`]]) +
+    `<div style="font-size:14px;margin:10px 2px"><b>${nLay}</b> cables ready for laying inspection, <b>${nTerm}</b> cables ready for termination inspection.</div>
+    <div class="mgf"><input class="fin" placeholder="Search cable number…" value="${esc(v.q)}" oninput="VS.RI.q=this.value;riBody()"><select onchange="VS.RI.pan=this.value;riBody()">${panOpts(A.concat(B), v.pan)}</select>
+     <select onchange="VS.RI.w=this.value;riBody()">${[['', 'Work type – all'], ['lay', 'Laying inspection'], ['term', 'Termination inspection']].map(([k, l]) => `<option value="${k}" ${v.w === k ? 'selected' : ''}>${l}</option>`).join('')}</select></div>
+    <button class="tile main" style="width:100%;min-height:auto;margin:6px 0" onclick="openRI()"><b>📋 Generate inspection list</b><span class="n">all cables in the current filtered view · for MAX / WhatsApp</span></button><div id="rib"></div>
+    <div class="foot">Pulled / terminated = IWP + cable tracker status, including ticks saved on this phone. RFI status from Cable RAWP inspection progress. Rejected or pending RFIs count as not accepted.</div>`;
+  riBody();
+}
+function riBody() {
+  const v = VS.RI, {A, B} = riLists(), fA = riFilter(A, 'A'), fB = riFilter(B, 'B'); VS.RI.cur = {A: fA, B: fB};
+  const row = (r, grp) => `<div class="cbx"><div style="display:flex;gap:8px;align-items:flex-start"><div style="flex:1;min-width:0" onclick="go('#/c/${enc(r.c.t)}')"><b style="word-break:break-all">${esc(r.c.t)}</b>${holdMini(r.c.t)}
+    <div class="s2">${esc(r.c.ty)} ${esc(r.c.c)} · ${esc(shortT(lastTag(r.c.f)))} → ${esc(shortT(lastTag(r.c.o)))}</div><div class="s2">Panel: ${r.pan ? esc(shortT(r.pan)) : '—'} · Laying RFI ${rfiB(r.l, r.lr)}${grp === 'A' ? ` · Term. RFI ${rfiB(r.t, r.tr)}` : ''}</div></div>
+    <button class="tg" style="flex:none;padding:8px 10px" onclick="event.stopPropagation();riCall('${grp}',${r.c.i})">📞 Call<small>inspection</small></button></div></div>`;
+  const sec = (L, grp, t, lk) => `<div class="sect">${t} (${L.length})</div>${L.slice(0, v[lk]).map(r => row(r, grp)).join('') || '<div class="empty">None</div>'}${L.length > v[lk] ? `<button class="more" onclick="VS.RI.${lk}+=300;riBody()">Show more (${L.length - v[lk]})</button>` : ''}`;
+  document.getElementById('rib').innerHTML = sec(fA, 'A', '✅ Pulled + terminated – RFI not accepted', 'limA') + sec(fB, 'B', '🟡 Pulled, not terminated – laying RFI not accepted (intermediate)', 'limB');
+}
+const lastTag = s => { const m = String(s || '').match(/G[01]-[A-Z0-9()\-]+/g); return m ? m[m.length - 1] : String(s || '').slice(-40); };
+function riCall(grp, i) { const L = (VS.RI.cur || {})[grp] || [], r = L.find(x => x.c.i === i); if (!r) return; riShow('Call inspection', riLine(r, grp)); }
+function riText() { const {A, B} = VS.RI.cur || {A: [], B: []}, v = VS.RI;
+  const f = [v.pan ? 'panel ' + (v.pan === '-' ? 'none' : shortT(v.pan)) : '', v.w ? (v.w === 'lay' ? 'laying' : 'termination') + ' only' : '', v.q ? 'search "' + v.q + '"' : ''].filter(Boolean).join(', ');
+  return `Ready for inspection · ${tstr(Date.now())}${PS_.name ? ' · ' + PS_.name : ''}\nCCR – RHI RFI not accepted${f ? ' (' + f + ')' : ''}\n\n` +
+    (A.length ? `Pulled + terminated (${A.length}):\n` + A.map(r => '  ' + riLine(r, 'A')).join('\n') + '\n\n' : '') +
+    (B.length ? `Pulled, not terminated (${B.length}):\n` + B.map(r => '  ' + riLine(r, 'B')).join('\n') : '') + (!A.length && !B.length ? 'No cables in this view.' : ''); }
+function openRI() { const {A, B} = VS.RI.cur || {A: [], B: []}; riShow(`Inspection list · ${A.length + B.length} cables`, riText()); }
+function riShow(title, text) { REP = {kind: 'ri', L: [], text};
+  modalP(`<div class="h3">${esc(title)}</div><textarea id="rtx" class="fin" style="height:${text.length > 200 ? 240 : 90}px;font:12px monospace;white-space:pre" readonly>${esc(text)}</textarea>
+   <button class="tile main" style="width:100%;min-height:auto;margin-bottom:8px" onclick="copyText(REP.text).then(ok=>{toast(ok?'Copied ✓ – in MAX press and hold, Paste, Send':'Copy the text, then paste in MAX');setTimeout(()=>{window.location.href=MAX_PROG},600)})"><b>📤 Send to MAX</b><span class="n">copies the text and opens the MAX progress group</span></button>
+   <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><button class="tile" style="min-height:auto" onclick="copyText(REP.text).then(ok=>toast(ok?'Copied':'Select the text and copy'))"><b>📋 Copy</b></button>
+   <button class="tile" style="min-height:auto" onclick="navigator.share?navigator.share({text:REP.text}).catch(()=>{}):copyText(REP.text).then(()=>toast('Copied'))"><b>↗ Share…</b></button></div>`); }
 function toast(m) { const t = document.getElementById('toast'); t.textContent = m; t.style.display = 'block'; setTimeout(() => t.style.display = 'none', 3500); }
 (() => { const ht = document.getElementById('ht'); let lp = 0;
   ht.addEventListener('pointerdown', () => { lp = setTimeout(() => { lp = 0; ownerLogin(); }, 2000); });
