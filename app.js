@@ -53,8 +53,8 @@ function mDel(acc) { delete S2.m[acc]; ssave(); route(); }
 function tickBtns(c, dir) { const s = cst(c), b = cBase(c), e = S2.c[c.t] || {}; const ek = dir === 'IN' ? 'T' : 'F', ok = ek === 'F' ? 'T' : 'F';
   const v = k => k === 'P' ? s.p === true : (e[k] ? e[k].v : b[k]);
   const btn = (k, l, ru) => `<button class="tg ${v(k) ? 'y' : (e[k] ? 'n' : '')}" onclick="event.stopPropagation();cTick(decodeURIComponent('${enc(c.t)}'),'${k}')">${v(k) ? '✓ ' : ''}${l}<small>${ru}${e[k] ? ' · ' + dstr(e[k].t) : ''}</small></button>`;
-  return `<div class="btns">${btn('P', 'Pulled', 'Проложен')}${btn(ek, 'Term. this end', 'Подкл. здесь')}${btn(ok, 'Term. other end', 'Подкл. др. конец')}</div>`; }
-function cCard(c, dir) { const s = cst(c); return `<div class="cbx ${s.ok ? 'ok' : s.p ? 'part' : 'no'}"><div onclick="go('#/c/${enc(c.t)}')"><span class="badge b-na" style="margin-right:6px">${dir || ''}</span><b style="word-break:break-all">${esc(c.t)}</b> <span class="badge ${s.c}">${s.l}</span>
+  return `<div class="btns">${btn('P', 'Pulled', 'Проложен')}${btn(ek, 'Term. this end', 'Подкл. здесь')}${btn(ok, 'Term. other end', 'Подкл. др. конец')}</div>${lenBox(c)}`; }
+function cCard(c, dir) { const s = cst(c); return `<div class="cbx ${s.ok ? 'ok' : s.p ? 'part' : 'no'}"><div onclick="go('#/c/${enc(c.t)}')"><span class="badge b-na" style="margin-right:6px">${dir || ''}</span><b style="word-break:break-all">${esc(c.t)}</b> <span class="badge ${s.c}">${s.l}</span>${holdMini(c.t)}
   <div class="s2">${dir === 'IN' ? 'From' : 'To'}: ${esc(((dir === 'IN' ? c.f : c.o) || '').slice(-90))}</div><div class="s2">${esc(c.ty)} ${esc(c.c)} · ${esc(c.ln)} m${c.q ? ' · ⚠ CTQ' : ''}</div></div>${tickBtns(c, dir)}</div>`; }
 const ist_old = x => x.done ? {l: 'Done', c: 'b-ok'} : (x.f > 0 ? {l: 'Partly', c: 'b-part'} : {l: 'Not done', c: 'b-no'});
 function gstat(list) { const n = list.length, d = list.filter(x => x.done).length; const us = [...new Set(list.map(x => x.u))];
@@ -92,6 +92,8 @@ function route() {
   if (k === 'ow') return ownerView();
   if (k === 'rv') return a !== '' ? rvView(Number(a)) : rvHome();
   if (k === 'tq') return a ? tqView(a) : tqHome();
+  if (k === 'ctq') return a ? ctqView(a) : ctqHome();
+  if (k === 'ptq') return ptqView(a);
   if (k === 'mp') return mpHome();
   if (k === 'is') return isHome();
   if (k === 'pm') return pmHome();
@@ -127,7 +129,7 @@ function home() {
    <div class="sect">📦 Materials</div><div class="grid">
     ${T2('#/dr', '🧵 Cable drums', `${DR.length} drums · used / remaining`)}${T2('#/mt', '📋 Material tracking', `${D.mat.length} ident codes by system`)}${T2('#/mr', '🏬 MRF status', `${MRF.length} warehouse requests`)}</div>
    <div class="sect">🧭 Systems</div><div class="grid">${(() => { const st = Object.keys(SG).map(sysStat).filter(Boolean); const rd = st.filter(x => x.ok).length; return T2('#/bd', '🧭 System block diagrams<br><span style="font-weight:400;font-size:12px">how systems work · ready to start?</span>', `${rd} ready · ${st.length - rd} with issues`, st.length ? Math.round(100 * rd / st.length) : 0, 'main'); })()}${T2('#/gl', '🔩 Cable glands', 'size · type RU/EN · sleeve · earthing')}</div>
-   <div class="sect">📑 Documents</div><div class="grid">${T2('#/dg', '📐 Drawings register', `${RG.length} CCR docs · system → activity`)}${T2('#/sf', '📋 SF drawings (MTO)', `${SF.length} files · rev & dates`)}${T2('#/rv', '📄 Drawing revisions', `${RV.length} revised · ${RV.reduce((x, r) => x + r.ch.filter(rvDone).length, 0)} after installation`)}</div>
+   <div class="sect">📑 Documents</div><div class="grid">${T2('#/ctq', '❓ CTQ register<br><span style="font-weight:400;font-size:12px">internal TQs · what is on hold</span>', `${CTQ.filter(ctqOpen).length} open · ${Object.keys(HOLD).length} items on hold`, null, 'main')}${T2('#/dg', '📐 Drawings register', `${RG.length} CCR docs · system → activity`)}${T2('#/sf', '📋 SF drawings (MTO)', `${SF.length} files · rev & dates`)}${T2('#/rv', '📄 Drawing revisions', `${RV.length} revised · ${RV.reduce((x, r) => x + r.ch.filter(rvDone).length, 0)} after installation`)}</div>
    <div class="sect">🛠️ Tools</div><div class="grid">${T2('#/calc', '🧮 Engineering calculator', 'current · voltage drop · OD · gland')}${T2('#/nt', '📝 Site notes', `${(S2.notes || []).length} notes`)}</div>
    <div class="sect">📈 Progress</div><div class="grid">${T2('#/dp', '✍️ Daily progress entry', `${pend} lines not sent`)}${S2.owner ? T2('#/ow', '🔑 Import progress (owner)', `${(S2.rx || []).length} imported lines · total IWP report`, null, 'main') + T2('#/tp', '👷 Technician performance', `${new Set(perfRows().map(r => r.by)).size} technicians`, null, 'main') : ''}${T2('#/pp', '📊 Punch daily progress', 'site updates')}<button class="tile" onclick="openReport('punch')"><b>🧾 Punch report to Paul</b><div><span class="n">${ppend} new · MAX punch group</span></div></button></div>
    <div class="sect">🔑 Owner</div><button class="tile" style="width:100%;min-height:auto;background:#2b2f36;color:#fff;border-color:#2b2f36" onclick="S2.owner?go('#/ow'):ownerLogin()"><b>🔑 Owner menu${S2.owner ? ' – unlocked' : ''}</b><span class="n" style="color:#cfd6df">${S2.owner ? 'Import progress · total IWP report · technician performance' : 'Password required – owner only'}</span></button>
@@ -159,30 +161,30 @@ function itemView(i) {
   let conn = '';
   if (!c) { const n = N(x.tag); const cs = n.length > 6 ? C.filter(k => k._e.includes(n)).slice(0, 60) : [];
     if (cs.length) conn = `<div class="card"><div class="h3">Cables connected to this item (${cs.length})</div><div class="list">${cs.map(cRow).join('')}</div></div>`; }
-  main.innerHTML = `<div class="card"><div class="big">${esc(x.tag)}</div><div style="margin:6px 0"><span class="badge ${s.c}" style="font-size:13px">${s.l}</span></div>
+  main.innerHTML = `${holdCard(x.tag)}<div class="card"><div class="big">${esc(x.tag)}</div><div style="margin:6px 0"><span class="badge ${s.c}" style="font-size:13px">${s.l}</span>${holdMini(x.tag)}</div>
     ${kv([['Activity', x.g], ['IWP mapping', x.m], ['IWP type', T.it[x.it]], ['Access ID', x.acc], ['Unique tag', x.uid], ['Item / type', x.ctag], ['Description', T.desc[x.desc]], ['Quantity', `${fmtn(x.q)} ${x.u}`], ['Done', `${fmtn(x.f)} ${x.u}`], ['Remaining', `${fmtn(x.q - x.f)} ${x.u}`],
       ['Drawing', T.dwg[x.dwg]], ['Subtitle', T.sub[x.sub]], ['System', x.sy], ['Company', T.co[x.co]], ['Responsible', T.resp[x.resp]], ['TQ No.', x.tq], ['IWP notes', x.notes]])}</div>
     <div class="card"><div class="h3">Site progress / Прогресс на месте</div>${!c ? `<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px"><button class="tg ${S2.i[x.acc] && S2.i[x.acc].v ? 'y' : ''}" style="padding:12px" onclick="iTick('${x.acc}',true)">✓ Installed / done<small>Смонтировано</small></button><button class="tg ${S2.i[x.acc] && !S2.i[x.acc].v ? 'n' : ''}" style="padding:12px" onclick="iTick('${x.acc}',false)">✗ Not done<small>Не выполнено</small></button></div>` : ''}
       <div class="row" style="display:flex;gap:8px"><input class="fin" id="mq" type="number" inputmode="decimal" placeholder="Qty done today (${esc(x.u)}) – remaining ${fmtn(x.q - x.f)}" style="flex:1;margin:0"><button class="tile main" style="min-height:auto;padding:10px 14px" onclick="mSave('${x.acc}')"><b>Save</b></button></div>
       <div style="font-size:12px;color:var(--mut);margin-top:6px">${S2.m[x.acc] ? `Entered: ${fmtn(S2.m[x.acc].q)} ${esc(x.u)} on ${dstr(S2.m[x.acc].t)} by ${esc(S2.m[x.acc].by)} · <span class="link" onclick="mDel('${x.acc}')">delete</span>` : (S2.i[x.acc] ? `Site: ${S2.i[x.acc].v ? 'done' : 'not done'} ${dstr(S2.i[x.acc].t)} by ${esc(S2.i[x.acc].by)} · <span class="link" onclick="delete S2.i['${x.acc}'];ssave();route()">undo</span>` : 'No site entry yet')}</div></div>
     ${c ? `<div class="card"><div class="h3">Cable</div>${cableBody(c)}<div style="margin-top:8px"><span class="link" onclick="go('#/c/${enc(c.t)}')">Open full cable details ›</span></div></div>` : ''}
-    ${others.length ? `<div class="card"><div class="h3">Other IWP lines for this tag</div><div class="list">${others.map(y => { const s2 = ist(y); return `<button class="li" onclick="go('#/i/${y.i}')"><div class="m"><div class="t">${esc(y.g)}</div><div class="s">Access ID ${esc(y.acc)} · ${fmtn(y.f)}/${fmtn(y.q)} ${esc(y.u)}</div></div><span class="badge ${s2.c}">${s2.l}</span><span class="chev">›</span></button>`; }).join('')}</div></div>` : ''}${punchBox(x.tag)}${conn}`;
+    ${others.length ? `<div class="card"><div class="h3">Other IWP lines for this tag</div><div class="list">${others.map(y => { const s2 = ist(y); return `<button class="li" onclick="go('#/i/${y.i}')"><div class="m"><div class="t">${esc(y.g)}</div><div class="s">Access ID ${esc(y.acc)} · ${fmtn(y.f)}/${fmtn(y.q)} ${esc(y.u)}</div></div><span class="badge ${s2.c}">${s2.l}</span><span class="chev">›</span></button>`; }).join('')}</div></div>` : ''}${!c ? lrAtCard(x.tag) : ''}${punchBox(x.tag)}${conn}`;
 }
 function cableBody(c) {
   const s = cst(c);
   return kv([['Status', `<span class="badge ${s.c}">${s.l}</span>`, 1], ['From', plinkText(c.f), 1], ['From room', c.fr], ['To', plinkText(c.o), 1], ['To room', c.tr], ['Type', c.ty], ['Cores', c.c], ['Length, m', c.ln], ['Drum', c.dr], ['Document', c.d]]);
 }
 function plinkText(t) { if (!t) return ''; return esc(t).replace(/G0-[A-Z0-9]+-[A-Z0-9()\-]+/g, tag => PBY[tag] ? `<span class="link" onclick="go('#/p/${enc(tag)}')">${tag}</span>` : tag); }
-function cRow(c, d) { const s = cst(c); return `<button class="li" onclick="go('#/c/${enc(c.t)}')"><div class="m"><div class="t">${d ? `<span class="badge b-na" style="margin-right:6px">${d}</span>` : ''}${esc(c.t)}</div><div class="s">${esc((d === 'IN' ? c.f : c.o || '').slice(-70))}</div></div><span class="badge ${s.c}">${s.l}</span><span class="chev">›</span></button>`; }
+function cRow(c, d) { const s = cst(c); return `<button class="li" onclick="go('#/c/${enc(c.t)}')"><div class="m"><div class="t">${d ? `<span class="badge b-na" style="margin-right:6px">${d}</span>` : ''}${esc(c.t)}${holdMini(c.t)}</div><div class="s">${esc((d === 'IN' ? c.f : c.o || '').slice(-70))}</div></div><span class="badge ${s.c}">${s.l}</span><span class="chev">›</span></button>`; }
 function cableView(t) {
   const c = CBY[t]; if (!c) { main.innerHTML = '<div class="empty">Cable not found</div>'; return; }
   const s = cst(c); setHead('Cable', c.t); const lines = IBY[c.t] || [];
-  main.innerHTML = `<div class="card"><div class="big">${esc(c.t)}</div><div style="margin:6px 0"><span class="badge ${s.c}" style="font-size:13px">${s.l}</span></div>${cableBody(c)}</div>
+  main.innerHTML = `${holdCard(c.t)}<div class="card"><div class="big">${esc(c.t)}</div><div style="margin:6px 0"><span class="badge ${s.c}" style="font-size:13px">${s.l}</span>${holdMini(c.t)}</div>${cableBody(c)}</div>
    <div class="card"><div class="h3">Site check / Проверка на месте</div>${tickBtns(c, 'OUT')}<input class="fin" style="margin-top:8px" placeholder="Remark / примечание" value="${esc((S2.c[c.t] || {}).R ? S2.c[c.t].R.v : '')}" onchange="cRem(decodeURIComponent('${enc(c.t)}'),this.value)"></div>
    <div class="card"><div class="h3">Pulling / Прокладка</div>${kv([['Status', s.p === true ? '✓ Completed' : (s.p === false ? '✗ Not completed' : '–')], ['Tracker', c.tp], ['Pull date', c.pd], ['IWP access ID', c.la], ['IWP qty / done', c.lq !== '' ? `${fmtn(c.lq)} / ${fmtn(c.lf)} m` : ''], ['Company', c.co]])}</div>
    <div class="card"><div class="h3">Termination / Подключение</div>${kv([['Status', s.t === true ? '✓ Completed' : (s.t === false ? '✗ Not completed' : '–')], ['Tracker', c.tt], ['From end date', c.tf], ['To end date', c.tto], ['IWP access ID', c.ta], ['IWP ends done', c.tq !== '' ? `${c.tfa} / ${c.tq}` : '']])}</div>
    ${lines.length ? `<div class="card"><div class="h3">IWP lines (${lines.length})</div><div class="list">${lines.map(y => { const s2 = ist(y); return `<button class="li" onclick="go('#/i/${y.i}')"><div class="m"><div class="t">${esc(y.g)}</div><div class="s">Access ID ${esc(y.acc)} · ${fmtn(y.f)}/${fmtn(y.q)} ${esc(y.u)} · ${esc(T.co[y.co])}</div></div><span class="badge ${s2.c}">${s2.l}</span><span class="chev">›</span></button>`; }).join('')}</div></div>` : ''}
-   ${tCard(c)}${glCard(c)}${punchBox(c.t)}${c.rf ? `<div class="card"><div class="h3">Terminal reference</div>${esc(c.rf)}</div>` : ''}
+   ${lrCard(c)}${tCard(c)}${glCard(c)}${punchBox(c.t)}${c.rf ? `<div class="card"><div class="h3">Terminal reference</div>${esc(c.rf)}</div>` : ''}
    ${c.q ? `<div class="card"><div class="h3">Internal TQ (CTQ)</div><div class="note">${esc(c.q)}</div></div>` : ''}
    ${c.tqs ? `<div class="card"><div class="h3">Project TQ</div><div style="font-size:13px">${esc(c.tqs)}</div></div>` : ''}
    ${(c.cm || c.h) ? `<div class="card"><div class="h3">Tracker remark</div><div class="note">${esc([c.h ? 'HOLD: ' + c.h : '', c.cm].filter(Boolean).join('\n'))}</div></div>` : ''}`;
@@ -207,20 +209,9 @@ function panelView(t) {
   const inst = (IBY[t] || []);
   const rows = (d) => p.cs.filter(z => z[0] === d).map(([dd, tg]) => CBY[tg] ? cCard(CBY[tg], dd) : `<div class="cbx"><b>${esc(tg)}</b></div>`).join('');
   const nOut = p.cs.filter(z => z[0] === 'OUT').length, nIn = p.cs.length - nOut;
-  main.innerHTML = `<div class="card"><div class="big">${esc(t)}</div><div class="small" style="color:var(--mut);font-size:13px">${esc(p.desc)}</div>${kv([['Room', p.room ? `<span class="link" onclick="go('#/rm/${enc(p.room)}')">${esc(roomLbl(p.room))}</span>` : '', 1], ['Cables', `${p.cs.length} (OUT ${nOut} / IN ${nIn})`], ['Complete', `${s.d} of ${s.n} (${s.pc}%)`]])}<div class="pbar"><i style="width:${s.pc}%"></i></div></div>
+  main.innerHTML = `${holdCard(t)}<div class="card"><div class="big">${esc(t)}${holdMini(t)}</div><div class="small" style="color:var(--mut);font-size:13px">${esc(p.desc)}</div>${kv([['Room', p.room ? `<span class="link" onclick="go('#/rm/${enc(p.room)}')">${esc(roomLbl(p.room))}</span>` : '', 1], ['Cables', `${p.cs.length} (OUT ${nOut} / IN ${nIn})`], ['Complete', `${s.d} of ${s.n} (${s.pc}%)`]])}<div class="pbar"><i style="width:${s.pc}%"></i></div></div>
    ${inst.length ? `<div class="card"><div class="h3">Installation (IWP)</div><div class="list">${inst.map(y => { const s2 = ist(y); return `<button class="li" onclick="go('#/i/${y.i}')"><div class="m"><div class="t">${esc(y.g)}</div><div class="s">Access ID ${esc(y.acc)} · ${fmtn(y.f)}/${fmtn(y.q)} ${esc(y.u)}</div></div><span class="badge ${s2.c}">${s2.l}</span><span class="chev">›</span></button>`; }).join('')}</div></div>` : ''}
-   ${punchBox(t)}${nOut ? `<div class="sect">Outgoing cables (${nOut})</div>${rows('OUT')}` : ''}${nIn ? `<div class="sect">Incoming cables (${nIn})</div>${rows('IN')}` : ''}`;
-}
-function searchView(q) {
-  setHead('Search', q); if (qbox.value !== q) qbox.value = q;
-  const n = N(q); if (n.length < 2) { main.innerHTML = '<div class="empty">Type at least 2 characters</div>'; return; }
-  const ps = PAN.filter(p => p._n.includes(n)).slice(0, 30), cs = C.filter(c => c._n.includes(n)).slice(0, 60);
-  const seen = new Set(cs.map(c => c.t)); const is = I.filter(x => x._n.includes(n) && !seen.has(x.tag)).slice(0, 60);
-  main.innerHTML = (ps.length ? `<div class="sect">Panels & boxes (${ps.length})</div><div class="list">${ps.map(p => { const s = pstat(p); return `<button class="li" onclick="go('#/p/${enc(p.tag)}')"><div class="m"><div class="t">${esc(p.tag)}</div><div class="s">${p.room ? 'Room ' + esc(p.room) + ' · ' : ''}${esc(p.desc)}</div></div><div class="r pc">${s.pc}%</div><span class="chev">›</span></button>`; }).join('')}</div>` : '') +
-    (cs.length ? `<div class="sect">Cables (${cs.length})</div><div class="list">${cs.map(c => cRow(c)).join('')}</div>` : '') +
-    (is.length ? `<div class="sect">Devices / installation items (${is.length})</div><div class="list">${is.map(x => { const s = ist(x); return `<button class="li" onclick="go('#/i/${x.i}')"><div class="m"><div class="t">${esc(x.tag)}</div><div class="s">${esc(x.g)} · ${esc(T.desc[x.desc])}</div></div><span class="badge ${s.c}">${s.l}</span><span class="chev">›</span></button>`; }).join('')}</div>` : '') +
-    (() => { const pu = PU.filter(p => p._n.includes(n)).slice(0, 60); return pu.length ? `<div class="sect">Punch items (${pu.length})</div><div class="list">${pu.map(pRow).join('')}</div>` : ''; })() +
-    (!ps.length && !cs.length && !is.length ? '<div class="empty">Nothing found. Type part of the tag, e.g. JB-541, CA-1001, UPA-TC-002.</div>' : '');
+   ${lrAtCard(t)}${punchBox(t)}${nOut ? `<div class="sect">Outgoing cables (${nOut})</div>${rows('OUT')}` : ''}${nIn ? `<div class="sect">Incoming cables (${nIn})</div>${rows('IN')}` : ''}`;
 }
 const PKEY = 'ccr_punch_v1'; let PS_ = {name: '', e: {}, x: {}};
 try { const v = localStorage.getItem(PKEY); if (v) PS_ = Object.assign(PS_, JSON.parse(v)); } catch (err) {}
@@ -345,8 +336,10 @@ const DISC_IC = d => /Электро/.test(d) ? '⚡' : /^Оборудовани
 function progLines(onlyNew) {
   const out = []; const nw = e => e && (!onlyNew || !e.s);
   Object.entries(S2.c).forEach(([tag, e]) => { const c = CBY[tag]; if (!c) return; const L = IBY[tag] || [];
-    if (nw(e.P) && e.P.v) { const pl = L.filter(x => /pull/i.test(x.g)); if (pl.length) pl.forEach(x => out.push({acc: x.acc, q: Math.max(x.q - x.f, 0) || x.q, t: e.P.t, tag, a: 'Pulled', by: e.P.by, ref: [e.P]}));
-      else out.push({acc: c.la || '-', q: Number(c.ln) || '', t: e.P.t, tag, a: 'Pulled', by: e.P.by, ref: [e.P]}); }
+    const pL = e.L && e.L.v ? ` – actual length ${fmtn(e.L.v).replace(/ /g, '')} m` : '', pL2 = e.L && e.L.v ? `Pulled length ${fmtn(e.L.v).replace(/ /g, '')} m (actual)` : '';
+    if (nw(e.P) && e.P.v) { const pr = e.L ? [e.P, e.L] : [e.P]; const pl = L.filter(x => /pull/i.test(x.g)); if (pl.length) pl.forEach(x => out.push({acc: x.acc, q: Math.max(x.q - x.f, 0) || x.q, t: e.P.t, tag, a: 'Pulled' + pL, by: e.P.by, ref: pr}));
+      else out.push({acc: c.la || '-', q: Number(c.ln) || '', t: e.P.t, tag, a: 'Pulled' + pL, by: e.P.by, ref: pr}); }
+    else if (nw(e.L) && e.L.v) out.push({acc: c.la || '', q: '', t: e.L.t, tag, a: pL2, by: e.L.by, ref: [e.L]});
     const fs = ['F', 'T'].filter(k => nw(e[k])); if (fs.length) { const b = cBase(c); const nE = ['F', 'T'].filter(k => (e[k] ? e[k].v : b[k]) && !b[k]).length;
       const refs = fs.map(k => e[k]); const t = Math.max(...refs.map(r => r.t));
       if (nE > 0) { const tl = L.filter(x => /termination/i.test(x.g)); const x = tl.find(y => !y.done) || tl[0];
@@ -573,7 +566,7 @@ function ownPunch() { const d = VS.OW.d; const one = {}; (S2.rx || []).filter(r 
   copyText(Object.values(one).map(r => [r.no, r.v === 'F' ? 'Fixed' : 'Not fixed', d.split('-').reverse().join('.'), r.tag, r.by].join('\t')).join('\n')).then(() => toast('Punch list copied')); }
 
 // ======== v3.2 modules ========
-const APPV = '3.4';
+const APPV = '3.5';
 const shortT = t => String(t || '').replace(/^G0-D1810BX0-/, '').replace(/^G0-D1801FX0-/, 'FX0-');
 const SYSN = {'EL-ESPS': ['Substation 10/0.4 kV & power supply', 'Подстанция 10/0,4 кВ'], 'EL-EMSV': ['Power installation (boards, UPS, motors)', 'Силовое электрооборудование'], 'EL-ESBZ': ['Power supply from utility substation', 'Электроснабжение от ПС'], 'EL-ELOV': ['Indoor lighting', 'Внутреннее освещение'], 'EL-EG02': ['Earthing & lightning protection', 'Заземление и молниезащита'], 'EL-EG01': ['Area earthing', 'Заземление площадки'], 'EH-EOES': ['Electric heating', 'Электрообогрев'], 'EH-AEOG': ['Heat tracing', 'Электрообогрев (кабель)'], 'EH-EOBK': ['Electric heating (other)', 'Электрообогрев'],
   'IN-DCS': ['Distributed Control System (DCS)', 'РСУ'], 'IN-ESD': ['Emergency Shutdown (ESD)', 'ПАЗ'], 'IN-SPAP': ['Fire alarm & fire fighting control (AFA&FFS)', 'АСПС и ПТ'], 'IN-GDSS': ['Gas detection', 'Контроль загазованности'], 'IN-ASUE': ['Utilities control system', 'АСУ ЭО (утилиты)'], 'IN-ASUS': ['Power supply control system', 'АСУ ЭС'], 'IN-ASKU': ['Utility metering (AUMS)', 'АСКУ ЭР'], 'IN-MAEC': ['Rotating equipment monitoring (CMS)', 'МСО и ВО'], 'IN-MFMS': ['Material flow metering (MFMS)', 'СУМП'], 'IN-AKVS': ['Emission monitoring (CEMS)', 'АКВС'], 'IN-INTS': ['Operator training simulator', 'Тренажёр оператора'], 'IN-INSS': ['Information security', 'СОИБ'], 'IN-AOVK': ['HVAC automation', 'Автоматизация ОВиК'], 'IN-AKMP': ['Analyzer system', 'Анализаторы'],
@@ -929,6 +922,127 @@ function alHome() { if (!S2.owner) return ownerLogin(); VS.AL = VS.AL || 'new'; 
   if (D.meta.ver && S2.dataVer !== D.meta.ver) { S2.dataVer = D.meta.ver; ssave(); } }
 function alDo(id, v) { S2.ald[id] = {v, t: Date.now()}; ssave(); alHome(); if (v !== 'D') { const a = allAlerts().find(x => x.id === id); if (a) { const t = `Permit ${v === 'A' ? 'APPROVED ✅' : 'REJECTED ⛔'} · ${a.title}\n${a.txt}\nRequested by ${a.by} · ${a.at}`; copyText(t).then(() => toast('Answer copied – paste to the technician in MAX')); } } }
 
+// ======== v3.5: CTQ menu + hold links, ID search, LR end-to-end termination, pulled length ========
+// ---- CTQ affected-tag parser → links to cables / panels / devices that exist in the app
+const KT = {}; // normalized full tag -> {k:'c'|'p'|'d', t}
+const addKT = (t, k) => { const n = N(t); if (n.length > 3 && !KT[n]) KT[n] = {k, t}; };
+PAN.forEach(p => addKT(p.tag, 'p')); C.forEach(c => addKT(c.t, 'c')); I.forEach(x => { if (x.tag) addKT(x.tag, CBY[x.tag] ? 'c' : PBY[x.tag] ? 'p' : 'd'); });
+const SUF = {}; // normalized tag suffix (>= 2 segments, starting with a letter segment) -> [normalized full tags]
+Object.values(KT).forEach(o => { const seg = String(o.t).split('-'); for (let s = 1; s <= seg.length - 2; s++) { if (!/[A-ZА-Я]/i.test(seg[s])) continue; const k = N(seg.slice(s).join('-')); if (k.length < 4) continue; (SUF[k] = SUF[k] || []).push(N(o.t)); } });
+function ctqTokens(txt) {
+  const s = String(txt || '').replace(/\s*(\.\.\.|…)\s*/g, '...').replace(/[,;()→×]/g, ' ').replace(/\s\/\s/g, ' ');
+  const out = [];
+  s.split(/\s+/).forEach(tk => { tk = tk.replace(/^[^A-Za-zА-Яа-я0-9]+|[^A-Za-zА-Яа-я0-9]+$/g, ''); if (!tk) return;
+    let L = [tk];
+    const r = tk.split('...'); // ranges: JU-2000...JU-2029, JB-001...056, CC-4010-C01...C05
+    if (r.length === 2) { const a = r[0].match(/^(.*?)(\d+)$/), b = r[1].match(/^(.*?)(\d+)$/); L = [r[0], r[1]];
+      if (a && b && (!b[1] || a[1].endsWith(b[1]))) { const x = Number(a[2]), y = Number(b[2]), w = a[2].length; if (y > x && y - x <= 300) { L = []; for (let n = x; n <= y; n++) L.push(a[1] + String(n).padStart(w, '0')); } } }
+    L.forEach(t => { const m = t.match(/^(.*?)([A-Z]*\d+)((?:\/[A-Z]*\d+)+)(.*)$/); // slashes: JB-537/539-C01, LP-1001/1002/1003
+      if (m) [m[2], ...m[3].split('/').filter(Boolean)].forEach(alt => out.push(m[1] + (/^\d+$/.test(alt) && /[A-Z]/.test(m[2]) ? m[2].replace(/\d+$/, alt) : alt) + m[4]));
+      else out.push(t); }); });
+  return out.filter(t => /-/.test(t) && /\d/.test(t) && t.length >= 5);
+}
+function ctqResolve(tok) { const seg = tok.split('-');
+  for (let s = 0; s <= seg.length - 2; s++) { if (s && !/[A-ZА-Я]/i.test(seg[s])) continue; const k = N(seg.slice(s).join('-'));
+    if (k.length < 4) continue; if (!s && KT[k]) return [k]; if (SUF[k] && SUF[k].length <= 6) return SUF[k]; if (SUF[k]) return []; }
+  return []; }
+const CTQX = {}; // ctq no -> {c:Set, p:Set, d:Set}
+const HOLD = {}; // tag -> [ctq no]
+const ctqOpen = t => /open/i.test(t.st || '');
+CTQ.forEach(t => { const H = CTQX[t.no] = {c: new Set(), p: new Set(), d: new Set()};
+  const dx = new Set(); ctqTokens(t.tags).forEach(tok => { const r = ctqResolve(tok); r.forEach(n => { const o = KT[n]; H[o.k].add(o.t); if (o.k === 'd' && r.length <= 2) dx.add(o.t); }); });
+  dx.forEach(dt => C.forEach(c => { if (c.t.startsWith(dt + '-')) H.c.add(c.t); })); // cables named after an affected field device
+  C.forEach(c => { if (c.q && new RegExp('\\b' + t.no + '\\b').test(c.q)) H.c.add(c.t); }); // CTQ written in the cable tracker
+  if (ctqOpen(t)) [...H.c, ...H.p, ...H.d].forEach(x => { if (!(HOLD[x] = HOLD[x] || []).includes(t.no)) HOLD[x].push(t.no); }); });
+const CTQBY = {}; CTQ.forEach(t => CTQBY[t.no] = t);
+const subEN = s => { const m = String(s || '').search(/[А-Яа-яЁё]/); return (m > 20 ? s.slice(0, m) : s).trim(); };
+const holdTags = tag => HOLD[tag] || [];
+const holdMini = tag => holdTags(tag).length ? ` <span class="badge b-no">⛔ ${holdTags(tag).map(esc).join(', ')}</span>` : '';
+function holdCard(tag) { const L = holdTags(tag); if (!L.length) return '';
+  return L.map(no => { const t = CTQBY[no]; return `<div class="card" style="border-left:5px solid var(--bad);cursor:pointer" onclick="go('#/ctq/${enc(no)}')"><div><span class="badge b-no" style="font-size:13px">⛔ On hold – CTQ ${esc(no)}</span> ${t.hold === 'Yes' ? '<span class="badge b-part">Hold point</span>' : ''} <span class="badge b-na">${esc(t.pri)}</span></div>
+   <div style="font-size:14px;font-weight:600;margin-top:6px">${esc(subEN(t.sub))}</div><div class="s2" style="margin-top:4px">Action: ${esc(String(t.act || '').slice(0, 220))}${String(t.act || '').length > 220 ? '…' : ''}</div><div class="link" style="font-size:13px;margin-top:6px">Open CTQ details ›</div></div>`; }).join(''); }
+const ilink = (k, t) => k === 'c' ? `#/c/${enc(t)}` : k === 'p' ? `#/p/${enc(t)}` : (IBY[t] ? `#/i/${IBY[t][0].i}` : `#/s/${enc(t)}`);
+// ---- CTQ menu (everyone)
+function ctqHome() { VS.CQ = VS.CQ || {f: 'open', q: ''}; const v = VS.CQ; const op = CTQ.filter(ctqOpen);
+  setHead('CTQ register', `${op.length} open · ${op.filter(t => t.hold === 'Yes').length} hold points · ${CTQ.length} total`);
+  main.innerHTML = `<div class="kpi"><div><b style="color:var(--bad)">${op.length}</b><span>CTQ open</span></div><div><b>${op.filter(t => t.hold === 'Yes').length}</b><span>hold points</span></div><div><b>${Object.keys(HOLD).length}</b><span>items on hold</span></div></div>
+   <div class="chips">${[['open', 'Open'], ['hold', 'Hold point'], ['High', 'High'], ['all', 'All']].map(([k, l]) => `<button class="chip ${v.f === k ? 'on' : ''}" onclick="VS.CQ.f='${k}';ctqHome()">${l}</button>`).join('')}</div>
+   <input class="fin" placeholder="CTQ No, tag, drawing, text..." value="${esc(v.q)}" oninput="VS.CQ.q=this.value;ctqList()"><div id="cql"></div>`; ctqList(); }
+function ctqList() { const v = VS.CQ, ql = v.q.trim().toLowerCase(), nq = N(v.q);
+  const L = CTQ.filter(t => (v.f === 'all' || (v.f === 'open' ? ctqOpen(t) : v.f === 'hold' ? ctqOpen(t) && t.hold === 'Yes' : t.pri === v.f)) && (!ql || [t.no, t.sub, t.dwg, t.tags, t.act, t.rel].join(' ').toLowerCase().includes(ql) || (nq.length > 2 && [...CTQX[t.no].c, ...CTQX[t.no].p, ...CTQX[t.no].d].some(x => N(x).includes(nq)))));
+  document.getElementById('cql').innerHTML = L.length ? `<div class="list">${L.map(t => { const H = CTQX[t.no], n = H.c.size + H.p.size + H.d.size; return `<button class="li" onclick="go('#/ctq/${enc(t.no)}')"><div class="m"><div class="t">${esc(t.no)} · <span class="badge ${t.pri === 'High' ? 'b-no' : t.pri === 'Medium' ? 'b-part' : 'b-na'}">${esc(t.pri)}</span>${t.hold === 'Yes' ? ' <span class="badge b-no">⛔ Hold</span>' : ''}</div><div class="s" style="white-space:normal">${esc(subEN(t.sub).slice(0, 150))}</div><div class="s">${esc(t.dwg)}${n ? ` · ${n} linked items` : ''}</div></div><span class="badge ${ctqOpen(t) ? 'b-no' : 'b-ok'}">${esc(t.st || '-')}</span><span class="chev">›</span></button>`; }).join('')}</div>` : '<div class="empty">Nothing found</div>'; }
+function ctqView(no) { const t = CTQBY[no]; if (!t) { main.innerHTML = '<div class="empty">CTQ not found</div>'; return; } const H = CTQX[no];
+  setHead(no, `${t.pri} · ${t.st}${t.hold === 'Yes' ? ' · hold point' : ''}`);
+  const grp = (k, lbl, set) => set.size ? `<div class="sect">${lbl} (${set.size})</div><div class="list">${[...set].sort().slice(0, 300).map(x => k === 'c' ? cRow(CBY[x]) : `<button class="li" onclick="go('${ilink(k, x)}')"><div class="m"><div class="t">${esc(x)}</div><div class="s">${k === 'p' ? esc(PBY[x].desc) : esc(IBY[x] ? IBY[x][0].g + ' · ' + (T.desc[IBY[x][0].desc] || '') : '')}</div></div><span class="chev">›</span></button>`).join('')}</div>` : '';
+  main.innerHTML = `<div class="card"><div class="big">${esc(no)}</div><div style="margin:6px 0"><span class="badge ${ctqOpen(t) ? 'b-no' : 'b-ok'}" style="font-size:13px">${esc(t.st)}</span> <span class="badge ${t.pri === 'High' ? 'b-no' : t.pri === 'Medium' ? 'b-part' : 'b-na'}">${esc(t.pri)}</span>${t.hold === 'Yes' ? ' <span class="badge b-no">⛔ Hold point – work on hold</span>' : ''}</div>
+   ${kv([['Subject', t.sub], ['Drawing', t.dwg], ['Revision', t.rev], ['Sheets / pages', t.sh], ['Affected tags', t.tags], ['Action required', t.act], ['Category', t.cat], ['Responsible', t.resp], ['Affected works', t.aff], ['Hold point', t.hold], ['TQ reference', t.rel], ['TQ answer / status', t.rels], ['Status', t.st], ['Date sent', t.dt], ['Remarks', t.rem]])}</div>
+   ${H.c.size + H.p.size + H.d.size ? '' : '<div class="note">No cable / panel / device from this CTQ was found in the app data (tags may be material codes or not in the trackers yet).</div>'}
+   ${grp('p', '🗄️ Panels & boxes', H.p)}${grp('d', '🎛️ Devices / equipment', H.d)}${grp('c', '🧵 Cables', H.c)}`; }
+function ptqView(no) { const x = PTQ.find(y => y.no === no); if (!x) { main.innerHTML = '<div class="empty">TQ not found</div>'; return; } setHead(no, 'project TQ'); const cs = tqCables(no);
+  main.innerHTML = `<div class="card"><div class="big">${esc(no)}</div>${kv([['Status', x.st], ['Rev', x.rev], ['Issued', x.dt], ['Discipline', x.dis], ['Drawing', x.dwg], ['Area', x.area], ['Classification', x.cls], ['Description', x.desc], ['EP status', x.ep + (x.epd ? ' · ' + x.epd : '')], ['EP remarks', x.epr], ['Owner status', x.ow], ['Revised drawings', x.revd], ['Comments', x.com]])}</div>
+   ${cs.length ? `<div class="sect">Related cables (${cs.length})</div><div class="list">${cs.slice(0, 200).map(c => cRow(c)).join('')}</div>` : ''}`; }
+// ---- documents (register / SF / LR) – detail popup
+function docPop(no) { const r = RG.find(x => x.no === no); const sf = SF.filter(x => x.doc === no); const lrs = [...new Set(Object.values(LR).flat().map(z => z[0]).filter(f => N(f).includes(N(no).replace(/^GLE/, '').slice(0, 30))))];
+  modalP(`<div class="h3">Document</div><div class="big" style="font-size:15px">${esc(no)}</div>${r ? kv([['Title', r.en], ['Название', r.ru], ['System', r.sys], ['Type', r.ty], ['Revision', r.rev], ['Status', r.st], ['Date', r.dt], ['Discipline', r.dis]]) : ''}
+   ${sf.length ? `<div class="sect">SF files</div><div class="list">${sf.map(x => `<button class="li" onclick="closeP();go('#/sf/${enc(x.file)}')"><div class="m"><div class="t">${esc(x.file)}</div><div class="s">rev ${esc(x.rev)} ${esc(x.as || '')}</div></div><span class="chev">›</span></button>`).join('')}</div>` : ''}
+   ${lrs.length ? `<div class="s2" style="margin-top:6px">LR files: ${lrs.map(esc).join(', ')}</div>` : ''}<button class="tile" style="width:100%;min-height:auto;margin-top:10px" onclick="closeP()">Close</button>`); }
+// ---- global ID search
+function idSearch(q) { const n = N(q); const has = s => s && N(s).includes(n); const G = [];
+  const add = (key, title, L, row) => { if (L.length) G.push({key, title, n: L.length, html: L.slice(0, 40).map(row).join('') + (L.length > 40 ? `<div class="li"><div class="m s2">+ ${L.length - 40} more – type more characters</div></div>` : '')}); };
+  const devTags = [...new Set(I.filter(x => x._n.includes(n) && !CBY[x.tag] && !PBY[x.tag]).map(x => x.tag))];
+  add('p', '🗄️ Panels & boxes', PAN.filter(p => p._n.includes(n)), p => { const s = pstat(p); return `<button class="li" onclick="go('#/p/${enc(p.tag)}')"><div class="m"><div class="t">${esc(p.tag)}${holdMini(p.tag)}</div><div class="s">${p.room ? 'Room ' + esc(p.room) + ' · ' : ''}${esc(p.desc)}</div></div><div class="r pc">${s.pc}%</div><span class="chev">›</span></button>`; });
+  add('d', '🎛️ Equipment / device tags', devTags, t => { const x = IBY[t][0], s = ist(x); return `<button class="li" onclick="go('#/i/${x.i}')"><div class="m"><div class="t">${esc(t)}${holdMini(t)}</div><div class="s">${esc(x.g)} · ${esc(T.desc[x.desc] || '')}</div></div><span class="badge ${s.c}">${s.l}</span><span class="chev">›</span></button>`; });
+  add('c', '🧵 Cables', C.filter(c => c._n.includes(n)), c => cRow(c));
+  const accI = I.filter(x => x.acc && N(x.acc).includes(n)), seenA = new Set(accI.map(x => String(x.acc)));
+  const accC = []; C.forEach(c => [['la', 'Cable pulling'], ['ta', 'Cable termination']].forEach(([k, g]) => { if (c[k] && !seenA.has(String(c[k])) && N(c[k]).includes(n)) accC.push({c, acc: c[k], g}); }));
+  add('a', '📋 IWP Access IDs', [...accI, ...accC], x => { if (x.c) return `<button class="li" onclick="go('#/c/${enc(x.c.t)}')"><div class="m"><div class="t">Access ID ${esc(x.acc)} · ${esc(x.c.t)}${holdMini(x.c.t)}</div><div class="s">${x.g} · cable ${esc(x.c.ln || '')} m</div></div><span class="badge ${cst(x.c).c}">${cst(x.c).l}</span><span class="chev">›</span></button>`;
+    const s = ist(x); return `<button class="li" onclick="go('#/i/${x.i}')"><div class="m"><div class="t">Access ID ${esc(x.acc)} · ${esc(x.tag)}${holdMini(x.tag)}</div><div class="s">${esc(x.g)} · ${fmtn(x.f)}/${fmtn(x.q)} ${esc(x.u)}</div></div><span class="badge ${s.c}">${s.l}</span><span class="chev">›</span></button>`; });
+  add('pr', '🔧 RHI punch', PU.filter(p => p.rhi && (has(p.no) || p._t.includes(n))), pRow);
+  add('pm', '📌 Master punch (client)', PU.filter(p => !p.rhi && (has(p.no) || p._t.includes(n))), pRow);
+  add('q', '❓ CTQ (internal TQ)', CTQ.filter(t => has(t.no)), t => `<button class="li" onclick="go('#/ctq/${enc(t.no)}')"><div class="m"><div class="t">${esc(t.no)} · ${esc(t.pri)}${t.hold === 'Yes' ? ' <span class="badge b-no">⛔ Hold</span>' : ''}</div><div class="s">${esc(subEN(t.sub))}</div></div><span class="badge ${ctqOpen(t) ? 'b-no' : 'b-ok'}">${esc(t.st)}</span><span class="chev">›</span></button>`);
+  add('t', '📨 Project TQ', PTQ.filter(t => has(t.no)), t => `<button class="li" onclick="go('#/ptq/${enc(t.no)}')"><div class="m"><div class="t">${esc(t.no)} R${esc(t.rev)}</div><div class="s">${esc(t.desc.slice(0, 120))}</div></div><span class="badge ${t.st === 'Closed' ? 'b-ok' : 'b-no'}">${esc(t.st)}</span><span class="chev">›</span></button>`);
+  const docs = [...new Set([...RG.map(r => r.no), ...SF.map(x => x.doc)])].filter(has);
+  add('g', '📑 Documents / drawings', docs, d => { const r = RG.find(x => x.no === d); return `<button class="li" onclick="docPop(decodeURIComponent('${enc(d)}'))"><div class="m"><div class="t">${esc(d)}</div><div class="s">${esc(r ? r.en : 'SF drawing')}</div></div>${r ? `<div class="r">Rev ${esc(r.rev)}<div>${esc(r.st)}</div></div>` : ''}<span class="chev">›</span></button>`; });
+  add('dr', '🧵 Cable drums', DR.filter(d => has(d.no) || has(d.id)), d => `<button class="li" onclick="go('#/dr/${d.i}')"><div class="m"><div class="t">Drum ${esc(d.no)}</div><div class="s">${esc(d.id)} · ${esc(d.desc)}</div></div><span class="chev">›</span></button>`);
+  add('mr', '🏬 MRF', MRF.filter(m => has(m.no)), m => `<button class="li" onclick="go('#/mr/${enc(m.no)}')"><div class="m"><div class="t">${esc(m.no)}</div><div class="s">${esc(m.sub || '')}</div></div><span class="chev">›</span></button>`);
+  return G; }
+function searchView(q) {
+  setHead('ID search', q); if (qbox.value !== q) qbox.value = q;
+  const n = N(q); if (n.length < 2) { main.innerHTML = '<div class="empty">Type at least 2 characters</div>'; return; }
+  const G = idSearch(q); VS.SG = VS.SG && VS.SG.q === q ? VS.SG : {q, f: ''}; const f = VS.SG.f;
+  main.innerHTML = G.length ? `<div class="chips"><button class="chip ${!f ? 'on' : ''}" onclick="VS.SG.f='';searchView(VS.SG.q)">All ${G.reduce((a, g) => a + g.n, 0)}</button>${G.map(g => `<button class="chip ${f === g.key ? 'on' : ''}" onclick="VS.SG.f='${g.key}';searchView(VS.SG.q)">${g.title.split(' ')[0]} ${g.n}</button>`).join('')}</div>` +
+    G.filter(g => !f || g.key === f).map(g => `<div class="sect">${g.title} (${g.n})</div><div class="list">${g.html}</div>`).join('')
+    : '<div class="empty">Nothing found. Type part of any ID: tag, cable, panel, Access ID, punch No, CTQ/TQ No, document No (e.g. JB-541, CA-1001, 88647, CTQ-18).</div>';
+}
+// ---- LR end-to-end termination
+const cleanTb = s => { const P = String(s || '').trim().replace(/[«_].*$/, '').replace(/(\d)(?=[A-Z]{2,}\d)/g, '$1|').split('|'); const out = [P[0]]; P.slice(1).forEach(x => { if (!out.some(o => o.endsWith(x))) out.push(x); }); return out.join(' / '); }; // PDF text may join two strip names
+const cleanTn = s => String(s || '').replace(/[«_].*$/, '').replace(/[А-Яа-я].*$/, '').trim();
+const PANS = PAN.map(p => p.tag).sort((a, b) => b.length - a.length);
+const canonDev = t => { t = String(t || '').trim(); if (PBY[t] || KT[N(t)]) return t; const p = PANS.find(x => t.startsWith(x)); return p || t; };
+function lrEnds(tag) { const R = (LR[tag] || []).map(r => ({doc: r[0], pg: r[1], core: String(r[2] || ''), dev: canonDev(r[3]), oth: canonDev(r[4]), tb: cleanTb(r[5]), tn: cleanTn(r[6])})); if (!R.length) return null;
+  const c = CBY[tag], fN = N(node0(c ? c.f : '')), tN = N(node0(c ? c.o : ''));
+  const devs = [...new Set(R.map(r => r.dev))]; let from = devs.find(d => fN && fN.includes(N(d).slice(-10))) || devs[0]; let to = devs.find(d => d !== from && tN && tN.includes(N(d).slice(-10))) || devs.find(d => d !== from) || (R.find(r => r.oth !== from) || {}).oth || '';
+  const cores = [...new Set(R.map(r => r.core))]; const at = (d, core) => R.filter(r => r.dev === d && r.core === core);
+  const rows = cores.map(core => ({core, F: at(from, core), T: at(to, core)}));
+  return {R, from, to, rows, docs: [...new Set(R.map(r => r.doc + ' · sh. ' + r.pg))]}; }
+const tbTxt = L => L.length ? L.map(r => `<b>${esc(r.tb || '-')}</b> : ${esc(r.tn || '-')}`).join('<br>') : '<span style="color:var(--mut)">–</span>';
+const devLink = d => d ? (PBY[d] ? `<span class="link" onclick="go('#/p/${enc(d)}')">${esc(shortT(d))}</span>` : (IBY[d] ? `<span class="link" onclick="go('#/i/${IBY[d][0].i}')">${esc(shortT(d))}</span>` : esc(shortT(d)))) : '–';
+function lrCard(c) { const E = lrEnds(c.t);
+  if (!E) return `<div class="card"><div class="h3">End-to-end termination (LR drawing)</div><div class="note" style="background:#eef3f8">LR termination data not available yet</div></div>`;
+  return `<div class="card"><div class="h3">End-to-end termination (LR drawing)</div>
+   <div style="display:grid;grid-template-columns:1fr auto 1fr;gap:6px;align-items:center;font-size:13px;margin-bottom:8px"><div style="background:#eef3f8;border-radius:8px;padding:8px"><div class="s2">From device</div>${devLink(E.from)}</div><div style="font-size:18px;color:var(--acc)">↔</div><div style="background:#eef3f8;border-radius:8px;padding:8px"><div class="s2">To device</div>${devLink(E.to)}</div></div>
+   <div class="list"><div class="li" style="font-size:12px;font-weight:700;color:var(--pri2);background:#f5f7fa"><div style="width:58px;flex:none">Cores</div><div style="flex:1">From: strip : terminals</div><div style="flex:1">To: strip : terminals</div></div>
+   ${E.rows.map(r => `<div class="li" style="font-size:13px;align-items:flex-start"><div style="width:58px;flex:none;font-weight:600">${esc(r.core || '-')}</div><div style="flex:1;word-break:break-word">${tbTxt(r.F)}</div><div style="flex:1;word-break:break-word">${tbTxt(r.T)}</div></div>`).join('')}</div>
+   <div class="s2" style="margin-top:6px">LR drawing: ${E.docs.map(esc).join('; ')}</div></div>`; }
+const LRAT = {}; Object.keys(LR).forEach(tag => (LR[tag] || []).forEach(r => { const d = canonDev(r[3]); ((LRAT[d] = LRAT[d] || {})[tag] = LRAT[d][tag] || []).push(r); }));
+function lrAtCard(dev) { const M = LRAT[dev]; if (!M) return '';
+  return `<div class="card"><div class="h3">Terminations at this ${PBY[dev] ? 'panel' : 'device'} (LR drawing)</div><div class="list">${Object.entries(M).map(([tag, rs]) => { const E = lrEnds(tag); const oth = E ? (E.from === dev ? E.to : E.from) : '';
+    return `<button class="li" style="align-items:flex-start" onclick="go('#/c/${enc(tag)}')"><div class="m"><div class="t">${esc(tag)}${holdMini(tag)}</div><div class="s" style="white-space:normal">${rs.map(r => `${esc(cleanTb(r[5]))} : ${esc(cleanTn(r[6]))} (cores ${esc(r[2])})`).join(' · ')}</div><div class="s" style="white-space:normal">↔ ${esc(shortT(oth))} · ${esc(String(rs[0][0]).replace(/_AL.*$/, ''))} sh. ${esc(rs[0][1])}</div></div><span class="chev">›</span></button>`; }).join('')}</div></div>`; }
+// ---- actual pulled length (saved on the phone, sent in report)
+function lenBox(c) { const e = (S2.c[c.t] || {}).L;
+  return `<div style="display:flex;gap:6px;align-items:center;margin-top:6px" onclick="event.stopPropagation()"><input class="fin" id="pl_${c.i}" type="number" inputmode="decimal" min="0" step="0.1" placeholder="Actual pulled length, m${c.ln ? ' (design ' + esc(c.ln) + ' m)' : ''}" value="${e ? esc(e.v) : ''}" style="flex:1;margin:0;padding:8px 10px;font-size:14px"><button class="tg y" style="padding:8px 12px;flex:none" onclick="event.stopPropagation();lenSave(decodeURIComponent('${enc(c.t)}'),${c.i})">Save m</button></div>${e ? `<div class="s2" style="margin-top:3px">Pulled length ${fmtn(e.v)} m · ${dstr(e.t)} · ${esc(e.by)}${e.s ? ' · sent' : ' · not sent'}</div>` : ''}`; }
+function lenSave(tag, i) { if (!who(`lenSave(decodeURIComponent('${enc(tag)}'),${i})`)) return; const el = document.getElementById('pl_' + i); const v = Number(String(el ? el.value : '').replace(',', '.'));
+  if (!(v > 0) || v > 5000) return toast('Enter the pulled length in metres'); const e = S2.c[tag] = S2.c[tag] || {}; e.L = {v: Math.round(v * 10) / 10, t: Date.now(), by: PS_.name}; ssave(); toast('Pulled length saved'); route(); }
 function toast(m) { const t = document.getElementById('toast'); t.textContent = m; t.style.display = 'block'; setTimeout(() => t.style.display = 'none', 3500); }
 (() => { const ht = document.getElementById('ht'); let lp = 0;
   ht.addEventListener('pointerdown', () => { lp = setTimeout(() => { lp = 0; ownerLogin(); }, 2000); });
