@@ -116,6 +116,7 @@ function route() {
   if (k === 'calc') return calcHome();
   if (k === 'nt') return ntHome();
   if (k === 'owner') { go('#/'); return ownerLogin(); }
+  if (k === 'mg') { if (S2.mgr || S2.owner) return mgHome(); home(); return mgrLogin(); }
   home();
 }
 // --- views
@@ -130,6 +131,7 @@ function home() {
   main.innerHTML = `${D.__fb ? `<div class="card" style="border-left:5px solid #e0a100;background:#fff8e6;font-size:13px"><b>⚠ Showing last good data (${esc(D.meta.date)})</b><div style="margin-top:4px">Today's automatic update${D.__fb.date && D.__fb.date !== '?' ? ' (' + esc(D.__fb.date) + ')' : ''} has a different file format, so the app is using the last good data. All screens work normally.</div></div>` : ''}<div class="kpi"><div><b>${all.n}</b><span>IWP lines</span></div><div><b style="color:var(--ok)">${(all.n ? Math.round(100 * all.d / all.n) : 0)}%</b><span>lines done</span></div><div><b>${cc}/${C.length}</b><span>cables complete</span></div></div>
    ${S2.owner ? (() => { const n = alCount(); return `<button class="tile main" style="width:100%;min-height:auto;margin-bottom:8px;background:${n ? '#b42318' : '#2b2f36'};border-color:${n ? '#b42318' : '#2b2f36'}" onclick="go('#/al')"><b>🔔 Alerts from site · ${n} new</b><span class="n" style="color:#f3d6d2">issues · permits · revisions · TQ</span></button>`; })() : ''}
    <button class="tile main" style="width:100%;min-height:auto;margin-bottom:4px;background:${pend ? '#c55a11' : 'var(--pri)'};border-color:${pend ? '#c55a11' : 'var(--pri)'}" onclick="openReport('prog')"><b>📤 Send report to Paul · ${pend} new progress lines</b><span class="n">👷 ${esc(PS_.name || 'tap to set your name')} · MAX progress group</span></button>
+   <button class="tile main" style="width:100%;min-height:auto;margin-bottom:4px;background:var(--acc);border-color:var(--acc);color:#fff" onclick="S2.mgr||S2.owner?go('#/mg'):mgrLogin()"><b>📊 Manager dashboard${S2.mgr || S2.owner ? '' : ' 🔒'}</b><span class="n" style="color:#fff">overall % · panel progress table · bottom-10 timeline</span></button>
    <div class="sect">🏗️ Construction</div><div class="grid">
     ${T2('#/p', 'Panel cable check<br><span style="font-weight:400;font-size:12px">pulled / terminated per panel</span>', `${PAN.length} panels · ${pcomp} complete`, (PAN.length ? Math.round(100 * pcomp / PAN.length) : 0), 'main')}
     ${T2('#/ic', 'Interconnection cables<br><span style="font-weight:400;font-size:12px">to/from other buildings</span>', `${icd}/${ICX.length} complete`, ICX.length ? Math.round(100 * icd / ICX.length) : 0, 'main')}
@@ -300,7 +302,7 @@ function punchHome() {
   main.innerHTML = `<div class="chips">${[['rhi', 'RHI responsible'], ['all', 'All responsible']].map(([k, l]) => `<button class="chip ${VS.PS.who === k ? 'on' : ''}" onclick="VS.PS.who='${k}';punchHome()">${l}</button>`).join('')}</div>
    <div class="kpi"><div><b>${L.length}</b><span>punch items</span></div><div><b style="color:var(--bad)">${op.length}</b><span>open</span></div><div><b style="color:var(--ok)">${L.length ? Math.round(100 * (L.length - op.length) / L.length) : 0}%</b><span>closed</span></div></div>
    <div class="kpi"><div><b style="color:var(--bad)">${cA}</b><span>open cat A</span></div><div><b style="color:var(--warn)">${cB}</b><span>open cat B</span></div><div><b>${cC}</b><span>open cat C</span></div></div>
-   <div class="chips"><button class="chip on" onclick="go('#/pp')">📊 Daily progress</button><button class="chip" onclick="openReport('punch')">Send report to Paul</button><button class="chip" onclick="document.getElementById('pimp2').click()">⬆ Import</button><button class="chip" onclick="askPName('route()')">👷 ${esc(PS_.name || 'Set name')}</button></div>
+   <div class="chips"><button class="chip on" onclick="go('#/pp')">📊 Daily progress</button><button class="chip" onclick="openReport('punch')">Send report to Paul</button><button class="chip" onclick="openXPunch()">🔗 Cross-punch report</button><button class="chip" onclick="document.getElementById('pimp2').click()">⬆ Import</button><button class="chip" onclick="askPName('route()')">👷 ${esc(PS_.name || 'Set name')}</button></div>
    <input type="file" id="pimp2" accept=".json,application/json" multiple style="display:none" onchange="importPunch(this.files);this.value=''">
    <button class="tile main" style="width:100%;min-height:auto;margin-bottom:4px" onclick="go('#/pk/all:')"><b>All open punch items (${op.length}) ›</b></button>
    <div class="sect">By discipline</div><div class="grid">${discs.map(tile).join('')}</div>
@@ -336,7 +338,7 @@ function punchItem(i) {
        <div class="small" style="font-size:12px;color:var(--mut)">${e ? `Last site update: ${dstr(e.t)} by ${esc(e.by)} · <span class="link" onclick="clearPunch('${esc(p.no)}')">undo</span>` : 'No site update yet'}</div>`; })()}</div>
    <div class="card"><div class="h3">Item</div>${kv([['Tag', tl, 1], ['Tag description', p.tage ? `${esc(p.tage)}<br><span style="color:var(--mut)">${esc(p.tagd)}</span>` : esc(p.tagd), 1], ['Discipline', `${DISC_IC(p.d)} ${esc((PT.discE || [])[p.disc] || '')}<br><span style="color:var(--mut)">${esc(p.d)}</span>`, 1], ['Section', ((PT.secE || [])[p.sec] || '') + ' / ' + PT.sec[p.sec]], ['Subsystem', PT.sub[p.sub]], ['Subsystem name', `${esc((PT.subnE || [])[p.subn] || '')}<br><span style="color:var(--mut)">${esc(PT.subn[p.subn])}</span>`, 1], ['System', PT.sys[p.sys]], ['Title', PT.tit[p.tit]]])}</div>
    <div class="card"><div class="h3">Status</div>${kv([['Status', p.st], ['Category', p.cat], ['Stage', ((PT.stgE || [])[p.stg] || '') + (PT.stg[p.stg] ? ' / ' + PT.stg[p.stg] : '')], ['Issue date', p.idate], ['Delay, days', p.st === 'Open' ? p.delay : ''], ['Closed date', p.cdate], ['Closure reason', p.reason], ['Inspection', p.insp], ['ACT status', p.act]])}</div>
-   <div class="card"><div class="h3">Responsibility</div>${kv([['Issued by', PT.by[p.by]], ['Organisation', PT.org[p.org]], ['EPC responsible', PT.epc[p.epc]], ['Responsible to fix', PT.resp[p.resp]], ['Department', PT.dept[p.dept]], ['Notes', p.notes], ['Remarks', p.rem]])}</div>`;
+   <div class="card"><div class="h3">Responsibility</div>${kv([['Issued by', PT.by[p.by]], ['Organisation', PT.org[p.org]], ['EPC responsible', PT.epc[p.epc]], ['Responsible to fix', PT.resp[p.resp]], ['Department', PT.dept[p.dept]], ['Notes', p.notes], ['Remarks', p.rem]])}</div>${xPunchCard(p)}`;
 }
 // ===== MAX groups
 const MAX_PROG = 'https://max.ru/join/1VYEFgINWOywM4Gx9U4uXZZsp1AKPCgozEWICdJ9dNs';
@@ -577,7 +579,7 @@ function ownPunch() { const d = VS.OW.d; const one = {}; (S2.rx || []).filter(r 
   copyText(Object.values(one).map(r => [r.no, r.v === 'F' ? 'Fixed' : 'Not fixed', d.split('-').reverse().join('.'), r.tag, r.by].join('\t')).join('\n')).then(() => toast('Punch list copied')); }
 
 // ======== v3.2 modules ========
-const APPV = '3.6';
+const APPV = '3.7';
 const shortT = t => String(t || '').replace(/^G0-D1810BX0-/, '').replace(/^G0-D1801FX0-/, 'FX0-');
 const SYSN = {'EL-ESPS': ['Substation 10/0.4 kV & power supply', 'Подстанция 10/0,4 кВ'], 'EL-EMSV': ['Power installation (boards, UPS, motors)', 'Силовое электрооборудование'], 'EL-ESBZ': ['Power supply from utility substation', 'Электроснабжение от ПС'], 'EL-ELOV': ['Indoor lighting', 'Внутреннее освещение'], 'EL-EG02': ['Earthing & lightning protection', 'Заземление и молниезащита'], 'EL-EG01': ['Area earthing', 'Заземление площадки'], 'EH-EOES': ['Electric heating', 'Электрообогрев'], 'EH-AEOG': ['Heat tracing', 'Электрообогрев (кабель)'], 'EH-EOBK': ['Electric heating (other)', 'Электрообогрев'],
   'IN-DCS': ['Distributed Control System (DCS)', 'РСУ'], 'IN-ESD': ['Emergency Shutdown (ESD)', 'ПАЗ'], 'IN-SPAP': ['Fire alarm & fire fighting control (AFA&FFS)', 'АСПС и ПТ'], 'IN-GDSS': ['Gas detection', 'Контроль загазованности'], 'IN-ASUE': ['Utilities control system', 'АСУ ЭО (утилиты)'], 'IN-ASUS': ['Power supply control system', 'АСУ ЭС'], 'IN-ASKU': ['Utility metering (AUMS)', 'АСКУ ЭР'], 'IN-MAEC': ['Rotating equipment monitoring (CMS)', 'МСО и ВО'], 'IN-MFMS': ['Material flow metering (MFMS)', 'СУМП'], 'IN-AKVS': ['Emission monitoring (CEMS)', 'АКВС'], 'IN-INTS': ['Operator training simulator', 'Тренажёр оператора'], 'IN-INSS': ['Information security', 'СОИБ'], 'IN-AOVK': ['HVAC automation', 'Автоматизация ОВиК'], 'IN-AKMP': ['Analyzer system', 'Анализаторы'],
@@ -1054,6 +1056,82 @@ function lenBox(c) { const e = (S2.c[c.t] || {}).L;
   return `<div style="display:flex;gap:6px;align-items:center;margin-top:6px" onclick="event.stopPropagation()"><input class="fin" id="pl_${c.i}" type="number" inputmode="decimal" min="0" step="0.1" placeholder="Actual pulled length, m${c.ln ? ' (design ' + esc(c.ln) + ' m)' : ''}" value="${e ? esc(e.v) : ''}" style="flex:1;margin:0;padding:8px 10px;font-size:14px"><button class="tg y" style="padding:8px 12px;flex:none" onclick="event.stopPropagation();lenSave(decodeURIComponent('${enc(c.t)}'),${c.i})">Save m</button></div>${e ? `<div class="s2" style="margin-top:3px">Pulled length ${fmtn(e.v)} m · ${dstr(e.t)} · ${esc(e.by)}${e.s ? ' · sent' : ' · not sent'}</div>` : ''}`; }
 function lenSave(tag, i) { if (!who(`lenSave(decodeURIComponent('${enc(tag)}'),${i})`)) return; const el = document.getElementById('pl_' + i); const v = Number(String(el ? el.value : '').replace(',', '.'));
   if (!(v > 0) || v > 5000) return toast('Enter the pulled length in metres'); const e = S2.c[tag] = S2.c[tag] || {}; e.L = {v: Math.round(v * 10) / 10, t: Date.now(), by: PS_.name}; ssave(); toast('Pulled length saved'); route(); }
+// ===== v3.7 Manager dashboard (manager password, or owner) =====
+const MGR_PIN = 'Alpy';
+function mgrLogin() { modalP(`<div class="h3">Manager password</div><input class="fin" id="mpin" type="password" autocapitalize="off" autocomplete="off" placeholder="Password"><button class="tile main" style="width:100%;min-height:auto" onclick="if(document.getElementById('mpin').value.trim()===MGR_PIN){S2.mgr=1;ssave();closeP();go('#/mg')}else toast('Wrong password')"><b>Unlock</b></button>`); }
+const pct = (a, b) => b ? Math.round(100 * a / b) : 0;
+let MGC = null; // cached panel stats (site entries change → rebuilt on each dashboard open)
+function mgPanel(p) {
+  const cabs = p.cs.map(z => CBY[z[1]]).filter(Boolean);
+  const eq = (IBY[p.tag] || []).filter(x => !/^Cable (pulling|termination)$/.test(x.g));
+  const iw = eq.concat(...cabs.map(c => IBY[c.t] || []));
+  const tags = new Set([p.tag, ...p.cs.map(z => z[1])]);
+  let po = 0; tags.forEach(t => (PUBY[t] || []).forEach(q => { if (q.st === 'Open') po++; }));
+  const pulled = cabs.filter(c => cst(c).p === true).length;
+  return {p, tag: p.tag, iwN: iw.length, iw: iw.length ? pct(iw.filter(x => x.done).length, iw.length) : null,
+    cbN: cabs.length, cb: cabs.length ? pct(pulled, cabs.length) : null, po, eqN: eq.length, eq: eq.length ? pct(eq.filter(x => x.done).length, eq.length) : null};
+}
+function mgHome() {
+  setHead('Manager dashboard', `progress overview · data ${D.meta.date}`); qbox.value = '';
+  MGC = PAN.map(mgPanel); VS.MG = VS.MG || {q: '', iw: '', pu: '', tl: window.innerWidth >= 700};
+  const v = VS.MG;
+  const all = gstat(I), cp = C.filter(c => cst(c).p === true).length, ct = C.filter(c => cst(c).t === true).length;
+  const pOpen = PU.filter(p => p.st === 'Open'), pRhi = pOpen.filter(p => /^RHI-/.test(p.no)).length;
+  const eqS = INST.filter(x => x.done).length, ctqA = CTQ.filter(ctqOpen), ctqH = ctqA.filter(t => t.hold === 'Yes').length;
+  const card = (val, unit, lbl, sub, bad) => `<div class="mgk ${bad ? 'bad' : ''}"><b>${val}${unit}</b><span>${lbl}</span>${sub ? `<i>${sub}</i>` : ''}</div>`;
+  const ip = pct(all.d, all.n), pp = pct(cp, C.length), tp = pct(ct, C.length), ep = pct(eqS, INST.length);
+  main.innerHTML = `<div class="sect">Overall progress</div><div class="mgs">
+    ${card(ip, '%', 'IWP completion', `${all.d}/${all.n} lines`, ip < 50)}
+    ${card(pp, '%', 'Cable pulling', `${cp}/${C.length} cables`, pp < 50)}
+    ${card(tp, '%', 'Cable termination', `${ct}/${C.length} both ends`, tp < 50)}
+    ${card(pOpen.length, '', 'Punch open', `client ${pOpen.length - pRhi} · RHI ${pRhi}`, pOpen.length > 0)}
+    ${card(ep, '%', 'Equipment installed', `${eqS}/${INST.length} lines`, ep < 50)}
+    ${card(ctqA.length, '', 'CTQ on hold', `${ctqH} hold points`, ctqA.length > 0)}</div>
+   <div class="sect">Panel progress (${PAN.length})</div>
+   <div class="mgf"><input class="fin" placeholder="Filter panel / description…" value="${esc(v.q)}" oninput="VS.MG.q=this.value;mgTable()">
+    <select onchange="VS.MG.iw=this.value;mgTable()"><option value="">IWP % – any</option>${[['lo', '< 25%'], ['mid', '25–75%'], ['hi', '> 75%']].map(([k, l]) => `<option value="${k}" ${v.iw === k ? 'selected' : ''}>IWP ${l}</option>`).join('')}</select>
+    <select onchange="VS.MG.pu=this.value;mgTable()"><option value="">Punch – any</option>${[['0', 'Open punch > 0'], ['5', 'Open punch > 5']].map(([k, l]) => `<option value="${k}" ${v.pu === k ? 'selected' : ''}>${l}</option>`).join('')}</select></div>
+   <div id="mgt"></div>
+   <button class="chip ${v.tl ? 'on' : ''}" style="margin-top:12px" onclick="VS.MG.tl=!VS.MG.tl;mgTl()">${v.tl ? '▲' : '▼'} Timeline</button><div id="mgl"></div>
+   <div class="foot">IWP % = done IWP lines of the panel and its cables · Cables pulled % = panel cables pulled · Open punch = client + RHI punch on the panel tag and its cables · Equipment % = installation lines of the panel tag.</div>`;
+  mgTable(); mgTl();
+}
+function mgTable() {
+  const v = VS.MG, nq = N(v.q), ql = v.q.trim().toLowerCase(), f = x => x == null ? '–' : x + '%';
+  const L = MGC.filter(r => (!nq || r.p._n.includes(nq) || String(r.p.desc).toLowerCase().includes(ql)) &&
+    (!v.iw || (r.iw != null && (v.iw === 'lo' ? r.iw < 25 : v.iw === 'mid' ? r.iw >= 25 && r.iw <= 75 : r.iw > 75))) &&
+    (!v.pu || r.po > Number(v.pu)));
+  const col = x => x == null ? '' : x >= 75 ? 'color:var(--ok)' : x < 25 ? 'color:var(--bad)' : 'color:var(--warn)';
+  document.getElementById('mgt').innerHTML = L.length ? `<div class="mgw"><table class="mgtb"><thead><tr><th>Panel</th><th>IWP</th><th>Pulled</th><th>Punch</th><th>Equip.</th></tr></thead><tbody>${L.map(r => `<tr>
+    <td><span class="link" onclick="go('#/p/${enc(r.tag)}')">${esc(r.tag.replace(/^G0-D18(10BX0|01FX0)-/, ''))}</span></td>
+    <td style="${col(r.iw)}"><b>${f(r.iw)}</b></td><td style="${col(r.cb)}">${f(r.cb)}</td><td style="${r.po ? 'color:var(--bad);font-weight:700' : ''}">${r.po}</td><td style="${col(r.eq)}">${f(r.eq)}</td></tr>`).join('')}</tbody></table></div><div class="s2" style="margin-top:4px">${L.length} of ${MGC.length} panels</div>` : '<div class="empty">No panels match the filter</div>';
+}
+function mgTl() {
+  const v = VS.MG, el = document.getElementById('mgl'); if (!el) return;
+  const b = el.previousElementSibling; if (b) { b.textContent = (v.tl ? '▲' : '▼') + ' Timeline'; b.classList.toggle('on', v.tl); }
+  if (!v.tl) { el.innerHTML = ''; return; }
+  const L = MGC.filter(r => r.iw != null).sort((a, b) => a.iw - b.iw || b.iwN - a.iwN).slice(0, 10);
+  el.innerHTML = `<div class="card" style="margin-top:8px"><div class="h3">Bottom 10 panels by completion</div>${L.map(r => `<div class="mgbar" onclick="go('#/p/${enc(r.tag)}')"><span class="n">${esc(r.tag.replace(/^G0-D18(10BX0|01FX0)-/, ''))}</span><span class="b"><i style="width:${r.iw}%"></i></span><span class="v">${r.iw}%</span></div>`).join('') || '<div class="empty">No data</div>'}</div>`;
+}
+// ===== v3.7 Client punch ↔ RHI internal punch cross-link (same tag)
+const isRHIp = p => /^RHI-/.test(String(p.no));
+const PUT = {}; PU.forEach(p => { if (p._t) (PUT[p._t] = PUT[p._t] || []).push(p); });
+function xPunch(p) { return p._t ? (PUT[p._t] || []).filter(q => q !== p && isRHIp(q) !== isRHIp(p)) : []; }
+function xPunchCard(p) { const L = xPunch(p); if (!L.length) return '';
+  return `<div class="card" style="border-left:5px solid var(--acc)"><div class="h3">${isRHIp(p) ? 'Client punch for this tag' : 'RHI punch for this tag'} (${L.length})</div><div class="list">${L.map(q => `<button class="li" onclick="go('#/pi/${q.i}')"><div class="m"><div class="t">№ ${esc(q.no)}</div><div class="s" style="white-space:normal">${esc(q.den || q.dru || '')}</div></div><div class="r">${pb(q)}</div><span class="chev">›</span></button>`).join('')}</div></div>`; }
+function xPunchText() {
+  const tags = {}; PU.forEach(p => { if (p._t) { const g = tags[p._t] = tags[p._t] || {tag: p.tag, c: [], r: []}; (isRHIp(p) ? g.r : g.c).push(p); } });
+  const G = Object.values(tags).filter(g => g.c.length && g.r.length).sort((a, b) => a.tag.localeCompare(b.tag));
+  const ln = p => `${p.no} | ${String(p.den || p.dru || '').replace(/\s+/g, ' ').trim()} | ${p.st}`;
+  return {n: G.length, text: `Cross-punch report · ${tstr(Date.now())}${PS_.name ? ' · ' + PS_.name : ''}\nCCR – tags with both client punch and RHI punch: ${G.length}\n\n` +
+    G.map(g => `Tag: ${g.tag}\n` + g.c.map(p => `  Client: ${ln(p)}`).join('\n') + '\n' + g.r.map(p => `  RHI:    ${ln(p)}`).join('\n')).join('\n\n')};
+}
+function openXPunch() { const r = xPunchText(); REP = {kind: 'xpunch', L: [], text: r.text};
+  modalP(`<div class="h3">Cross-punch report · ${r.n} tags</div>
+   <textarea id="rtx" class="fin" style="height:240px;font:12px monospace;white-space:pre" readonly>${esc(r.text)}</textarea>
+   <button class="tile main" style="width:100%;min-height:auto;margin-bottom:8px" onclick="copyText(REP.text).then(ok=>{toast(ok?'Copied ✓ – in MAX press and hold, Paste, Send':'Copy the text, then paste in MAX');setTimeout(()=>{window.location.href=MAX_PUNCH},600)})"><b>📤 Send report to Paul</b><span class="n">copies the text and opens the MAX punch group</span></button>
+   <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><button class="tile" style="min-height:auto" onclick="copyText(REP.text).then(ok=>toast(ok?'Copied for Paul':'Select the text and copy'))"><b>📋 Copy for Paul</b></button>
+   <button class="tile" style="min-height:auto" onclick="navigator.share?navigator.share({text:REP.text}).catch(()=>{}):copyText(REP.text).then(()=>toast('Copied for Paul'))"><b>↗ Share…</b></button></div>`); }
 function toast(m) { const t = document.getElementById('toast'); t.textContent = m; t.style.display = 'block'; setTimeout(() => t.style.display = 'none', 3500); }
 (() => { const ht = document.getElementById('ht'); let lp = 0;
   ht.addEventListener('pointerdown', () => { lp = setTimeout(() => { lp = 0; ownerLogin(); }, 2000); });
