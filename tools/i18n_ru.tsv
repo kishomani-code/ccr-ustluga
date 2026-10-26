@@ -1,0 +1,943 @@
+Completed	Завершено
+COMPLETED	ЗАВЕРШЕНО
+Complete	Завершено
+In progress	В работе
+In Progress	В работе
+IN PROGRESS	В РАБОТЕ
+Not started	Не начато
+Not Started	Не начато
+NOT STARTED	НЕ НАЧАТО
+On hold	На удержании
+On Hold	На удержании
+Accepted	Принято
+Accepted w/c	Принято с замеч.
+Accepted with comments	Принято с замечаниями
+Submitted	Подано
+Submitted (pending)	Подано (ожидает)
+Rejected	Отклонено
+Open	Открыто
+Closed	Закрыто
+open	открыто
+closed	закрыто
+Done	Выполнено
+Not done	Не выполнено
+Partly	Частично
+Done (site)	Выполнено (на месте)
+Not done (site)	Не выполнено (на месте)
+site	на месте
+# m (site)	# м (на месте)
+No status	Нет статуса
+Termination open	Подключение не завершено
+NOT PULLED	НЕ ПРОЛОЖЕН
+NOT READY	НЕ ГОТОВО
+Not ready	Не готово
+Ready	Готово
+Fixed	Исправлено
+Not fixed	Не исправлено
+Not completed	Не завершено
+Not complete	Не завершено
+No RFI	Нет РФИ
+Yes	Да
+No	Нет
+CCR site app	Приложение CCR
+v# · data #	v# · данные #
+data #	данные #
+IWP lines	Строки IWP
+lines done	строк выполнено
+cables complete	кабелей завершено
+Alerts from site	Сигналы с объекта
+# new	# новых
+new	новых
+issues · permits · revisions · TQ	замечания · допуски · ревизии · TQ
+Send report to Paul	Отправить отчёт Паулю
+# new progress lines	# новых строк прогресса
+tap to set your name	нажмите, чтобы указать имя
+MAX progress group	группа прогресса MAX
+MAX punch group	группа замечаний MAX
+Manager dashboard	Панель менеджера
+overall %	общий %
+panel progress table	таблица прогресса панелей
+bottom-# timeline	график худших #
+Construction	Строительство
+Panel cable check	Проверка кабелей панели
+pulled / terminated per panel	проложено / подключено по панелям
+# panels	# панелей
+# complete	# завершено
+Interconnection cables	Межобъектные кабели
+to/from other buildings	к/от других зданий
+Installation check	Проверка монтажа
+panels, devices, trays, earthing	панели, приборы, лотки, заземление
+# lines	# строк
+#/# lines	#/# строк
+Punch list (RHI)	Замечания РХИ
+Punch list	Перечень замечаний
+# open	# открыто
+# closed	# закрыто
+# to send	# к отправке
+Rooms	Помещения
+room number → panels & cables	номер помещения → панели и кабели
+# rooms	# помещений
+Cable pulling	Прокладка кабеля
+Cable termination	Подключение кабеля
+Issues found	Найденные проблемы
+report to engineer	сообщить инженеру
+# not sent	# не отправлено
+# total	# всего
+Work permits	Наряды-допуски
+request from engineer	запрос у инженера
+Inspection (RFI)	Инспекция (РФИ)
+RFI Progress	Прогресс РФИ
+RFI progress	Прогресс РФИ
+cables & equipment RFI status	статус РФИ кабелей и оборудования
+laying RFI accepted #/#	РФИ прокладки принято #/#
+Ready for inspection	Готово к инспекции
+work done · RFI not accepted	работа выполнена · РФИ не принято
+work done	работа выполнена
+RFI not accepted	РФИ не принято
+# cables to call	# кабелей к вызову
+Materials	Материалы
+Cable drums	Кабельные барабаны
+# drums	# барабанов
+used / remaining	использовано / остаток
+Material tracking	Учёт материалов
+# ident codes by system	# идент. кодов по системам
+MRF status	Статус MRF
+# warehouse requests	# заявок на склад
+Systems	Системы
+System block diagrams	Структурные схемы систем
+how systems work	как работают системы
+ready to start?	готово к запуску?
+# ready	# готово
+# with issues	# с проблемами
+Cable glands	Кабельные вводы
+size · type RU/EN · sleeve · earthing	размер · тип RU/EN · муфта · заземление
+Documents	Документы
+CTQ register	Реестр CTQ
+internal TQs	внутренние TQ
+what is on hold	что на удержании
+# items on hold	# позиций на удержании
+Drawings register	Реестр чертежей
+# CCR docs	# документов CCR
+system → activity	система → работа
+SF drawings (MTO)	Чертежи SF (MTO)
+# files	# файлов
+rev & dates	ревизии и даты
+Drawing revisions	Ревизии чертежей
+# revised	# изменено
+# after installation	# после монтажа
+Tools	Инструменты
+Engineering calculator	Инженерный калькулятор
+current · voltage drop · OD · gland	ток · падение напряжения · диаметр · ввод
+Site notes	Заметки с объекта
+# notes	# заметок
+Progress	Прогресс
+Daily progress entry	Ввод ежедневного прогресса
+Daily progress	Ежедневный прогресс
+# lines not sent	# строк не отправлено
+Import progress (owner)	Импорт прогресса (владелец)
+Import progress	Импорт прогресса
+# imported lines	# импортированных строк
+total IWP report	общий отчёт IWP
+Total IWP report	Общий отчёт IWP
+Technician performance	Производительность техников
+# technicians	# техников
+Punch daily progress	Ежедневный прогресс по замечаниям
+site updates	обновления с объекта
+Punch report to Paul	Отчёт по замечаниям Паулю
+Owner	Владелец
+Owner menu	Меню владельца
+unlocked	разблокировано
+Import progress · total IWP report · technician performance	Импорт прогресса · общий отчёт IWP · производительность техников
+Password required	Требуется пароль
+owner only	только владелец
+Updates automatically when the phone is online	Обновляется автоматически, когда телефон в сети
+App version #	Версия приложения #
+Showing last good data (#)	Показаны последние рабочие данные (#)
+Today's automatic update	Сегодняшнее автоматическое обновление
+All	Все
+all	все
+All systems	Все системы
+All systems (#)	Все системы (#)
+Filter in this activity	Фильтр в этой работе
+Show more	Показать ещё
+Show more (#)	Показать ещё (#)
+Show more (# left)	Показать ещё (осталось #)
+Nothing found	Ничего не найдено
+Nothing found. Type part of any ID	Ничего не найдено. Введите часть любого ID
+type more characters	введите больше символов
+#/# lines done	#/# строк выполнено
+lines	строк
+Activity	Работа
+IWP mapping	Привязка IWP
+Access ID	Access ID
+IWP access ID	Access ID IWP
+IWP type	Тип IWP
+IWP qty / done	Кол-во IWP / выполнено
+Site progress / Прогресс на месте	Прогресс на месте
+Site check / Проверка на месте	Проверка на месте
+Pulling / Прокладка	Прокладка
+Termination / Подключение	Подключение
+Remark / примечание	Примечание
+Your name / Ваше имя	Ваше имя
+Cable gland / кабельный ввод	Кабельный ввод
+Status	Статус
+From	Откуда
+To	Куда
+From room	Из помещения
+To room	В помещение
+Type	Тип
+Cores	Жилы
+Length	Длина
+Length m	Длина, м
+Drum	Барабан
+Document	Документ
+Cable	Кабель
+Cables	Кабели
+Panel	Панель
+Panels	Панели
+Panels & boxes	Панели и коробки
+Tag	Тег
+Description	Описание
+Responsible	Ответственный
+Responsibility	Ответственность
+Responsible to fix	Ответственный за устранение
+Date	Дата
+Report	Отчёт
+Send	Отправить
+Copy	Копировать
+Share	Поделиться
+Share all	Поделиться всем
+Filter	Фильтр
+Search	Поиск
+Password	Пароль
+Wrong password	Неверный пароль
+Wrong PIN	Неверный PIN
+Loading	Загрузка
+Error	Ошибка
+No data	Нет данных
+Details	Подробности
+Back	Назад
+Home	Главная
+Close	Закрыть
+Cancel	Отмена
+Save	Сохранить
+Unlock	Разблокировать
+Manager password	Пароль менеджера
+Owner password	Пароль владельца
+Owner mode is ON	Режим владельца ВКЛЮЧЁН
+Open import	Открыть импорт
+Turn off	Выключить
+Pulled	Проложен
+Pulled + terminated	Проложен + подключён
+pulled + terminated	проложен + подключён
+pulled	проложен
+pulled only	только проложен
+# pulled only	# только проложено
+Term. this end	Подкл. здесь
+Term. other end	Подкл. др. конец
+Other end	Другой конец
+Terminal	Клемма
+Terminal reference	Привязка клемм
+Internal TQ (CTQ)	Внутренний TQ (CTQ)
+Internal CTQ (#)	Внутренний CTQ (#)
+Project TQ	Проектный TQ
+Project TQ (#)	Проектный TQ (#)
+Tracker remark	Примечание трекера
+Tracker	Трекер
+Pulling	Прокладка
+Termination	Подключение
+Punch	Замечания
+Punch items (# · open #)	Замечания (# · открыто #)
+Punch items	Замечания
+punch items	замечания
+Punch № #	Замечание № #
+Client punch	Замечания заказчика
+RHI punch	Замечания РХИ
+RHI punch for this tag (#)	Замечания РХИ по этому тегу (#)
+Client punch for this tag (#)	Замечания заказчика по этому тегу (#)
+RHI internal punch	Внутренние замечания РХИ
+RHI responsible	Ответственность РХИ
+All responsible	Все ответственные
+By discipline	По дисциплинам
+By subsystem	По подсистемам
+By technician	По техникам
+By day (fixed)	По дням (исправлено)
+Cross-punch report	Перекрёстный отчёт по замечаниям
+Cross-punch report · # tags	Перекрёстный отчёт · # тегов
+All open punch items (#)	Все открытые замечания (#)
+Open A-punch (#)	Открытые замечания кат. A (#)
+open A-punch	открытые замечания кат. A
+no open A-punch	нет открытых замечаний кат. A
+open cat A	открыто кат. A
+open cat B	открыто кат. B
+open cat C	открыто кат. C
+Cat #	Кат. #
+All cat	Все кат.
+Item	Позиция
+Category	Категория
+Discipline	Дисциплина
+Subsystem	Подсистема
+Subsystem name	Название подсистемы
+System	Система
+Company	Компания
+Department	Отдел
+Subcontractor	Субподрядчик
+EPC responsible	Ответственный EPC
+punch fixed	замечание исправлено
+fixed today	исправлено сегодня
+fixed total (site)	исправлено всего (на месте)
+fixed last # days	исправлено за # дн.
+master punch list #	мастер-перечень замечаний #
+Master punch #	Мастер-перечень #
+Equipment	Оборудование
+equipment	оборудование
+Equipment installed	Оборудование смонтировано
+Equip.	Обор.
+Equip	Обор.
+Installed / done	Смонтировано / выполнено
+Installation	Монтаж
+Installation lines	Строки монтажа
+installation lines	строки монтажа
+Cable pulling, termination	Прокладка, подключение кабеля
+IWP completion	Выполнение IWP
+CTQ on hold	CTQ на удержании
+Punch open	Открытые замечания
+Panel progress (#)	Прогресс панелей (#)
+Timeline	График
+Bottom # panels by completion	# худших панелей по выполнению
+# of # panels	# из # панелей
+No panels match the filter	Нет панелей по фильтру
+Filter panel / description	Фильтр: панель / описание
+Filter panel / room	Фильтр: панель / помещение
+IWP % = done IWP lines of the panel and its cables	IWP % = выполненные строки IWP панели и её кабелей
+Cables pulled % = panel cables pulled	Проложено % = проложенные кабели панели
+Open punch = client + RHI punch on the panel tag and its cables	Открытые замечания = заказчика + РХИ по тегу панели и её кабелям
+Equipment % = installation lines of the panel tag	Оборудование % = строки монтажа по тегу панели
+IWP #–#%	IWP #–#%
+Open punch > #	Открытых замечаний > #
+Overall progress	Общий прогресс
+# open punch	# открытых замечаний
+Cables RFI (#)	РФИ кабелей (#)
+Equipment RFI (#)	РФИ оборудования (#)
+Total cables	Всего кабелей
+RAWP scope	Объём RAWP
+Laying RFI submitted	РФИ прокладки подано
+Laying RFI accepted	РФИ прокладки принято
+Term. RFI submitted	РФИ подключения подано
+Term. RFI accepted	РФИ подключения принято
+# cables	# кабелей
+Install. RFI submitted	РФИ монтажа подано
+Install. RFI accepted	РФИ монтажа принято
+equipment, devices, trays, earthing	оборудование, приборы, лотки, заземление
+Search cable number	Поиск по номеру кабеля
+Search tag / Access ID	Поиск: тег / Access ID
+All panels (#)	Все панели (#)
+no panel	без панели
+All activities (#)	Все работы (#)
+Laying RFI – all	РФИ прокладки – все
+Term. RFI – all	РФИ подключения – все
+RFI status – all	Статус РФИ – все
+Laying RFI	РФИ прокладки
+Term. RFI	РФИ подключения
+RFI status	Статус РФИ
+Cable No	№ кабеля
+Cable No.	№ кабеля
+# of # shown (# total)	показано # из # (всего #)
+No cables match the filter	Нет кабелей по фильтру
+No items match the filter	Нет позиций по фильтру
+Source: Cable RAWP inspection progress. Submitted = RFI raised, inspection pending (New task). Accepted includes "accepted with comments". Panel = panel where the cable starts (else where it ends)	Источник: прогресс инспекций Cable RAWP. Подано = РФИ выпущено, инспекция ожидается (New task). Принято включает «принято с замечаниями». Панель = панель, где кабель начинается (иначе – где заканчивается)
+Source: E&I equipment control (CCR RFI records) matched to IWP installation lines	Источник: контроль оборудования E&I (записи РФИ CCR), сопоставленный со строками монтажа IWP
+CCR inspection status	Статус инспекций CCR
+Ready for laying inspection	Готово к инспекции прокладки
+Ready for term. inspection	Готово к инспекции подключения
+pulled · laying RFI not accepted	проложено · РФИ прокладки не принято
+pulled + terminated · term. RFI not accepted	проложено + подключено · РФИ подключения не принято
+Cables to call	Кабели к вызову
+# complete · # pulled only	# завершено · # только проложено
+# cables ready for laying inspection, # cables ready for termination inspection	# кабелей готово к инспекции прокладки, # кабелей готово к инспекции подключения
+cables ready for laying inspection	кабелей готово к инспекции прокладки
+cables ready for termination inspection	кабелей готово к инспекции подключения
+Work type – all	Вид работ – все
+Laying inspection	Инспекция прокладки
+Termination inspection	Инспекция подключения
+Generate inspection list	Сформировать список на инспекцию
+all cables in the current filtered view · for MAX / WhatsApp	все кабели в текущем фильтре · для MAX / WhatsApp
+all cables in the current filtered view	все кабели в текущем фильтре
+for MAX / WhatsApp	для MAX / WhatsApp
+Pulled / terminated = IWP + cable tracker status, including ticks saved on this phone. RFI status from Cable RAWP inspection progress. Rejected or pending RFIs count as not accepted	Проложено / подключено = статус IWP + трекера кабелей, включая отметки на этом телефоне. Статус РФИ – из прогресса инспекций Cable RAWP. Отклонённые и ожидающие РФИ считаются непринятыми
+Pulled + terminated – RFI not accepted (#)	Проложено + подключено – РФИ не принято (#)
+Pulled, not terminated – laying RFI not accepted (intermediate) (#)	Проложено, не подключено – РФИ прокладки не принято (промежуточная) (#)
+None	Нет
+Call	Вызвать
+inspection	инспекцию
+Call inspection	Вызов инспекции
+Inspection list · # cables	Список на инспекцию · # кабелей
+Send to MAX	Отправить в MAX
+copies the text and opens the MAX progress group	копирует текст и открывает группу прогресса MAX
+copies the text and opens the MAX punch group	копирует текст и открывает группу замечаний MAX
+copies the text and opens the MAX group – then paste & send	копирует текст и открывает группу MAX – затем вставьте и отправьте
+Copy for Paul	Копировать для Пауля
+Share…	Поделиться…
+After you open the group, the lines are marked as sent and will not be sent again	После открытия группы строки отмечаются как отправленные и повторно не отправляются
+Punch report → MAX punch group	Отчёт по замечаниям → группа замечаний MAX
+Progress report → MAX progress group	Отчёт о прогрессе → группа прогресса MAX
+Nothing new to report	Нет нового для отчёта
+All entries are already sent	Все записи уже отправлены
+Show last sent report again	Показать последний отправленный отчёт
+laying inspection needed	нужна инспекция прокладки
+termination inspection needed	нужна инспекция подключения
+laying + termination inspection needed	нужна инспекция прокладки + подключения
+Panel: #	Панель: #
+Room #	Помещение #
+No room	Без помещения
+Panels in this room	Панели в этом помещении
+Room number	Номер помещения
+panels & cables per room	панели и кабели по помещениям
+Incoming cables (#)	Входящие кабели (#)
+Outgoing cables (#)	Исходящие кабели (#)
+Cables connected to this item (#)	Кабели, подключённые к позиции (#)
+Cables not complete (#)	Незавершённые кабели (#)
+#/# cables complete	#/# кабелей завершено
+#/# cables pulled	#/# кабелей проложено
+#/# cables	#/# кабелей
+#/# both ends	#/# оба конца
+#% cables complete	#% кабелей завершено
+cables pulled	кабелей проложено
+ends terminated	концов подключено
+not terminated	не подключено
+Other IWP lines for this tag	Другие строки IWP по этому тегу
+IWP lines (#)	Строки IWP (#)
+Open full cable details	Открыть полные данные кабеля
+Terminations at this panel/device (LR drawing)	Подключения на этой панели/приборе (чертёж LR)
+End-to-end termination (LR drawing)	Сквозное подключение (чертёж LR)
+LR termination data not available yet	Данные подключений LR пока недоступны
+Confirm terminal points before marking terminated	Подтвердите клеммы перед отметкой «подключено»
+Terminal points changed	Клеммы изменены
+Actual pulled length	Фактическая длина прокладки
+Actual pulled length, m	Фактическая длина прокладки, м
+Actual pulled length, m (design # m)	Фактическая длина прокладки, м (проект # м)
+Save m	Сохранить м
+design # m	проект # м
+pulled # m	проложено # м
+Pull date	Дата прокладки
+Drum No	№ барабана
+Drum length	Длина барабана
+Cables from this drum (#)	Кабели с этого барабана (#)
+Used (cables)	Использовано (кабели)
+Remaining	Остаток
+remaining #	остаток #
+returned/actual #	возврат/факт #
+Hold	Удержание
+Hold point	Точка удержания
+hold point	точка удержания
+hold points	точки удержания
+# hold points	# точек удержания
+On hold – CTQ	На удержании – CTQ
+Action	Действие
+Action required	Требуемое действие
+Open CTQ details	Открыть детали CTQ
+CTQ / hold	CTQ / удержание
+CTQ / hold (#)	CTQ / удержание (#)
+CTQ No	№ CTQ
+CTQ/TQ No	№ CTQ/TQ
+CTQ open	CTQ открыт
+# CTQ open	# CTQ открыто
+Affected tags	Затронутые теги
+Affected works	Затронутые работы
+work on hold	работы на удержании
+# cables blocked	# кабелей заблокировано
+# cables already pulled before answer	# кабелей проложено до ответа
+# linked items	# связанных позиций
+# project TQ not closed	# проектных TQ не закрыто
+No cable / panel / device from this CTQ was found in the app data (tags may be material codes or not in the trackers yet)	Кабели / панели / приборы из этого CTQ не найдены в данных приложения (теги могут быть кодами материалов или ещё не внесены в трекеры)
+TQ answer / status	Ответ / статус TQ
+TQ reference	Ссылка на TQ
+TQ No	№ TQ
+TQs (owner)	TQ (владелец)
+Subject	Тема
+Title	Название
+Issued	Выпущен
+Issue date	Дата выпуска
+Issued by	Выпустил
+Received	Получен
+received by	получил
+Impact	Влияние
+Classification	Классификация
+Delay	Задержка
+High	Высокое
+Medium	Среднее
+Low	Низкое
+Drawing	Чертёж
+drawing	чертёж
+Revision	Ревизия
+Rev	Рев.
+Rev #	Рев. #
+rev #	рев. #
+Sheets / pages	Листы / страницы
+New in revision	Новое в ревизии
+Removed in revision	Удалено в ревизии
+Quantity changed	Количество изменено
+Change notices (Изм.)	Извещения об изменении (Изм.)
+Check rework risk	Проверить риск переделки
+check and rework if needed	проверить и переделать при необходимости
+rev came after installation	ревизия пришла после монтажа
+rev after installation	ревизия после монтажа
+After installation #	После монтажа #
+what changed	что изменилось
+# changes	# изменений
+changes	изменения
+older revision	старая ревизия
+current file	текущий файл
+latest revision & dates	последняя ревизия и даты
+Dates are taken from each SF drawing	Даты взяты из каждого чертежа SF
+Material	Материал
+Ident code	Идент. код
+Ident code / cable type	Идент. код / тип кабеля
+cable ident codes per system (design vs pulled)	идент. коды кабелей по системам (проект / проложено)
+Quantity	Количество
+Qty	Кол-во
+Stock	Склад
+Warehouse	Склад
+Storage	Хранение
+MRF No	№ MRF
+MRF date	Дата MRF
+Material requests (MRF)	Заявки на материалы (MRF)
+MRF / warehouse issue (#)	MRF / выдача со склада (#)
+No MRF found	MRF не найдены
+# MRF from warehouse	# MRF со склада
+Unique tag	Уникальный тег
+Tag description	Описание тега
+Location / zone	Расположение / зона
+Zone	Зона
+Area	Зона
+Stage	Этап
+Section	Раздел
+Source	Источник
+Remark	Примечание
+Remarks	Примечания
+Pulled length # m (actual)	Длина прокладки # м (факт)
+Inspection	Инспекция
+Inspection list	Список на инспекцию
+Daily progress entry	Ввод ежедневного прогресса
+Today's site entries (#)	Записи за сегодня (#)
+No entries today. Tick cables in Panel check	Сегодня записей нет. Отмечайте кабели в «Проверке кабелей панели»
+Send report to Paul (# new lines)	Отправить отчёт Паулю (# новых строк)
+Today	Сегодня
+today	сегодня
+Ranking	Рейтинг
+who reported how much	кто сколько отметил
+technicians reported	техников отчиталось
+lines reported	строк отмечено
+Pulling m / person / day	Прокладка м / чел. / день
+Terminations ends / person / day	Подключение концов / чел. / день
+Installation items / person / day	Монтаж позиций / чел. / день
+Manpower suggestion	Рекомендация по людям
+People available	Доступно людей
+Minimum crew size	Мин. размер бригады
+Suggested crews (top fronts)	Рекомендуемые бригады (основные фронты)
+Total suggested	Всего рекомендовано
+# people	# чел.
+people	чел.
+# man-days	# чел.-дн.
+# work fronts	# фронтов работ
+≈ # days	≈ # дн.
+# days	# дн.
+Paste messages from MAX	Вставить сообщения из MAX
+Paste reports from MAX	Вставить отчёты из MAX
+Import	Импорт
+Import reports	Импорт отчётов
+Clear imported	Очистить импорт
+Clear all imported reports?	Очистить все импортированные отчёты?
+No imports yet	Импорта пока нет
+No reports imported yet	Отчёты ещё не импортированы
+Copy for Excel (Daily Input)	Копировать для Excel (Daily Input)
+Excel / CSV	Excel / CSV
+Mark exported	Отметить выгруженным
+No progress for this day	Нет прогресса за этот день
+Import / IWP report	Импорт / отчёт IWP
+Calculator	Калькулятор
+Current	Ток
+Voltage	Напряжение
+Power	Мощность
+Voltage drop & cable size	Падение напряжения и сечение
+Cable OD & gland selection	Наружный диаметр кабеля и выбор ввода
+Cable OD	Наружный диаметр кабеля
+Gland size	Размер ввода
+Gland	Ввод
+Quick reference	Краткий справочник
+Unit converter	Конвертер единиц
+Ohm's law	Закон Ома
+Fill any two	Заполните любые два
+Copper	Медь
+Aluminium	Алюминий
+Conductor	Проводник
+Allowed drop	Допустимое падение
+Length (one way)	Длина (в одну сторону)
+Cable size	Сечение кабеля
+Earthing	Заземление
+Settings	Настройки
+New note	Новая заметка
+Edit note	Изменить заметку
+No notes yet	Заметок пока нет
+No notes	Нет заметок
+Search notes	Поиск по заметкам
+# notes on this phone	# заметок на этом телефоне
+Report new issue	Сообщить о проблеме
+Report issue	Сообщение о проблеме
+No issues reported	Проблем не сообщено
+Request permit	Запросить допуск
+Permit request	Запрос допуска
+No permit requests	Нет запросов допуска
+Send issues to Paul (# new)	Отправить проблемы Паулю (# новых)
+Send permit requests to Paul (# new)	Отправить запросы допусков Паулю (# новых)
+No alerts	Нет сигналов
+Issues #	Проблемы #
+Permits #	Допуски #
+Revisions #	Ревизии #
+System block diagram	Структурная схема системы
+ready to start	готово к запуску
+Ready to start = all cables pulled + terminated	Готово к запуску = все кабели проложены и подключены
+green = ready to start commissioning	зелёный = готово к пусконаладке
+red = issue	красный = проблема
+systems ready	систем готово
+systems with issues	систем с проблемами
+Electrical	Электрика
+Instrument	КИП
+Telecom	Связь
+Fire	Пожарная безопасность
+Safety	Безопасность
+Control & safety	Управление и безопасность
+Power & earthing	Питание и заземление
+Other	Прочее
+Other / general	Прочее / общее
+Cable tag / type / panel	Тег кабеля / тип / панель
+Find IWP line (access ID	Найти строку IWP (Access ID
+or find a line above	или найдите строку выше
+ID search	Поиск по ID
+Zoom	Масштаб
+Timeline	График
+Gland list CSV	Список вводов CSV
+Copy failed – use CSV	Не удалось скопировать – используйте CSV
+Nothing to export	Нечего выгружать
+Answer copied – paste to the technician in MAX	Ответ скопирован – вставьте технику в MAX
+Choose system and describe the work	Выберите систему и опишите работу
+Choose system and write the issue	Выберите систему и опишите проблему
+Copied for Paul	Скопировано для Пауля
+Copied	Скопировано
+Could not save - send the report now	Не удалось сохранить – отправьте отчёт сейчас
+Enter the pulled length in metres	Введите длину прокладки в метрах
+Enter the quantity done	Введите выполненное количество
+New data downloaded – reopen the app	Загружены новые данные – перезапустите приложение
+No punch updates yet	Обновлений по замечаниям пока нет
+No report found – paste text starting with "Reported by:"	Отчёт не найден – вставьте текст, начинающийся с «Reported by:»
+Nothing for this day	Нет данных за этот день
+Nothing new to send	Нет нового для отправки
+Press and hold in the box → Paste	Нажмите и удерживайте в поле → Вставить
+Progress saved	Прогресс сохранён
+Pulled length saved	Длина прокладки сохранена
+Punch list copied	Перечень замечаний скопирован
+Write something	Напишите что-нибудь
+# alerts added	Добавлено сигналов: #
+# new alerts (issues / permits)	# новых сигналов (проблемы / допуски)
+Copied # lines – paste in Daily Input cell A	Скопировано строк: # – вставьте в Daily Input, ячейку A
+Report with # punch items ready - send it to Paul	Отчёт по # замечаниям готов – отправьте Паулю
+Copied ✓ – in MAX press and hold, Paste, Send	Скопировано ✓ – в MAX нажмите и удерживайте, Вставить, Отправить
+Copy the text, then paste in MAX	Скопируйте текст и вставьте в MAX
+Select the text and copy	Выделите текст и скопируйте
+New data loaded	Загружены новые данные
+In MAX: press and hold the report message → Copy. Paste one or many reports here. Lines already imported are skipped	В MAX: нажмите и удерживайте сообщение отчёта → Копировать. Вставьте сюда один или несколько отчётов. Уже импортированные строки пропускаются
+e.g. Ivanov A	напр. Иванов А.
+Reported by	Отчёт от
+CCR progress – RHI (# lines)	Прогресс CCR – РХИ (# строк)
+CCR punch check (# fixed, # not fixed)	Проверка замечаний CCR (исправлено #, не исправлено #)
+Access ID	Access ID
+Activity	Работа
+By	Кто
+Punch No	№ замечания
+Punch No.	№ замечания
+CCR – tags with both client punch and RHI punch	CCR – теги с замечаниями заказчика и РХИ
+Client	Заказчик
+CCR – RHI RFI not accepted	CCR – РФИ РХИ не принято
+Pulled + terminated (#)	Проложено + подключено (#)
+Pulled, not terminated (#)	Проложено, не подключено (#)
+No cables in this view	В этом фильтре нет кабелей
+panel	панель
+none	нет
+laying only	только прокладка
+termination only	только подключение
+search	поиск
+from end	со стороны «откуда»
+to end	со стороны «куда»
+Cable type (mark)	Тип кабеля (марка)
+Type EN	Тип EN
+Type RU	Тип RU
+estimated from cores and size	оценка по жилам и сечению
+OD is estimated	диаметр оценочный
+Typical selection. Confirm against the design gland schedule / manufacturer chart and the hazardous area drawing	Типовой подбор. Сверьте с проектной таблицей вводов / каталогом производителя и чертежом взрывоопасных зон
+measure the real cable or check the cable datasheet before ordering glands	измерьте реальный кабель или проверьте паспорт кабеля перед заказом вводов
+enter OD in calculator	введите диаметр в калькуляторе
+Sleeve / accessories	Муфта / аксессуары
+armoured	бронированный
+screened	экранированный
+Double-compression gland for armoured cable	Ввод двойного уплотнения для бронированного кабеля
+Polyamide gland for unarmoured cable	Полиамидный ввод для небронированного кабеля
+PVC shroud over gland	ПВХ-колпачок на ввод
+Earth tag for armour → PE bar	Кольцо заземления брони → шина PE
+PE core to earth terminal	Жила PE на клемму заземления
+Armour earthed both ends via gland earth tag to PE	Броня заземляется с двух сторон через кольцо заземления ввода на PE
+Lock nut + sealing washer; IP washer on threaded entry	Контргайка + уплотнительная шайба; IP-шайба на резьбовом вводе
+Hazardous area (Ex equipment)	Взрывоопасная зона (Ex-оборудование)
+safe area	безопасная зона
+control room	операторная
+Ready	Готово
+Schemes / MTO	Схемы / MTO
+Specs / data sheets	Спецификации / листы данных
+Drawing revisions	Ревизии чертежей
+When a new drawing revision is loaded	Когда загружена новая ревизия чертежа
+changes are compared with the old revision. ⚠ = the work was already done before the revision came	изменения сравниваются со старой ревизией. ⚠ = работа уже выполнена до прихода ревизии
+older	старее
+old	старая
+New #	Новые #
+New	Новое
+Last date	Последняя дата
+last date #	последняя дата #
+From end date	Дата начала
+To end date	Дата окончания
+Waiting fronts (no crew now	Ожидающие фронты (сейчас без бригады
+Split by remaining man-days; fronts with open A-punch or no progress in the last # days get extra weight. Adjust rates to your crews	Распределение по оставшимся чел.-дням; фронты с открытыми замечаниями кат. A или без прогресса за последние # дн. получают больший вес. Настройте нормы под свои бригады
+# people in # crews (min # per crew). Biggest / most delayed fronts first	# чел. в # бригадах (мин. # на бригаду). Сначала самые большие / отстающие фронты
+Same cable reported by # people on the same day is counted once. Format = Daily Input sheet	Один кабель, отмеченный # людьми в один день, считается один раз. Формат = лист Daily Input
+No reports yet. Tap “Paste MAX reports” and paste the messages from the groups	Отчётов пока нет. Нажмите «Paste MAX reports» и вставьте сообщения из групп
+select all report messages in the group → Copy → paste here (#+ at once is fine)	выделите все сообщения отчётов в группе → Копировать → вставьте сюда (можно #+ сразу)
+paste MAX messages	вставить сообщения MAX
+all in one paste	всё одной вставкой
+start fresh	начать заново
+import progress	импорт прогресса
+technician performance	производительность техников
+issues and permit requests	проблемы и запросы допусков
+report site issues to the engineer	сообщить инженеру о проблемах на объекте
+request permit from the engineer	запросить допуск у инженера
+opens Paul's MAX chat	открывает чат Пауля в MAX
+only to engineer	только инженеру
+progress overview	обзор прогресса
+daily progress	ежедневный прогресс
+site updates from technicians	обновления от техников
+punch	замечания
+progress	прогресс
+cable	кабель
+cables	кабели
+panels	панели
+devices	приборы
+trays	лотки
+earthing	заземление
+tag	тег
+type	тип
+size	размер
+date	дата
+name	имя
+code	код
+system	система
+subsystem	подсистема
+drawing)	чертёж)
+access IDs	Access ID
+installe	смонтир
+check Drawing revisions	проверьте «Ревизии чертежей»
+check zone drawing	проверьте чертёж зон
+check / rework	проверить / переделать
+to check	проверить
+no rework	без переделки
+tap for cable list	нажмите для списка кабелей
+block diagram	структурная схема
+pick system → activity	выберите систему → работу
+name or panel	имя или панель
+e.g. # or JB-#	напр. # или JB-#
+or measured OD	или измеренный диаметр
+or current I	или ток I
+signals / interlocks	сигналы / блокировки
+power	питание
+network	сеть
+building	здание
+one end outside CCR	один конец вне CCR
+Boxes = panels / equipment (dashed = group of field devices). Lines = cables from → to. Red = not pulled/terminated	Блоки = панели / оборудование (пунктир = группа полевых приборов). Линии = кабели откуда → куда. Красный = не проложен/не подключён
+no CTQ/hold. Tap a block to see how the system is connected	нет CTQ/удержаний. Нажмите на блок, чтобы увидеть подключение системы
+CTQ/hold or A-punch. Tap a line for its cables	CTQ/удержание или замечание кат. A. Нажмите на линию для списка кабелей
+Indoor CCR	Внутри CCR
+Outdoor / other area	Снаружи / другая зона
+Power supply	Электроснабжение
+Fixed	Исправлено
+Received	Получено
+Not completed	Не завершено
+Completed	Завершено
+item #	позиция #
+items on hold	позиций на удержании
+# items	# позиций
+# tags	# тегов
+# more	ещё #
+More	Ещё
+left	осталось
+total	всего
+within #	в пределах #
+above #	выше #
+Smallest size for ≤ #	Минимальное сечение для ≤ #
+Total	Итого
+Delete	Удалить
+Edit	Изменить
+Mark exported	Отметить выгруженным
+Work	Работа
+Workers	Работники
+Location	Расположение
+Permit	Допуск
+Comment	Комментарий
+System...	Система...
+Choose system… (#)	Выберите систему… (#)
+Issue history	История выпуска
+File	Файл
+Files	Файлы
+Insulation test	Испытание изоляции
+DECT radio access	Радиодоступ DECT
+Electric heating	Электрообогрев
+Heat tracing	Электрообогрев трубопроводов
+Gas detection	Газообнаружение
+Fire alarm (building)	Пожарная сигнализация (здание)
+Fire alarm & fire fighting control	Пожарная сигнализация и управление пожаротушением
+Fire safety automation (area)	Автоматика пожарной безопасности (площадка)
+Earthing & lightning protection	Заземление и молниезащита
+Indoor lighting	Внутреннее освещение
+Information security	Информационная безопасность
+Local warning system	Локальная система оповещения
+Master clock	Система единого времени
+Process CCTV	Технологическое видеонаблюдение
+Operator training simulator	Тренажёр операторов
+Video conferencing	Видеоконференцсвязь
+HVAC automation	Автоматика ОВиК
+Utilities control system	Система управления инженерными системами
+Power supply control system	Система управления электроснабжением
+Analyzer system	Система анализаторов
+Emergency Shutdown (ESD)	Противоаварийная защита (ESD)
+Distributed Control System (DCS)	Распределённая система управления (DCS)
+Structured cabling (SCS)	Структурированная кабельная система (SCS)
+Fibre network (FTN)	Волоконно-оптическая сеть (FTN)
+TV antenna (CATV)	Телевизионная антенна (CATV)
+PA/GA & dispatch intercom	Громкоговорящая связь и диспетчерская связь
+Emission monitoring (CEMS)	Мониторинг выбросов (CEMS)
+Material flow metering (MFMS)	Учёт потоков материалов (MFMS)
+Utility metering (AUMS)	Учёт энергоресурсов (AUMS)
+Rotating equipment monitoring (CMS)	Мониторинг вращающегося оборудования (CMS)
+Power supply from utility substation	Электроснабжение от подстанции
+Substation #/# kV & power supply	Подстанция #/# кВ и электроснабжение
+Transformer #/# kV	Трансформатор #/# кВ
+Pulled	Проложен
+What is wrong? (terminal / core / marking)	Что не так? (клемма / жила / маркировка)
+Terminations at this panel (LR drawing)	Подключения на этой панели (чертёж LR)
+Terminations at this device (LR drawing)	Подключения на этом приборе (чертёж LR)
+LR drawing	Чертёж LR
+Installation (IWP)	Монтаж (IWP)
+Room	Помещение
+# of # (#%)	# из # (#%)
+CCR progress – RHI (# lines)	Прогресс CCR – РХИ (строк: #)
+# CCR documents	# документов CCR
+# SF documents	# документов SF
+# CTQ/hold	# CTQ/удержаний
+# A-punch	# замечаний кат. A
+# after install	# после монтажа
+# day(s)	# дн.
+# ident codes	# идент. кодов
+# lines not sent yet	# строк ещё не отправлено
+# open / #	# открыто / #
+A open #	A открыто #
+# revised drawings	# изменённых чертежей
+Revised drawings	Изменённые чертежи
+revised drawings	изменённые чертежи
+#% closed	#% закрыто
+Choose system… (#)	Выберите систему… (#)
+#/# complete	#/# завершено
+Current ⇄ power	Ток ⇄ мощность
+(check current rating too)	(проверьте также допустимый ток)
+Comments	Комментарии
+EP remarks	Примечания EP
+EP status	Статус EP
+Owner status	Статус владельца
+Efficiency η (motor)	КПД η (двигатель)
+Efficiency η (motor), %	КПД η (двигатель), %
+Filter items	Фильтр позиций
+IWP % – any	IWP % – любой
+IWP ends done	Концов IWP выполнено
+Item / type	Позиция / тип
+Lines (#)	Строки (#)
+No site entry yet	Записей с объекта пока нет
+No site update yet	Обновлений с объекта пока нет
+Power P	Мощность P
+Power P, kW	Мощность P, кВт
+Voltage U	Напряжение U
+Voltage U, V	Напряжение U, В
+Punch report (#)	Отчёт по замечаниям (#)
+RHI RFI not accepted	РФИ РХИ не принято
+work done · RHI RFI not accepted	работа выполнена · РФИ РХИ не принято
+TQ register #	Реестр TQ #
+progress update group	группа обновлений прогресса
+a box for the panel	блок для панели
+all time	за всё время
+any	любой
+cable # m	кабель # м
+cable OD	диаметр кабеля
+cable type	тип кабеля
+cables not complete (of #)	кабелей не завершено (из #)
+client #	заказчик #
+days	дн.
+design	проект
+device → comment	прибор → комментарий
+doc No	№ документа
+drum	барабан
+electrical basics	основы электротехники
+from / to	откуда / куда
+gland selection	выбор ввода
+gland size	размер ввода
+ident code	идент. код
+imported lines	импортированных строк
+including	включая
+last # days	последние # дн.
+panels / boxes	панели / коробки
+project TQ	проектный TQ
+punch No	№ замечания
+revision #	ревизия #
+sleeve	муфта
+system-wise	по системам
+text	текст
+title	название
+tracker	трекер
+type RU/EN	тип RU/EN
+workers	работники
+Ø conductor # mm	Ø проводника # мм
+Cores × size (e.g. #x# / #x#x#)	Жилы × сечение (напр. #x# / #x#x#)
+Armour earthed both ends; instrument screen earthed one end (control room)	Броня заземлена с двух сторон; экран КИП заземлён с одной стороны (операторная)
+Heat-shrink sleeve at cable end / core ferrules (кембрики) + core markers	Термоусадочная муфта на конце кабеля / кембрики на жилах + маркировка жил
+LV power/control cables at #–# V DC	Силовые/контрольные кабели НН при #–# В пост. тока
+instrument cables at # V DC (disconnect electronics first)	кабели КИП при # В пост. тока (сначала отключите электронику)
+last issue (status/rev/date) and the latest change notice (Изм.). ✓ = current file you have	последний выпуск (статус/рев./дата) и последнее извещение (Изм.). ✓ = ваш текущий файл
+Power installation (boards, UPS, motors)	Силовое электрооборудование (щиты, ИБП, двигатели)
+Fire alarm & fire fighting control (AFA&FFS)	Пожарная сигнализация и управление пожаротушением (AFA&FFS)
+Subtitle	Подзаголовок
+IP#/# (brass)	IP#/# (латунь)
+#-phase	#-фазн.
+#-phase / DC	#-фазн. / пост. ток
+#φ motor # V	двигатель #φ # В
+A per kW	А на кВт
+inch	дюйм
+# changes on finished work (New in revision)	# изменений по выполненной работе (новое в ревизии)
+# changes on finished work (Quantity changed)	# изменений по выполненной работе (количество изменено)
+# changes on finished work (Terminal points changed)	# изменений по выполненной работе (клеммы изменены)
+All site updates (#)	Все обновления с объекта (#)
+Qty done today (m)	Выполнено сегодня (м)
+Qty done today (pc)	Выполнено сегодня (шт.)
+Revision came after installation (material installed)	Ревизия пришла после монтажа (материал смонтирован)
+Revision came after installation (pulled + terminated)	Ревизия пришла после монтажа (проложен + подключён)
+Revision came after installation (pulled)	Ревизия пришла после монтажа (проложен)
+Equipment / device tags (#)	Теги оборудования / приборов (#)
+Cable drums (#)	Кабельные барабаны (#)
+Power supply (# kV), CCR building	Электроснабжение (# кВ), здание CCR
+Power supply (# kV), CCR	Электроснабжение (# кВ), CCR
+Set name	Указать имя
+Password required – owner only	Требуется пароль – только владелец
+Owner menu – unlocked	Меню владельца – разблокировано
+Length, m	Длина, м
+Length (m)	Длина (м)

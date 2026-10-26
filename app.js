@@ -1,3 +1,4 @@
+if (typeof t !== 'function') window.t = k => k;
 const D = (window.__D && typeof window.__D === 'object') ? window.__D : {};
 // ---- safe defaults: the app must load even when data.json is missing keys or has another shape
 const arr = v => Array.isArray(v) ? v : [], obj = v => (v && typeof v === 'object' && !Array.isArray(v)) ? v : {};
@@ -63,7 +64,7 @@ function mSave(acc) { if (!who(`mSave('${acc}')`)) return; const q = Number(Stri
 function mDel(acc) { delete S2.m[acc]; ssave(); route(); }
 function tickBtns(c, dir) { const s = cst(c), b = cBase(c), e = S2.c[c.t] || {}; const ek = dir === 'IN' ? 'T' : 'F', ok = ek === 'F' ? 'T' : 'F';
   const v = k => k === 'P' ? s.p === true : (e[k] ? e[k].v : b[k]);
-  const btn = (k, l, ru) => `<button class="tg ${v(k) ? 'y' : (e[k] ? 'n' : '')}" onclick="event.stopPropagation();cTick(decodeURIComponent('${enc(c.t)}'),'${k}')">${v(k) ? '✓ ' : ''}${l}<small>${ru}${e[k] ? ' · ' + dstr(e[k].t) : ''}</small></button>`;
+  const btn = (k, l, ru) => `<button class="tg ${v(k) ? 'y' : (e[k] ? 'n' : '')}" onclick="event.stopPropagation();cTick(decodeURIComponent('${enc(c.t)}'),'${k}')">${v(k) ? '✓ ' : ''}${l}<small>${e[k] ? dstr(e[k].t) : ''}</small></button>`;
   return `<div class="btns">${btn('P', 'Pulled', 'Проложен')}${btn(ek, 'Term. this end', 'Подкл. здесь')}${btn(ok, 'Term. other end', 'Подкл. др. конец')}</div>${lenBox(c)}`; }
 function cCard(c, dir) { const s = cst(c); return `<div class="cbx ${s.ok ? 'ok' : s.p ? 'part' : 'no'}"><div onclick="go('#/c/${enc(c.t)}')"><span class="badge b-na" style="margin-right:6px">${dir || ''}</span><b style="word-break:break-all">${esc(c.t)}</b> <span class="badge ${s.c}">${s.l}</span>${holdMini(c.t)}
   <div class="s2">${dir === 'IN' ? 'From' : 'To'}: ${esc(((dir === 'IN' ? c.f : c.o) || '').slice(-90))}</div><div class="s2">${esc(c.ty)} ${esc(c.c)} · ${esc(c.ln)} m${c.q ? ' · ⚠ CTQ' : ''}</div></div>${tickBtns(c, dir)}</div>`; }
@@ -369,12 +370,12 @@ function progLines(onlyNew) {
 }
 function progText(L) {
   const by = [...new Set(L.map(l => l.by))].join(', ') || PS_.name;
-  return `Reported by: ${by} · ${tstr(Date.now())}\nCCR progress – RHI (${L.length} lines)\nAccess ID\tQty\tDate\tTag\tActivity\tBy\n` + L.map(l => [l.acc, l.q === '' ? '' : fmtn(l.q).replace(/ /g, ''), dstr(l.t), l.tag, l.a, l.by].join('\t')).join('\n');
+  return `${t('Reported by')}: ${by} · ${tstr(Date.now())}\n${t(`CCR progress – RHI (${L.length} lines)`)}\n${['Access ID', 'Qty', 'Date', 'Tag', 'Activity', 'By'].map(x => t(x)).join('\t')}\n` + L.map(l => [l.acc, l.q === '' ? '' : fmtn(l.q).replace(/ /g, ''), dstr(l.t), l.tag, l.a, l.by].join('\t')).join('\n');
 }
 function punchLines(onlyNew) { return Object.entries(PS_.e).filter(([no, e]) => PNO[no] && e.v && (!onlyNew || !e.s)).map(([no, e]) => ({no, e, p: PNO[no]})).sort((a, b) => a.e.t - b.e.t); }
 function punchText(L) {
   const by = [...new Set(L.map(l => l.e.by))].join(', ') || PS_.name;
-  return `Reported by: ${by} · ${tstr(Date.now())}\nCCR punch check (${L.filter(l => l.e.v === 'F').length} fixed, ${L.filter(l => l.e.v === 'N').length} not fixed)\nPunch No\tStatus\tDate\tTag\tRemark\tBy\n` + L.map(l => [l.no, l.e.v === 'F' ? 'Fixed' : 'Not fixed', dstr(l.e.t), l.p.tag || '', l.e.r || '', l.e.by].join('\t')).join('\n');
+  return `${t('Reported by')}: ${by} · ${tstr(Date.now())}\n${t(`CCR punch check (${L.filter(l => l.e.v === 'F').length} fixed, ${L.filter(l => l.e.v === 'N').length} not fixed)`)}\n${['Punch No', 'Status', 'Date', 'Tag', 'Remark', 'By'].map(x => t(x)).join('\t')}\n` + L.map(l => [l.no, t(l.e.v === 'F' ? 'Fixed' : 'Not fixed'), dstr(l.e.t), l.p.tag || '', l.e.r || '', l.e.by].join('\t')).join('\n');
 }
 async function copyText(t) { try { await navigator.clipboard.writeText(t); return true; } catch (err) { const a = document.getElementById('rtx'); if (a) { a.select(); try { return document.execCommand('copy'); } catch (e2) {} } return false; } }
 let REP = null;
@@ -483,19 +484,19 @@ function dpList() { const nq = N(VS.DP.q); const el = document.getElementById('d
 // ===== technician performance (from pasted MAX reports + this phone's own entries)
 const pd = s => { const m = String(s).match(/(\d\d)\.(\d\d)\.(\d{4})/); return m ? m[3] + '-' + m[2] + '-' + m[1] : ''; };
 function parseReports(txt) {
-  const blocks = String(txt).replace(/\r/g, '').split(/(?=Reported by:)/).filter(b => /^Reported by:/.test(b.trim()));
+  const blocks = String(txt).replace(/\r/g, '').split(/(?=Reported by:|Отчёт от:)/).filter(b => /^(Reported by|Отчёт от):/.test(b.trim()));
   const out = [];
   blocks.forEach(b => { const ls = b.trim().split('\n').map(l => l.replace(/\u00a0/g, ' ')).filter(l => l.trim());
-    const h = ls[0].match(/Reported by:\s*(.+?)\s*[·•|-]\s*(\d\d\.\d\d\.\d{4})(?:\s+(\d\d:\d\d))?/); if (!h) return;
-    const hby = h[1].trim(), kind = /punch/i.test(ls[1] || '') ? 'punch' : 'prog';
-    ls.slice(2).forEach(l => { if (/^(Access ID|Punch No)/i.test(l.trim())) return; let f = l.split('\t');
+    const h = ls[0].match(/(?:Reported by|Отчёт от):\s*(.+?)\s*[·•|-]\s*(\d\d\.\d\d\.\d{4})(?:\s+(\d\d:\d\d))?/); if (!h) return;
+    const hby = h[1].trim(), kind = /punch|замечан/i.test(ls[1] || '') ? 'punch' : 'prog';
+    ls.slice(2).forEach(l => { if (/^(Access ID|Punch No|№ замечания)/i.test(l.trim())) return; let f = l.split('\t');
       if (kind === 'prog') { let r;
         if (f.length >= 5) r = {acc: f[0].trim(), q: Number(String(f[1]).replace(',', '.')) || 0, d: pd(f[2]), tag: f[3].trim(), a: f[4].trim(), by: (f[5] || hby).trim()};
         else { const m = l.trim().match(/^(\S*)\s+(\S*)\s*(\d\d\.\d\d\.\d{4})\s+(\S+)\s+(.*)$/); if (!m) return; r = {acc: m[1], q: Number(m[2].replace(',', '.')) || 0, d: pd(m[3]), tag: m[4], a: m[5].replace(new RegExp('\\s*' + hby.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '$'), ''), by: hby}; }
         out.push(Object.assign(r, {k: 'prog'})); }
       else { let r;
-        if (f.length >= 3) r = {no: f[0].trim(), v: /not/i.test(f[1]) ? 'N' : 'F', d: pd(f[2]), tag: (f[3] || '').trim(), by: (f[5] || hby).trim()};
-        else { const m = l.trim().match(/^(\S+)\s+(Fixed|Not fixed)\s+(\d\d\.\d\d\.\d{4})\s*(\S*)/i); if (!m) return; r = {no: m[1], v: /not/i.test(m[2]) ? 'N' : 'F', d: pd(m[3]), tag: m[4], by: hby}; }
+        if (f.length >= 3) r = {no: f[0].trim(), v: /not|не/i.test(f[1]) ? 'N' : 'F', d: pd(f[2]), tag: (f[3] || '').trim(), by: (f[5] || hby).trim()};
+        else { const m = l.trim().match(/^(\S+)\s+(Fixed|Not fixed|Исправлено|Не исправлено)\s+(\d\d\.\d\d\.\d{4})\s*(\S*)/i); if (!m) return; r = {no: m[1], v: /not|не/i.test(m[2]) ? 'N' : 'F', d: pd(m[3]), tag: m[4], by: hby}; }
         out.push(Object.assign(r, {k: 'punch'})); } }); });
   return out;
 }
@@ -582,7 +583,7 @@ function ownPunch() { const d = VS.OW.d; const one = {}; (S2.rx || []).filter(r 
   copyText(Object.values(one).map(r => [r.no, r.v === 'F' ? 'Fixed' : 'Not fixed', d.split('-').reverse().join('.'), r.tag, r.by].join('\t')).join('\n')).then(() => toast('Punch list copied')); }
 
 // ======== v3.2 modules ========
-const APPV = '3.8';
+const APPV = '3.9';
 const shortT = t => String(t || '').replace(/^G0-D1810BX0-/, '').replace(/^G0-D1801FX0-/, 'FX0-');
 const SYSN = {'EL-ESPS': ['Substation 10/0.4 kV & power supply', 'Подстанция 10/0,4 кВ'], 'EL-EMSV': ['Power installation (boards, UPS, motors)', 'Силовое электрооборудование'], 'EL-ESBZ': ['Power supply from utility substation', 'Электроснабжение от ПС'], 'EL-ELOV': ['Indoor lighting', 'Внутреннее освещение'], 'EL-EG02': ['Earthing & lightning protection', 'Заземление и молниезащита'], 'EL-EG01': ['Area earthing', 'Заземление площадки'], 'EH-EOES': ['Electric heating', 'Электрообогрев'], 'EH-AEOG': ['Heat tracing', 'Электрообогрев (кабель)'], 'EH-EOBK': ['Electric heating (other)', 'Электрообогрев'],
   'IN-DCS': ['Distributed Control System (DCS)', 'РСУ'], 'IN-ESD': ['Emergency Shutdown (ESD)', 'ПАЗ'], 'IN-SPAP': ['Fire alarm & fire fighting control (AFA&FFS)', 'АСПС и ПТ'], 'IN-GDSS': ['Gas detection', 'Контроль загазованности'], 'IN-ASUE': ['Utilities control system', 'АСУ ЭО (утилиты)'], 'IN-ASUS': ['Power supply control system', 'АСУ ЭС'], 'IN-ASKU': ['Utility metering (AUMS)', 'АСКУ ЭР'], 'IN-MAEC': ['Rotating equipment monitoring (CMS)', 'МСО и ВО'], 'IN-MFMS': ['Material flow metering (MFMS)', 'СУМП'], 'IN-AKVS': ['Emission monitoring (CEMS)', 'АКВС'], 'IN-INTS': ['Operator training simulator', 'Тренажёр оператора'], 'IN-INSS': ['Information security', 'СОИБ'], 'IN-AOVK': ['HVAC automation', 'Автоматизация ОВиК'], 'IN-AKMP': ['Analyzer system', 'Анализаторы'],
@@ -804,7 +805,7 @@ function lrRows(tag) { return (LR[tag] || []).map((r, i) => ({i, doc: r[0], pg: 
 function lrEnd(c, r) { const a = node0(c.f), b = node0(c.o); const P = N(r.pan); if (P && N(b).includes(P.slice(-10))) return 'T'; if (P && N(a).includes(P.slice(-10))) return 'F'; return 'X'; }
 const onEnd = (c, r, end) => { const e = lrEnd(c, r); return e === end || e === 'X'; };
 function tSt(tag, i) { return ((S2.t[tag] || {})[i]) || null; }
-function tSet(tag, i, v) { if (!who(`tSet(decodeURIComponent('${enc(tag)}'),${i},'${v}')`)) return; const m = S2.t[tag] = S2.t[tag] || {}; const r = v === 'N' ? (prompt('What is wrong? (terminal / core / marking)') || '') : '';
+function tSet(tag, i, v) { if (!who(`tSet(decodeURIComponent('${enc(tag)}'),${i},'${v}')`)) return; const m = S2.t[tag] = S2.t[tag] || {}; const r = v === 'N' ? (prompt(t('What is wrong? (terminal / core / marking)')) || '') : '';
   m[i] = {v, t: Date.now(), by: PS_.name, r}; ssave(); if (document.getElementById('tmod')) tCheck(tag, window.tEnd); else route(); }
 function tRowsHtml(c, end) { const R = lrRows(c.t).filter(r => !end || onEnd(c, r, end));
   return R.map(r => { const s = tSt(c.t, r.i); return `<div class="li" style="align-items:flex-start"><div class="m"><div class="t">${esc(r.tb || '-')} : ${esc(r.tn || '-')}</div><div class="s" style="white-space:normal">cores ${esc(r.core || '-')} · ${esc(shortT(r.pan) || '')} · ${esc(r.doc.replace(/^GLE-G0-D1810BX0-/, '').replace(/_AL.*$/, ''))} p.${r.pg}</div>${s && s.v === 'N' && s.r ? `<div class="s" style="color:var(--bad)">✗ ${esc(s.r)}</div>` : ''}</div>
@@ -1125,9 +1126,9 @@ function xPunchCard(p) { const L = xPunch(p); if (!L.length) return '';
 function xPunchText() {
   const tags = {}; PU.forEach(p => { if (p._t) { const g = tags[p._t] = tags[p._t] || {tag: p.tag, c: [], r: []}; (isRHIp(p) ? g.r : g.c).push(p); } });
   const G = Object.values(tags).filter(g => g.c.length && g.r.length).sort((a, b) => a.tag.localeCompare(b.tag));
-  const ln = p => `${p.no} | ${String(p.den || p.dru || '').replace(/\s+/g, ' ').trim()} | ${p.st}`;
-  return {n: G.length, text: `Cross-punch report · ${tstr(Date.now())}${PS_.name ? ' · ' + PS_.name : ''}\nCCR – tags with both client punch and RHI punch: ${G.length}\n\n` +
-    G.map(g => `Tag: ${g.tag}\n` + g.c.map(p => `  Client: ${ln(p)}`).join('\n') + '\n' + g.r.map(p => `  RHI:    ${ln(p)}`).join('\n')).join('\n\n')};
+  const ln = p => `${p.no} | ${String(p.den || p.dru || '').replace(/\s+/g, ' ').trim()} | ${t(p.st)}`, cl = t('Client') + ':', pad = ' '.repeat(Math.max(cl.length - 3, 1));
+  return {n: G.length, text: `${t('Cross-punch report')} · ${tstr(Date.now())}${PS_.name ? ' · ' + PS_.name : ''}\n${t('CCR – tags with both client punch and RHI punch')}: ${G.length}\n\n` +
+    G.map(g => `${t('Tag')}: ${g.tag}\n` + g.c.map(p => `  ${cl} ${ln(p)}`).join('\n') + '\n' + g.r.map(p => `  RHI:${pad}${ln(p)}`).join('\n')).join('\n\n')};
 }
 function openXPunch() { const r = xPunchText(); REP = {kind: 'xpunch', L: [], text: r.text};
   modalP(`<div class="h3">Cross-punch report · ${r.n} tags</div>
@@ -1198,8 +1199,8 @@ function riLists() {
     (s.t === true ? A : B).push(r); });
   return {A, B}; // A: pulled + terminated (laying and/or termination RFI open) · B: pulled only, laying RFI open
 }
-const riNeed = (r, grp) => grp === 'B' ? 'laying inspection needed' : r.tOnly ? 'termination inspection needed' : (r.t === 'acc' ? 'laying inspection needed' : 'laying + termination inspection needed');
-const riLine = (r, grp) => `${r.c.t} · ${r.pan ? shortT(r.pan) : 'no panel'} · ${riNeed(r, grp)}`;
+const riNeed = (r, grp) => t(grp === 'B' ? 'laying inspection needed' : r.tOnly ? 'termination inspection needed' : (r.t === 'acc' ? 'laying inspection needed' : 'laying + termination inspection needed'));
+const riLine = (r, grp) => `${r.c.t} · ${r.pan ? shortT(r.pan) : t('no panel')} · ${riNeed(r, grp)}`;
 function riFilter(L, grp) { const v = VS.RI, nq = N(v.q);
   return L.filter(r => (!nq || r.c._n.includes(nq)) && (!v.pan || (v.pan === '-' ? !r.pan : r.pan === v.pan)) &&
     (!v.w || (v.w === 'lay' ? !r.tOnly : (grp === 'A' && r.t !== 'acc')))); }
@@ -1224,13 +1225,13 @@ function riBody() {
   document.getElementById('rib').innerHTML = sec(fA, 'A', '✅ Pulled + terminated – RFI not accepted', 'limA') + sec(fB, 'B', '🟡 Pulled, not terminated – laying RFI not accepted (intermediate)', 'limB');
 }
 const lastTag = s => { const m = String(s || '').match(/G[01]-[A-Z0-9()\-]+/g); return m ? m[m.length - 1] : String(s || '').slice(-40); };
-function riCall(grp, i) { const L = (VS.RI.cur || {})[grp] || [], r = L.find(x => x.c.i === i); if (!r) return; riShow('Call inspection', riLine(r, grp)); }
+function riCall(grp, i) { const L = (VS.RI.cur || {})[grp] || [], r = L.find(x => x.c.i === i); if (!r) return; riShow(t('Call inspection'), riLine(r, grp)); }
 function riText() { const {A, B} = VS.RI.cur || {A: [], B: []}, v = VS.RI;
-  const f = [v.pan ? 'panel ' + (v.pan === '-' ? 'none' : shortT(v.pan)) : '', v.w ? (v.w === 'lay' ? 'laying' : 'termination') + ' only' : '', v.q ? 'search "' + v.q + '"' : ''].filter(Boolean).join(', ');
-  return `Ready for inspection · ${tstr(Date.now())}${PS_.name ? ' · ' + PS_.name : ''}\nCCR – RHI RFI not accepted${f ? ' (' + f + ')' : ''}\n\n` +
-    (A.length ? `Pulled + terminated (${A.length}):\n` + A.map(r => '  ' + riLine(r, 'A')).join('\n') + '\n\n' : '') +
-    (B.length ? `Pulled, not terminated (${B.length}):\n` + B.map(r => '  ' + riLine(r, 'B')).join('\n') : '') + (!A.length && !B.length ? 'No cables in this view.' : ''); }
-function openRI() { const {A, B} = VS.RI.cur || {A: [], B: []}; riShow(`Inspection list · ${A.length + B.length} cables`, riText()); }
+  const f = [v.pan ? t('panel') + ' ' + (v.pan === '-' ? t('none') : shortT(v.pan)) : '', v.w ? t(v.w === 'lay' ? 'laying only' : 'termination only') : '', v.q ? t('search') + ' "' + v.q + '"' : ''].filter(Boolean).join(', ');
+  return `${t('Ready for inspection')} · ${tstr(Date.now())}${PS_.name ? ' · ' + PS_.name : ''}\n${t('CCR – RHI RFI not accepted')}${f ? ' (' + f + ')' : ''}\n\n` +
+    (A.length ? t(`Pulled + terminated (${A.length})`) + ':\n' + A.map(r => '  ' + riLine(r, 'A')).join('\n') + '\n\n' : '') +
+    (B.length ? t(`Pulled, not terminated (${B.length})`) + ':\n' + B.map(r => '  ' + riLine(r, 'B')).join('\n') : '') + (!A.length && !B.length ? t('No cables in this view') + '.' : ''); }
+function openRI() { const {A, B} = VS.RI.cur || {A: [], B: []}; riShow(t(`Inspection list · ${A.length + B.length} cables`), riText()); }
 function riShow(title, text) { REP = {kind: 'ri', L: [], text};
   modalP(`<div class="h3">${esc(title)}</div><textarea id="rtx" class="fin" style="height:${text.length > 200 ? 240 : 90}px;font:12px monospace;white-space:pre" readonly>${esc(text)}</textarea>
    <button class="tile main" style="width:100%;min-height:auto;margin-bottom:8px" onclick="copyText(REP.text).then(ok=>{toast(ok?'Copied ✓ – in MAX press and hold, Paste, Send':'Copy the text, then paste in MAX');setTimeout(()=>{window.location.href=MAX_PROG},600)})"><b>📤 Send to MAX</b><span class="n">copies the text and opens the MAX progress group</span></button>
