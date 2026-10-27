@@ -1,0 +1,24 @@
+name: Apply patch
+on:
+  push:
+    paths: ['tools/patches/*.py']
+permissions:
+  contents: write
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+      - run: |
+          for f in $(git diff --name-only --diff-filter=AM HEAD~1 HEAD -- 'tools/patches/*.py'); do echo "== $f"; python3 "$f"; done
+          python3 tools/build_i18n.py
+          node --check app.js
+          node --check translations.js
+      - run: |
+          git config user.name ccr-auto-update
+          git config user.email ccr-auto-update@users.noreply.github.com
+          git add -A app.js translations.js index.html sw.js tools/i18n_ru.tsv
+          git commit -m "Patch applied: $(git log -1 --format=%s)" || echo nothing
+          git push
