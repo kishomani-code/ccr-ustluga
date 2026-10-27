@@ -927,7 +927,9 @@ var RU = {
 "Owner menu – unlocked": "Меню владельца – разблокировано",
 "Length, m": "Длина, м",
 "Length (m)": "Длина (м)",
-"Cable not in cable list yet": "Кабеля пока нет в кабельном журнале"
+"Cable not in cable list yet": "Кабеля пока нет в кабельном журнале",
+"Client # open · RHI internal # open": "Заказчик: # открыто · РХИ внутр.: # открыто",
+"CCR · RHI internal punch": "CCR · внутренние замечания РХИ"
 };
 // Labels that were already bilingual ("English / Русский") – show only one language.
 var BI = {
