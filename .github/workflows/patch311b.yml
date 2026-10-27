@@ -1,0 +1,19 @@
+name: Patch v3.11b
+on:
+  push:
+    paths: ['.github/workflows/patch311b.yml']
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: python3 tools/patch311.py && python3 tools/build_i18n.py && node --check app.js && node --check translations.js
+      - run: |
+          git config user.name ccr-auto-update
+          git config user.email ccr-auto-update@users.noreply.github.com
+          git add app.js translations.js
+          git commit -m "v3.11: client punch and RHI internal punch shown separately"
+          git push
