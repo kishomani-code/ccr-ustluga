@@ -1,0 +1,61 @@
+# Automatic data update for the CCR site app.
+# Upload the new Excel files into the "input" folder on GitHub -> this job builds data.json,
+# refreshes the phone cache name in sw.js, removes the uploaded Excel files and saves a log.
+name: Update app data
+
+on:
+  push:
+    paths:
+      - 'input/**'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: update-data
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Any Excel files?
+        id: chk
+        run: |
+          n=$(find input -type f \( -iname '*.xlsx' -o -iname '*.xlsb' -o -iname '*.xlsm' -o -iname '*.xls' \) | wc -l)
+          echo "count=$n" >> "$GITHUB_OUTPUT"
+          echo "Excel files in input: $n"
+
+      - uses: actions/setup-python@v5
+        if: steps.chk.outputs.count != '0'
+        with:
+          python-version: '3.12'
+
+      - name: Install readers
+        if: steps.chk.outputs.count != '0'
+        run: pip install openpyxl pyxlsb
+
+      - name: Build data.json
+        if: steps.chk.outputs.count != '0'
+        run: |
+          set -o pipefail
+          python3 tools/build_data.py --input input --base data_base.json --current data.json --out data.json 2>&1 | tee build_log.txt
+
+      - name: New cache name so phones load the new data
+        if: steps.chk.outputs.count != '0'
+        run: |
+          stamp=$(date -u +%Y%m%d%H%M)
+          sed -i -E "s/(const CACHE = '[^']*)-d[0-9]{12}'/\1'/" sw.js
+          sed -i -E "s/(const CACHE = '[^']*)'/\1-d${stamp}'/" sw.js
+          grep "const CACHE" sw.js
+
+      - name: Save, remove uploaded Excel files, keep log
+        if: steps.chk.outputs.count != '0'
+        run: |
+          mkdir -p input
+          { echo "Last automatic update: $(TZ=Europe/Moscow date '+%d.%m.%Y %H:%M') MSK"; echo; echo "Files used:";
+            find input -type f \( -iname '*.xls*' \) -printf '  %f\n'; echo; cat build_log.txt; } > in
