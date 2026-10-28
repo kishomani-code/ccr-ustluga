@@ -1,6 +1,7 @@
-# Automatic data update for the CCR site app.
-# Upload the new Excel files into the "input" folder on GitHub -> this job builds data.json,
-# refreshes the phone cache name in sw.js, removes the uploaded Excel files and saves a log.
+# Automatic data update for the site app (CCR and D48).
+# Upload the new Excel files into the "input" folder on GitHub -> this job builds data.json (CCR)
+# and data_d48.json (D48) from the same files, refreshes the phone cache name in sw.js,
+# removes the uploaded Excel files and saves a log in input/LAST_UPDATE.txt.
 name: Update app data
 
 on:
@@ -19,7 +20,7 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 40
     steps:
       - uses: actions/checkout@v4
 
@@ -39,11 +40,20 @@ jobs:
         if: steps.chk.outputs.count != '0'
         run: pip install openpyxl pyxlsb
 
-      - name: Build data.json
+      - name: Build data.json (CCR)
         if: steps.chk.outputs.count != '0'
         run: |
           set -o pipefail
-          python3 tools/build_data.py --input input --base data_base.json --current data.json --out data.json 2>&1 | tee build_log.txt
+          echo "===== CCR =====" | tee build_log.txt
+          python3 tools/build_data.py --site ccr --input input --base data_base.json --current data.json --out data.json 2>&1 | tee -a build_log.txt
+
+      - name: Build data_d48.json (D48)
+        if: steps.chk.outputs.count != '0'
+        continue-on-error: true
+        run: |
+          set -o pipefail
+          echo "===== D48 =====" | tee -a build_log.txt
+          python3 tools/build_data.py --site d48 --input input --base tools/d48_skeleton.json --current data_d48.json --out data_d48.json 2>&1 | tee -a build_log.txt
 
       - name: New cache name so phones load the new data
         if: steps.chk.outputs.count != '0'
@@ -58,4 +68,10 @@ jobs:
         run: |
           mkdir -p input
           { echo "Last automatic update: $(TZ=Europe/Moscow date '+%d.%m.%Y %H:%M') MSK"; echo; echo "Files used:";
-            find input -type f \( -iname '*.xls*' \) -printf '  %f\n'; echo; cat build_log.txt; } > in
+            find input -type f \( -iname '*.xls*' \) -printf '  %f\n'; echo; cat build_log.txt; } > input/LAST_UPDATE.txt
+          find input -type f \( -iname '*.xlsx' -o -iname '*.xlsb' -o -iname '*.xlsm' -o -iname '*.xls' \) -delete
+          git config user.name ccr-auto-update
+          git config user.email ccr-auto-update@users.noreply.github.com
+          git add -A input data.json data_d48.json sw.js
+          git commit -m "Automatic data update $(TZ=Europe/Moscow date '+%d.%m.%Y %H:%M')" || echo "nothing to commit"
+          git push

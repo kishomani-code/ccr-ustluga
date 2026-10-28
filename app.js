@@ -1,4 +1,8 @@
 if (typeof t !== 'function') window.t = k => k;
+const PRJ = window.__P === 'D48' ? 'D48' : 'CCR';   // v4.0: two projects in one app (CCR / D48)
+const PRJN = PRJ === 'D48' ? {b: 'G0-D4810BX0', a: 'G0-D4801FX0', nm: 'Utilities Substation & IRR', rx: /D4810|D4801|-D48-/} : {b: 'G0-D1810BX0', a: 'G0-D1801FX0', nm: 'Central Control Room', rx: /D1810|D1801|-D18-/};
+if (PRJ === 'D48') { const _t0 = window.t; window.t = k => String(_t0(k)).replace(/\bCCR\b/g, 'D48'); }
+const E = (window.__E && typeof window.__E === 'object') ? window.__E : {};
 const D = (window.__D && typeof window.__D === 'object') ? window.__D : {};
 // ---- safe defaults: the app must load even when data.json is missing keys or has another shape
 const arr = v => Array.isArray(v) ? v : [], obj = v => (v && typeof v === 'object' && !Array.isArray(v)) ? v : {};
@@ -32,11 +36,11 @@ const pcat = p => `<span class="badge ${p.cat === 'A' ? 'b-no' : p.cat === 'B' ?
 function punchBox(tag) { const ps = PUBY[tag] || []; if (!ps.length) return ''; const op = ps.filter(p => p.st === 'Open').length;
   return `<div class="card"><div class="h3">Punch items (${ps.length} · open ${op})</div><div class="list">${ps.map(pRow).join('')}</div></div>`; }
 function pRow(p) { return `<button class="li" onclick="go('#/pi/${p.i}')"><div class="m"><div class="t">${DISC_IC(p.d)} № ${esc(p.no)} · ${esc(p.tag || '-')}</div><div class="s">${esc(p.den || p.dru)}</div></div><div class="r">${pb(p)}<div style="margin-top:3px">${pcat(p)}</div>${siteSt(p) ? '<div style="margin-top:3px">' + (siteSt(p).v === 'F' ? '<span class="badge b-ok">✓ site</span>' : '<span class="badge b-no">✗ site</span>') + '</div>' : ''}</div><span class="chev">›</span></button>`; }
-const SKEY = 'ccr_site_v1'; let S2 = {c: {}, i: {}, m: {}, last: 0, lastText: '', rx: []};
+const SKEY = PRJ === 'D48' ? 'd48_site_v1' : 'ccr_site_v1'; let S2 = {c: {}, i: {}, m: {}, last: 0, lastText: '', rx: []};
 try { const v = localStorage.getItem(SKEY); if (v) S2 = Object.assign(S2, JSON.parse(v)); } catch (err) {}
 function ssave() { CSTC = {}; try { localStorage.setItem(SKEY, JSON.stringify(S2)); } catch (err) { toast('Could not save - send the report now'); } }
 const MAXLINK = 'https://max.ru/u/f9LHodD0cOJtQE7ljdbFZtb7Z8mLZSYAeSDsBgSF4tXPzXK-0S2T-VwbXkU';
-const isCCR = t => /D1810|D1801|-D18-/.test(t);
+const isCCR = t => PRJN.rx.test(t);   // = inside this project (CCR or D48)
 const GCNT = {}; I.forEach(x => GCNT[x.g] = (GCNT[x.g] || 0) + 1); const GROUPS = Object.keys(GCNT).sort((a, b) => GCNT[b] - GCNT[a]);
 let CSTC = {}; function cst(c) { return CSTC[c.i] || (CSTC[c.i] = cst0(c)); }
 function cst0(c) {
@@ -66,7 +70,7 @@ function tickBtns(c, dir) { const s = cst(c), b = cBase(c), e = S2.c[c.t] || {};
   const v = k => k === 'P' ? s.p === true : (e[k] ? e[k].v : b[k]);
   const btn = (k, l, ru) => `<button class="tg ${v(k) ? 'y' : (e[k] ? 'n' : '')}" onclick="event.stopPropagation();cTick(decodeURIComponent('${enc(c.t)}'),'${k}')">${v(k) ? '✓ ' : ''}${l}<small>${e[k] ? dstr(e[k].t) : ''}</small></button>`;
   return `<div class="btns">${btn('P', 'Pulled', 'Проложен')}${btn(ek, 'Term. this end', 'Подкл. здесь')}${btn(ok, 'Term. other end', 'Подкл. др. конец')}</div>${lenBox(c)}`; }
-function cCard(c, dir) { const s = cst(c); return `<div class="cbx ${s.ok ? 'ok' : s.p ? 'part' : 'no'}"><div onclick="go('#/c/${enc(c.t)}')"><span class="badge b-na" style="margin-right:6px">${dir || ''}</span><b style="word-break:break-all">${esc(c.t)}</b> <span class="badge ${s.c}">${s.l}</span>${holdMini(c.t)}
+function cCard(c, dir) { const s = cst(c); return `<div class="cbx ${s.ok ? 'ok' : s.p ? 'part' : 'no'}"><div onclick="go('#/c/${enc(c.t)}')"><span class="badge b-na" style="margin-right:6px">${dir || ''}</span><b style="word-break:break-all">${esc(c.t)}</b> <span class="badge ${s.c}">${s.l}</span>${holdMini(c.t)}${probMini(c.t)}
   <div class="s2">${dir === 'IN' ? 'From' : 'To'}: ${esc(((dir === 'IN' ? c.f : c.o) || '').slice(-90))}</div><div class="s2">${esc(c.ty)} ${esc(c.c)} · ${esc(c.ln)} m${c.q ? ' · ⚠ CTQ' : ''}</div></div>${tickBtns(c, dir)}</div>`; }
 const ist_old = x => x.done ? {l: 'Done', c: 'b-ok'} : (x.f > 0 ? {l: 'Partly', c: 'b-part'} : {l: 'Not done', c: 'b-no'});
 function gstat(list) { const n = list.length, d = list.filter(x => x.done).length; const us = [...new Set(list.map(x => x.u))];
@@ -114,7 +118,10 @@ function route() {
   if (k === 'bd') return a ? bdSys(a) : bdHome();
   if (k === 'sf') return a ? sfView(a) : sfHome();
   if (k === 'gl') return glHome();
-  if (k === 'calc') return calcHome();
+  if (k === 'calc') return home();
+  if (k === 'ntq') return a ? ntqView(a) : ntqHome();
+  if (k === 'mct') return mctHome(a);
+  if (k === 'ig') return a ? igView(a) : igHome();
   if (k === 'nt') return ntHome();
   if (k === 'owner') { go('#/'); return ownerLogin(); }
   if (k === 'rf') return rfiHome();
@@ -124,14 +131,14 @@ function route() {
 }
 // --- views
 function home() {
-  setHead('CCR site app', `v${APPV} · data ${D.meta.date} · G0-D1810BX0 / G0-D1801FX0`); qbox.value = '';
+  setHead(PRJ + ' site app', `v${APPV} · data ${D.meta.date} · ${PRJN.b} / ${PRJN.a}`); qbox.value = '';
   const all = gstat(I), cc = C.filter(c => cst(c).ok).length;
   const tile = (g, cls) => { const s = gstat(I.filter(x => x.g === g)); return `<button class="tile ${cls || ''}" onclick="go('#/a/${enc(g)}')"><b>${esc(g)}</b><div><div class="row"><span class="n">${s.d}/${s.n} lines${s.u === 'lines' ? (() => { const m = I.filter(x => x.g === g && x.u === 'm'); return m.length ? ' · ' + fmtn(m.reduce((a, x) => a + x.f, 0)) + ' / ' + fmtn(m.reduce((a, x) => a + x.q, 0)) + ' m' : ''; })() : ' · ' + fmtn(s.f) + ' / ' + fmtn(s.q) + ' ' + s.u}</span></div><div class="pc">${s.pc}%</div><div class="pbar"><i style="width:${s.pc}%"></i></div></div></button>`; };
   const ps = PAN.map(p => p.cs.length ? p.cs.filter(([d, t]) => CBY[t] && cst(CBY[t]).ok).length / p.cs.length : 0); const pcomp = ps.filter(v => v >= 1).length;
   const pend = progLines(true).length, ppend = punchLines(true).length; const icd = ICX.filter(c => cst(c).ok).length, ist_ = gstat(INST);
   const T2 = (h, b, n, pc, cls) => `<button class="tile ${cls || ''}" onclick="go('${h}')"><b>${b}</b><div><span class="n">${n}</span>${pc != null ? `<div class="pc">${pc}%</div><div class="pbar"><i style="width:${pc}%"></i></div>` : ''}</div></button>`;
   const r = PU.filter(p => p.rhi), o = r.filter(p => p.st === 'Open').length, oCl = r.filter(p => !p.int && p.st === 'Open').length, oIn = r.filter(p => p.int && p.st === 'Open').length;
-  main.innerHTML = `${D.__fb ? `<div class="card" style="border-left:5px solid #e0a100;background:#fff8e6;font-size:13px"><b>⚠ Showing last good data (${esc(D.meta.date)})</b><div style="margin-top:4px">Today's automatic update${D.__fb.date && D.__fb.date !== '?' ? ' (' + esc(D.__fb.date) + ')' : ''} has a different file format, so the app is using the last good data. All screens work normally.</div></div>` : ''}<div class="kpi"><div><b>${all.n}</b><span>IWP lines</span></div><div><b style="color:var(--ok)">${(all.n ? Math.round(100 * all.d / all.n) : 0)}%</b><span>lines done</span></div><div><b>${cc}/${C.length}</b><span>cables complete</span></div></div>
+  main.innerHTML = `${projBar()}${D.__fb ? `<div class="card" style="border-left:5px solid #e0a100;background:#fff8e6;font-size:13px"><b>⚠ Showing last good data (${esc(D.meta.date)})</b><div style="margin-top:4px">Today's automatic update${D.__fb.date && D.__fb.date !== '?' ? ' (' + esc(D.__fb.date) + ')' : ''} has a different file format, so the app is using the last good data. All screens work normally.</div></div>` : ''}<div class="kpi"><div><b>${all.n}</b><span>IWP lines</span></div><div><b style="color:var(--ok)">${(all.n ? Math.round(100 * all.d / all.n) : 0)}%</b><span>lines done</span></div><div><b>${cc}/${C.length}</b><span>cables complete</span></div></div>
    ${S2.owner ? (() => { const n = alCount(); return `<button class="tile main" style="width:100%;min-height:auto;margin-bottom:8px;background:${n ? '#b42318' : '#2b2f36'};border-color:${n ? '#b42318' : '#2b2f36'}" onclick="go('#/al')"><b>🔔 Alerts from site · ${n} new</b><span class="n" style="color:#f3d6d2">issues · permits · revisions · TQ</span></button>`; })() : ''}
    <button class="tile main" style="width:100%;min-height:auto;margin-bottom:4px;background:${pend ? '#c55a11' : 'var(--pri)'};border-color:${pend ? '#c55a11' : 'var(--pri)'}" onclick="openReport('prog')"><b>📤 Send report to Paul · ${pend} new progress lines</b><span class="n">👷 ${esc(PS_.name || 'tap to set your name')} · MAX progress group</span></button>
    <button class="tile main" style="width:100%;min-height:auto;margin-bottom:4px;background:var(--acc);border-color:var(--acc);color:#fff" onclick="S2.mgr||S2.owner?go('#/mg'):mgrLogin()"><b>📊 Manager dashboard${S2.mgr || S2.owner ? '' : ' 🔒'}</b><span class="n" style="color:#fff">overall % · panel progress table · bottom-10 timeline</span></button>
@@ -146,8 +153,9 @@ function home() {
    <div class="sect">📦 Materials</div><div class="grid">
     ${T2('#/dr', '🧵 Cable drums', `${DR.length} drums · used / remaining`)}${T2('#/mt', '📋 Material tracking', `${D.mat.length} ident codes by system`)}${T2('#/mr', '🏬 MRF status', `${MRF.length} warehouse requests`)}</div>
    <div class="sect">🧭 Systems</div><div class="grid">${(() => { const st = Object.keys(SG).map(sysStat).filter(Boolean); const rd = st.filter(x => x.ok).length; return T2('#/bd', '🧭 System block diagrams<br><span style="font-weight:400;font-size:12px">how systems work · ready to start?</span>', `${rd} ready · ${st.length - rd} with issues`, st.length ? Math.round(100 * rd / st.length) : 0, 'main'); })()}${T2('#/gl', '🔩 Cable glands', 'size · type RU/EN · sleeve · earthing')}</div>
-   <div class="sect">📑 Documents</div><div class="grid">${T2('#/ctq', '❓ CTQ register<br><span style="font-weight:400;font-size:12px">internal TQs · what is on hold</span>', `${CTQ.filter(ctqOpen).length} open · ${Object.keys(HOLD).length} items on hold`, null, 'main')}${T2('#/dg', '📐 Drawings register', `${RG.length} CCR docs · system → activity`)}${T2('#/sf', '📋 SF drawings (MTO)', `${SF.length} files · rev & dates`)}${T2('#/rv', '📄 Drawing revisions', `${RV.length} revised · ${RV.reduce((x, r) => x + r.ch.filter(rvDone).length, 0)} after installation`)}</div>
-   <div class="sect">🛠️ Tools</div><div class="grid">${T2('#/calc', '🧮 Engineering calculator', 'current · voltage drop · OD · gland')}${T2('#/nt', '📝 Site notes', `${(S2.notes || []).length} notes`)}</div>
+   <div class="sect">📑 Documents</div><div class="grid">${T2('#/ctq', '❓ CTQ register<br><span style="font-weight:400;font-size:12px">internal TQs · what is on hold</span>', `${CTQ.filter(ctqOpen).length} open · ${Object.keys(HOLD).length} items on hold`, null, 'main')}${T2('#/dg', '📐 Drawings register', `${RG.length} ${PRJ} docs · system → activity`)}${T2('#/sf', '📋 SF drawings (MTO)', `${SF.length} files · rev & dates`)}${T2('#/rv', '📄 Drawing revisions', `${RV.length} revised · ${RV.reduce((x, r) => x + r.ch.filter(rvDone).length, 0)} after installation`)}</div>
+   ${engTiles()}
+   <div class="sect">🛠️ Tools</div><div class="grid">${T2('#/nt', '📝 Site notes', `${(S2.notes || []).length} notes`)}</div>
    <div class="sect">📈 Progress</div><div class="grid">${T2('#/dp', '✍️ Daily progress entry', `${pend} lines not sent`)}${S2.owner ? T2('#/ow', '🔑 Import progress (owner)', `${(S2.rx || []).length} imported lines · total IWP report`, null, 'main') + T2('#/tp', '👷 Technician performance', `${new Set(perfRows().map(r => r.by)).size} technicians`, null, 'main') : ''}${T2('#/pp', '📊 Punch daily progress', 'site updates')}<button class="tile" onclick="openReport('punch')"><b>🧾 Punch report to Paul</b><div><span class="n">${ppend} new · MAX punch group</span></div></button></div>
    <div class="sect">🔑 Owner</div><button class="tile" style="width:100%;min-height:auto;background:#2b2f36;color:#fff;border-color:#2b2f36" onclick="S2.owner?go('#/ow'):ownerLogin()"><b>🔑 Owner menu${S2.owner ? ' – unlocked' : ''}</b><span class="n" style="color:#cfd6df">${S2.owner ? 'Import progress · total IWP report · technician performance' : 'Password required – owner only'}</span></button>
    <div class="foot">${esc(D.meta.src)}<br>Updates automatically when the phone is online.<br>App version ${APPV}</div>`;
@@ -178,10 +186,10 @@ function itemView(i) {
   let conn = '';
   if (!c) { const n = N(x.tag); const cs = n.length > 6 ? C.filter(k => k._e.includes(n)).slice(0, 60) : [];
     if (cs.length) conn = `<div class="card"><div class="h3">Cables connected to this item (${cs.length})</div><div class="list">${cs.map(cRow).join('')}</div></div>`; }
-  main.innerHTML = `${holdCard(x.tag)}<div class="card"><div class="big">${esc(x.tag)}</div><div style="margin:6px 0"><span class="badge ${s.c}" style="font-size:13px">${s.l}</span>${holdMini(x.tag)}</div>
+  main.innerHTML = `${probCard([x.tag, x.uid])}${holdCard(x.tag)}<div class="card"><div class="big">${esc(x.tag)}</div><div style="margin:6px 0"><span class="badge ${s.c}" style="font-size:13px">${s.l}</span>${holdMini(x.tag)}</div>
     ${kv([['Activity', x.g], ['IWP mapping', x.m], ['IWP type', T.it[x.it]], ['Access ID', x.acc], ['Unique tag', x.uid], ['Item / type', x.ctag], ['Description', T.desc[x.desc]], ['Quantity', `${fmtn(x.q)} ${x.u}`], ['Done', `${fmtn(x.f)} ${x.u}`], ['Remaining', `${fmtn(x.q - x.f)} ${x.u}`],
       ['Drawing', T.dwg[x.dwg]], ['Subtitle', T.sub[x.sub]], ['System', x.sy], ['Company', T.co[x.co]], ['Responsible', T.resp[x.resp]], ['TQ No.', x.tq], ['IWP notes', x.notes]])}</div>
-    <div class="card"><div class="h3">Site progress / Прогресс на месте</div>${!c ? `<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px"><button class="tg ${S2.i[x.acc] && S2.i[x.acc].v ? 'y' : ''}" style="padding:12px" onclick="iTick('${x.acc}',true)">✓ Installed / done<small>Смонтировано</small></button><button class="tg ${S2.i[x.acc] && !S2.i[x.acc].v ? 'n' : ''}" style="padding:12px" onclick="iTick('${x.acc}',false)">✗ Not done<small>Не выполнено</small></button></div>` : ''}
+    ${instCard(x)}<div class="card"><div class="h3">Site progress / Прогресс на месте</div>${!c ? `<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px"><button class="tg ${S2.i[x.acc] && S2.i[x.acc].v ? 'y' : ''}" style="padding:12px" onclick="iTick('${x.acc}',true)">✓ Installed / done<small>Смонтировано</small></button><button class="tg ${S2.i[x.acc] && !S2.i[x.acc].v ? 'n' : ''}" style="padding:12px" onclick="iTick('${x.acc}',false)">✗ Not done<small>Не выполнено</small></button></div>` : ''}
       <div class="row" style="display:flex;gap:8px"><input class="fin" id="mq" type="number" inputmode="decimal" placeholder="Qty done today (${esc(x.u)}) – remaining ${fmtn(x.q - x.f)}" style="flex:1;margin:0"><button class="tile main" style="min-height:auto;padding:10px 14px" onclick="mSave('${x.acc}')"><b>Save</b></button></div>
       <div style="font-size:12px;color:var(--mut);margin-top:6px">${S2.m[x.acc] ? `Entered: ${fmtn(S2.m[x.acc].q)} ${esc(x.u)} on ${dstr(S2.m[x.acc].t)} by ${esc(S2.m[x.acc].by)} · <span class="link" onclick="mDel('${x.acc}')">delete</span>` : (S2.i[x.acc] ? `Site: ${S2.i[x.acc].v ? 'done' : 'not done'} ${dstr(S2.i[x.acc].t)} by ${esc(S2.i[x.acc].by)} · <span class="link" onclick="delete S2.i['${x.acc}'];ssave();route()">undo</span>` : 'No site entry yet')}</div></div>
     ${c ? `<div class="card"><div class="h3">Cable</div>${cableBody(c)}<div style="margin-top:8px"><span class="link" onclick="go('#/c/${enc(c.t)}')">Open full cable details ›</span></div></div>` : ''}
@@ -192,11 +200,11 @@ function cableBody(c) {
   return kv([['Status', `<span class="badge ${s.c}">${s.l}</span>`, 1], ['From', plinkText(c.f), 1], ['From room', c.fr], ['To', plinkText(c.o), 1], ['To room', c.tr], ['Type', c.ty], ['Cores', c.c], ['Length, m', c.ln], ['Drum', c.dr], ['Document', c.d]]);
 }
 function plinkText(t) { if (!t) return ''; return esc(t).replace(/G0-[A-Z0-9]+-[A-Z0-9()\-]+/g, tag => PBY[tag] ? `<span class="link" onclick="go('#/p/${enc(tag)}')">${tag}</span>` : tag); }
-function cRow(c, d) { const s = cst(c); return `<button class="li" onclick="go('#/c/${enc(c.t)}')"><div class="m"><div class="t">${d ? `<span class="badge b-na" style="margin-right:6px">${d}</span>` : ''}${esc(c.t)}${holdMini(c.t)}</div><div class="s">${esc((d === 'IN' ? c.f : c.o || '').slice(-70))}</div></div><span class="badge ${s.c}">${s.l}</span><span class="chev">›</span></button>`; }
+function cRow(c, d) { const s = cst(c); return `<button class="li" onclick="go('#/c/${enc(c.t)}')"><div class="m"><div class="t">${d ? `<span class="badge b-na" style="margin-right:6px">${d}</span>` : ''}${esc(c.t)}${holdMini(c.t)}${probMini(c.t)}</div><div class="s">${esc((d === 'IN' ? c.f : c.o || '').slice(-70))}</div></div><span class="badge ${s.c}">${s.l}</span><span class="chev">›</span></button>`; }
 function cableView(t) {
   const c = CBY[t]; if (!c) { main.innerHTML = '<div class="empty">Cable not found</div>'; return; }
   const s = cst(c); setHead('Cable', c.t); const lines = IBY[c.t] || [];
-  main.innerHTML = `${holdCard(c.t)}<div class="card"><div class="big">${esc(c.t)}</div><div style="margin:6px 0"><span class="badge ${s.c}" style="font-size:13px">${s.l}</span>${holdMini(c.t)}</div>${cableBody(c)}</div>
+  main.innerHTML = `${probCard([c.t])}${holdCard(c.t)}<div class="card"><div class="big">${esc(c.t)}</div><div style="margin:6px 0"><span class="badge ${s.c}" style="font-size:13px">${s.l}</span>${holdMini(c.t)}</div>${cableBody(c)}</div>
    <div class="card"><div class="h3">Site check / Проверка на месте</div>${tickBtns(c, 'OUT')}<input class="fin" style="margin-top:8px" placeholder="Remark / примечание" value="${esc((S2.c[c.t] || {}).R ? S2.c[c.t].R.v : '')}" onchange="cRem(decodeURIComponent('${enc(c.t)}'),this.value)"></div>
    <div class="card"><div class="h3">Pulling / Прокладка</div>${kv([['Status', s.p === true ? '✓ Completed' : (s.p === false ? '✗ Not completed' : '–')], ['Tracker', c.tp], ['Pull date', c.pd], ['IWP access ID', c.la], ['IWP qty / done', c.lq !== '' ? `${fmtn(c.lq)} / ${fmtn(c.lf)} m` : ''], ['Company', c.co]])}</div>
    <div class="card"><div class="h3">Termination / Подключение</div>${kv([['Status', s.t === true ? '✓ Completed' : (s.t === false ? '✗ Not completed' : '–')], ['Tracker', c.tt], ['From end date', c.tf], ['To end date', c.tto], ['IWP access ID', c.ta], ['IWP ends done', c.tq !== '' ? `${c.tfa} / ${c.tq}` : '']])}</div>
@@ -217,20 +225,20 @@ function pList() {
   const v = VS.P, nq = N(v.q);
   const list = PAN.filter(p => { const s = pstat(p); return (v.f === 'all' || (v.f === 'done' ? s.d === s.n : s.d < s.n)) && (!nq || p._n.includes(nq) || N(p.desc).includes(nq) || ('ROOM' + p.room) === nq || p.room === v.q.trim()); });
   document.getElementById('pl').innerHTML = list.length ? `<div class="list">${list.slice(0, v.lim).map(p => { const s = pstat(p);
-    return `<button class="li" onclick="go('#/p/${enc(p.tag)}')"><div class="m"><div class="t">${esc(p.tag.replace(/^G0-D1810BX0-/, ''))}</div><div class="s">${p.room ? 'Room ' + esc(p.room) + ' · ' : ''}${esc(p.desc)}</div><div class="pbar" style="max-width:220px"><i style="width:${s.pc}%"></i></div></div><div class="r"><div class="pc" style="color:${s.pc === 100 ? 'var(--ok)' : 'var(--warn)'}">${s.pc}%</div>${s.d}/${s.n}</div><span class="chev">›</span></button>`; }).join('')}</div>` +
+    return `<button class="li" onclick="go('#/p/${enc(p.tag)}')"><div class="m"><div class="t">${esc(p.tag.replace(/^G0-D(18|48)10BX0-/, ''))}</div><div class="s">${p.room ? 'Room ' + esc(p.room) + ' · ' : ''}${esc(p.desc)}</div><div class="pbar" style="max-width:220px"><i style="width:${s.pc}%"></i></div></div><div class="r"><div class="pc" style="color:${s.pc === 100 ? 'var(--ok)' : 'var(--warn)'}">${s.pc}%</div>${s.d}/${s.n}</div><span class="chev">›</span></button>`; }).join('')}</div>` +
     (list.length > v.lim ? `<button class="more" onclick="VS.P.lim+=200;pList()">Show more (${list.length - v.lim})</button>` : '') : '<div class="empty">Nothing found</div>';
 }
 function panelView(t) {
   const p = PBY[t]; if (!p) { main.innerHTML = '<div class="empty">Panel not found</div>'; return; }
-  const s = pstat(p); setHead(t.replace(/^G0-D1810BX0-/, ''), `${s.d}/${s.n} cables complete · ${s.pc}%`);
+  const s = pstat(p); setHead(t.replace(/^G0-D(18|48)10BX0-/, ''), `${s.d}/${s.n} cables complete · ${s.pc}%`);
   const inst = (IBY[t] || []);
   const rows = (d) => p.cs.filter(z => z[0] === d).map(([dd, tg]) => CBY[tg] ? cCard(CBY[tg], dd) : `<div class="cbx"><b>${esc(tg)}</b></div>`).join('');
   const nOut = p.cs.filter(z => z[0] === 'OUT').length, nIn = p.cs.length - nOut;
-  main.innerHTML = `${holdCard(t)}<div class="card"><div class="big">${esc(t)}${holdMini(t)}</div><div class="small" style="color:var(--mut);font-size:13px">${esc(p.desc)}</div>${kv([['Room', p.room ? `<span class="link" onclick="go('#/rm/${enc(p.room)}')">${esc(roomLbl(p.room))}</span>` : '', 1], ['Cables', `${p.cs.length} (OUT ${nOut} / IN ${nIn})`], ['Complete', `${s.d} of ${s.n} (${s.pc}%)`]])}<div class="pbar"><i style="width:${s.pc}%"></i></div></div>
+  main.innerHTML = `${probCard([t])}${holdCard(t)}<div class="card"><div class="big">${esc(t)}${holdMini(t)}</div><div class="small" style="color:var(--mut);font-size:13px">${esc(p.desc)}</div>${kv([['Room', p.room ? `<span class="link" onclick="go('#/rm/${enc(p.room)}')">${esc(roomLbl(p.room))}</span>` : '', 1], ['Cables', `${p.cs.length} (OUT ${nOut} / IN ${nIn})`], ['Complete', `${s.d} of ${s.n} (${s.pc}%)`]])}<div class="pbar"><i style="width:${s.pc}%"></i></div></div>
    ${inst.length ? `<div class="card"><div class="h3">Installation (IWP)</div><div class="list">${inst.map(y => { const s2 = ist(y); return `<button class="li" onclick="go('#/i/${y.i}')"><div class="m"><div class="t">${esc(y.g)}</div><div class="s">Access ID ${esc(y.acc)} · ${fmtn(y.f)}/${fmtn(y.q)} ${esc(y.u)}</div></div><span class="badge ${s2.c}">${s2.l}</span><span class="chev">›</span></button>`; }).join('')}</div></div>` : ''}
    ${lrAtCard(t)}${punchBox(t)}${nOut ? `<div class="sect">Outgoing cables (${nOut})</div>${rows('OUT')}` : ''}${nIn ? `<div class="sect">Incoming cables (${nIn})</div>${rows('IN')}` : ''}`;
 }
-const PKEY = 'ccr_punch_v1'; let PS_ = {name: '', e: {}, x: {}};
+const PKEY = PRJ === 'D48' ? 'd48_punch_v1' : 'ccr_punch_v1'; let PS_ = {name: '', e: {}, x: {}};
 try { const v = localStorage.getItem(PKEY); if (v) PS_ = Object.assign(PS_, JSON.parse(v)); } catch (err) {}
 function psave() { try { localStorage.setItem(PKEY, JSON.stringify(PS_)); } catch (err) { toast('Could not save - send the report now'); } }
 const PNO = {}; PU.forEach(p => PNO[p.no] = p);
@@ -297,7 +305,7 @@ function exportPunch() {
 }
 function pscope() { VS.PS = VS.PS || {who: 'cl'}; if (!['cl', 'int', 'all'].includes(VS.PS.who)) VS.PS.who = 'cl'; return VS.PS.who === 'cl' ? PU.filter(p => p.rhi && !p.int) : VS.PS.who === 'int' ? PU.filter(p => p.int) : PU; }
 function punchHome() {
-  const L = pscope(); const op = L.filter(p => p.st === 'Open'); setHead('Punch list', VS.PS.who === 'int' ? 'CCR · RHI internal punch' : `CCR · master punch list ${PJ.date}`);
+  const L = pscope(); const op = L.filter(p => p.st === 'Open'); setHead('Punch list', VS.PS.who === 'int' ? PRJ + ' · RHI internal punch' : `${PRJ} · master punch list ${PJ.date}`);
   const cA = op.filter(p => p.cat === 'A').length, cB = op.filter(p => p.cat === 'B').length, cC = op.filter(p => p.cat === 'C').length;
   const discs = [...new Set(L.map(p => p.d))];
   const tile = d => { const x = L.filter(p => p.d === d), o = x.filter(p => p.st === 'Open').length, pc = x.length ? Math.round(100 * (x.length - o) / x.length) : 0;
@@ -418,7 +426,7 @@ const INST = I.filter(x => !/^Cable (pulling|termination)$/.test(x.g));
 function instHome() { const s = gstat(INST); setHead('Installation check', `${s.d}/${s.n} lines done`);
   const tile = g => { const x = INST.filter(y => y.g === g), st = gstat(x), ns = x.filter(y => S2.i[y.acc] || S2.m[y.acc]).length;
     return `<button class="tile" onclick="go('#/a/${enc(g)}')"><b>${esc(g)}</b><div><span class="n">${st.d}/${st.n} lines${ns ? ' · ' + ns + ' site entries' : ''}</span><div class="pc">${st.pc}%</div><div class="pbar"><i style="width:${st.pc}%"></i></div></div></button>`; };
-  main.innerHTML = `<div class="grid">${GROUPS.filter(g => !/^Cable (pulling|termination)$/.test(g)).map(tile).join('')}</div>`; }
+  main.innerHTML = `${(E.inst || []).length ? `<button class="tile main" style="width:100%;min-height:auto;margin-bottom:9px" onclick="go('#/ig')"><b>📘 Installation guide · ${(E.inst || []).length} device types</b><span class="n">remarks · check before install · typical details</span></button>` : ''}<div class="grid">${GROUPS.filter(g => !/^Cable (pulling|termination)$/.test(g)).map(tile).join('')}</div>`; }
 // ===== drums
 const DR = D.drums.map((a, i) => ({i, no: a[0], id: a[1], desc: a[2], len: a[3], u: a[4], rd: a[5], pl: a[6], stk: a[7], used: a[8], rem: a[9], sys: a[10], mrf: a[11], cab: a[12], _n: N(a[0] + ' ' + a[1] + ' ' + a[2])}));
 const SYS_ALL = [...new Set([].concat(...DR.map(d => d.sys), D.mat.map(m => m[0]), ...D.mrf.map(m => m[5])))].filter(Boolean).sort();
@@ -583,8 +591,8 @@ function ownPunch() { const d = VS.OW.d; const one = {}; (S2.rx || []).filter(r 
   copyText(Object.values(one).map(r => [r.no, r.v === 'F' ? 'Fixed' : 'Not fixed', d.split('-').reverse().join('.'), r.tag, r.by].join('\t')).join('\n')).then(() => toast('Punch list copied')); }
 
 // ======== v3.2 modules ========
-const APPV = '3.12';
-const shortT = t => String(t || '').replace(/^G0-D1810BX0-/, '').replace(/^G0-D1801FX0-/, 'FX0-');
+const APPV = '4.0';
+const shortT = t => String(t || '').replace(/^G0-D(18|48)10BX0-/, '').replace(/^G0-D(18|48)01FX0-/, 'FX0-');
 const SYSN = {'EL-ESPS': ['Substation 10/0.4 kV & power supply', 'Подстанция 10/0,4 кВ'], 'EL-EMSV': ['Power installation (boards, UPS, motors)', 'Силовое электрооборудование'], 'EL-ESBZ': ['Power supply from utility substation', 'Электроснабжение от ПС'], 'EL-ELOV': ['Indoor lighting', 'Внутреннее освещение'], 'EL-EG02': ['Earthing & lightning protection', 'Заземление и молниезащита'], 'EL-EG01': ['Area earthing', 'Заземление площадки'], 'EH-EOES': ['Electric heating', 'Электрообогрев'], 'EH-AEOG': ['Heat tracing', 'Электрообогрев (кабель)'], 'EH-EOBK': ['Electric heating (other)', 'Электрообогрев'],
   'IN-DCS': ['Distributed Control System (DCS)', 'РСУ'], 'IN-ESD': ['Emergency Shutdown (ESD)', 'ПАЗ'], 'IN-SPAP': ['Fire alarm & fire fighting control (AFA&FFS)', 'АСПС и ПТ'], 'IN-GDSS': ['Gas detection', 'Контроль загазованности'], 'IN-ASUE': ['Utilities control system', 'АСУ ЭО (утилиты)'], 'IN-ASUS': ['Power supply control system', 'АСУ ЭС'], 'IN-ASKU': ['Utility metering (AUMS)', 'АСКУ ЭР'], 'IN-MAEC': ['Rotating equipment monitoring (CMS)', 'МСО и ВО'], 'IN-MFMS': ['Material flow metering (MFMS)', 'СУМП'], 'IN-AKVS': ['Emission monitoring (CEMS)', 'АКВС'], 'IN-INTS': ['Operator training simulator', 'Тренажёр оператора'], 'IN-INSS': ['Information security', 'СОИБ'], 'IN-AOVK': ['HVAC automation', 'Автоматизация ОВиК'], 'IN-AKMP': ['Analyzer system', 'Анализаторы'],
   'FA-PSGN': ['Fire alarm (building)', 'Пожарная сигнализация'], 'FA-SPBA': ['Fire safety automation (area)', 'Автоматика пожарной безопасности'], 'FA-GPTS': ['Gas fire extinguishing', 'Газовое пожаротушение'],
@@ -694,8 +702,8 @@ function odEst(ty, cores) { ty = String(ty || ''); const T = ty.toUpperCase();
 const GL_MET = [['M16', 3.5, 8.5], ['M20s', 6, 12], ['M20', 10, 14.5], ['M25', 13, 20.5], ['M32', 19.5, 26.5], ['M40', 25.5, 33], ['M50s', 31.5, 39], ['M50', 37, 44.5], ['M63s', 42.5, 50.5], ['M63', 49, 56.5], ['M75s', 55, 62.5], ['M75', 61, 68.5], ['M80', 66, 80]];
 const GL_PL = [['M12', 3, 6.5], ['M16', 4.5, 10], ['M20', 6, 13], ['M25', 9, 17], ['M32', 13, 21], ['M40', 19, 28], ['M50', 27, 35], ['M63', 34, 45]];
 function pickGl(d, tbl) { if (!d) return []; return tbl.filter(g => d >= g[1] && d <= g[2]); }
-function zoneOf(txt) { const t = String(txt || ''); if (/взрывозащ|Ex\b|Exd|Exe|explos/i.test(t)) return 'ex'; if ((/D1810BX0|-D18-|^G0-[A-Z]{4,5}-D18/.test(t) || PBY[node0(t)]) && !/кровл|roof|наруж|outdoor|D1801FX0/i.test(t)) return 'in'; return 'out'; }
-const ZN = {in: ['Indoor CCR – safe area', 'В здании ЦО – невзрывоопасная зона'], out: ['Outdoor / other area – check zone drawing', 'Снаружи / др. площадка – проверить классификацию зон'], ex: ['Hazardous (Ex) equipment', 'Взрывозащищённое оборудование']};
+function zoneOf(txt) { const t = String(txt || ''); if (/взрывозащ|Ex\b|Exd|Exe|explos/i.test(t)) return 'ex'; if (((PRJ === 'D48' ? /D4810BX0|-D48-|^G0-[A-Z]{4,5}-D48/ : /D1810BX0|-D18-|^G0-[A-Z]{4,5}-D18/).test(t) || PBY[node0(t)]) && !(PRJ === 'D48' ? /кровл|roof|наруж|outdoor|D4801FX0/i : /кровл|roof|наруж|outdoor|D1801FX0/i).test(t)) return 'in'; return 'out'; }
+const ZN = {in: [`Indoor ${PRJ} – safe area`, 'В здании ЦО – невзрывоопасная зона'], out: ['Outdoor / other area – check zone drawing', 'Снаружи / др. площадка – проверить классификацию зон'], ex: ['Hazardous (Ex) equipment', 'Взрывозащищённое оборудование']};
 function glandFor(ty, cores, endTxt, od) { const e = od ? {d: od, how: 'measured / entered'} : odEst(ty, cores); const arm = isArm(ty), scr = isScr(ty), z = zoneOf(endTxt);
   const lan = /CAT|UTP|FTP|HDMI|PATCH|RJ/i.test(ty || ''); const met = z !== 'in' || arm;
   const sizes = e ? pickGl(e.d, met ? GL_MET : GL_PL) : [];
@@ -711,14 +719,14 @@ function glandFor(ty, cores, endTxt, od) { const e = od ? {d: od, how: 'measured
 function glCard(c) { const ends = [['From', c.f], ['To', c.o]];
   return `<div class="card"><div class="h3">Cable gland / кабельный ввод</div>${ends.map(([l, t]) => { const g = glandFor(c.ty, c.c, t);
     return `<div style="border-top:1px solid var(--line);padding-top:6px;margin-top:6px"><b>${l}:</b> <span style="font-size:12px">${esc(shortT(node0(t)))}</span>
-      ${kv([['Zone', ZN[g.z][0] + '<br><span style="color:var(--mut)">' + ZN[g.z][1] + '</span>', 1], ['Cable OD', g.e ? `≈ ${g.e.d} mm (${(g.e.d / 25.4).toFixed(2)}") · ${g.e.how}` : 'enter OD in calculator'], ['Gland size', g.lan ? 'RJ/LAN: brush entry / cable entry, no compression gland' : (g.sizes.map(s => `${s[0]} (${s[1]}–${s[2]} mm)`).join(' or ') || '-')], ['Type EN', g.typeEN], ['Тип RU', g.typeRU], ['Sleeve / accessories', g.acc.map(a => a[0] + '<br><span style="color:var(--mut)">' + a[1] + '</span>').join('<br>'), 1], ['Earthing', g.earth[0] + '<br><span style="color:var(--mut)">' + g.earth[1] + '</span>', 1]])}</div>`; }).join('')}
+      ${kv([['Zone', ZN[g.z][0] + '<br><span style="color:var(--mut)">' + ZN[g.z][1] + '</span>', 1], ['Cable OD', g.e ? `≈ ${g.e.d} mm (${(g.e.d / 25.4).toFixed(2)}") · ${g.e.how}` : 'measure cable OD'], ['Gland size', g.lan ? 'RJ/LAN: brush entry / cable entry, no compression gland' : (g.sizes.map(s => `${s[0]} (${s[1]}–${s[2]} mm)`).join(' or ') || '-')], ['Type EN', g.typeEN], ['Тип RU', g.typeRU], ['Sleeve / accessories', g.acc.map(a => a[0] + '<br><span style="color:var(--mut)">' + a[1] + '</span>').join('<br>'), 1], ['Earthing', g.earth[0] + '<br><span style="color:var(--mut)">' + g.earth[1] + '</span>', 1]])}</div>`; }).join('')}
     <div style="font-size:11px;color:var(--mut);margin-top:6px">Typical selection. Confirm against the design gland schedule / manufacturer chart and the hazardous area drawing.</div></div>`; }
 function node0(t) { const m = (String(t || '').match(/G\d-[A-Z0-9]+(?:-[A-Z0-9()]+)+/g) || []).filter(x => !/^G\d-[A-Z]\d{4}[A-Z]{2}\d$/.test(x)); return m.length ? m[m.length - 1] : String(t || '').slice(-40); }
 const CSYS = {}; Object.entries(SG).forEach(([s, g]) => g.e.forEach(e => e[2].forEach(i => CSYS[i] = s)));
 function glHome() { VS.GL = VS.GL || {sy: '', q: '', lim: 80}; const v = VS.GL; const syss = [...new Set(Object.values(CSYS))].sort();
   setHead('Cable glands', 'system-wise · gland size, type RU/EN, sleeve, earthing');
   main.innerHTML = `<select onchange="VS.GL.sy=this.value;VS.GL.lim=80;glList()"><option value="">All systems</option>${syss.map(y => `<option value="${y}" ${v.sy === y ? 'selected' : ''}>${esc(y)} · ${esc(sysName(y))}</option>`).join('')}</select>
-   <input class="fin" placeholder="Cable tag / type / panel…" value="${esc(v.q)}" oninput="VS.GL.q=this.value;glList()"><div class="chips"><button class="chip" onclick="exportGl()">⬇ Gland list CSV</button><button class="chip" onclick="go('#/calc')">🧮 Calculator</button></div><div id="gll"></div>`; glList(); }
+   <input class="fin" placeholder="Cable tag / type / panel…" value="${esc(v.q)}" oninput="VS.GL.q=this.value;glList()"><div class="chips"><button class="chip" onclick="exportGl()">⬇ Gland list CSV</button></div><div id="gll"></div>`; glList(); }
 function glRows() { const v = VS.GL, nq = N(v.q); return C.filter(c => (!v.sy || CSYS[c.i] === v.sy) && (!nq || c._n.includes(nq) || c._e.includes(nq) || N(c.ty).includes(nq))); }
 function glList() { const v = VS.GL; const L = glRows();
   document.getElementById('gll').innerHTML = L.length ? `<div class="list">${L.slice(0, v.lim).map(c => { const a = glandFor(c.ty, c.c, c.f), b = glandFor(c.ty, c.c, c.o); const sz = g => g.lan ? 'RJ' : (g.sizes[0] ? g.sizes[0][0] : '?');
@@ -731,37 +739,7 @@ const AWG = [[30, 0.05], [28, 0.08], [26, 0.13], [24, 0.2], [22, 0.33], [20, 0.5
 const STD_A = [0.5, 0.75, 1, 1.5, 2.5, 4, 6, 10, 16, 25, 35, 50, 70, 95, 120, 150, 185, 240, 300];
 function cv(id) { const e = document.getElementById(id); return e ? Number(String(e.value).replace(',', '.')) : 0; }
 function cs(id) { const e = document.getElementById(id); return e ? e.value : ''; }
-function calcHome() { setHead('Engineering calculator', 'electrical basics · cable OD · gland selection');
-  const inp = (id, l, v, u) => `<label style="display:block;font-size:12px;color:var(--mut)">${l}<input class="fin" id="${id}" type="text" inputmode="decimal" value="${v}" oninput="calcRun()" style="margin:2px 0 6px">${u ? '' : ''}</label>`;
-  const sel = (id, l, opts) => `<label style="display:block;font-size:12px;color:var(--mut)">${l}<select id="${id}" onchange="calcRun()" style="margin:2px 0 6px">${opts.map(o => `<option value="${o[0]}">${o[1]}</option>`).join('')}</select></label>`;
-  const g2 = h => `<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">${h}</div>`; const res = id => `<div id="${id}" class="note" style="background:#e8f6ee;font-size:14px"></div>`;
-  main.innerHTML = `<div class="card"><div class="h3">1 · Current ⇄ power</div>${g2(sel('k_ph', 'System', [['3', '3-phase'], ['1', '1-phase']]) + inp('k_u', 'Voltage U, V', 400) + inp('k_p', 'Power P, kW', 15) + inp('k_pf', 'cos φ', 0.85) + inp('k_ef', 'Efficiency η (motor), %', 100) + inp('k_i', 'or current I, A (→ power)', ''))}${res('r_k')}
-     <div style="font-size:11px;color:var(--mut)">3φ: I = P / (√3 · U · cosφ · η) · 1φ: I = P / (U · cosφ · η) · S(kVA) = √3 · U · I</div></div>
-   <div class="card"><div class="h3">2 · Ohm's law</div>${g2(inp('o_u', 'U, V', 24) + inp('o_r', 'R, Ω', '') + inp('o_i', 'I, A', 0.5))}${res('r_o')}<div style="font-size:11px;color:var(--mut)">Fill any two: U = I·R · P = U·I</div></div>
-   <div class="card"><div class="h3">3 · Voltage drop & cable size</div>${g2(sel('v_ph', 'System', [['3', '3-phase'], ['1', '1-phase / DC']]) + sel('v_m', 'Conductor', [['cu', 'Copper'], ['al', 'Aluminium']]) + inp('v_u', 'Voltage, V', 400) + inp('v_i', 'Current, A', 30) + inp('v_l', 'Length (one way), m', 120) + inp('v_a', 'Cable size, mm²', 10) + inp('v_pf', 'cos φ', 0.85) + inp('v_lim', 'Allowed drop, %', 4))}${res('r_v')}
-     <div style="font-size:11px;color:var(--mut)">ΔU = k · I · L · (R·cosφ + X·sinφ), k = √3 (3φ) or 2 (1φ). ρ Cu 0.0225, Al 0.036 Ω·mm²/m (warm), X ≈ 0.08 mΩ/m.</div></div>
-   <div class="card"><div class="h3">4 · Cable OD & gland selection</div>${g2(inp('g_ty', 'Cable type (mark)', 'КВБбШвнг(А)-LS') + inp('g_c', 'Cores × size (e.g. 10x1,5 / 4x2x1,0)', '10x1,5') + inp('g_od', 'or measured OD, mm', '') + sel('g_z', 'Location / zone', [['in', 'Indoor CCR – safe area'], ['out', 'Outdoor / other area'], ['ex', 'Hazardous area (Ex equipment)']]))}${res('r_g')}
-     <div style="font-size:11px;color:var(--mut)">OD is estimated – measure the real cable or check the cable datasheet before ordering glands.</div></div>
-   <div class="card"><div class="h3">5 · Unit converter</div>${g2(inp('u_mm', 'mm', 25.4) + inp('u_in', 'inch', '') + inp('u_a', 'mm²', 2.5) + inp('u_kw', 'kW ⇄ HP', 7.5))}${res('r_u')}</div>
-   <div class="card"><div class="h3">6 · Quick reference</div><div style="font-size:13px;line-height:1.6">
-     • 3φ motor 400 V: ≈ 2 A per kW (cosφ 0.85, η 0.9)<br>• 1φ 230 V: ≈ 4.4–5 A per kW<br>• Transformer 10/0.4 kV: I(0.4 kV) ≈ 1.44 × kVA<br>• Insulation test: LV power/control cables at 500–1000 V DC, instrument cables at 500 V DC (disconnect electronics first)<br>• Armour earthed both ends; instrument screen earthed one end (control room)<br>• 1 inch = 25.4 mm · 1 HP = 0.746 kW · Cu ρ20 = 0.0175 Ω·mm²/m</div></div>`;
-  calcRun(); }
-function calcRun() { try {
-  const ph = cs('k_ph'), U = cv('k_u'), P = cv('k_p'), pf = cv('k_pf') || 1, ef = (cv('k_ef') || 100) / 100, Ii = cv('k_i'); const kk = ph === '3' ? Math.sqrt(3) : 1;
-  let t = ''; if (Ii > 0) { const Pk = kk * U * Ii * pf * ef / 1000; t = `P = <b>${Pk.toFixed(2)} kW</b> · S = ${(kk * U * Ii / 1000).toFixed(2)} kVA`; } else if (P > 0 && U > 0) { const I = P * 1000 / (kk * U * pf * ef); t = `I = <b>${I.toFixed(1)} A</b> · S = ${(P / pf / ef).toFixed(2)} kVA · Q = ${(P / ef * Math.tan(Math.acos(Math.min(pf, 1)))).toFixed(2)} kvar`; }
-  document.getElementById('r_k').innerHTML = t || 'enter values';
-  const ou = cv('o_u'), or = cv('o_r'), oi = cv('o_i'); let o = '';
-  if (ou && oi && !or) o = `R = <b>${(ou / oi).toFixed(3)} Ω</b> · P = ${(ou * oi).toFixed(2)} W`; else if (ou && or && !oi) o = `I = <b>${(ou / or).toFixed(3)} A</b> · P = ${(ou * ou / or).toFixed(2)} W`; else if (oi && or && !ou) o = `U = <b>${(oi * or).toFixed(2)} V</b> · P = ${(oi * oi * or).toFixed(2)} W`; else o = 'leave one field empty';
-  document.getElementById('r_o').innerHTML = o;
-  const vp = cs('v_ph') === '3' ? Math.sqrt(3) : 2, rho = cs('v_m') === 'al' ? 0.036 : 0.0225, vu = cv('v_u'), vi = cv('v_i'), vl = cv('v_l'), va = cv('v_a'), vpf = cv('v_pf') || 1, lim = cv('v_lim') || 4; const sn = Math.sqrt(Math.max(0, 1 - vpf * vpf));
-  const du = A => vp * vi * vl * ((rho / A) * vpf + 0.00008 * sn); let vt = '';
-  if (vu && vi && vl && va) { const d = du(va); vt = `ΔU = <b>${d.toFixed(2)} V = ${(100 * d / vu).toFixed(2)} %</b> ${100 * d / vu > lim ? '⚠ above ' + lim + ' %' : '✓ within ' + lim + ' %'}`; const mn = STD_A.find(A => 100 * du(A) / vu <= lim); vt += `<br>Smallest size for ≤ ${lim} %: <b>${mn ? mn + ' mm²' : '> 300 mm²'}</b> (check current rating too)`; }
-  document.getElementById('r_v').innerHTML = vt || 'enter values';
-  const z = cs('g_z'); const g = glandFor(cs('g_ty'), cs('g_c'), z === 'ex' ? 'Ex' : z === 'in' ? 'G0-D1810BX0' : 'outdoor', cv('g_od') || 0);
-  document.getElementById('r_g').innerHTML = g.e ? `OD ≈ <b>${g.e.d} mm</b> (${(g.e.d / 25.4).toFixed(2)} inch) · ${g.arm ? 'armoured' : 'unarmoured'}${g.scr ? ', screened' : ''}<br>Gland: <b>${g.sizes.map(s => `${s[0]} (${s[1]}–${s[2]} mm)`).join(' or ') || 'no size – check'}</b><br>${esc(g.typeEN)}<br><span style="color:#555">${esc(g.typeRU)}</span><br><span style="font-size:12px">${g.acc.map(a => '• ' + a[0]).join('<br>')}<br>• ${g.earth[0]}</span>` : 'enter cores (e.g. 4x2,5) or OD';
-  const mm = cv('u_mm'), a = cv('u_a'), kw = cv('u_kw'); const inch = cv('u_in'); const aw = AWG.reduce((b, x) => Math.abs(x[1] - a) < Math.abs(b[1] - a) ? x : b, AWG[0]);
-  document.getElementById('r_u').innerHTML = `${mm} mm = <b>${(mm / 25.4).toFixed(3)}"</b>${inch ? ` · ${inch}" = <b>${(inch * 25.4).toFixed(1)} mm</b>` : ''}<br>${a} mm² ≈ <b>AWG ${aw[0]}</b> (${aw[1]} mm²) · Ø conductor ${(2 * Math.sqrt(a / Math.PI)).toFixed(2)} mm<br>${kw} kW = <b>${(kw / 0.746).toFixed(2)} HP</b> · ${kw} HP = ${(kw * 0.746).toFixed(2)} kW`;
- } catch (err) {} }
+// v4.0: engineering calculator removed (user request)
 // ======== Site notes ========
 function notes() { S2.notes = S2.notes || []; return S2.notes; }
 function ntHome() { VS.NT = VS.NT || {q: '', c: ''}; const v = VS.NT; const L = notes().filter(n => (!v.c || n.c === v.c) && (!v.q || (n.x + ' ' + n.tag).toLowerCase().includes(v.q.toLowerCase()))).sort((a, b) => b.t - a.t);
@@ -811,7 +789,7 @@ function tSt(tag, i) { return ((S2.t[tag] || {})[i]) || null; }
 function tSet(tag, i, v) { if (!who(`tSet(decodeURIComponent('${enc(tag)}'),${i},'${v}')`)) return; const m = S2.t[tag] = S2.t[tag] || {}; const r = v === 'N' ? (prompt(t('What is wrong? (terminal / core / marking)')) || '') : '';
   m[i] = {v, t: Date.now(), by: PS_.name, r}; ssave(); if (document.getElementById('tmod')) tCheck(tag, window.tEnd); else route(); }
 function tRowsHtml(c, end) { const R = lrRows(c.t).filter(r => !end || onEnd(c, r, end));
-  return R.map(r => { const s = tSt(c.t, r.i); return `<div class="li" style="align-items:flex-start"><div class="m"><div class="t">${esc(r.tb || '-')} : ${esc(r.tn || '-')}</div>${r.sig ? `<div class="s" style="white-space:normal">${esc(r.sig)}</div>` : ''}<div class="s" style="white-space:normal">cores ${esc(r.core || '-')} · ${esc(shortT(r.pan) || '')} · ${esc(r.doc.replace(/^GLE-G0-D1810BX0-/, '').replace(/_AL.*$/, ''))} p.${r.pg}</div>${s && s.v === 'N' && s.r ? `<div class="s" style="color:var(--bad)">✗ ${esc(s.r)}</div>` : ''}</div>
+  return R.map(r => { const s = tSt(c.t, r.i); return `<div class="li" style="align-items:flex-start"><div class="m"><div class="t">${esc(r.tb || '-')} : ${esc(r.tn || '-')}</div>${r.sig ? `<div class="s" style="white-space:normal">${esc(r.sig)}</div>` : ''}<div class="s" style="white-space:normal">cores ${esc(r.core || '-')} · ${esc(shortT(r.pan) || '')} · ${esc(r.doc.replace(/^GLE-G0-D(18|48)10BX0-/, '').replace(/_AL.*$/, ''))} p.${r.pg}</div>${s && s.v === 'N' && s.r ? `<div class="s" style="color:var(--bad)">✗ ${esc(s.r)}</div>` : ''}</div>
      <div style="display:flex;gap:4px;flex:none"><button class="tg ${s && s.v === 'Y' ? 'y' : ''}" style="padding:8px 10px" onclick="tSet(decodeURIComponent('${enc(c.t)}'),${r.i},'Y')">✓</button><button class="tg ${s && s.v === 'N' ? 'n' : ''}" style="padding:8px 10px" onclick="tSet(decodeURIComponent('${enc(c.t)}'),${r.i},'N')">✗</button></div></div>`; }).join(''); }
 function tCard(c) { const R = lrRows(c.t); if (!R.length) return ''; const ok = R.filter(r => (tSt(c.t, r.i) || {}).v === 'Y').length, bad = R.filter(r => (tSt(c.t, r.i) || {}).v === 'N').length;
   return `<div class="card"><div class="h3">Termination points / точки подключения (${ok}/${R.length} confirmed${bad ? ' · ' + bad + ' wrong' : ''})</div><div style="font-size:12px;color:var(--mut);margin-bottom:6px">Check each core is on the correct terminal, then tap ✓ (correct) or ✗ (wrong).</div><div class="list">${tRowsHtml(c)}</div>
@@ -1169,7 +1147,7 @@ function rfiHome() {
     main.innerHTML = tabs + rfiStrip([[en, 'Installation lines', 'equipment, devices, trays, earthing'], [`${pct(es, en)}%`, 'Install. RFI submitted', `${es} lines`, pct(es, en) < 50], [`${pct(ea, en)}%`, 'Install. RFI accepted', `${ea} lines`, pct(ea, en) < 50]]) +
       `<div class="mgf" style="margin-top:10px"><input class="fin" placeholder="Search tag / Access ID…" value="${esc(v.eq)}" oninput="VS.RF.eq=this.value;VS.RF.elim=200;rfeTable()"><select onchange="VS.RF.g=this.value;VS.RF.elim=200;rfeTable()"><option value="">All activities (${grps.length})</option>${grps.map(g => `<option ${v.g === g ? 'selected' : ''}>${esc(g)}</option>`).join('')}</select>
        <select onchange="VS.RF.e=this.value;VS.RF.elim=200;rfeTable()">${stOpts(v.e).replace('>All<', '>RFI status – all<')}</select></div><div id="rft"></div>
-       <div class="foot">Source: E&I equipment control (CCR RFI records) matched to IWP installation lines.</div>`;
+       <div class="foot">Source: E&I equipment control (${PRJ} RFI records) matched to IWP installation lines.</div>`;
     rfeTable();
   }
 }
@@ -1246,6 +1224,104 @@ function toast(m) { const t = document.getElementById('toast'); t.textContent = 
   ht.addEventListener('pointerup', e => { if (lp) { clearTimeout(lp); lp = 0; ttlTap(); } e.preventDefault(); });
   ht.addEventListener('pointercancel', () => { clearTimeout(lp); lp = 0; });
   ht.addEventListener('contextmenu', e => e.preventDefault()); })();
+// ======== v4.0: project switch (CCR / D48), Need TQs, cable problem notes, installation guide, MCT ========
+// Data: eng_ccr.json / eng_d48.json (loaded by index.html as window.__E):
+//   ntq: [{id, sys, title, problem, evidence[], cables[], tags[], drawings[], proposal, severity, blocks, existing}]
+//   cnote: {cable_or_tag: [ntq id]}  · inst: [{key, title, sys[], match{tag[],text[],grp[]}, remarks[], checks[], variants[], images[]}]
+//   mct: {transits[], materials[], iwp[], install_notes[]}  · img: folder of the typical-detail crops
+var NTQ = Array.isArray(E.ntq) ? E.ntq.filter(x => x && x.id) : [];
+var NTQBY = {}; NTQ.forEach(x => NTQBY[x.id] = x);
+var CNOTE = {}; (function () { const add = (k, id) => { if (!k) return; (CNOTE[k] = CNOTE[k] || []).includes(id) || CNOTE[k].push(id); };
+  Object.entries(E.cnote || {}).forEach(([k, ids]) => (ids || []).forEach(id => NTQBY[id] && add(k, id)));
+  NTQ.forEach(x => { (x.cables || []).forEach(c => add(c, x.id)); (x.tags || []).forEach(c => add(c, x.id)); }); })();
+var IMGD = E.img || ('img/' + PRJ.toLowerCase() + '/');
+var NTQS = {}; try { NTQS = JSON.parse(localStorage.getItem(PRJ.toLowerCase() + '_ntq_v1') || '{}'); } catch (err) {}
+function ntqSave() { try { localStorage.setItem(PRJ.toLowerCase() + '_ntq_v1', JSON.stringify(NTQS)); } catch (err) {} }
+const sevC = s => s === 'High' ? 'b-no' : s === 'Medium' ? 'b-part' : 'b-na';
+function projBar() { const o = PRJ === 'D48' ? 'CCR' : 'D48';
+  return `<div style="display:flex;gap:6px;margin-bottom:9px">${['CCR', 'D48'].map(k => `<button class="chip ${k === PRJ ? 'on' : ''}" style="flex:1;padding:10px;font-size:15px;font-weight:700" onclick="${k === PRJ ? '' : `projSwitch('${k}')`}">${k === 'CCR' ? '🏢 CCR' : '⚡ D48'}</button>`).join('')}</div>`; }
+function projSwitch(k) { try { sessionStorage.setItem('proj', k); localStorage.setItem('proj_last', k); } catch (err) {} location.hash = ''; location.reload(); }
+function engTiles() { const T2 = (h, b, n, cls) => `<button class="tile ${cls || ''}" onclick="go('${h}')"><b>${b}</b><div><span class="n">${n}</span></div></button>`;
+  const op = NTQ.filter(x => !(NTQS[x.id] && NTQS[x.id].st === 'raised')).length; const m = E.mct || {};
+  return `<div class="sect">🧰 Engineering</div><div class="grid">${T2('#/ntq', '❗ Need TQs<br><span style="font-weight:400;font-size:12px">problems found in drawings & database</span>', `${NTQ.length} problems · ${op} not raised`, 'main')}${T2('#/ig', '📘 Installation guide<br><span style="font-weight:400;font-size:12px">remarks · typical details</span>', `${(E.inst || []).length} device types`)}${T2('#/mct', '🧱 MCT installation<br><span style="font-weight:400;font-size:12px">transits, frames, modules</span>', `${(m.transits || []).length} transits · ${(m.materials || []).length} materials`)}</div>`; }
+// ---- problem notes on cables / panels / devices
+function probIds(keys) { const s = new Set(); keys.filter(Boolean).forEach(k => (CNOTE[k] || []).forEach(i => s.add(i))); return [...s]; }
+function probMini(k) { return (CNOTE[k] || []).length ? ' <span class="badge b-no" title="known problem">⚠ TQ</span>' : ''; }
+function probCard(keys) { const ids = probIds(keys); if (!ids.length) return '';
+  return `<div class="card" style="border-left:5px solid #b42318;background:#fff5f4"><div class="h3">⚠ Known problem – check before work (${ids.length})</div>${ids.map(id => { const x = NTQBY[id];
+    return `<div style="margin:6px 0 10px"><div><span class="badge ${sevC(x.severity)}">${esc(x.severity || '')}</span> <b>${esc(x.title)}</b></div><div style="font-size:13px;margin-top:3px">${esc(x.problem)}</div>${x.blocks && x.blocks !== 'none' ? `<div style="font-size:12px;color:#b42318;margin-top:3px">Affects: ${esc(x.blocks)}</div>` : ''}<div style="margin-top:4px"><span class="link" onclick="go('#/ntq/${enc(x.id)}')">${esc(x.id)} · open details ›</span></div></div>`; }).join('')}</div>`; }
+// ---- Need TQs menu
+function ntqHome() { VS.NQ = VS.NQ || {sy: '', sv: '', f: 'open', q: ''}; const v = VS.NQ;
+  const syss = [...new Set(NTQ.map(x => x.sys || '-'))].sort();
+  setHead('Need TQs', `${PRJ} · ${NTQ.length} problems from drawings & database`);
+  main.innerHTML = `<div class="note" style="background:#eef3f8;font-size:13px">Problems found by checking ${PRJ} drawings against each other and against the cable tracker / IWP. Each one needs a TQ or a designer answer before the affected work. Mark it when the TQ is raised.</div>
+   <div class="chips">${[['open', 'Not raised'], ['raised', 'TQ raised'], ['all', 'All']].map(([k, l]) => `<button class="chip ${v.f === k ? 'on' : ''}" onclick="VS.NQ.f='${k}';ntqHome()">${l}</button>`).join('')}${['High', 'Medium', 'Low'].map(k => `<button class="chip ${v.sv === k ? 'on' : ''}" onclick="VS.NQ.sv=VS.NQ.sv==='${k}'?'':'${k}';ntqHome()">${k}</button>`).join('')}</div>
+   <select onchange="VS.NQ.sy=this.value;ntqList()"><option value="">All systems (${syss.length})</option>${syss.map(y => `<option ${v.sy === y ? 'selected' : ''}>${esc(y)}</option>`).join('')}</select>
+   <input class="fin" placeholder="Filter: cable, tag, drawing, text…" value="${esc(v.q)}" oninput="VS.NQ.q=this.value;ntqList()">
+   <div class="chips"><button class="chip" onclick="ntqCopyAll()">📋 Copy list for TQ register</button></div><div id="nql"></div>`; ntqList(); }
+function ntqF() { const v = VS.NQ, ql = v.q.trim().toLowerCase();
+  return NTQ.filter(x => { const r = NTQS[x.id] && NTQS[x.id].st === 'raised'; return (v.f === 'all' || (v.f === 'raised' ? r : !r)) && (!v.sv || x.severity === v.sv) && (!v.sy || (x.sys || '-') === v.sy) && (!ql || JSON.stringify(x).toLowerCase().includes(ql)); }); }
+function ntqList() { const L = ntqF(); const by = {}; L.forEach(x => (by[x.sys || '-'] = by[x.sys || '-'] || []).push(x));
+  document.getElementById('nql').innerHTML = L.length ? `<div class="list">${Object.entries(by).map(([sy, xs]) => `<div class="gh">${esc(sy)} · ${xs.length}</div>` + xs.map(x => { const st = NTQS[x.id];
+    return `<button class="li" onclick="go('#/ntq/${enc(x.id)}')"><div class="m"><div class="t">${esc(x.id)} · ${esc(x.title)}</div><div class="s">${(x.cables || []).length} cables · ${(x.tags || []).length} tags${x.existing ? ' · see ' + esc(x.existing) : ''}${x.blocks && x.blocks !== 'none' ? ' · affects ' + esc(x.blocks) : ''}</div></div><div class="r"><span class="badge ${sevC(x.severity)}">${esc(x.severity || '')}</span>${st && st.st === 'raised' ? `<div><span class="badge b-ok">TQ ${esc(st.no || 'raised')}</span></div>` : ''}</div><span class="chev">›</span></button>`; }).join('')).join('')}</div>` : '<div class="empty">Nothing found</div>'; }
+function ntqText(x) { return `${x.title}\n${x.sys ? 'System: ' + x.sys + '\n' : ''}${(x.drawings || []).length ? 'Drawings: ' + x.drawings.join('; ') + '\n' : ''}\nProblem: ${x.problem}\n${(x.evidence || []).length ? '\nDetails:\n' + x.evidence.map(e => '- ' + e).join('\n') + '\n' : ''}${(x.cables || []).length ? '\nCables: ' + x.cables.join(', ') + '\n' : ''}${(x.tags || []).length ? 'Tags: ' + x.tags.join(', ') + '\n' : ''}\nRequest: ${x.proposal || ''}`; }
+function ntqCopyAll() { const L = ntqF(); copyText(L.map((x, i) => `${i + 1}. [${x.id}] ${ntqText(x)}`).join('\n\n----------\n\n')).then(ok => toast(ok ? `Copied ${L.length} problems` : 'Select the text and copy')); }
+function ntqView(id) { const x = NTQBY[id]; if (!x) { main.innerHTML = '<div class="empty">Not found</div>'; return; } const st = NTQS[id] || {};
+  setHead(x.id, `${x.sys || ''} · ${x.severity || ''}`);
+  const cl = (x.cables || []).map(c => CBY[c] ? cRow(CBY[c]) : `<div class="li"><div class="m"><div class="t">${esc(c)}</div><div class="s">not in ${PRJ} cable list</div></div></div>`).join('');
+  const tl = (x.tags || []).map(t => PBY[t] ? `<button class="li" onclick="go('#/p/${enc(t)}')"><div class="m"><div class="t">${esc(t)}</div><div class="s">panel / box</div></div><span class="chev">›</span></button>` : IBY[t] ? `<button class="li" onclick="go('#/i/${IBY[t][0].i}')"><div class="m"><div class="t">${esc(t)}</div><div class="s">${esc(IBY[t][0].g)}</div></div><span class="chev">›</span></button>` : `<div class="li"><div class="m"><div class="t">${esc(t)}</div></div></div>`).join('');
+  main.innerHTML = `<div class="card"><div class="big" style="font-size:18px">${esc(x.title)}</div><div style="margin:6px 0"><span class="badge ${sevC(x.severity)}">${esc(x.severity || '')}</span> <span class="badge b-na">${esc(x.sys || '')}</span>${x.blocks && x.blocks !== 'none' ? ` <span class="badge b-no">affects ${esc(x.blocks)}</span>` : ''}${x.existing ? ` <span class="badge b-part">related ${esc(x.existing)}</span>` : ''}</div>
+     <div style="font-size:14px;margin-top:6px">${esc(x.problem)}</div>
+     ${(x.evidence || []).length ? `<div class="h3" style="margin-top:10px">Details from drawings</div><ul style="margin:4px 0 0;padding-left:18px;font-size:13px">${x.evidence.map(e => `<li>${esc(e)}</li>`).join('')}</ul>` : ''}
+     ${(x.drawings || []).length ? `<div class="h3" style="margin-top:10px">Drawings</div><div style="font-size:13px">${x.drawings.map(esc).join('<br>')}</div>` : ''}
+     <div class="h3" style="margin-top:10px">Request to designer</div><div style="font-size:14px">${esc(x.proposal || '')}</div></div>
+   <div class="card"><div class="h3">TQ status (this phone)</div><div style="display:flex;gap:8px"><input class="fin" id="ntqno" placeholder="TQ No when raised" value="${esc(st.no || '')}" style="flex:1;margin:0"><button class="tile main" style="min-height:auto;padding:10px 14px" onclick="NTQS['${esc(id)}']={st:'raised',no:document.getElementById('ntqno').value.trim(),t:Date.now()};ntqSave();toast('Marked as raised');route()"><b>Raised</b></button></div>
+     ${st.st ? `<div style="font-size:12px;color:var(--mut);margin-top:6px">Marked ${dstr(st.t)} · <span class="link" onclick="delete NTQS['${esc(id)}'];ntqSave();route()">undo</span></div>` : ''}
+     <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px"><button class="tile" style="min-height:auto" onclick="copyText(ntqText(NTQBY['${esc(id)}'])).then(ok=>toast(ok?'Copied – paste into the TQ form':'Select the text and copy'))"><b>📋 Copy TQ text</b></button><button class="tile" style="min-height:auto" onclick="navigator.share?navigator.share({text:ntqText(NTQBY['${esc(id)}'])}).catch(()=>{}):copyText(ntqText(NTQBY['${esc(id)}'])).then(()=>toast('Copied'))"><b>↗ Share…</b></button></div></div>
+   ${cl ? `<div class="card"><div class="h3">Cables (${(x.cables || []).length})</div><div class="list">${cl}</div></div>` : ''}${tl ? `<div class="card"><div class="h3">Tags (${(x.tags || []).length})</div><div class="list">${tl}</div></div>` : ''}`; }
+// ---- installation remarks (device types) + typical details
+var INSTG = (Array.isArray(E.inst) ? E.inst : []).map(g => { const rx = a => (a || []).map(r => { try { return new RegExp(r, 'i'); } catch (err) { return null; } }).filter(Boolean); const m = g.match || {};
+  return Object.assign({remarks: [], checks: [], variants: [], images: [], sys: []}, g, {_t: rx(m.tag), _x: rx(m.text), _g: rx(m.grp)}); });
+function instFor(x) { const tg = [x.tag, x.uid, x.ctag].filter(Boolean).join(' '), tx = [T.desc[x.desc], T.it[x.it], x.ctag, x.m].filter(Boolean).join(' ');
+  return INSTG.filter(g => (g._t.some(r => r.test(tg))) || (g._x.some(r => r.test(tx)) && (!g._g.length || g._g.some(r => r.test(x.g)))) || (!g._t.length && !g._x.length && g._g.some(r => r.test(x.g)))); }
+function varFor(g, tag) { const tl = String(tag || '').toUpperCase(); return (g.variants || []).filter(v => String(v.tags || '').split(/[,;\s]+/).filter(Boolean).some(t => { t = t.toUpperCase(); const m = t.match(/^(.*?)(\d+)[–-](\d+)$/);
+  if (m) { const n = (tl.match(new RegExp(m[1].replace(/[^A-Z0-9]/g, '.?') + '(\\d+)$')) || [])[1]; return n && +n >= +m[2] && +n <= +m[3]; } return tl.endsWith(t) || tl.includes('-' + t); })); }
+function imgTag(im) { return `<figure style="margin:8px 0"><img loading="lazy" src="${IMGD}${esc(im.file)}" alt="${esc(im.caption || '')}" style="width:100%;border:1px solid var(--line,#d9dee5);border-radius:8px;background:#fff" onclick="window.open(this.src)"><figcaption style="font-size:12px;color:var(--mut)">${esc(im.caption || '')}${im.ref ? ' · ' + esc(im.ref) : ''}</figcaption></figure>`; }
+function instCard(x) { const gs = instFor(x); if (!gs.length) return '';
+  return gs.map(g => { const vs = varFor(g, x.uid || x.tag);
+    return `<div class="card" style="border-left:5px solid #1f6b4f"><div class="h3">📘 ${esc(g.title)}</div>
+      ${vs.length ? `<div class="note" style="background:#fff3cd;font-size:14px"><b>This tag:</b> ${vs.map(v => esc(v.what)).join('<br>')}</div>` : ''}
+      ${(g.checks || []).length ? `<div style="font-size:13px;font-weight:700;margin-top:6px">Check before install</div><ul style="margin:2px 0 0;padding-left:18px;font-size:13px">${g.checks.map(c => `<li>${esc(c)}</li>`).join('')}</ul>` : ''}
+      <details style="margin-top:6px"><summary style="font-size:13px;cursor:pointer">Remarks (${(g.remarks || []).length})${(g.images || []).length ? ' · ' + g.images.length + ' typical details' : ''}</summary><ul style="margin:4px 0 0;padding-left:18px;font-size:13px">${(g.remarks || []).map(r => `<li>${esc(r)}</li>`).join('')}</ul>${(g.images || []).map(imgTag).join('')}</details>
+      <div style="margin-top:4px"><span class="link" onclick="go('#/ig/${enc(g.key)}')">Open full guide ›</span></div></div>`; }).join(''); }
+function igHome() { VS.IG = VS.IG || {q: ''}; setHead('Installation guide', `${PRJ} · ${INSTG.length} device types`);
+  main.innerHTML = `<div class="note" style="background:#eef3f8;font-size:13px">Remarks from the ${PRJ} drawings for each device type: how to install, what differs between devices of the same family, and typical details. The same remarks show on every device in Installation check.</div><input class="fin" placeholder="Filter: speaker, detector, MCT…" value="${esc(VS.IG.q)}" oninput="VS.IG.q=this.value;igList()"><div id="igl"></div>`; igList(); }
+function igList() { const ql = VS.IG.q.trim().toLowerCase(); const L = INSTG.filter(g => !ql || JSON.stringify([g.title, g.sys, g.remarks, g.checks]).toLowerCase().includes(ql));
+  const n = g => I.filter(x => !/^Cable (pulling|termination)$/.test(x.g) && instFor(x).includes(g)).length;
+  document.getElementById('igl').innerHTML = L.length ? `<div class="list">${L.map(g => `<button class="li" onclick="go('#/ig/${enc(g.key)}')"><div class="m"><div class="t">${esc(g.title)}</div><div class="s">${esc((g.sys || []).join(', '))} · ${(g.remarks || []).length} remarks${(g.images || []).length ? ' · ' + g.images.length + ' details' : ''}${(g.variants || []).length ? ' · ⚠ devices differ' : ''}</div></div><div class="r">${n(g)} items</div><span class="chev">›</span></button>`).join('')}</div>` : '<div class="empty">Nothing found</div>'; }
+function igView(k) { const g = INSTG.find(y => y.key === k); if (!g) { main.innerHTML = '<div class="empty">Not found</div>'; return; } setHead(g.title, (g.sys || []).join(', '));
+  const its = I.filter(x => !/^Cable (pulling|termination)$/.test(x.g) && instFor(x).includes(g));
+  main.innerHTML = `${(g.variants || []).length ? `<div class="card" style="border-left:5px solid #c55a11"><div class="h3">⚠ Not all the same – check the tag</div><div class="list">${g.variants.map(v => `<div class="li"><div class="m"><div class="t" style="word-break:normal">${esc(v.tags)}</div><div class="s" style="white-space:normal">${esc(v.what)}</div></div></div>`).join('')}</div></div>` : ''}
+   ${(g.checks || []).length ? `<div class="card"><div class="h3">Check before install</div><ul style="margin:0;padding-left:18px;font-size:14px">${g.checks.map(c => `<li>${esc(c)}</li>`).join('')}</ul></div>` : ''}
+   <div class="card"><div class="h3">Remarks from drawings</div><ul style="margin:0;padding-left:18px;font-size:14px">${(g.remarks || []).map(r => `<li style="margin-bottom:4px">${esc(r)}</li>`).join('')}</ul></div>
+   ${(g.images || []).length ? `<div class="card"><div class="h3">Typical details (${g.images.length}) – tap to enlarge</div>${g.images.map(imgTag).join('')}</div>` : ''}
+   <div class="card"><div class="h3">Devices in this group (${its.length})</div><div class="list">${its.slice(0, 300).map(x => { const s = ist(x); return `<button class="li" onclick="go('#/i/${x.i}')"><div class="m"><div class="t">${esc(x.uid || x.tag)}</div><div class="s">${esc(x.g)} · ${esc(x.sy || '')}</div></div><span class="badge ${s.c}">${s.l}</span><span class="chev">›</span></button>`; }).join('')}</div></div>`; }
+// ---- MCT installation
+function mctHome(tab) { const m = E.mct || {}; VS.MC = VS.MC || {t: 'tr', q: ''}; if (tab) VS.MC.t = tab; const v = VS.MC;
+  const tr = m.transits || [], ma = m.materials || [], iw = (m.iwp || []).length ? m.iwp : I.filter(x => /transit|mct|проход/i.test(x.g)).map(x => ({acc: x.acc, tag: x.uid || x.tag, desc: T.desc[x.desc], qty: x.q, done: x.f}));
+  setHead('MCT installation', `${PRJ} · ${tr.length} transits · ${ma.length} materials · ${iw.length} IWP lines`);
+  main.innerHTML = `<div class="chips">${[['tr', `Transits ${tr.length}`], ['ma', `Materials ${ma.length}`], ['iw', `IWP ${iw.length}`], ['no', `How to install ${(m.install_notes || []).length}`]].map(([k, l]) => `<button class="chip ${v.t === k ? 'on' : ''}" onclick="VS.MC.t='${k}';mctHome()">${l}</button>`).join('')}</div>
+   ${v.t !== 'no' ? `<input class="fin" placeholder="Filter: tag, room, size, code…" value="${esc(v.q)}" oninput="VS.MC.q=this.value;mctList()">` : ''}<div id="mcl"></div>`; mctList(); }
+function mctList() { const m = E.mct || {}, v = VS.MC, ql = (v.q || '').trim().toLowerCase(), el = document.getElementById('mcl'); const f = o => !ql || JSON.stringify(o).toLowerCase().includes(ql);
+  if (v.t === 'no') { const g = INSTG.filter(g => /mct|transit|проход/i.test(g.key + ' ' + g.title));
+    el.innerHTML = `<div class="card"><div class="h3">Installation notes from drawings</div><ul style="margin:0;padding-left:18px;font-size:14px">${(m.install_notes || []).map(n => `<li style="margin-bottom:5px">${esc(typeof n === 'string' ? n : (n.text || n.note || JSON.stringify(n)))}${n.ref ? ' <span style="color:var(--mut)">(' + esc(n.ref) + ')</span>' : ''}</li>`).join('') || '<li>No notes found on the drawings</li>'}</ul></div>${g.map(x => `<div class="card"><div class="h3">📘 ${esc(x.title)}</div><ul style="margin:0;padding-left:18px;font-size:13px">${(x.remarks || []).map(r => `<li>${esc(r)}</li>`).join('')}</ul>${(x.images || []).map(imgTag).join('')}</div>`).join('')}`; return; }
+  if (v.t === 'ma') { const L = (m.materials || []).filter(f);
+    el.innerHTML = L.length ? `<div class="list">${L.map(x => `<div class="li"><div class="m"><div class="t" style="word-break:normal">${esc(x.desc)}</div><div class="s">${x.ident ? 'Code ' + esc(x.ident) + ' · ' : ''}${esc(x.drawing || '')}${x.sheet ? ' sh.' + esc(x.sheet) : ''}${x.section ? ' · ' + esc(x.section) : ''}</div></div><div class="r"><b>${fmtn(x.qty)}</b><div>${esc(x.unit || '')}</div></div></div>`).join('')}</div>` : '<div class="empty">Nothing found</div>'; return; }
+  if (v.t === 'iw') { const L = ((m.iwp || []).length ? m.iwp : I.filter(x => /transit|mct|проход/i.test(x.g)).map(x => ({acc: x.acc, tag: x.uid || x.tag, desc: T.desc[x.desc], qty: x.q, done: x.f}))).filter(f);
+    el.innerHTML = L.length ? `<div class="list">${L.map(x => { const it = I.find(y => y.acc === String(x.acc)); const s = it ? ist(it) : null;
+      return `<button class="li" onclick="${it ? `go('#/i/${it.i}')` : ''}"><div class="m"><div class="t">${esc(x.tag)}</div><div class="s">${esc(x.desc || '')} · Access ID ${esc(x.acc)}</div></div><div class="r">${s ? `<span class="badge ${s.c}">${s.l}</span>` : ''}<div>${fmtn(x.done)}/${fmtn(x.qty)}</div></div><span class="chev">›</span></button>`; }).join('')}</div>` : '<div class="empty">No IWP lines</div>'; return; }
+  const L = (m.transits || []).filter(f);
+  el.innerHTML = L.length ? L.map(x => `<div class="card"><div class="h3">${esc(x.tag || x.location || 'Transit')}</div>${kv([['Location', x.location], ['Type', x.type], ['Size', x.size], ['Frame', x.frame], ['Modules', (x.modules || []).map(md => `${esc(md.qty || '')} × ${esc(md.size || '')}${md.ident ? ' (' + esc(md.ident) + ')' : ''}`).join('<br>'), 1], ['Sealing', x.sealing], ['Cables', (x.cables || []).map(c => CBY[c] ? `<span class="link" onclick="go('#/c/${enc(c)}')">${esc(c)}</span>` : esc(c)).join('<br>'), 1], ['Drawing', `${x.drawing || ''}${x.sheet ? ' sh.' + x.sheet : ''}`], ['Notes', x.notes]])}</div>`).join('') : '<div class="empty">No transits listed on the drawings</div>'; }
 route();
 if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
   const hadSW = !!navigator.serviceWorker.controller;
