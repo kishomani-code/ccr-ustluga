@@ -14,7 +14,10 @@ Usage:
 """
 import argparse, datetime, glob, json, os, re, sys, time
 
-CCR = ('G0-D1810BX0', 'G0-D1801FX0')
+SITES = {'ccr': (('G0-D1810BX0', 'G0-D1801FX0'), 'D1810|D1801'),
+         'd48': (('G0-D4810BX0', 'G0-D4801FX0'), 'D4810|D4801')}
+SITE = 'ccr'
+CCR, SITE_RX = SITES['ccr']   # building tags of the selected site (name kept for history)
 PATTERNS = {
     'iwp':    ['*IWP_Status*.xls*'],
     'cables': ['*Cable_Tracker*.xls*'],
@@ -410,6 +413,28 @@ def update_panels(panels, cables, prev_n, CK):
     return n
 
 
+CYR = str.maketrans('АВЕКМНОРСТХ', 'ABEKMHOPCTX')
+TAG_RX = re.compile(r'G[01]-[A-Z0-9]{4,12}(?:-[A-Z0-9()]{1,12}){1,6}')
+
+
+def build_panels(cables, CK):
+    """site without a panel list yet (D48): every equipment tag named in From / To becomes a panel."""
+    it, io, ifr = CK.index('t'), CK.index('o'), CK.index('f')
+    pans = {}
+    for c in cables:
+        for side, txt in (('OUT', c[ifr] or ''), ('IN', c[io] or '')):
+            tags = [t.rstrip('-') for t in TAG_RX.findall(txt.translate(CYR))]
+            tags = [t for t in tags if t != c[it] and not t.endswith('-WP01')]
+            if not tags:
+                continue
+            tag = max(tags, key=len)
+            p = pans.setdefault(tag, [tag, txt[:160], room(txt), []])
+            p[3].append([side, c[it]])
+    out = [p for p in pans.values() if any(x in p[0] for x in CCR) or len(p[3]) >= 2 or re.search(r'-D48-|D48', p[0])]
+    out.sort(key=lambda p: p[0])
+    return out
+
+
 def st_map(v):
     s = S(v).lower()
     return 'Closed' if re.search(r'закр|clos|отмен|cancel', s) else 'Open'
@@ -437,7 +462,7 @@ def build_punch(mrows, rrows, prev):
         rows = [list(r) for r in prev['punch']['rows'] if not str(r[ino]).startswith('RHI-')]
     for r in (mrows or [])[1:]:
         tit = S(col(r, 1))
-        if not tit or not re.search('D1810|D1801', tit) or not S(col(r, 0)) or S(col(r, 0)) == '#':
+        if not tit or not re.search(SITE_RX, tit) or not S(col(r, 0)) or S(col(r, 0)) == '#':
             continue
         no = acc_s(col(r, 0))
         o = {'no': no, 'tit': tx('tit', (tit + ' ' + S(col(r, 2))).strip() if S(col(r, 2)) else tit + ' '),
@@ -515,7 +540,7 @@ def build_ptq(rows, prev):
     best = {}
     for r in rows[1:]:
         no = S(col(r, 4))
-        if not no or not any(x in S(col(r, c)) for c in (4, 16, 17) for x in ('D1810', 'D1801')):
+        if not no or not any(x in S(col(r, c)) for c in (4, 16, 17) for x in SITE_RX.split('|')):
             continue
         best[no] = r          # later revision rows overwrite earlier ones
     out = []
@@ -611,7 +636,7 @@ def validate(out, base):
             err.append(f'{k} is empty')
     if not out['punch']['rows']:
         err.append('punch.rows is empty')
-    if not out['tq']['ctq']:
+    if not out['tq']['ctq'] and SITE == 'ccr':
         err.append('tq.ctq is empty')
     return err
 
@@ -630,7 +655,12 @@ def main():
     ap.add_argument('--base', default='data_base.json', help='last good data in the app schema (schema reference)')
     ap.add_argument('--current', default='data.json', help='current data.json; used for carry-forward if valid')
     ap.add_argument('--out', default='data.json')
+    ap.add_argument('--site', default='ccr', choices=sorted(SITES), help='ccr = G0-D1810/D1801, d48 = G0-D4810/D4801')
     a = ap.parse_args()
+    global SITE, CCR, SITE_RX
+    SITE = a.site
+    CCR, SITE_RX = SITES[SITE]
+    log(f'site: {SITE} {CCR}')
 
     base = json.load(open(a.base, encoding='utf-8'))
     prev = base
@@ -671,6 +701,9 @@ def main():
         notes.append(f'cable tracker: {upd} cables updated, {add} new cables added (From/To kept for existing)')
         notes.append(f'RAWP: {rw} cables got laying/termination RFI info')
         out['panels'] = json.loads(json.dumps(prev['panels']))
+        if not out['panels'] and SITE != 'ccr':
+            out['panels'] = build_panels(out['cables'], out['CK'])
+            prev_nc = len(out['cables'])
         notes.append(f'panels: {update_panels(out["panels"], out["cables"], prev_nc, out["CK"])} new cable links')
     if rows.get('master') or rows.get('rhi'):
         out['punch'], nm, nr = build_punch(rows.get('master'), rows.get('rhi'), prev)
@@ -680,7 +713,7 @@ def main():
         out['reg'] = build_reg(rows['docs'], prev)
     if rows.get('ptq'):
         out['tq'] = dict(out['tq'], ptq=build_ptq(rows['ptq'], prev))
-    if rows.get('ctq'):
+    if rows.get('ctq') and SITE == 'ccr':
         ctq, nreg = build_ctq(rows['ctq'], prev)
         out['tq'] = dict(out['tq'], ctq=ctq)
         notes.append(f'CTQ: {nreg} from register, {len(ctq) - nreg} carried forward')
