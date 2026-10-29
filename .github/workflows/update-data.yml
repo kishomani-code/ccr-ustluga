@@ -27,7 +27,7 @@ jobs:
       - name: Any Excel files?
         id: chk
         run: |
-          n=$(find input -type f \( -iname '*.xlsx' -o -iname '*.xlsb' -o -iname '*.xlsm' -o -iname '*.xls' \) | wc -l)
+          n=$(find input -type f -iname '*.xls*' | wc -l)
           echo "count=$n" >> "$GITHUB_OUTPUT"
           echo "Excel files in input: $n"
 
@@ -45,7 +45,8 @@ jobs:
         run: |
           set -o pipefail
           echo "===== CCR =====" | tee build_log.txt
-          python3 tools/build_data.py --site ccr --input input --base data_base.json --current data.json --out data.json 2>&1 | tee -a build_log.txt
+          python3 tools/build_data.py --site ccr --input input \
+            --base data_base.json --current data.json --out data.json 2>&1 | tee -a build_log.txt
 
       - name: Build data_d48.json (D48)
         if: steps.chk.outputs.count != '0'
@@ -53,7 +54,9 @@ jobs:
         run: |
           set -o pipefail
           echo "===== D48 =====" | tee -a build_log.txt
-          python3 tools/build_data.py --site d48 --input input --base tools/d48_skeleton.json --current data_d48.json --out data_d48.json 2>&1 | tee -a build_log.txt
+          python3 tools/build_data.py --site d48 --input input \
+            --base tools/d48_skeleton.json --current data_d48.json \
+            --out data_d48.json 2>&1 | tee -a build_log.txt
 
       - name: New cache name so phones load the new data
         if: steps.chk.outputs.count != '0'
@@ -67,6 +70,12 @@ jobs:
         if: steps.chk.outputs.count != '0'
         run: |
           mkdir -p input
-          { echo "Last automatic update: $(TZ=Europe/Moscow date '+%d.%m.%Y %H:%M') MSK"; echo; echo "Files used:";
-            find input -type f \( -iname '*.xls*' \) -printf '  %f\n'; echo; cat build_log.txt; } > input/LAST_UPDATE.txt
-          find input -type f \( -iname '*.xlsx' -o -iname '*.xlsb' -o -iname '*.
+          echo "Last update: $(TZ=Europe/Moscow date '+%d.%m.%Y %H:%M') MSK" > input/LAST_UPDATE.txt
+          find input -type f -iname '*.xls*' -printf '%f\n' >> input/LAST_UPDATE.txt
+          cat build_log.txt >> input/LAST_UPDATE.txt
+          find input -type f -iname '*.xls*' -delete
+          git config user.name ccr-auto-update
+          git config user.email ccr-auto-update@users.noreply.github.com
+          git add -A input data.json data_d48.json sw.js
+          git commit -m "Automatic data update" || echo "nothing to commit"
+          git push
