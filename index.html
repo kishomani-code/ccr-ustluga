@@ -87,10 +87,23 @@ window.onerror=function(m,u,l){var e=document.getElementById('main');if(e)e.inne
  function load(f,next,must){var s=document.createElement('script');s.src=f+'?v='+V;s.onload=next;s.onerror=function(){if(must)fail(f+LT(' missing',' отсутствует'));else next();};document.body.appendChild(s);}
  function start(d){window.__D=d;load('translations.js',function(){if(typeof window.t!=='function')window.t=function(k){return k;};load('app.js',null,true);},false);}
  var t=document.getElementById('ldt');
- get('data.json').then(function(d){if(ok(d))return d;if(t)t.textContent=LT('Daily data has a different format – loading last good data...','Ежедневные данные в другом формате – загружаю последние рабочие данные...');
-   return get('data_base.json').then(function(b){if(!ok(b))throw 'data_base.json has wrong format';b.__fb={date:(d&&d.meta&&d.meta.date)||'?',ver:(d&&d.meta&&d.meta.ver)||''};return b;});})
- .catch(function(e){if(t)t.textContent=LT('Loading last good data...','Загрузка последних рабочих данных...');return get('data_base.json').then(function(b){if(!ok(b))throw e;b.__fb={date:'?',ver:'',err:String(e)};return b;});})
- .then(function(d){if(t)t.textContent=LT('Preparing your app...','Подготовка приложения...');start(d);}).catch(function(e){fail(e);});})();
+ var P=null;try{P=sessionStorage.getItem('proj');}catch(e){}
+ var u=(location.hash.match(/[?&]p=(ccr|d48)/i)||[])[1];if(u)P=u.toUpperCase();
+ window.__pick=function(k){try{sessionStorage.setItem('proj',k);}catch(e){}location.reload();};
+ if(P!=='CCR'&&P!=='D48'){pick();return;}
+ window.__P=P;try{sessionStorage.setItem('proj',P);localStorage.setItem('proj_last',P);}catch(e){}
+ var w3=document.getElementById('wl3');if(w3)w3.textContent=P==='D48'?'D48 · G0-D4810BX0 / G0-D4801FX0':'CCR · G0-D1810BX0 / G0-D1801FX0';
+ document.getElementById('ttl').textContent=P==='D48'?LT('D48 site app','Приложение D48'):LT('CCR site app','Приложение CCR');
+ var DF=P==='D48'?'data_d48.json':'data.json',BF=P==='D48'?'data_d48.json':'data_base.json',EF=P==='D48'?'eng_d48.json':'eng_ccr.json';
+ function pick(){var last='';try{last=localStorage.getItem('proj_last')||'';}catch(e){}
+  var w=document.getElementById('wl3');if(w)w.textContent=LT('Site app v4.0 · CCR and D48','Приложение v4.0 · CCR и D48');document.getElementById('ttl').textContent=LT('Rencons site app','Приложение Ренконс');
+  var b=function(k,a,c){return '<button onclick="window.__pick(\''+k+'\')" style="display:block;width:100%;max-width:340px;margin:10px auto;padding:16px;border-radius:14px;border:2px solid '+(last===k?'#c55a11':'#023362')+';background:#023362;color:#fff;font:inherit;text-align:left;cursor:pointer"><b style="font-size:20px">'+a+'</b><div style="font-size:13px;opacity:.85;margin-top:3px">'+c+'</div></button>';};
+  if(t)t.innerHTML='<div style="font-size:15px;font-weight:700;color:#023362;margin:6px 0 4px">'+LT('Choose project','Выберите объект')+'</div>'+b('CCR','🏢 CCR',LT('Central Control Room · G0-D1810BX0 / G0-D1801FX0','Центральная операторная · G0-D1810BX0 / G0-D1801FX0'))+b('D48','⚡ D48',LT('Utilities Substation & IRR · G0-D4810BX0 / G0-D4801FX0','Подстанция ТОЗХ с аппаратной · G0-D4810BX0 / G0-D4801FX0'));}
+ function eng(d){return fetch(EF+'?v='+V+'&t='+Date.now()).then(function(r){return r.ok?r.json():{};}).catch(function(){return {};}).then(function(e){window.__E=e||{};return d;});}
+ get(DF).then(function(d){if(ok(d))return d;if(t)t.textContent=LT('Daily data has a different format – loading last good data...','Ежедневные данные в другом формате – загружаю последние рабочие данные...');
+   return get(BF).then(function(b){if(!ok(b))throw BF+' has wrong format';b.__fb={date:(d&&d.meta&&d.meta.date)||'?',ver:(d&&d.meta&&d.meta.ver)||''};return b;});})
+ .catch(function(e){if(t)t.textContent=LT('Loading last good data...','Загрузка последних рабочих данных...');return get(BF).then(function(b){if(!ok(b))throw e;b.__fb={date:'?',ver:'',err:String(e)};return b;});})
+ .then(eng).then(function(d){if(t)t.textContent=LT('Preparing your app...','Подготовка приложения...');start(d);}).catch(function(e){fail(e);});})();
 </script>
 </body>
 </html>
