@@ -1234,12 +1234,20 @@ function toast(m) { const t = document.getElementById('toast'); t.textContent = 
 //   ntq: [{id, sys, title, problem, evidence[], cables[], tags[], drawings[], proposal, severity, blocks, existing}]
 //   cnote: {cable_or_tag: [ntq id]}  · inst: [{key, title, sys[], match{tag[],text[],grp[]}, remarks[], checks[], variants[], images[]}]
 //   mct: {transits[], materials[], iwp[], install_notes[]}  · img: folder of the typical-detail crops
-var NTQ = Array.isArray(E.ntq) ? E.ntq.filter(x => x && x.id) : [];
-var NTQBY = {}; NTQ.forEach(x => NTQBY[x.id] = x);
-var CNOTE = {}; (function () { const add = (k, id) => { if (!k) return; (CNOTE[k] = CNOTE[k] || []).includes(id) || CNOTE[k].push(id); };
+var NTQ = [], NTQBY = {}, CNOTE = {}, IMGD = '', INSTG = [];
+function engInit() {
+NTQ = Array.isArray(E.ntq) ? E.ntq.filter(x => x && x.id) : [];
+NTQBY = {}; NTQ.forEach(x => NTQBY[x.id] = x);
+CNOTE = {}; (function () { const add = (k, id) => { if (!k) return; (CNOTE[k] = CNOTE[k] || []).includes(id) || CNOTE[k].push(id); };
   Object.entries(E.cnote || {}).forEach(([k, ids]) => (ids || []).forEach(id => NTQBY[id] && add(k, id)));
   NTQ.forEach(x => { (x.cables || []).forEach(c => add(c, x.id)); (x.tags || []).forEach(c => add(c, x.id)); }); })();
-var IMGD = typeof E.img === 'string' ? E.img : '';   // typical-detail images sit next to index.html (ccr_*.jpg / d48_*.jpg)
+IMGD = typeof E.img === 'string' ? E.img : '';   // typical-detail images sit next to index.html (ccr_*.jpg / d48_*.jpg)
+INSTG = (Array.isArray(E.inst) ? E.inst : []).map(g => { const rx = a => (a || []).map(r => { try { return new RegExp(r, 'i'); } catch (err) { return null; } }).filter(Boolean); const m = g.match || {};
+  return Object.assign({remarks: [], checks: [], variants: [], images: [], sys: []}, g, {_t: rx(m.tag), _x: rx(m.text), _g: rx(m.grp)}); });
+}
+engInit();
+// eng file missing at start (old cached index.html or slow network): load it now and redraw
+if (!(E.inst || []).length && !(E.ntq || []).length) fetch('eng_' + PRJ.toLowerCase() + '.json?t=' + Date.now(), {cache: 'no-store'}).then(r => r.ok ? r.json() : null).then(e => { if (e && typeof e === 'object') { Object.assign(E, e); engInit(); route(); } }).catch(() => {});
 var NTQS = {}; try { NTQS = JSON.parse(localStorage.getItem(PRJ.toLowerCase() + '_ntq_v1') || '{}'); } catch (err) {}
 function ntqSave() { try { localStorage.setItem(PRJ.toLowerCase() + '_ntq_v1', JSON.stringify(NTQS)); } catch (err) {} }
 const sevC = s => s === 'High' ? 'b-no' : s === 'Medium' ? 'b-part' : 'b-na';
@@ -1285,8 +1293,6 @@ function ntqView(id) { const x = NTQBY[id]; if (!x) { main.innerHTML = '<div cla
      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px"><button class="tile" style="min-height:auto" onclick="copyText(ntqText(NTQBY['${esc(id)}'])).then(ok=>toast(ok?'Copied – paste into the TQ form':'Select the text and copy'))"><b>📋 Copy TQ text</b></button><button class="tile" style="min-height:auto" onclick="navigator.share?navigator.share({text:ntqText(NTQBY['${esc(id)}'])}).catch(()=>{}):copyText(ntqText(NTQBY['${esc(id)}'])).then(()=>toast('Copied'))"><b>↗ Share…</b></button></div></div>
    ${cl ? `<div class="card"><div class="h3">Cables (${(x.cables || []).length})</div><div class="list">${cl}</div></div>` : ''}${tl ? `<div class="card"><div class="h3">Tags (${(x.tags || []).length})</div><div class="list">${tl}</div></div>` : ''}`; }
 // ---- installation remarks (device types) + typical details
-var INSTG = (Array.isArray(E.inst) ? E.inst : []).map(g => { const rx = a => (a || []).map(r => { try { return new RegExp(r, 'i'); } catch (err) { return null; } }).filter(Boolean); const m = g.match || {};
-  return Object.assign({remarks: [], checks: [], variants: [], images: [], sys: []}, g, {_t: rx(m.tag), _x: rx(m.text), _g: rx(m.grp)}); });
 function instFor(x) { const tg = [x.tag, x.uid, x.ctag].filter(Boolean).join(' '), tx = [T.desc[x.desc], T.it[x.it], x.ctag, x.m].filter(Boolean).join(' ');
   return INSTG.filter(g => (!(g.sys || []).length || !x.sy || g.sys.includes(x.sy)) && ((g._t.some(r => r.test(tg))) || (g._x.some(r => r.test(tx)) && (!g._g.length || g._g.some(r => r.test(x.g)))) || (!g._t.length && !g._x.length && g._g.some(r => r.test(x.g))))); }
 function varFor(g, tag) { const tl = String(tag || '').toUpperCase(); return (g.variants || []).filter(v => String(v.tags || '').split(/[,;\s]+/).filter(Boolean).some(t => { t = t.toUpperCase(); const m = t.match(/^(.*?)(\d+)[–-](\d+)$/);
