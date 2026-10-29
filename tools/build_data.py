@@ -435,6 +435,78 @@ def build_panels(cables, CK):
     return out
 
 
+def build_sg(cables, CK, panels):
+    """D48: system block diagrams from the cable list. Node = panel / box (tag found in From / To);
+    devices with one cable are grouped per panel. Columns follow the cable direction (from -> to)."""
+    K = {k: i for i, k in enumerate(CK)}
+    pdesc = {p[0]: p[1] for p in panels}
+    dead = re.compile('удален|дубликат|другом проекте', re.I)
+
+    def end(txt):
+        tags = [t.rstrip('-') for t in TAG_RX.findall((txt or '').translate(CYR))]
+        tags = [t for t in tags if not t.endswith('-WP01')]
+        return max(tags, key=len) if tags else (txt or '-').strip()[:50] or '-'
+    bysys = {}
+    for i, c in enumerate(cables):
+        m = re.search(r'\b([A-Z]{2}-[A-Z0-9]{4})-', c[K['d']] or '')
+        if not m or dead.search(c[K['h']] or ''):
+            continue
+        a, b = end(c[K['f']]), end(c[K['o']])
+        if a == b:
+            continue
+        bysys.setdefault(m.group(1), []).append((i, a, b, c[K['f']], c[K['o']]))
+    sg = {}
+    for sy, lst in sorted(bysys.items()):
+        deg = {}
+        txt = {}
+        for i, a, b, fa, fb in lst:
+            deg[a] = deg.get(a, 0) + 1; deg[b] = deg.get(b, 0) + 1
+            txt.setdefault(a, fa); txt.setdefault(b, fb)
+        hub = {t for t, n in deg.items() if n >= 2 or t in pdesc}
+        node, grp = {}, {}
+
+        def nid(t, other, side):
+            if t in hub or other not in hub:
+                return node.setdefault(t, ('T', t))
+            k = '#' + other + '|' + side
+            grp.setdefault(k, [])
+            if t not in grp[k]:
+                grp[k].append(t)
+            return node.setdefault(k, ('G', k))
+        edges = {}
+        for i, a, b, fa, fb in lst:
+            x, y = nid(a, b, 'out'), nid(b, a, 'in')
+            edges.setdefault((x[1], y[1]), []).append(i)
+        keys = list(dict.fromkeys([k for e in edges for k in e]))
+        # columns: longest path from sources (cycles cut by visit order)
+        succ = {}
+        for (x, y) in edges:
+            succ.setdefault(x, set()).add(y)
+        col = {k: 0 for k in keys}
+        for _ in range(6):
+            ch = False
+            for (x, y) in edges:
+                if col[y] < col[x] + 1 and col[x] < 5:
+                    col[y] = col[x] + 1; ch = True
+            if not ch:
+                break
+        rows = {}
+        order = sorted(keys, key=lambda k: (col[k], k.startswith('#'), k))
+        n_out, ix = [], {}
+        for k in order:
+            r = rows.get(col[k], 0); rows[col[k]] = r + 1
+            ix[k] = len(n_out)
+            if k.startswith('#'):
+                mem = grp[k]
+                n_out.append([k, f'{len(mem)} devices / boxes', '; '.join(m[:40] for m in mem[:3]), col[k], r, 1, mem])
+            else:
+                n_out.append([k, k, (pdesc.get(k) or txt.get(k) or '')[:120], col[k], r, 0, []])
+        e_out = [[ix[x], ix[y], sorted(set(cs))] for (x, y), cs in edges.items()]
+        if len(n_out) >= 2:
+            sg[sy] = {'n': n_out, 'e': e_out}
+    return sg
+
+
 def st_map(v):
     s = S(v).lower()
     return 'Closed' if re.search(r'закр|clos|отмен|cancel', s) else 'Open'
@@ -718,10 +790,13 @@ def main():
         out['tq'] = dict(out['tq'], ctq=ctq)
         notes.append(f'CTQ: {nreg} from register, {len(ctq) - nreg} carried forward')
 
+    if SITE != 'ccr':      # D48: block diagrams rebuilt from the cable list every time
+        out['sg'] = build_sg(out['cables'], out['CK'], out['panels'])
+        notes.append(f'block diagrams: {len(out["sg"])} systems')
     # sg holds cable indices -> remap by tag if order changed
     old_t = [c[0] for c in prev['cables']]
     new_ix = {c[0]: i for i, c in enumerate(out['cables'])}
-    for g in out['sg'].values():
+    for g in (out['sg'].values() if SITE == 'ccr' else []):
         g['e'] = [[e[0], e[1], [new_ix[old_t[i]] for i in e[2] if i < len(old_t) and old_t[i] in new_ix]] for e in g['e']]
 
     dates = [(file_key(f)[1], k) for k, f in files.items() if file_key(f)[1]]
