@@ -80,7 +80,7 @@ function LT(en,ru){return LL?ru:en;}
  g('ldt').textContent='Загрузка данных... в первый раз нужен интернет (≈10 МБ), затем работает офлайн';g('q').placeholder='Поиск по ID: тег · кабель · Access ID · замечание · CTQ · документ';
  g('ttl').textContent='Приложение CCR';var b=g('lang');b.children[0].className='';b.children[2].className='on';})();
 window.onerror=function(m,u,l){var e=document.getElementById('main');if(e)e.innerHTML='<div class="card" style="border-left:5px solid #b42318"><b>'+LT('App error','Ошибка приложения')+'</b><div style="font-size:13px;margin-top:6px">'+String(m).replace(/</g,'&lt;')+' ('+LT('line','строка')+' '+l+')</div><div style="font-size:12px;color:#687384;margin-top:8px">'+LT('Send this screenshot to Paul. Try: close the app, open again with internet.','Отправьте этот скриншот Паулю. Попробуйте: закройте приложение и откройте снова с интернетом.')+'</div></div>';};
-(function(){var V='39';var main=document.getElementById('main');
+(function(){var V='41';var main=document.getElementById('main');
  function fail(e){main.innerHTML='<div class="card"><b>'+LT('Could not load data','Не удалось загрузить данные')+'</b><div style="font-size:13px;margin-top:6px">'+e+'</div><div style="font-size:12px;color:#687384;margin-top:8px">'+LT('Open once with internet, then it works offline.','Откройте один раз с интернетом, затем приложение работает офлайн.')+'</div><button class="more" onclick="location.reload()">'+LT('Try again','Повторить')+'</button></div>';}
  function ok(d){return d&&typeof d==='object'&&Array.isArray(d.items)&&d.items.length&&Array.isArray(d.items[0])&&Array.isArray(d.IK)&&Array.isArray(d.cables)&&Array.isArray(d.CK);}
  function get(u){return fetch(u+'?v='+V+'&t='+Date.now()).then(function(r){if(!r.ok)throw 'HTTP '+r.status+' '+u;return r.json();});}
@@ -96,14 +96,29 @@ window.onerror=function(m,u,l){var e=document.getElementById('main');if(e)e.inne
  document.getElementById('ttl').textContent=P==='D48'?LT('D48 site app','Приложение D48'):LT('CCR site app','Приложение CCR');
  var DF=P==='D48'?'data_d48.json':'data.json',BF=P==='D48'?'data_d48.json':'data_base.json',EF=P==='D48'?'eng_d48.json':'eng_ccr.json';
  function pick(){var last='';try{last=localStorage.getItem('proj_last')||'';}catch(e){}
-  var w=document.getElementById('wl3');if(w)w.textContent=LT('Site app v4.0 · CCR and D48','Приложение v4.0 · CCR и D48');document.getElementById('ttl').textContent=LT('Rencons site app','Приложение Ренконс');
+  var w=document.getElementById('wl3');if(w)w.textContent=LT('Site app v4.1 · CCR and D48','Приложение v4.1 · CCR и D48');document.getElementById('ttl').textContent=LT('Rencons site app','Приложение Ренконс');
   var b=function(k,a,c){return '<button onclick="window.__pick(\''+k+'\')" style="display:block;width:100%;max-width:340px;margin:10px auto;padding:16px;border-radius:14px;border:2px solid '+(last===k?'#c55a11':'#023362')+';background:#023362;color:#fff;font:inherit;text-align:left;cursor:pointer"><b style="font-size:20px">'+a+'</b><div style="font-size:13px;opacity:.85;margin-top:3px">'+c+'</div></button>';};
   if(t)t.innerHTML='<div style="font-size:15px;font-weight:700;color:#023362;margin:6px 0 4px">'+LT('Choose project','Выберите объект')+'</div>'+b('CCR','🏢 CCR',LT('Central Control Room · G0-D1810BX0 / G0-D1801FX0','Центральная операторная · G0-D1810BX0 / G0-D1801FX0'))+b('D48','⚡ D48',LT('Utilities Substation & IRR · G0-D4810BX0 / G0-D4801FX0','Подстанция ТОЗХ с аппаратной · G0-D4810BX0 / G0-D4801FX0'));}
- function eng(d){return fetch(EF+'?v='+V+'&t='+Date.now()).then(function(r){return r.ok?r.json():{};}).catch(function(){return {};}).then(function(e){window.__E=e||{};return d;});}
- get(DF).then(function(d){if(ok(d))return d;if(t)t.textContent=LT('Daily data has a different format – loading last good data...','Ежедневные данные в другом формате – загружаю последние рабочие данные...');
+ // v4.1: data is kept on the phone (Cache Storage). Open / switch project = saved copy at once;
+ // the newest data is downloaded in the background and offered with a "tap to load" bar.
+ var DC='appdata-v1',FRESH=15*60*1000;
+ function cget(f){if(!('caches' in window))return Promise.resolve(null);return caches.open(DC).then(function(c){return c.match(f);}).then(function(r){return r?r.json():null;}).catch(function(){return null;});}
+ function net(f){return fetch(f+'?t='+Date.now(),{cache:'no-store'}).then(function(r){if(!r.ok)throw 'HTTP '+r.status+' '+f;var c2=r.clone();if('caches' in window)caches.open(DC).then(function(c){return c.put(f,c2);}).catch(function(){});try{localStorage.setItem('dt_'+f,String(Date.now()));}catch(e){}return r.json();});}
+ function age(f){try{return Date.now()-Number(localStorage.getItem('dt_'+f)||0);}catch(e){return 1e12;}}
+ function bar(msg){var b=document.createElement('div');b.style.cssText='position:fixed;left:12px;right:12px;bottom:14px;z-index:9999;background:#023362;color:#fff;padding:12px 14px;border-radius:12px;font:14px/1.3 inherit;box-shadow:0 4px 14px rgba(0,0,0,.25);cursor:pointer';b.innerHTML=msg;b.onclick=function(){location.reload();};document.body.appendChild(b);}
+ function bg(cd){if(age(DF)<FRESH&&age(EF)<FRESH)return;setTimeout(function(){
+   net(EF).catch(function(){});
+   net(DF).then(function(d){if(ok(d)&&d.meta&&cd.meta&&d.meta.ver!==cd.meta.ver)bar('🔄 '+LT('New data','Новые данные')+' '+(d.meta.date||'')+' – '+LT('tap to load','нажмите, чтобы загрузить'));}).catch(function(){});},2500);}
+ function eng(d){return net(EF).catch(function(){return cget(EF);}).then(function(e){window.__E=e||{};return d;});}
+ function online(){return net(DF).then(function(d){if(ok(d))return d;if(t)t.textContent=LT('Daily data has a different format – loading last good data...','Ежедневные данные в другом формате – загружаю последние рабочие данные...');
    return get(BF).then(function(b){if(!ok(b))throw BF+' has wrong format';b.__fb={date:(d&&d.meta&&d.meta.date)||'?',ver:(d&&d.meta&&d.meta.ver)||''};return b;});})
  .catch(function(e){if(t)t.textContent=LT('Loading last good data...','Загрузка последних рабочих данных...');return get(BF).then(function(b){if(!ok(b))throw e;b.__fb={date:'?',ver:'',err:String(e)};return b;});})
- .then(eng).then(function(d){if(t)t.textContent=LT('Preparing your app...','Подготовка приложения...');start(d);}).catch(function(e){fail(e);});})();
+ .then(eng).then(function(d){if(t)t.textContent=LT('Preparing your app...','Подготовка приложения...');start(d);}).catch(function(e){fail(e);});}
+ cget(DF).then(function(cd){
+   if(!ok(cd))return online();
+   if(t)t.textContent=LT('Opening saved data...','Открываю сохранённые данные...');
+   return cget(EF).then(function(ce){window.__E=ce||{};start(cd);bg(cd);});
+ }).catch(function(){online();});})();
 </script>
 </body>
 </html>
