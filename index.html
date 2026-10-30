@@ -80,12 +80,12 @@ function LT(en,ru){return LL?ru:en;}
  g('ldt').textContent='Загрузка данных... в первый раз нужен интернет (≈10 МБ), затем работает офлайн';g('q').placeholder='Поиск по ID: тег · кабель · Access ID · замечание · CTQ · документ';
  g('ttl').textContent='Приложение CCR';var b=g('lang');b.children[0].className='';b.children[2].className='on';})();
 window.onerror=function(m,u,l){var e=document.getElementById('main');if(e)e.innerHTML='<div class="card" style="border-left:5px solid #b42318"><b>'+LT('App error','Ошибка приложения')+'</b><div style="font-size:13px;margin-top:6px">'+String(m).replace(/</g,'&lt;')+' ('+LT('line','строка')+' '+l+')</div><div style="font-size:12px;color:#687384;margin-top:8px">'+LT('Send this screenshot to Paul. Try: close the app, open again with internet.','Отправьте этот скриншот Паулю. Попробуйте: закройте приложение и откройте снова с интернетом.')+'</div></div>';};
-(function(){var V='41';var main=document.getElementById('main');
+(function(){var V='43';var main=document.getElementById('main');
  function fail(e){main.innerHTML='<div class="card"><b>'+LT('Could not load data','Не удалось загрузить данные')+'</b><div style="font-size:13px;margin-top:6px">'+e+'</div><div style="font-size:12px;color:#687384;margin-top:8px">'+LT('Open once with internet, then it works offline.','Откройте один раз с интернетом, затем приложение работает офлайн.')+'</div><button class="more" onclick="location.reload()">'+LT('Try again','Повторить')+'</button></div>';}
  function ok(d){return d&&typeof d==='object'&&Array.isArray(d.items)&&d.items.length&&Array.isArray(d.items[0])&&Array.isArray(d.IK)&&Array.isArray(d.cables)&&Array.isArray(d.CK);}
  function get(u){return fetch(u+'?v='+V+'&t='+Date.now()).then(function(r){if(!r.ok)throw 'HTTP '+r.status+' '+u;return r.json();});}
  function load(f,next,must){var s=document.createElement('script');s.src=f+'?v='+V;s.onload=next;s.onerror=function(){if(must)fail(f+LT(' missing',' отсутствует'));else next();};document.body.appendChild(s);}
- function start(d){window.__D=d;load('translations.js',function(){if(typeof window.t!=='function')window.t=function(k){return k;};load('app.js',null,true);},false);}
+ function start(d){window.__D=d;load('translations.js',function(){if(typeof window.t!=='function')window.t=function(k){return k;};load('app.js',function(){load('areas.js',null,false);},true);},false);}
  var t=document.getElementById('ldt');
  var P=null;try{P=sessionStorage.getItem('proj');}catch(e){}
  var u=(location.hash.match(/[?&]p=(ccr|d48)/i)||[])[1];if(u)P=u.toUpperCase();
@@ -96,7 +96,7 @@ window.onerror=function(m,u,l){var e=document.getElementById('main');if(e)e.inne
  document.getElementById('ttl').textContent=P==='D48'?LT('D48 site app','Приложение D48'):LT('CCR site app','Приложение CCR');
  var DF=P==='D48'?'data_d48.json':'data.json',BF=P==='D48'?'data_d48.json':'data_base.json',EF=P==='D48'?'eng_d48.json':'eng_ccr.json';
  function pick(){var last='';try{last=localStorage.getItem('proj_last')||'';}catch(e){}
-  var w=document.getElementById('wl3');if(w)w.textContent=LT('Site app v4.2 · CCR and D48','Приложение v4.2 · CCR и D48');document.getElementById('ttl').textContent=LT('Rencons site app','Приложение Ренконс');
+  var w=document.getElementById('wl3');if(w)w.textContent=LT('Site app v4.3 · CCR and D48','Приложение v4.3 · CCR и D48');document.getElementById('ttl').textContent=LT('Rencons site app','Приложение Ренконс');
   var b=function(k,a,c){return '<button onclick="window.__pick(\''+k+'\')" style="display:block;width:100%;max-width:340px;margin:10px auto;padding:16px;border-radius:14px;border:2px solid '+(last===k?'#c55a11':'#023362')+';background:#023362;color:#fff;font:inherit;text-align:left;cursor:pointer"><b style="font-size:20px">'+a+'</b><div style="font-size:13px;opacity:.85;margin-top:3px">'+c+'</div></button>';};
   if(t)t.innerHTML='<div style="font-size:15px;font-weight:700;color:#023362;margin:6px 0 4px">'+LT('Choose project','Выберите объект')+'</div>'+b('CCR','🏢 CCR',LT('Central Control Room · G0-D1810BX0 / G0-D1801FX0','Центральная операторная · G0-D1810BX0 / G0-D1801FX0'))+b('D48','⚡ D48',LT('Utilities Substation & IRR · G0-D4810BX0 / G0-D4801FX0','Подстанция ТОЗХ с аппаратной · G0-D4810BX0 / G0-D4801FX0'));}
  // v4.1: data is kept on the phone (Cache Storage). Open / switch project = saved copy at once;
