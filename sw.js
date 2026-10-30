@@ -7,7 +7,7 @@ self.addEventListener('fetch', e => {
   if (e.request.method !== 'GET') return;
   e.respondWith(
     fetch(e.request, {cache: 'no-store'}).then(res => {
-      if (res.ok && !/\/(data|data_d48|eng_ccr|eng_d48|areas\/[^/]+)\.json$/.test(e.request.url.split('?')[0])) { const copy = res.clone(); caches.open(CACHE).then(c => c.put(e.request.url.split('?')[0], copy)); } return res;
+      if (res.ok && !/\/(data|data_d48|data_cold|eng_ccr|eng_d48|eng_cold|areas\/[^/]+)\.json$/.test(e.request.url.split('?')[0])) { const copy = res.clone(); caches.open(CACHE).then(c => c.put(e.request.url.split('?')[0], copy)); } return res;
     }).catch(() => caches.match(e.request, {ignoreSearch: true}).then(r => r || caches.match('./index.html')))
   );
 });

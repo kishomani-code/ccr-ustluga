@@ -18,8 +18,8 @@
 
   // ---------------- top bar: CCR / D48 / OTHER AREA
   OA.topBar = function (on) { const p = OA.proj();
-    const chip = (k, l, h) => `<button class="chip ${(on || p) === k ? 'on' : ''}" style="flex:1;padding:10px 4px;font-size:14px;font-weight:700" onclick="${h}">${l}</button>`;
-    return `<div><div style="display:flex;gap:6px;margin-bottom:6px">${chip('CCR', '🏢 CCR', p === 'CCR' ? "go('#/')" : "projSwitch('CCR')")}${chip('D48', '⚡ D48', p === 'D48' ? "go('#/')" : "projSwitch('D48')")}</div><div style="display:flex;gap:6px;margin-bottom:9px">${chip('OA', '🌍 OTHER AREA', "go('#/oa')")}${chip('CC', '❄️ COLD CABLES', "go('#/cc')")}</div></div>`; };
+    const chip = (k, l, h) => `<button class="chip ${(on || p) === k ? 'on' : ''}" data-nt="1" style="flex:1;padding:10px 4px;font-size:14px;font-weight:700" onclick="${h}">${l}</button>`;
+    return `<div><div style="display:flex;gap:6px;margin-bottom:6px">${chip('CCR', '🏢 CCR', p === 'CCR' ? "go('#/')" : "projSwitch('CCR')")}${chip('D48', '⚡ D48', p === 'D48' ? "go('#/')" : "projSwitch('D48')")}</div><div style="display:flex;gap:6px;margin-bottom:9px">${chip('OA', '🌍 OTHER AREA', "go('#/oa')")}${chip('COLD', '❄️ COLD CABLES', p === 'COLD' ? "go('#/')" : "projSwitch('COLD')")}</div></div>`; };
   if (typeof window.projBar === 'function') window.projBar = () => OA.topBar();
 
   // ---------------- "Primavera" bars: done vs remaining per row
@@ -74,7 +74,7 @@
       if (sub === 'r') return OA.punch(d, 'rhi', arg);
       if (sub === 'd') return OA.drums(d, arg);
       OA.menu(d, ix); });
-    if (!OA.data[a]) main.innerHTML = OA.topBar(OA.mode === 'cold' ? 'CC' : 'OA') + `<div class="empty">Loading ${esc(a)}… (first time needs internet)</div>`; };
+    if (!OA.data[a]) main.innerHTML = OA.topBar(OA.mode === 'cold' ? 'COLD' : 'OA') + `<div class="empty">Loading ${esc(a)}… (first time needs internet)</div>`; };
   OA.menu = function (d, ix) { const K = OA.K; const C = d.cables, R = C.filter(c => c[K.c.co] === 'RHI'); const base = R.length ? R : C;
     const pulled = base.filter(c => c[K.c.ps] === 'Completed').length, term = base.filter(c => c[K.c.tc] === 'Completed').length;
     const m = base.reduce((t, c) => t + (c[K.c.ln] || 0), 0), pm = base.reduce((t, c) => t + Math.min(c[K.c.pm] || 0, c[K.c.ln] || c[K.c.pm] || 0), 0);
@@ -82,7 +82,7 @@
     const po = d.punch.filter(p => p[K.p.st] === 'Open').length, ro = d.rhi.filter(p => p[K.p.st] === 'Open').length;
     const T2 = (h, b, n, pc, cls) => `<button class="tile ${cls || ''}" onclick="go('${h}')"><b>${b}</b><div><span class="n">${n}</span>${pc != null ? `<div class="pc">${pc}%</div><div class="pbar"><i style="width:${pc}%"></i></div>` : ''}</div></button>`;
     const G = ix ? ix.g || {} : {}; const keys = d.cold ? Object.keys(G).filter(k => /heat|обогрев|EH/i.test(k)) : MAIN.filter(k => G[k]).concat(Object.keys(G).filter(k => !MAIN.includes(k)).sort((x, y) => G[y][0] - G[x][0]));
-    main.innerHTML = OA.topBar(d.cold ? 'CC' : 'OA') + (d.cold ? '<div style="font-size:12px;color:var(--mut);margin:0 2px 6px">❄️ Cold cables only (heat tracing EOES / AEOG) · information only</div>' : '') + `<div class="card" style="padding:12px">${ix && ix.nm ? `<div style="font-size:13px;color:var(--mut)">${esc(ix.nm)}</div>` : ''}
+    main.innerHTML = OA.topBar(d.cold ? 'COLD' : 'OA') + (d.cold ? '<div style="font-size:12px;color:var(--mut);margin:0 2px 6px">❄️ Cold cables only (heat tracing EOES / AEOG) · information only</div>' : '') + `<div class="card" style="padding:12px">${ix && ix.nm ? `<div style="font-size:13px;color:var(--mut)">${esc(ix.nm)}</div>` : ''}
      <div class="kpi" style="margin:8px 0 6px"><div><b>${fm(base.length)}</b><span>cables ${R.length ? '(RHI)' : '(all companies)'}</span></div><div><b style="color:var(--ok)">${fm(pulled)}</b><span>pulled · ${P(pulled, base.length)}%</span></div><div><b style="color:var(--bad)">${fm(base.length - pulled)}</b><span>remaining to pull</span></div></div>
      <div class="kpi" style="margin-bottom:6px"><div><b>${fm(pm)} m</b><span>pulled of ${fm(m)} m</span></div><div><b style="color:var(--ok)">${fm(term)}</b><span>terminated · ${P(term, base.length)}%</span></div><div><b style="color:var(--bad)">${fm(base.length - term)}</b><span>remaining to terminate</span></div></div>
      ${keys.length ? `<div class="sect" style="margin-top:6px">IWP activities (RHI / all)</div>${keys.map(k => { const e = G[k]; const rhi = e[7] > 0; return bar(rhi ? e[8] : e[3], rhi ? e[7] : e[2], esc(k), `${fm(rhi ? e[8] : e[3])} / ${fm(rhi ? e[7] : e[2])} ${esc(e[4])}${rhi ? '' : ' · not RHI'}`); }).join('')}` : ''}</div>
@@ -179,10 +179,10 @@
     return OA.coldD[d.a] = v; };
   OA.coldD = {};
   OA.coldHome = function () { setHead('Cold cables', 'heat tracing – EOES / AEOG · data ' + ((OA.idx || {}).date || '…')); qbox.value = '';
-    if (!OA.idx) { main.innerHTML = OA.topBar('CC') + '<div class="empty">Loading areas…</div>'; OA.loadIdx(() => { if (location.hash === '#/cc') OA.coldHome(); }); return; }
+    if (!OA.idx) { main.innerHTML = OA.topBar('COLD') + '<div class="empty">Loading areas…</div>'; OA.loadIdx(() => { if (location.hash === '#/cc') OA.coldHome(); }); return; }
     const L = OA.idx.areas.filter(a => a.eh && a.eh[0] > 0).sort((x, y) => y.eh[0] - x.eh[0]);
     const t = L.reduce((s, a) => { s.n += a.eh[0]; s.p += a.eh[2]; s.t += a.eh[3]; s.m += a.eh[4]; s.pm += a.eh[5]; s.r += a.eh[1]; s.rp += a.eh[6]; return s; }, {n: 0, p: 0, t: 0, m: 0, pm: 0, r: 0, rp: 0});
-    main.innerHTML = OA.topBar('CC') + `<div style="font-size:12px;color:var(--mut);margin:0 2px 6px">ℹ️ Information only – heat-tracing cables (EOES power, AEOG automation) from the cable tracker, IWP, punch lists and drums. No site entry, no report to Paul here.</div>
+    main.innerHTML = OA.topBar('COLD') + `<div style="font-size:12px;color:var(--mut);margin:0 2px 6px">ℹ️ Information only – heat-tracing cables (EOES power, AEOG automation) from the cable tracker, IWP, punch lists and drums. No site entry, no report to Paul here.</div>
      <div class="kpi"><div><b>${fm(t.n)}</b><span>cold cables · ${fm(t.r)} RHI</span></div><div><b style="color:var(--ok)">${fm(t.p)}</b><span>pulled · ${P(t.p, t.n)}%</span></div><div><b style="color:var(--bad)">${fm(t.n - t.p)}</b><span>remaining to pull</span></div></div>
      <div class="kpi"><div><b>${fm(t.pm)} m</b><span>pulled of ${fm(t.m)} m</span></div><div><b style="color:var(--ok)">${fm(t.t)}</b><span>terminated · ${P(t.t, t.n)}%</span></div><div><b style="color:var(--bad)">${fm(t.n - t.t)}</b><span>remaining to terminate</span></div></div>
      <div class="sect">Areas – pulled / total cold cables</div>

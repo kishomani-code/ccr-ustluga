@@ -1,7 +1,14 @@
 if (typeof t !== 'function') window.t = k => k;
-const PRJ = window.__P === 'D48' ? 'D48' : 'CCR';   // v4.0: two projects in one app (CCR / D48)
-const PRJN = PRJ === 'D48' ? {b: 'G0-D4810BX0', a: 'G0-D4801FX0', nm: 'Utilities Substation & IRR', rx: /D4810|D4801|-D48-/} : {b: 'G0-D1810BX0', a: 'G0-D1801FX0', nm: 'Central Control Room', rx: /D1810|D1801|-D18-/};
+const PRJ = window.__P === 'D48' ? 'D48' : window.__P === 'COLD' ? 'COLD' : 'CCR';   // v4.0: CCR / D48 · v4.3: COLD (heat tracing cold cables)
+const PRJN = PRJ === 'D48' ? {b: 'G0-D4810BX0', a: 'G0-D4801FX0', nm: 'Utilities Substation & IRR', rx: /D4810|D4801|-D48-/}
+  : PRJ === 'COLD' ? {b: 'G1-A30210X0', a: 'G0-A10200X0 / G0-D10250X0', nm: 'Cold cables – electrical heat tracing (EOES / AEOG)', rx: /A10200|D10250|A30210/}
+  : {b: 'G0-D1810BX0', a: 'G0-D1801FX0', nm: 'Central Control Room', rx: /D1810|D1801|-D18-/};
 if (PRJ === 'D48') { const _t0 = window.t; window.t = k => String(_t0(k)).replace(/\bCCR\b/g, 'D48'); }
+// v4.3: the cold cable report goes to Sri (+7 926 071-17-97), not to Paul – every rendered text and report line is renamed
+const REC = PRJ === 'COLD' ? {en: 'Sri', ru: 'Шри', tel: '+7 926 071-17-97'} : {en: 'Paul', ru: 'Пауль', tel: ''};
+const renRec = v => String(v).replace(/\bPaul\b/g, 'Sri').replace(/\bPaul's\b/g, "Sri's").replace(/Паул[юья]?/g, 'Шри');
+if (PRJ === 'COLD') { const _t1 = window.t; window.t = k => renRec(String(_t1(k)).replace(/\bCCR\b/g, 'Cold cables'));
+  if (typeof window.trText === 'function') { const _tr = window.trText; window.trText = v => { const r = String(_tr(v)); return /Paul|Паул|\bCCR\b/.test(r) ? renRec(r).replace(/\bCCR\b/g, 'Cold cables') : r; }; } }
 const E = (window.__E && typeof window.__E === 'object') ? window.__E : {};
 const D = (window.__D && typeof window.__D === 'object') ? window.__D : {};
 // ---- safe defaults: the app must load even when data.json is missing keys or has another shape
@@ -36,10 +43,13 @@ const pcat = p => `<span class="badge ${p.cat === 'A' ? 'b-no' : p.cat === 'B' ?
 function punchBox(tag) { const ps = PUBY[tag] || []; if (!ps.length) return ''; const op = ps.filter(p => p.st === 'Open').length;
   return `<div class="card"><div class="h3">Punch items (${ps.length} · open ${op})</div><div class="list">${ps.map(pRow).join('')}</div></div>`; }
 function pRow(p) { return `<button class="li" onclick="go('#/pi/${p.i}')"><div class="m"><div class="t">${DISC_IC(p.d)} № ${esc(p.no)} · ${esc(p.tag || '-')}</div><div class="s">${esc(p.den || p.dru)}</div></div><div class="r">${pb(p)}<div style="margin-top:3px">${pcat(p)}</div>${siteSt(p) ? '<div style="margin-top:3px">' + (siteSt(p).v === 'F' ? '<span class="badge b-ok">✓ site</span>' : '<span class="badge b-no">✗ site</span>') + '</div>' : ''}</div><span class="chev">›</span></button>`; }
-const SKEY = PRJ === 'D48' ? 'd48_site_v1' : 'ccr_site_v1'; let S2 = {c: {}, i: {}, m: {}, last: 0, lastText: '', rx: []};
+const SKEY = PRJ === 'D48' ? 'd48_site_v1' : PRJ === 'COLD' ? 'cold_site_v1' : 'ccr_site_v1'; let S2 = {c: {}, i: {}, m: {}, last: 0, lastText: '', rx: []};
 try { const v = localStorage.getItem(SKEY); if (v) S2 = Object.assign(S2, JSON.parse(v)); } catch (err) {}
 function ssave() { CSTC = {}; try { localStorage.setItem(SKEY, JSON.stringify(S2)); } catch (err) { toast('Could not save - send the report now'); } }
 const MAXLINK = 'https://max.ru/u/f9LHodD0cOJtQE7ljdbFZtb7Z8mLZSYAeSDsBgSF4tXPzXK-0S2T-VwbXkU';
+// v4.3: COLD has no MAX group – the report is opened in MAX as a share (choose Sri, +7 926 071-17-97)
+const maxShare = txt => 'https://max.ru/:share?text=' + encodeURIComponent(String(txt || '').slice(0, 3500));
+const maxTo = (url, txt) => PRJ === 'COLD' ? maxShare(txt) : url;
 const isCCR = t => PRJN.rx.test(t);   // = inside this project (CCR or D48)
 const GCNT = {}; I.forEach(x => GCNT[x.g] = (GCNT[x.g] || 0) + 1); const GROUPS = Object.keys(GCNT).sort((a, b) => GCNT[b] - GCNT[a]);
 let CSTC = {}; function cst(c) { return CSTC[c.i] || (CSTC[c.i] = cst0(c)); }
@@ -164,7 +174,7 @@ function route() {
 }
 // --- views
 function home() {
-  setHead(PRJ + ' · GPP E&I', `v${APPV} · data ${D.meta.date} · ${PRJN.b} / ${PRJN.a}`); qbox.value = '';
+  setHead((PRJ === 'COLD' ? 'Cold cables' : PRJ) + ' · GPP E&I', `v${APPV} · data ${D.meta.date} · ${PRJN.b} / ${PRJN.a}`); qbox.value = '';
   const all = gstat(I), cc = C.filter(c => cst(c).ok).length;
   const tile = (g, cls) => { const s = gstat(I.filter(x => x.g === g)); return `<button class="tile ${cls || ''}" onclick="go('#/a/${enc(g)}')"><b>${esc(g)}</b><div><div class="row"><span class="n">${s.d}/${s.n} lines${s.u === 'lines' ? (() => { const m = I.filter(x => x.g === g && x.u === 'm'); return m.length ? ' · ' + fmtn(m.reduce((a, x) => a + x.f, 0)) + ' / ' + fmtn(m.reduce((a, x) => a + x.q, 0)) + ' m' : ''; })() : ' · ' + fmtn(s.f) + ' / ' + fmtn(s.q) + ' ' + s.u}</span></div><div class="pc">${s.pc}%</div><div class="pbar"><i style="width:${s.pc}%"></i></div></div></button>`; };
   const ps = PAN.map(p => p.cs.length ? p.cs.filter(([d, t]) => CBY[t] && cst(CBY[t]).ok).length / p.cs.length : 0); const pcomp = ps.filter(v => v >= 1).length;
@@ -173,7 +183,7 @@ function home() {
   const r = PU.filter(p => p.rhi), o = r.filter(p => p.st === 'Open').length, oCl = r.filter(p => !p.int && p.st === 'Open').length, oIn = r.filter(p => p.int && p.st === 'Open').length;
   main.innerHTML = `${projBar()}${D.__fb ? `<div class="card" style="border-left:5px solid #e0a100;background:#fff8e6;font-size:13px"><b>⚠ Showing last good data (${esc(D.meta.date)})</b><div style="margin-top:4px">Today's automatic update${D.__fb.date && D.__fb.date !== '?' ? ' (' + esc(D.__fb.date) + ')' : ''} has a different file format, so the app is using the last good data. All screens work normally.</div></div>` : ''}<div class="kpi"><div><b>${all.n}</b><span>IWP lines</span></div><div><b style="color:var(--ok)">${(all.n ? Math.round(100 * all.d / all.n) : 0)}%</b><span>lines done</span></div><div><b>${cc}/${C.length}</b><span>cables complete</span></div></div>
    ${S2.owner ? (() => { const n = alCount(); return `<button class="tile main" style="width:100%;min-height:auto;margin-bottom:8px;background:${n ? '#b42318' : '#2b2f36'};border-color:${n ? '#b42318' : '#2b2f36'}" onclick="go('#/al')"><b>🔔 Alerts from site · ${n} new</b><span class="n" style="color:#f3d6d2">issues · permits · revisions · TQ</span></button>`; })() : ''}
-   <button class="tile main" style="width:100%;min-height:auto;margin-bottom:4px;background:${pend ? '#c55a11' : 'var(--pri)'};border-color:${pend ? '#c55a11' : 'var(--pri)'}" onclick="openReport('prog')"><b>📤 Send report to Paul · ${pend} new progress lines</b><span class="n">👷 ${esc(PS_.name || 'tap to set your name')} · MAX progress group</span></button>
+   <button class="tile main" style="width:100%;min-height:auto;margin-bottom:4px;background:${pend ? '#c55a11' : 'var(--pri)'};border-color:${pend ? '#c55a11' : 'var(--pri)'}" onclick="openReport('prog')"><b>📤 Send report to Paul · ${pend} new progress lines</b><span class="n">👷 ${esc(PS_.name || 'tap to set your name')} · ${PRJ === 'COLD' ? 'MAX → Sri ' + REC.tel : 'MAX progress group'}</span></button>
    <button class="tile main" style="width:100%;min-height:auto;margin-bottom:4px;background:var(--acc);border-color:var(--acc);color:#fff" onclick="S2.mgr||S2.owner?go('#/mg'):mgrLogin()"><b>📊 Manager dashboard${S2.mgr || S2.owner ? '' : ' 🔒'}</b><span class="n" style="color:#fff">overall % · panel progress table · bottom-10 timeline</span></button>
    <div class="sect">🏗️ Construction</div><div class="grid">
     ${T2('#/p', 'Panel cable check<br><span style="font-weight:400;font-size:12px">pulled / terminated per panel</span>', `${PAN.length} panels · ${pcomp} complete`, (PAN.length ? Math.round(100 * pcomp / PAN.length) : 0), 'main')}
@@ -271,7 +281,7 @@ function panelView(t) {
    ${inst.length ? `<div class="card"><div class="h3">Installation (IWP)</div><div class="list">${inst.map(y => { const s2 = ist(y); return `<button class="li" onclick="go('#/i/${y.i}')"><div class="m"><div class="t">${esc(y.g)}</div><div class="s">Access ID ${esc(y.acc)} · ${fmtn(y.f)}/${fmtn(y.q)} ${esc(y.u)}</div></div><span class="badge ${s2.c}">${s2.l}</span><span class="chev">›</span></button>`; }).join('')}</div></div>` : ''}
    ${lrAtCard(t)}${punchBox(t)}${nOut ? `<div class="sect">Outgoing cables (${nOut})</div>${rows('OUT')}` : ''}${nIn ? `<div class="sect">Incoming cables (${nIn})</div>${rows('IN')}` : ''}`;
 }
-const PKEY = PRJ === 'D48' ? 'd48_punch_v1' : 'ccr_punch_v1'; let PS_ = {name: '', e: {}, x: {}};
+const PKEY = PRJ === 'D48' ? 'd48_punch_v1' : PRJ === 'COLD' ? 'cold_punch_v1' : 'ccr_punch_v1'; let PS_ = {name: '', e: {}, x: {}};
 try { const v = localStorage.getItem(PKEY); if (v) PS_ = Object.assign(PS_, JSON.parse(v)); } catch (err) {}
 function psave() { try { localStorage.setItem(PKEY, JSON.stringify(PS_)); } catch (err) { toast('Could not save - send the report now'); } }
 const PNO = {}; PU.forEach(p => PNO[p.no] = p);
@@ -428,17 +438,17 @@ function openReport(kind) {
 }
 function showRep(kind, old) {
   const isP = kind === 'punch'; const text = old ? (isP ? S2.lastP : S2.lastText) : REP.text; if (old) REP = {kind, L: [], text};
-  modalP(`<div class="h3">${isP ? 'Punch report → MAX punch group' : 'Progress report → MAX progress group'}</div>
+  modalP(`<div class="h3">${PRJ === 'COLD' ? (isP ? 'Punch report → Sri (MAX, ' + REC.tel + ')' : 'Progress report → Sri (MAX, ' + REC.tel + ')') : isP ? 'Punch report → MAX punch group' : 'Progress report → MAX progress group'}</div>
    <textarea id="rtx" class="fin" style="height:200px;font:12px monospace;white-space:pre" readonly>${esc(text)}</textarea>
-   <button class="tile main" style="width:100%;min-height:auto;margin-bottom:8px" onclick="sendRep()"><b>📤 Send report to Paul</b><span class="n">copies the text and opens the MAX group – then paste & send</span></button>
+   <button class="tile main" style="width:100%;min-height:auto;margin-bottom:8px" onclick="sendRep()"><b>📤 Send report to Paul</b><span class="n">${PRJ === 'COLD' ? 'copies the text and opens MAX – choose Sri, paste & send' : 'copies the text and opens the MAX group – then paste & send'}</span></button>
    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><button class="tile" style="min-height:auto" onclick="copyText(REP.text).then(ok=>toast(ok?'Copied for Paul':'Select the text and copy'))"><b>📋 Copy for Paul</b></button>
    <button class="tile" style="min-height:auto" onclick="shareRep()"><b>↗ Share…</b></button></div>
-   <div style="font-size:12px;color:var(--mut);margin-top:8px">After you open the group, the lines are marked as sent and will not be sent again.</div>`);
+   <div style="font-size:12px;color:var(--mut);margin-top:8px">${PRJ === 'COLD' ? 'After you open MAX' : 'After you open the group'}, the lines are marked as sent and will not be sent again.</div>`);
 }
 function markSent() { if (!REP || !REP.L.length) return; const now = Date.now();
   if (REP.kind === 'punch') { REP.L.forEach(l => l.e.s = now); S2.lastP = REP.text; psave(); } else { REP.L.forEach(l => l.ref.forEach(r => r.s = now)); S2.lastText = REP.text; }
   S2.last = now; ssave(); REP.L = []; }
-async function sendRep() { const ok = await copyText(REP.text); const url = REP.kind === 'punch' ? MAX_PUNCH : MAX_PROG; markSent();
+async function sendRep() { const ok = await copyText(REP.text); const url = maxTo(REP.kind === 'punch' ? MAX_PUNCH : MAX_PROG, REP.text); markSent();
   toast(ok ? 'Copied ✓ – in MAX press and hold, Paste, Send' : 'Copy the text, then paste in MAX'); setTimeout(() => { window.location.href = url; }, 600); closeP(); route(); }
 function shareRep() { if (navigator.share) navigator.share({text: REP.text}).then(() => { markSent(); closeP(); route(); }).catch(() => {}); else copyText(REP.text).then(() => toast('Copied for Paul')); }
 // ===== interconnection cables
@@ -934,7 +944,7 @@ function mineText(k) { const L = S2[k].filter(x => !x.s); if (!L.length) return 
     : `Reported by: ${x.by} · ${tstr(x.t)}\nPERMIT REQUEST ${x.id}\nPermit: ${x.ty.replace(/^\S+\s/, '')}\nSystem: ${x.sys}\nSubsystem: ${x.sub || '-'}\nLocation: ${x.loc || '-'}\nDate: ${x.d} ${x.h}\nWorkers: ${x.w}\nWork: ${x.x}`).join('\n\n'); }
 function sendMine(k) { const t = mineText(k); if (!t) return toast('Nothing new to send'); REP = {kind: k, L: S2[k].filter(x => !x.s), text: t};
   modalP(`<div class="h3">${k === 'is' ? 'Issues' : 'Permit requests'} → Paul (MAX direct)</div><textarea id="rtx" class="fin" style="height:180px;font:12px monospace" readonly>${esc(t)}</textarea>
-   <button class="tile main" style="width:100%;min-height:auto" onclick="copyText(REP.text).then(ok=>{REP.L.forEach(x=>x.s=Date.now());ssave();toast(ok?'Copied ✓ – paste in Paul chat':'Copy the text');closeP();setTimeout(()=>location.href=MAXLINK,500);route();})"><b>📤 Send report to Paul</b><span class="n">copies text and opens Paul's MAX chat</span></button>`); }
+   <button class="tile main" style="width:100%;min-height:auto" onclick="copyText(REP.text).then(ok=>{REP.L.forEach(x=>x.s=Date.now());ssave();toast(ok?'Copied ✓ – paste in Paul chat':'Copy the text');closeP();setTimeout(()=>location.href=maxTo(MAXLINK,REP.text),500);route();})"><b>📤 Send report to Paul</b><span class="n">copies text and opens Paul's MAX chat</span></button>`); }
 // ---- parse issues / permits from pasted MAX text (owner import)
 function parseAlerts(txt) { const out = []; String(txt).replace(/\r/g, '').split(/(?=Reported by:)/).forEach(b => { const ls = b.trim().split('\n'); if (!/^(SITE ISSUE|PERMIT REQUEST)/.test(ls[1] || '')) return;
   const h = ls[0].match(/Reported by:\s*(.+?)\s*·\s*(\d\d\.\d\d\.\d{4})\s*(\d\d:\d\d)?/); const f = {}; ls.slice(2).forEach(l => { const m = l.match(/^(\w+):\s*(.*)$/); if (m) f[m[1]] = m[2]; else if (f._last) f[f._last] += ' ' + l; });

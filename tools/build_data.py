@@ -19,7 +19,7 @@ SITES = {'ccr': (('G0-D1810BX0', 'G0-D1801FX0'), 'D1810|D1801'),
          # cold cables = heat tracing (EH: EOES power supply + AEOG automation) in the areas whose AEOG drawings the user holds
          'cold': (('G0-A10200X0', 'G0-D10250X0', 'G1-A30210X0'), 'A10200|D10250|A30210')}
 DISC_RX = {'cold': r'-EH-'}          # extra filter on the document number (discipline) for a site
-EH_TXT = re.compile(r'обогрев|heat trac|EOES|AEOG', re.I)
+EH_TXT = re.compile(r'обогрев|heat trac|EOES|AEOG|EGNUC|-EHC|-Th-|-PJB-', re.I)
 
 
 def in_disc(doc):
