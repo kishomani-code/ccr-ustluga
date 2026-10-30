@@ -267,7 +267,8 @@ def main():
     rh = build_rhi(rows['rhi']) if 'rhi' in rows else {}
     os.makedirs(a.out, exist_ok=True)
     for f in glob.glob(os.path.join(a.out, '*.json')):
-        os.remove(f)
+        if os.path.basename(f) != 'cold_drawings.json':     # drawing list is maintained by hand, not rebuilt
+            os.remove(f)
     areas = sorted(cab)                      # an area = a title that has cables in the Md cable tracker
     dr_area = {}
     for d in drums.values():

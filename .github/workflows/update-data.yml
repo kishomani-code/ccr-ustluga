@@ -1,6 +1,7 @@
-# Automatic data update for the site app (CCR and D48).
-# Upload the new Excel files into the "input" folder on GitHub -> this job builds data.json (CCR)
-# and data_d48.json (D48) from the same files, refreshes the phone cache name in sw.js,
+# Automatic data update for the site app (CCR, D48, cold cables and OTHER AREA).
+# Upload the new Excel files into the "input" folder on GitHub -> this job builds data.json (CCR),
+# data_d48.json (D48), data_cold.json (cold cables / heat tracing) and the areas/ folder (dashboard +
+# OTHER AREA, one file per title) from the same files, refreshes the phone cache name in sw.js,
 # removes the uploaded Excel files and saves a log in input/LAST_UPDATE.txt.
 name: Update app data
 
@@ -58,6 +59,27 @@ jobs:
             --base tools/d48_skeleton.json --current data_d48.json \
             --out data_d48.json 2>&1 | tee -a build_log.txt
 
+      - name: Build data_cold.json (cold cables – heat tracing)
+        if: steps.chk.outputs.count != '0'
+        continue-on-error: true
+        run: |
+          set -o pipefail
+          echo "===== COLD =====" | tee -a build_log.txt
+          python3 tools/build_data.py --site cold --input input \
+            --base tools/cold_skeleton.json --current data_cold.json \
+            --out data_cold.json 2>&1 | tee -a build_log.txt
+
+      - name: Build areas/ (total dashboard + OTHER AREA)
+        if: steps.chk.outputs.count != '0'
+        continue-on-error: true
+        run: |
+          set -o pipefail
+          echo "===== AREAS =====" | tee -a build_log.txt
+          cp areas/cold_drawings.json /tmp/cold_drawings.json 2>/dev/null || true
+          python3 tools/build_areas.py --input input --out areas \
+            --date "$(TZ=Europe/Moscow date '+%d.%m.%Y')" 2>&1 | tee -a build_log.txt
+          cp /tmp/cold_drawings.json areas/cold_drawings.json 2>/dev/null || true
+
       - name: New cache name so phones load the new data
         if: steps.chk.outputs.count != '0'
         run: |
@@ -76,6 +98,6 @@ jobs:
           find input -type f -iname '*.xls*' -delete
           git config user.name ccr-auto-update
           git config user.email ccr-auto-update@users.noreply.github.com
-          git add -A input data.json data_d48.json sw.js
+          git add -A input data.json data_d48.json data_cold.json areas sw.js
           git commit -m "Automatic data update" || echo "nothing to commit"
           git push
