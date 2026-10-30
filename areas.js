@@ -10,6 +10,7 @@
   OA.loadIdx = function (cb) { if (OA.idx) return cb && cb(OA.idx); cget('areas/index.json').then(d => { if (d) { OA.idx = d; cb && cb(d); } return getJ('areas/index.json'); }).then(d => { if (d && (!OA.idx || d.ver !== OA.idx.ver)) { OA.idx = d; cb && cb(d); } }).catch(() => {}); };
   OA.loadArea = function (a, cb) { if (OA.data[a]) return cb(OA.data[a]); OA.busy = true; getJ('areas/' + a + '.json').then(d => { OA.busy = false; OA.data[a] = d; cb(d); }).catch(e => { OA.busy = false; main.innerHTML = `<div class="card"><b>Could not load area ${esc(a)}</b><div style="font-size:13px;margin-top:6px">${esc(String(e))}</div><div style="font-size:12px;color:var(--mut);margin-top:8px">Open this area once with internet – then it works offline.</div><button class="more" onclick="route()">Try again</button></div>`; }); };
   const P = (d, n) => n ? Math.round(100 * d / n) : 0;
+  const REC = (typeof window.REC === 'object' && window.REC) || {en: 'Paul', ru: 'Пауль', tel: ''};   // report recipient (COLD project: Sri)
   const atHome = () => { const k = location.hash.replace(/^#\/?/, '').split('/')[0]; return !k || k[0] === '?'; };
   const PR = PRJN.rx;
   const isOwn = a => PR.test(a.a);
@@ -18,7 +19,7 @@
   // ---------------- top bar: CCR / D48 / OTHER AREA
   OA.topBar = function (on) { const p = OA.proj();
     const chip = (k, l, h) => `<button class="chip ${(on || p) === k ? 'on' : ''}" style="flex:1;padding:10px 4px;font-size:14px;font-weight:700" onclick="${h}">${l}</button>`;
-    return `<div style="display:flex;gap:6px;margin-bottom:6px">${chip('CCR', '🏢 CCR', p === 'CCR' ? "go('#/')" : "projSwitch('CCR')")}${chip('D48', '⚡ D48', p === 'D48' ? "go('#/')" : "projSwitch('D48')")}</div><div style="display:flex;gap:6px;margin-bottom:9px">${chip('OA', '🌍 OTHER AREA', "go('#/oa')")}${chip('CC', '❄️ COLD CABLES', "go('#/cc')")}</div>`; };
+    return `<div><div style="display:flex;gap:6px;margin-bottom:6px">${chip('CCR', '🏢 CCR', p === 'CCR' ? "go('#/')" : "projSwitch('CCR')")}${chip('D48', '⚡ D48', p === 'D48' ? "go('#/')" : "projSwitch('D48')")}</div><div style="display:flex;gap:6px;margin-bottom:9px">${chip('OA', '🌍 OTHER AREA', "go('#/oa')")}${chip('CC', '❄️ COLD CABLES', "go('#/cc')")}</div></div>`; };
   if (typeof window.projBar === 'function') window.projBar = () => OA.topBar();
 
   // ---------------- "Primavera" bars: done vs remaining per row
@@ -192,11 +193,57 @@
   OA.dw = {};
   OA.loadDw = function () { getJ('areas/cold_drawings.json').then(d => { OA.dw = d || {}; if (location.hash.startsWith('#/cc')) route(); }).catch(() => {}); };
 
+  // ---------------- project progress bars (CCR / D48 first page) – same style as the dashboard
+  OA.projBars = function () { const G = {}; I.forEach(x => { const e = G[x.g] = G[x.g] || {n: 0, d: 0, q: 0, f: 0, u: {}}; e.n++; if (x.done) e.d++; e.q += x.q; e.f += Math.min(x.f, x.q || x.f); e.u[x.u] = (e.u[x.u] || 0) + 1; });
+    const keys = Object.keys(G).sort((a, b) => G[b].n - G[a].n); VS.PB = VS.PB || {all: false}; const show = VS.PB.all ? keys : keys.slice(0, 8);
+    return `<div class="card" style="padding:12px"><div style="display:flex;justify-content:space-between;align-items:center"><div class="h3" style="margin:0">📈 ${PRJ === 'COLD' ? 'Cold cables' : PRJ} progress – IWP activities</div><span style="font-size:11px;color:var(--mut)">done / total</span></div>
+     ${show.map(k => { const e = G[k]; const u = Object.keys(e.u).sort((a, b) => e.u[b] - e.u[a])[0]; return bar(e.f, e.q, esc(k), `${fm(e.f)} / ${fm(e.q)} ${esc(u)} · ${fm(e.q - e.f)} left · ${e.d}/${e.n} lines`, `go('#/a/${enc(k)}')`); }).join('')}
+     ${keys.length > 8 ? `<button class="more" onclick="VS.PB.all=!VS.PB.all;route()">${VS.PB.all ? 'Show main activities' : `Show all ${keys.length} activities`}</button>` : ''}</div>`; };
+
+  // ---------------- bulk materials: tray, covers, conduits, earthing, supports, MCT frames … (IWP lines without an equipment tag)
+  const isBulk = x => !/^Cable (pulling|termination)$/.test(x.g) && !/^G\d-[A-Z0-9]{3,}/i.test(String(x.tag || '').trim());
+  OA.bulkLines = function () { return I.filter(isBulk); };
+  OA.bEntries = acc => (S2.b && S2.b[acc]) || [];
+  OA.bSum = acc => OA.bEntries(acc).reduce((t, e) => t + (Number(e.q) || 0), 0);
+  OA.bulk = function () { VS.BM = VS.BM || {sy: '', g: '', q: '', f: 'open', lim: 80}; const v = VS.BM; const nq = N(v.q);
+    const B = OA.bulkLines(); const syss = [...new Set(B.map(x => x.sy || '-'))].sort(); const grps = {}; B.forEach(x => grps[x.g] = (grps[x.g] || 0) + 1);
+    const L = B.filter(x => (!v.sy || (x.sy || '-') === v.sy) && (!v.g || x.g === v.g) && (v.f === 'all' || (v.f === 'open' ? !x.done : x.done)) && (!nq || N(x.tag + ' ' + T.desc[x.desc] + ' ' + T.dwg[x.dwg] + ' ' + x.acc).includes(nq)));
+    const q = L.reduce((t, x) => t + x.q, 0), f = L.reduce((t, x) => t + Math.min(x.f, x.q || x.f), 0), site = L.reduce((t, x) => t + OA.bSum(x.acc), 0);
+    setHead('Bulk materials', `${B.length} IWP lines · tray, conduits, earthing, supports…`); qbox.value = '';
+    main.innerHTML = `<div style="font-size:12px;color:var(--mut);margin:0 2px 6px">Materials without a tag (tray, covers, conduits, earthing, supports, MCT frames, boxes). Report by quantity against the IWP line and write where it was done (room / route). The report to ${REC.en} uses the Access ID like for cables.</div>
+     <input class="fin" placeholder="Material, drawing, access ID…" value="${esc(v.q)}" oninput="VS.BM.q=this.value;VS.BM.lim=80;OA.bulk()">
+     <div class="chips">${[['open', 'Not finished'], ['done', 'Done in IWP'], ['all', 'All']].map(([k, l]) => `<button class="chip ${v.f === k ? 'on' : ''}" onclick="VS.BM.f='${k}';VS.BM.lim=80;OA.bulk()">${l}</button>`).join('')}</div>
+     <select onchange="VS.BM.sy=this.value;VS.BM.lim=80;OA.bulk()"><option value="">All systems (${syss.length})</option>${syss.map(y => `<option ${v.sy === y ? 'selected' : ''}>${esc(y)}</option>`).join('')}</select>
+     <select onchange="VS.BM.g=this.value;VS.BM.lim=80;OA.bulk()"><option value="">All materials (${Object.keys(grps).length})</option>${Object.keys(grps).sort().map(g => `<option value="${esc(g)}" ${v.g === g ? 'selected' : ''}>${esc(g)} (${grps[g]})</option>`).join('')}</select>
+     ${bar(f, q, 'Selected lines – IWP fact', `${fm(f)} / ${fm(q)}${site ? ' · +' + fm(site) + ' entered on site' : ''}`)}
+     <div class="list">${L.slice(0, v.lim).map(x => OA.bRow(x)).join('') || '<div class="empty">No lines</div>'}</div>
+     ${L.length > v.lim ? `<button class="more" onclick="VS.BM.lim+=100;OA.bulk()">Show more (${L.length - v.lim} left)</button>` : ''}`; };
+  OA.bRow = function (x) { const st = ist(x); const sb = OA.bSum(x.acc); const E = OA.bEntries(x.acc); const last = E[E.length - 1];
+    return `<button class="li" onclick="OA.bOpen('${x.acc}')"><div class="m" style="min-width:0"><div class="t" style="white-space:normal">${esc(T.desc[x.desc] || x.g)}</div><div class="s">${esc(x.g)} · ${esc(x.sy || '')} · ${esc(String(T.dwg[x.dwg] || '').replace(/^GLE-\(.*?\)-/, ''))}${/^\d+$/.test(String(x.tag)) ? ' · № ' + esc(x.tag) : ''}</div><div class="s">IWP ${fmtn(x.f)} / ${fmtn(x.q)} ${esc(x.u)} · ${fmtn(Math.max(x.q - x.f, 0))} left${sb ? ` · <b>site +${fmtn(sb)} ${esc(x.u)}</b>${last ? ' (' + esc(last.loc || '') + ')' : ''}` : ''}</div></div><span class="badge ${sb ? 'b-part' : st.c}">${sb ? 'Site +' + fmtn(sb) : st.l}</span><span class="chev">›</span></button>`; };
+  OA.bOpen = function (acc) { const x = I.find(y => y.acc === acc); if (!x) return; const E = OA.bEntries(acc); const rooms = [...new Set(PAN.map(p => p.room).filter(Boolean))].sort((a, b) => (Number(a) || 999) - (Number(b) || 999));
+    modalP(`<div class="h3" style="white-space:normal">${esc(T.desc[x.desc] || x.g)}</div><div style="font-size:12px;color:var(--mut)">${esc(x.g)} · Access ID ${esc(x.acc)} · ${esc(T.dwg[x.dwg] || '')}<br>IWP: ${fmtn(x.f)} / ${fmtn(x.q)} ${esc(x.u)} · remaining ${fmtn(Math.max(x.q - x.f, 0))} ${esc(x.u)}</div>
+     <div style="display:flex;gap:8px;margin-top:10px"><input class="fin" id="bq" type="number" inputmode="decimal" placeholder="Qty done today (${esc(x.u)})" style="flex:1;margin:0"></div>
+     <div style="display:flex;gap:8px;margin-top:8px"><select id="br" style="flex:1"><option value="">Room…</option>${rooms.map(r => `<option>${esc(r)}</option>`).join('')}</select><input class="fin" id="bl" placeholder="Route / location / remark" style="flex:2;margin:0"></div>
+     <button class="tile main" style="width:100%;min-height:auto;margin-top:8px" onclick="OA.bSave('${acc}')"><b>Save</b><span class="n">goes into the progress report to ${REC.en}</span></button>
+     ${E.length ? `<div class="sect">Entered on site</div><div class="list">${E.map((e, i) => `<div class="li"><div class="m"><div class="t">+${fmtn(e.q)} ${esc(x.u)}${e.loc ? ' · ' + esc(e.loc) : ''}</div><div class="s">${dstr(e.t)} · ${esc(e.by || '')}${e.s ? ' · sent' : ' · not sent'}</div></div>${e.s ? '' : `<span class="link" onclick="OA.bDel('${acc}',${i})">delete</span>`}</div>`).join('')}</div>` : ''}
+     <button class="more" onclick="closeP()">Close</button>`); };
+  OA.bSave = function (acc) { if (!who(`OA.bSave('${acc}')`)) return; const q = Number(String(document.getElementById('bq').value).replace(',', '.')); if (!(q > 0)) return toast('Enter the quantity done');
+    const loc = [document.getElementById('br').value ? 'room ' + document.getElementById('br').value : '', document.getElementById('bl').value.trim()].filter(Boolean).join(' · ');
+    S2.b = S2.b || {}; (S2.b[acc] = S2.b[acc] || []).push({q, loc, t: Date.now(), by: PS_.name}); ssave(); toast('Saved – send the report to ' + REC.en); closeP(); route(); };
+  OA.bDel = function (acc, i) { if (!S2.b || !S2.b[acc]) return; S2.b[acc].splice(i, 1); if (!S2.b[acc].length) delete S2.b[acc]; ssave(); closeP(); route(); };
+  // bulk entries go into the same progress report as cables and installation lines
+  const _pl = window.progLines;
+  window.progLines = function (onlyNew) { const out = _pl(onlyNew); Object.entries(S2.b || {}).forEach(([acc, E]) => { const x = I.find(y => y.acc === acc); E.forEach(e => { if (onlyNew && e.s) return; out.push({acc, q: e.q, t: e.t, tag: x ? (x.tag || '') : '', a: (x ? x.g : 'Material') + (e.loc ? ' – ' + e.loc : ''), by: e.by, ref: [e]}); }); }); return out.sort((a, b) => a.t - b.t); };
+
   // ---------------- routing (called from route() in app.js)
   OA.route = function (rest, cold) { OA.mode = cold ? 'cold' : ''; const a = dec(rest[0] || ''); if (!a) return cold ? OA.coldHome() : OA.home(); return OA.area(a, rest[1] || '', rest.slice(2).map(dec).join('/')); };
   // dashboard on the first page: inserted after the project bar
   const _home = window.home;
-  window.home = function () { _home(); const pb = main.firstElementChild; if (pb) pb.insertAdjacentHTML('afterend', OA.dash()); };
+  window.home = function () { _home(); const pb = main.firstElementChild; if (pb) pb.insertAdjacentHTML('afterend', OA.dash());
+    const kpi = main.querySelector(':scope > .kpi'); if (kpi) kpi.insertAdjacentHTML('afterend', OA.projBars());
+    const sect = [...main.querySelectorAll('.sect')].find(e => /Construction/i.test(e.textContent)); const grid = sect && sect.nextElementSibling;
+    if (grid) { const B = OA.bulkLines(); const d = B.filter(x => x.done).length; const ent = Object.values(S2.b || {}).reduce((n, E) => n + E.filter(e => !e.s).length, 0);
+      grid.insertAdjacentHTML('beforeend', `<button class="tile main" onclick="go('#/bm')"><b>🧱 Bulk materials<br><span style="font-weight:400;font-size:12px">tray · conduits · earthing · supports · MCT</span></b><div><span class="n">${d}/${B.length} lines done${ent ? ' · ' + ent + ' entries to send' : ''}</span><div class="pc">${P(d, B.length)}%</div><div class="pbar"><i style="width:${P(d, B.length)}%"></i></div></div></button>`); } };
   OA.loadIdx(() => { if (atHome()) route(); }); OA.loadDw();
   if (location.hash.startsWith('#/oa')) route();
 })();
