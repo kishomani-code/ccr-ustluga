@@ -118,6 +118,9 @@ function route() {
   const h = location.hash.replace(/^#\//, ''); const [k, ...rest] = h.split('/'); const a = dec(rest.join('/'));
   window.scrollTo(0, 0);
   if (!k) return home();
+  if (k === 'oa' && window.OA) return OA.route(rest);   // v4.3 OTHER AREA
+  if (k === 'cc' && window.OA) return OA.route(rest, true);   // v4.3 COLD CABLES
+  if (k === 'bm' && window.OA) return OA.bulk(a);   // v4.3 bulk materials (tray, conduits, earthing, supports…)
   if (k === 'a') return actView(a);
   if (k === 'i') return itemView(Number(a));
   if (k === 'p') return a ? panelView(a) : panelList();
@@ -161,7 +164,7 @@ function route() {
 }
 // --- views
 function home() {
-  setHead(PRJ + ' site app', `v${APPV} · data ${D.meta.date} · ${PRJN.b} / ${PRJN.a}`); qbox.value = '';
+  setHead(PRJ + ' · GPP E&I', `v${APPV} · data ${D.meta.date} · ${PRJN.b} / ${PRJN.a}`); qbox.value = '';
   const all = gstat(I), cc = C.filter(c => cst(c).ok).length;
   const tile = (g, cls) => { const s = gstat(I.filter(x => x.g === g)); return `<button class="tile ${cls || ''}" onclick="go('#/a/${enc(g)}')"><b>${esc(g)}</b><div><div class="row"><span class="n">${s.d}/${s.n} lines${s.u === 'lines' ? (() => { const m = I.filter(x => x.g === g && x.u === 'm'); return m.length ? ' · ' + fmtn(m.reduce((a, x) => a + x.f, 0)) + ' / ' + fmtn(m.reduce((a, x) => a + x.q, 0)) + ' m' : ''; })() : ' · ' + fmtn(s.f) + ' / ' + fmtn(s.q) + ' ' + s.u}</span></div><div class="pc">${s.pc}%</div><div class="pbar"><i style="width:${s.pc}%"></i></div></div></button>`; };
   const ps = PAN.map(p => p.cs.length ? p.cs.filter(([d, t]) => CBY[t] && cst(CBY[t]).ok).length / p.cs.length : 0); const pcomp = ps.filter(v => v >= 1).length;
@@ -621,7 +624,7 @@ function ownPunch() { const d = VS.OW.d; const one = {}; (S2.rx || []).filter(r 
   copyText(Object.values(one).map(r => [r.no, r.v === 'F' ? 'Fixed' : 'Not fixed', d.split('-').reverse().join('.'), r.tag, r.by].join('\t')).join('\n')).then(() => toast('Punch list copied')); }
 
 // ======== v3.2 modules ========
-const APPV = '4.2';
+const APPV = '4.3';
 const shortT = t => String(t || '').replace(/^G0-D(18|48)10BX0-/, '').replace(/^G0-D(18|48)01FX0-/, 'FX0-');
 const SYSN = {'EL-ESPS': ['Substation 10/0.4 kV & power supply', 'Подстанция 10/0,4 кВ'], 'EL-EMSV': ['Power installation (boards, UPS, motors)', 'Силовое электрооборудование'], 'EL-ESBZ': ['Power supply from utility substation', 'Электроснабжение от ПС'], 'EL-ELOV': ['Indoor lighting', 'Внутреннее освещение'], 'EL-EG02': ['Earthing & lightning protection', 'Заземление и молниезащита'], 'EL-EG01': ['Area earthing', 'Заземление площадки'], 'EH-EOES': ['Electric heating', 'Электрообогрев'], 'EH-AEOG': ['Heat tracing', 'Электрообогрев (кабель)'], 'EH-EOBK': ['Electric heating (other)', 'Электрообогрев'],
   'IN-DCS': ['Distributed Control System (DCS)', 'РСУ'], 'IN-ESD': ['Emergency Shutdown (ESD)', 'ПАЗ'], 'IN-SPAP': ['Fire alarm & fire fighting control (AFA&FFS)', 'АСПС и ПТ'], 'IN-GDSS': ['Gas detection', 'Контроль загазованности'], 'IN-ASUE': ['Utilities control system', 'АСУ ЭО (утилиты)'], 'IN-ASUS': ['Power supply control system', 'АСУ ЭС'], 'IN-ASKU': ['Utility metering (AUMS)', 'АСКУ ЭР'], 'IN-MAEC': ['Rotating equipment monitoring (CMS)', 'МСО и ВО'], 'IN-MFMS': ['Material flow metering (MFMS)', 'СУМП'], 'IN-AKVS': ['Emission monitoring (CEMS)', 'АКВС'], 'IN-INTS': ['Operator training simulator', 'Тренажёр оператора'], 'IN-INSS': ['Information security', 'СОИБ'], 'IN-AOVK': ['HVAC automation', 'Автоматизация ОВиК'], 'IN-AKMP': ['Analyzer system', 'Анализаторы'],
