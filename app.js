@@ -119,6 +119,7 @@ function route() {
   window.scrollTo(0, 0);
   if (!k) return home();
   if (k === 'oa' && window.OA) return OA.route(rest);   // v4.3 OTHER AREA
+  if (k === 'cc' && window.OA) return OA.route(rest, true);   // v4.3 COLD CABLES
   if (k === 'a') return actView(a);
   if (k === 'i') return itemView(Number(a));
   if (k === 'p') return a ? panelView(a) : panelList();

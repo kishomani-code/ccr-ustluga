@@ -17,7 +17,8 @@
 
   // ---------------- top bar: CCR / D48 / OTHER AREA
   OA.topBar = function (on) { const p = OA.proj();
-    return `<div style="display:flex;gap:6px;margin-bottom:9px">${[['CCR', '🏢 CCR'], ['D48', '⚡ D48'], ['OA', '🌍 OTHER AREA']].map(([k, l]) => `<button class="chip ${(on || p) === k ? 'on' : ''}" style="flex:1;padding:10px 4px;font-size:${k === 'OA' ? 13 : 15}px;font-weight:700" onclick="${k === 'OA' ? "go('#/oa')" : k === p ? "go('#/')" : `projSwitch('${k}')`}">${l}</button>`).join('')}</div>`; };
+    const chip = (k, l, h) => `<button class="chip ${(on || p) === k ? 'on' : ''}" style="flex:1;padding:10px 4px;font-size:14px;font-weight:700" onclick="${h}">${l}</button>`;
+    return `<div style="display:flex;gap:6px;margin-bottom:6px">${chip('CCR', '🏢 CCR', p === 'CCR' ? "go('#/')" : "projSwitch('CCR')")}${chip('D48', '⚡ D48', p === 'D48' ? "go('#/')" : "projSwitch('D48')")}</div><div style="display:flex;gap:6px;margin-bottom:9px">${chip('OA', '🌍 OTHER AREA', "go('#/oa')")}${chip('CC', '❄️ COLD CABLES', "go('#/cc')")}</div>`; };
   if (typeof window.projBar === 'function') window.projBar = () => OA.topBar();
 
   // ---------------- "Primavera" bars: done vs remaining per row
@@ -64,31 +65,33 @@
   OA.area = function (a, sub, arg) { const ix = (OA.idx || {areas: []}).areas.find(x => x.a === a);
     setHead(a, (ix && ix.nm ? ix.nm.slice(0, 60) : 'area') + ' · ' + ((OA.idx || {}).date || ''));
     if (!OA.idx) { OA.loadIdx(() => route()); }
-    OA.loadArea(a, d => { OA.cur = d; const K = {c: {}, i: {}, p: {}, d: {}}; d.CK.forEach((k, i) => K.c[k] = i); d.IK.forEach((k, i) => K.i[k] = i); d.PK.forEach((k, i) => K.p[k] = i); d.DK.forEach((k, i) => K.d[k] = i); OA.K = K;
+    OA.loadArea(a, d => { const K = {c: {}, i: {}, p: {}, d: {}}; d.CK.forEach((k, i) => K.c[k] = i); d.IK.forEach((k, i) => K.i[k] = i); d.PK.forEach((k, i) => K.p[k] = i); d.DK.forEach((k, i) => K.d[k] = i); OA.K = K;
+      if (OA.mode === 'cold') d = OA.coldView(d); OA.cur = d;
       if (sub === 'c') return OA.cables(d, arg);
       if (sub === 'i') return OA.iwp(d, arg);
       if (sub === 'p') return OA.punch(d, 'punch', arg);
       if (sub === 'r') return OA.punch(d, 'rhi', arg);
       if (sub === 'd') return OA.drums(d, arg);
       OA.menu(d, ix); });
-    if (!OA.data[a]) main.innerHTML = OA.topBar('OA') + `<div class="empty">Loading ${esc(a)}… (first time needs internet)</div>`; };
+    if (!OA.data[a]) main.innerHTML = OA.topBar(OA.mode === 'cold' ? 'CC' : 'OA') + `<div class="empty">Loading ${esc(a)}… (first time needs internet)</div>`; };
   OA.menu = function (d, ix) { const K = OA.K; const C = d.cables, R = C.filter(c => c[K.c.co] === 'RHI'); const base = R.length ? R : C;
     const pulled = base.filter(c => c[K.c.ps] === 'Completed').length, term = base.filter(c => c[K.c.tc] === 'Completed').length;
     const m = base.reduce((t, c) => t + (c[K.c.ln] || 0), 0), pm = base.reduce((t, c) => t + Math.min(c[K.c.pm] || 0, c[K.c.ln] || c[K.c.pm] || 0), 0);
     const I = d.items, idone = I.filter(x => x[K.i.q] > 0 && x[K.i.f] >= x[K.i.q] - 0.5).length;
     const po = d.punch.filter(p => p[K.p.st] === 'Open').length, ro = d.rhi.filter(p => p[K.p.st] === 'Open').length;
     const T2 = (h, b, n, pc, cls) => `<button class="tile ${cls || ''}" onclick="go('${h}')"><b>${b}</b><div><span class="n">${n}</span>${pc != null ? `<div class="pc">${pc}%</div><div class="pbar"><i style="width:${pc}%"></i></div>` : ''}</div></button>`;
-    const G = ix ? ix.g || {} : {}; const keys = MAIN.filter(k => G[k]).concat(Object.keys(G).filter(k => !MAIN.includes(k)).sort((x, y) => G[y][0] - G[x][0]));
-    main.innerHTML = OA.topBar('OA') + `<div class="card" style="padding:12px">${ix && ix.nm ? `<div style="font-size:13px;color:var(--mut)">${esc(ix.nm)}</div>` : ''}
+    const G = ix ? ix.g || {} : {}; const keys = d.cold ? Object.keys(G).filter(k => /heat|обогрев|EH/i.test(k)) : MAIN.filter(k => G[k]).concat(Object.keys(G).filter(k => !MAIN.includes(k)).sort((x, y) => G[y][0] - G[x][0]));
+    main.innerHTML = OA.topBar(d.cold ? 'CC' : 'OA') + (d.cold ? '<div style="font-size:12px;color:var(--mut);margin:0 2px 6px">❄️ Cold cables only (heat tracing EOES / AEOG) · information only</div>' : '') + `<div class="card" style="padding:12px">${ix && ix.nm ? `<div style="font-size:13px;color:var(--mut)">${esc(ix.nm)}</div>` : ''}
      <div class="kpi" style="margin:8px 0 6px"><div><b>${fm(base.length)}</b><span>cables ${R.length ? '(RHI)' : '(all companies)'}</span></div><div><b style="color:var(--ok)">${fm(pulled)}</b><span>pulled · ${P(pulled, base.length)}%</span></div><div><b style="color:var(--bad)">${fm(base.length - pulled)}</b><span>remaining to pull</span></div></div>
      <div class="kpi" style="margin-bottom:6px"><div><b>${fm(pm)} m</b><span>pulled of ${fm(m)} m</span></div><div><b style="color:var(--ok)">${fm(term)}</b><span>terminated · ${P(term, base.length)}%</span></div><div><b style="color:var(--bad)">${fm(base.length - term)}</b><span>remaining to terminate</span></div></div>
      ${keys.length ? `<div class="sect" style="margin-top:6px">IWP activities (RHI / all)</div>${keys.map(k => { const e = G[k]; const rhi = e[7] > 0; return bar(rhi ? e[8] : e[3], rhi ? e[7] : e[2], esc(k), `${fm(rhi ? e[8] : e[3])} / ${fm(rhi ? e[7] : e[2])} ${esc(e[4])}${rhi ? '' : ' · not RHI'}`); }).join('')}` : ''}</div>
      <div class="sect">📂 Details</div><div class="grid">
-     ${T2(`#/oa/${enc(d.a)}/c`, '🔌 Cables<br><span style="font-weight:400;font-size:12px">cable tracker · pulled / terminated</span>', `${fm(C.length)} cables · ${fm(R.length)} RHI`, P(pulled, base.length), 'main')}
-     ${T2(`#/oa/${enc(d.a)}/i`, '📋 IWP lines<br><span style="font-weight:400;font-size:12px">quantity · fact · remaining</span>', `${fm(idone)} / ${fm(I.length)} lines done`, P(idone, I.length), 'main')}
-     ${T2(`#/oa/${enc(d.a)}/p`, '🧾 Client punch<br><span style="font-weight:400;font-size:12px">master punch list · RHI responsible</span>', `${po} open · ${d.punch.length} total`, P(d.punch.length - po, d.punch.length))}
-     ${T2(`#/oa/${enc(d.a)}/r`, '🧾 RHI internal punch<br><span style="font-weight:400;font-size:12px">RHI QC register</span>', `${ro} open · ${d.rhi.length} total`, P(d.rhi.length - ro, d.rhi.length))}
-     ${T2(`#/oa/${enc(d.a)}/d`, '🧵 Cable drums<br><span style="font-weight:400;font-size:12px">assigned drums · remaining</span>', `${d.drums.length} drums`)}</div>
+     ${T2(`${OA.base()}/${enc(d.a)}/c`, '🔌 Cables<br><span style="font-weight:400;font-size:12px">cable tracker · pulled / terminated</span>', `${fm(C.length)} cables · ${fm(R.length)} RHI`, P(pulled, base.length), 'main')}
+     ${T2(`${OA.base()}/${enc(d.a)}/i`, '📋 IWP lines<br><span style="font-weight:400;font-size:12px">quantity · fact · remaining</span>', `${fm(idone)} / ${fm(I.length)} lines done`, P(idone, I.length), 'main')}
+     ${T2(`${OA.base()}/${enc(d.a)}/p`, '🧾 Client punch<br><span style="font-weight:400;font-size:12px">master punch list · RHI responsible</span>', `${po} open · ${d.punch.length} total`, P(d.punch.length - po, d.punch.length))}
+     ${T2(`${OA.base()}/${enc(d.a)}/r`, '🧾 RHI internal punch<br><span style="font-weight:400;font-size:12px">RHI QC register</span>', `${ro} open · ${d.rhi.length} total`, P(d.rhi.length - ro, d.rhi.length))}
+     ${T2(`${OA.base()}/${enc(d.a)}/d`, '🧵 Cable drums<br><span style="font-weight:400;font-size:12px">assigned drums · remaining</span>', `${d.drums.length} drums`)}</div>
+     ${d.cold && OA.dw[d.a] ? `<div class="sect">AEOG drawings (${OA.dw[d.a].length})</div><div class="list">${OA.dw[d.a].map(x => `<div class="li"><div class="m"><div class="t">${esc(x[0])}</div><div class="s">${esc(x[1])} · rev ${esc(x[2])} · ${esc(x[3])}</div></div></div>`).join('')}</div>` : ''}
      <div class="foot">Data ${esc(d.date)} · Md cable tracker, IWP status, master punch list, RHI punch register</div>`; };
 
   // ---------------- cables
@@ -101,7 +104,7 @@
     main.innerHTML = `<input class="fin" placeholder="Cable, from / to, drum, ident…" value="${esc(v.q)}" oninput="VS.OC.q=this.value;VS.OC.lim=100;OA.cables(OA.cur)">
      <div class="chips">${[['all', 'All'], ['np', 'Not pulled'], ['nt', 'Pulled · term. open'], ['ok', 'Completed'], ['hold', 'HOLD']].map(([k, l]) => `<button class="chip ${v.f === k ? 'on' : ''}" onclick="VS.OC.f='${k}';VS.OC.lim=100;OA.cables(OA.cur)">${l}</button>`).join('')}${[['rhi', 'RHI'], ['all', 'All companies']].map(([k, l]) => `<button class="chip ${v.co === k ? 'on' : ''}" onclick="VS.OC.co='${k}';VS.OC.lim=100;OA.cables(OA.cur)">${l}</button>`).join('')}</div>
      <select onchange="VS.OC.sy=this.value;VS.OC.lim=100;OA.cables(OA.cur)"><option value="">All systems (${syss.length})</option>${syss.map(y => `<option ${v.sy === y ? 'selected' : ''}>${esc(y)}</option>`).join('')}</select>
-     <div class="list">${L.slice(0, v.lim).map(([c, i]) => { const s = CST(c, K); return `<button class="li" onclick="go('#/oa/${enc(d.a)}/c/${i}')"><div class="m" style="min-width:0"><div class="t">${esc(c[K.c.t])}${c[K.c.h] ? ' <span class="badge b-no">HOLD</span>' : ''}</div><div class="s" style="white-space:normal">${esc(c[K.c.ty])} ${esc(c[K.c.c])} · ${fmtn(c[K.c.pm])} / ${fmtn(c[K.c.ln])} m${c[K.c.dr] ? ' · drum ' + esc(c[K.c.dr]) : ''}${c[K.c.co] && c[K.c.co] !== 'RHI' ? ' · ' + esc(c[K.c.co]) : ''}</div><div class="s">${esc(String(c[K.c.o]).slice(-60))}</div></div><span class="badge ${s.c}">${s.l}</span><span class="chev">›</span></button>`; }).join('') || '<div class="empty">No cables</div>'}</div>
+     <div class="list">${L.slice(0, v.lim).map(([c, i]) => { const s = CST(c, K); return `<button class="li" onclick="go('${OA.base()}/${enc(d.a)}/c/${i}')"><div class="m" style="min-width:0"><div class="t">${esc(c[K.c.t])}${c[K.c.h] ? ' <span class="badge b-no">HOLD</span>' : ''}</div><div class="s" style="white-space:normal">${esc(c[K.c.ty])} ${esc(c[K.c.c])} · ${fmtn(c[K.c.pm])} / ${fmtn(c[K.c.ln])} m${c[K.c.dr] ? ' · drum ' + esc(c[K.c.dr]) : ''}${c[K.c.co] && c[K.c.co] !== 'RHI' ? ' · ' + esc(c[K.c.co]) : ''}</div><div class="s">${esc(String(c[K.c.o]).slice(-60))}</div></div><span class="badge ${s.c}">${s.l}</span><span class="chev">›</span></button>`; }).join('') || '<div class="empty">No cables</div>'}</div>
      ${L.length > v.lim ? `<button class="more" onclick="VS.OC.lim+=200;OA.cables(OA.cur)">Show more (${L.length - v.lim} left)</button>` : ''}`; };
   OA.cable = function (d, i) { const K = OA.K, c = d.cables[i]; if (!c) { main.innerHTML = '<div class="empty">Cable not found</div>'; return; } const s = CST(c, K);
     setHead(c[K.c.t], d.a + ' · ' + esc(c[K.c.sys]));
@@ -113,7 +116,7 @@
      ${row('From', esc(c[K.c.f]))}${row('To', esc(c[K.c.o]))}${row('Type', esc(c[K.c.ty] + ' ' + c[K.c.c]))}${row('Ident', esc(c[K.c.id]))}${row('Design length', fmtn(c[K.c.ln]) + ' m')}
      ${row('Pulled', (c[K.c.pm] ? fmtn(c[K.c.pm]) + ' m' : '–') + (c[K.c.pd] ? ' · ' + esc(c[K.c.pd]) : '') + (c[K.c.ps] ? ' · ' + esc(c[K.c.ps]) : ''))}
      ${row('Termination', [c[K.c.tf] ? 'from ' + c[K.c.tf] : '', c[K.c.tt] ? 'to ' + c[K.c.tt] : '', c[K.c.tc]].filter(Boolean).map(esc).join(' · ') || '–')}
-     ${row('Drum', c[K.c.dr] ? `<span class="link" onclick="go('#/oa/${enc(d.a)}/d/${enc(c[K.c.dr])}')">${esc(c[K.c.dr])}</span>${dr ? ` · ${fmtn(dr[K.d.len])} m on drum · ${fmtn(dr[K.d.rem])} m remaining` : ''}` : '')}
+     ${row('Drum', c[K.c.dr] ? `<span class="link" onclick="go('${OA.base()}/${enc(d.a)}/d/${enc(c[K.c.dr])}')">${esc(c[K.c.dr])}</span>${dr ? ` · ${fmtn(dr[K.d.len])} m on drum · ${fmtn(dr[K.d.rem])} m remaining` : ''}` : '')}
      ${row('Company', esc(c[K.c.co]))}${row('RFI', esc(c[K.c.rfi]))}${row('Drawing', esc(c[K.c.doc]))}</div>
      ${iw.length ? `<div class="sect">IWP lines</div><div class="list">${iw.map(x => OA.iRow(x, K)).join('')}</div>` : ''}
      ${pu.length ? `<div class="sect">Punch on this cable</div><div class="list">${pu.join('')}</div>` : ''}`; };
@@ -157,19 +160,43 @@
     const L = d.drums.filter(x => !nq || N(x[K.d.no] + ' ' + x[K.d.id] + ' ' + x[K.d.ty] + ' ' + x[K.d.c]).includes(nq) || x[K.d.cab].some(c => N(c[0]).includes(nq)));
     setHead(d.a + ' · drums', `${d.drums.length} drums assigned to cables of this area`);
     main.innerHTML = `<input class="fin" placeholder="Drum no, ident, cable type, cable…" value="${esc(v.q)}" oninput="VS.ODR.q=this.value;OA.drums(OA.cur)">
-     <div class="list">${L.slice(0, v.lim).map(x => { const here = x[K.d.cab].filter(c => c[1] === d.a); const pulled = x[K.d.cab].filter(c => c[4]).length; return `<button class="li" onclick="go('#/oa/${enc(d.a)}/d/${enc(x[K.d.no])}')"><div class="m" style="min-width:0"><div class="t">${esc(x[K.d.no])} <span class="badge b-na">${esc(x[K.d.id])}</span></div><div class="s">${esc(x[K.d.ty])} ${esc(x[K.d.c])} · ${fmtn(x[K.d.len])} m on drum · <b>${fmtn(x[K.d.rem])} m remaining</b></div><div class="s">${x[K.d.cab].length} cables (${here.length} in this area) · ${pulled} pulled${x[K.d.org] ? ' · ' + esc(x[K.d.org]) : ''}</div></div><span class="chev">›</span></button>`; }).join('') || '<div class="empty">No drums</div>'}</div>
+     <div class="list">${L.slice(0, v.lim).map(x => { const here = x[K.d.cab].filter(c => c[1] === d.a); const pulled = x[K.d.cab].filter(c => c[4]).length; return `<button class="li" onclick="go('${OA.base()}/${enc(d.a)}/d/${enc(x[K.d.no])}')"><div class="m" style="min-width:0"><div class="t">${esc(x[K.d.no])} <span class="badge b-na">${esc(x[K.d.id])}</span></div><div class="s">${esc(x[K.d.ty])} ${esc(x[K.d.c])} · ${fmtn(x[K.d.len])} m on drum · <b>${fmtn(x[K.d.rem])} m remaining</b></div><div class="s">${x[K.d.cab].length} cables (${here.length} in this area) · ${pulled} pulled${x[K.d.org] ? ' · ' + esc(x[K.d.org]) : ''}</div></div><span class="chev">›</span></button>`; }).join('') || '<div class="empty">No drums</div>'}</div>
      ${L.length > v.lim ? `<button class="more" onclick="VS.ODR.lim+=200;OA.drums(OA.cur)">Show more</button>` : ''}`; };
   OA.drum = function (d, x) { const K = OA.K; setHead('Drum ' + x[K.d.no], x[K.d.id] + ' · ' + x[K.d.ty] + ' ' + x[K.d.c]);
     const asg = x[K.d.cab].reduce((t, c) => t + (c[2] || 0), 0), pl = x[K.d.cab].reduce((t, c) => t + (c[3] || 0), 0);
     main.innerHTML = `<div class="kpi"><div><b>${fmtn(x[K.d.len])} m</b><span>on drum</span></div><div><b>${fmtn(asg)} m</b><span>assigned · ${x[K.d.cab].length} cables</span></div><div><b style="color:${x[K.d.rem] < 0 ? 'var(--bad)' : 'var(--ok)'}">${fmtn(x[K.d.rem])} m</b><span>remaining (tracker)</span></div></div>
      <div style="font-size:12px;color:var(--mut);margin-bottom:6px">${fmtn(pl)} m pulled so far · organisations: ${esc(x[K.d.org] || '-')}</div>
-     <div class="list">${x[K.d.cab].slice().sort((a, b) => a[1].localeCompare(b[1])).map(c => `<div class="li" ${c[1] === d.a ? `onclick="VS.OC=VS.OC||{};VS.OC.q=${JSON.stringify(c[0]).replace(/"/g, '&quot;')};VS.OC.co='all';go('#/oa/${enc(d.a)}/c')"` : ''}><div class="m" style="min-width:0"><div class="t">${esc(c[0])}</div><div class="s">${esc(c[1])} · ${fmtn(c[2])} m design · ${fmtn(c[3])} m pulled</div></div>${c[4] ? '<span class="badge b-ok">Pulled</span>' : '<span class="badge b-no">Not pulled</span>'}</div>`).join('')}</div>`; };
+     <div class="list">${x[K.d.cab].slice().sort((a, b) => a[1].localeCompare(b[1])).map(c => `<div class="li" ${c[1] === d.a ? `onclick="VS.OC=VS.OC||{};VS.OC.q=${JSON.stringify(c[0]).replace(/"/g, '&quot;')};VS.OC.co='all';go('${OA.base()}/${enc(d.a)}/c')"` : ''}><div class="m" style="min-width:0"><div class="t">${esc(c[0])}</div><div class="s">${esc(c[1])} · ${fmtn(c[2])} m design · ${fmtn(c[3])} m pulled</div></div>${c[4] ? '<span class="badge b-ok">Pulled</span>' : '<span class="badge b-no">Not pulled</span>'}</div>`).join('')}</div>`; };
+
+  // ---------------- COLD CABLES: heat tracing (EH: EOES power supply + AEOG automation) – same screens, filtered
+  const isEH = (c, K) => c[K.c.dc] === 'EH' || String(c[K.c.sys]).startsWith('EH-');
+  const isEHi = x => /heat|обогрев|^eh$|eht/i.test(String(x[1] || ''));
+  OA.coldView = function (d) { if (OA.coldD[d.a]) return OA.coldD[d.a]; const K = OA.K;
+    const cables = d.cables.filter(c => isEH(c, K)); const tags = new Set(cables.map(c => c[K.c.t])); const drs = new Set(cables.map(c => c[K.c.dr]).filter(Boolean));
+    const isP = p => tags.has(p[K.p.tag]) || /обогрев|heat|EOES|AEOG/i.test(p[K.p.tagd] + ' ' + p[K.p.den] + ' ' + p[K.p.sub] + ' ' + p[K.p.disc]);
+    const v = Object.assign({}, d, {cables, items: d.items.filter(x => isEHi(x) || tags.has(x[K.i.tag])), punch: d.punch.filter(isP), rhi: d.rhi.filter(isP), drums: d.drums.filter(x => drs.has(x[K.d.no])), cold: true});
+    return OA.coldD[d.a] = v; };
+  OA.coldD = {};
+  OA.coldHome = function () { setHead('Cold cables', 'heat tracing – EOES / AEOG · data ' + ((OA.idx || {}).date || '…')); qbox.value = '';
+    if (!OA.idx) { main.innerHTML = OA.topBar('CC') + '<div class="empty">Loading areas…</div>'; OA.loadIdx(() => { if (location.hash === '#/cc') OA.coldHome(); }); return; }
+    const L = OA.idx.areas.filter(a => a.eh && a.eh[0] > 0).sort((x, y) => y.eh[0] - x.eh[0]);
+    const t = L.reduce((s, a) => { s.n += a.eh[0]; s.p += a.eh[2]; s.t += a.eh[3]; s.m += a.eh[4]; s.pm += a.eh[5]; s.r += a.eh[1]; s.rp += a.eh[6]; return s; }, {n: 0, p: 0, t: 0, m: 0, pm: 0, r: 0, rp: 0});
+    main.innerHTML = OA.topBar('CC') + `<div style="font-size:12px;color:var(--mut);margin:0 2px 6px">ℹ️ Information only – heat-tracing cables (EOES power, AEOG automation) from the cable tracker, IWP, punch lists and drums. No site entry, no report to Paul here.</div>
+     <div class="kpi"><div><b>${fm(t.n)}</b><span>cold cables · ${fm(t.r)} RHI</span></div><div><b style="color:var(--ok)">${fm(t.p)}</b><span>pulled · ${P(t.p, t.n)}%</span></div><div><b style="color:var(--bad)">${fm(t.n - t.p)}</b><span>remaining to pull</span></div></div>
+     <div class="kpi"><div><b>${fm(t.pm)} m</b><span>pulled of ${fm(t.m)} m</span></div><div><b style="color:var(--ok)">${fm(t.t)}</b><span>terminated · ${P(t.t, t.n)}%</span></div><div><b style="color:var(--bad)">${fm(t.n - t.t)}</b><span>remaining to terminate</span></div></div>
+     <div class="sect">Areas – pulled / total cold cables</div>
+     ${L.map(a => bar(a.eh[2], a.eh[0], esc(a.a) + (a.eh[1] ? ` <span class="badge b-na">${a.eh[1]} RHI</span>` : ''), `${fm(a.eh[2])} / ${fm(a.eh[0])} · term. ${fm(a.eh[3])}${OA.dw[a.a] ? ' · ' + OA.dw[a.a].length + ' AEOG dwg' : ''}`, `go('#/cc/${enc(a.a)}')`)).join('')}
+     <div class="sect">AEOG drawings saved (${Object.values(OA.dw).reduce((n, l) => n + l.length, 0)})</div><div style="font-size:12px;color:var(--mut);margin:0 2px 6px">Drawing list only – the PDF files are with the engineer (too large for the phone app).</div>
+     ${Object.keys(OA.dw).sort().map(k => `<div class="card" style="padding:10px"><b>${esc(k)}</b><div style="font-size:12px;margin-top:4px">${OA.dw[k].map(x => `${esc(x[1])} rev ${esc(x[2])} ${esc(x[3])}`).join(' · ')}</div></div>`).join('')}`; };
+  OA.base = () => OA.mode === 'cold' ? '#/cc' : '#/oa';
+  OA.dw = {};
+  OA.loadDw = function () { getJ('areas/cold_drawings.json').then(d => { OA.dw = d || {}; if (location.hash.startsWith('#/cc')) route(); }).catch(() => {}); };
 
   // ---------------- routing (called from route() in app.js)
-  OA.route = function (rest) { const a = dec(rest[0] || ''); if (!a) return OA.home(); return OA.area(a, rest[1] || '', rest.slice(2).map(dec).join('/')); };
+  OA.route = function (rest, cold) { OA.mode = cold ? 'cold' : ''; const a = dec(rest[0] || ''); if (!a) return cold ? OA.coldHome() : OA.home(); return OA.area(a, rest[1] || '', rest.slice(2).map(dec).join('/')); };
   // dashboard on the first page: inserted after the project bar
   const _home = window.home;
   window.home = function () { _home(); const pb = main.firstElementChild; if (pb) pb.insertAdjacentHTML('afterend', OA.dash()); };
-  OA.loadIdx(() => { if (atHome()) route(); });
+  OA.loadIdx(() => { if (atHome()) route(); }); OA.loadDw();
   if (location.hash.startsWith('#/oa')) route();
 })();

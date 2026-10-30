@@ -297,7 +297,11 @@ def main():
         for e in G.values():
             for j in (2, 3, 7, 8):
                 e[j] = num(e[j])
+        EH = [c for c in C if c[ck['dc']] == 'EH' or c[ck['sys']].startswith('EH-')]      # cold cables = heat tracing (EOES / AEOG)
+        EHR = [c for c in EH if c[ck['co']] == 'RHI']
         row = {'a': ar, 'nm': names.get(ar, ''), 'g': G,
+               'eh': [len(EH), len(EHR), sum(1 for c in EH if c[ck['ps']] == 'Completed'), sum(1 for c in EH if c[ck['tc']] == 'Completed'),
+                      num(sum(c[ck['ln']] for c in EH)), num(sum(c[ck['pm']] for c in EH)), sum(1 for c in EHR if c[ck['ps']] == 'Completed'), sum(1 for c in EHR if c[ck['tc']] == 'Completed')],
                'cab': [len(C), len(rhi), pulled, term, num(sum(c[ck['ln']] for c in rhi)), num(sum(c[ck['pm']] for c in rhi))],
                'iwp': [len(I), done], 'cl': [len(P), sum(1 for p in P if p[pk['st']] == 'Open')],
                'rh': [len(R), sum(1 for p in R if p[pk['st']] == 'Open')], 'dr': len(D)}
