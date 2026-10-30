@@ -70,6 +70,36 @@ function tickBtns(c, dir) { const s = cst(c), b = cBase(c), e = S2.c[c.t] || {};
   const v = k => k === 'P' ? s.p === true : (e[k] ? e[k].v : b[k]);
   const btn = (k, l, ru) => `<button class="tg ${v(k) ? 'y' : (e[k] ? 'n' : '')}" onclick="event.stopPropagation();cTick(decodeURIComponent('${enc(c.t)}'),'${k}')">${v(k) ? '✓ ' : ''}${l}<small>${e[k] ? dstr(e[k].t) : ''}</small></button>`;
   return `<div class="btns">${btn('P', 'Pulled', 'Проложен')}${btn(ek, 'Term. this end', 'Подкл. здесь')}${btn(ok, 'Term. other end', 'Подкл. др. конец')}</div>${lenBox(c)}`; }
+// v4.2: site check shows IWP and cable tracker status side by side (pulled / this end / other end)
+function srcTbl(c, dir) {
+  const L = (IBY[c.t] || []).filter(x => /pull/i.test(x.g)), M = (IBY[c.t] || []).filter(x => /termination/i.test(x.g));
+  const ek = dir === 'IN' ? 'T' : 'F';
+  const Y = (ok, sub) => `<td style="padding:5px 4px;text-align:center;border-top:1px solid var(--line,#e3e8ef)"><b style="color:${ok === true ? 'var(--ok,#1e8e3e)' : ok === false ? 'var(--no,#c62828)' : 'var(--mut)'}">${ok === true ? '✓' : ok === false ? '✗' : '–'}</b>${sub ? `<br><small style="color:var(--mut)">${esc(sub)}</small>` : ''}</td>`;
+  let ip = null, ipS = '', i1 = null, i2 = null, itS = '';
+  if (L.length) { const q = L.reduce((a, x) => a + x.q, 0), f = L.reduce((a, x) => a + x.f, 0); ip = L.every(x => x.done); ipS = `${fmtn(f)} / ${fmtn(q)} ${L[0].u || 'm'}`; }
+  if (M.length) { const q = M.reduce((a, x) => a + x.q, 0), f = M.reduce((a, x) => a + x.f, 0); i1 = f >= 1; i2 = q >= 2 ? f >= 2 : i1; itS = `${fmtn(f)} / ${fmtn(q)} ends`; }
+  const tp = c.tp === 'Completed' || !!c.pd ? true : (c.tp ? false : null);
+  const both = c.tt === 'Completed';
+  const dThis = ek === 'F' ? c.tf : c.tto, dOther = ek === 'F' ? c.tto : c.tf;
+  const t1 = dThis || both ? true : (c.tt || c.tf || c.tto ? false : null), t2 = dOther || both ? true : (c.tt || c.tf || c.tto ? false : null);
+  const th = h => `<th style="padding:4px;font-size:12px;color:var(--mut);font-weight:600;text-align:center">${h}</th>`;
+  return `<table style="width:100%;border-collapse:collapse;font-size:13px"><tr>${th('')}${th('Pulled<br>Проложен')}${th('Term. this end<br>Подкл. здесь')}${th('Term. other end<br>Подкл. др. конец')}</tr>
+   <tr><td style="padding:5px 4px;border-top:1px solid var(--line,#e3e8ef)"><b>IWP</b>${c.la || c.ta ? `<br><small style="color:var(--mut)">${esc([c.la, c.ta].filter(Boolean).join(' / '))}</small>` : ''}</td>${Y(ip, ipS)}${Y(i1, itS)}${Y(i2, '')}</tr>
+   <tr><td style="padding:5px 4px;border-top:1px solid var(--line,#e3e8ef)"><b>Cable tracker</b></td>${Y(tp, c.pd || c.tp)}${Y(t1, dThis || (both ? c.tt : ''))}${Y(t2, dOther || (both ? c.tt : ''))}</tr></table>
+   ${M.length ? '<div style="font-size:11px;color:var(--mut);margin-top:3px">IWP counts terminated ends, not which end.</div>' : ''}${paulMsg(c, dir, {P: [ip, tp, L.length], A: [i1, t1, M.length], B: [i2, t2, M.length]})}`; }
+// v4.2: what to report to Paul (data owner) when IWP / tracker / site check do not agree
+function paulMsg(c, dir, R) {
+  const e = S2.c[c.t] || {}, ek = dir === 'IN' ? 'T' : 'F', ok = ek === 'F' ? 'T' : 'F';
+  const site = {P: e.P ? e.P.v : null, A: e[ek] ? e[ek].v : null, B: e[ok] ? e[ok].v : null};
+  const NM = {P: 'Pulled', A: 'Term. this end', B: 'Term. other end'};
+  const iw = [], tr = [];
+  for (const k of ['P', 'A', 'B']) { const [i, t, has] = R[k]; const done = site[k] === true || i === true || t === true;
+    if (!done) continue;
+    if (i !== true) iw.push(NM[k] + (has ? '' : ' (no IWP line)'));
+    if (t !== true) tr.push(NM[k]); }
+  const ln = (l, a) => `<div style="margin-top:6px;padding:7px 9px;border-radius:8px;background:#fdecea;color:#b3261e;font-size:13px"><b>${l}</b><br>${esc(a.join(' · '))}</div>`;
+  if (!iw.length && !tr.length) return '<div style="margin-top:6px;padding:7px 9px;border-radius:8px;background:#e6f4ea;color:#1e7e34;font-size:13px"><b>✓ IWP and cable tracker agree</b></div>';
+  return (iw.length ? ln('Report to Paul for IWP / Сообщить Паулю (IWP)', iw.map(x => x + (c.la || c.ta ? '' : ''))) : '') + (tr.length ? ln('Report to Paul for cable tracker / Сообщить Паулю (кабельный журнал)', tr) : ''); }
 function cCard(c, dir) { const s = cst(c); return `<div class="cbx ${s.ok ? 'ok' : s.p ? 'part' : 'no'}"><div onclick="go('#/c/${enc(c.t)}')"><span class="badge b-na" style="margin-right:6px">${dir || ''}</span><b style="word-break:break-all">${esc(c.t)}</b> <span class="badge ${s.c}">${s.l}</span>${holdMini(c.t)}${probMini(c.t)}
   <div class="s2">${dir === 'IN' ? 'From' : 'To'}: ${esc(((dir === 'IN' ? c.f : c.o) || '').slice(-90))}</div><div class="s2">${esc(c.ty)} ${esc(c.c)} · ${esc(c.ln)} m${c.q ? ' · ⚠ CTQ' : ''}</div></div>${tickBtns(c, dir)}</div>`; }
 const ist_old = x => x.done ? {l: 'Done', c: 'b-ok'} : (x.f > 0 ? {l: 'Partly', c: 'b-part'} : {l: 'Not done', c: 'b-no'});
@@ -205,7 +235,7 @@ function cableView(t) {
   const c = CBY[t]; if (!c) { main.innerHTML = '<div class="empty">Cable not found</div>'; return; }
   const s = cst(c); setHead('Cable', c.t); const lines = IBY[c.t] || [];
   main.innerHTML = `${probCard([c.t])}${holdCard(c.t)}<div class="card"><div class="big">${esc(c.t)}</div><div style="margin:6px 0"><span class="badge ${s.c}" style="font-size:13px">${s.l}</span>${holdMini(c.t)}</div>${cableBody(c)}</div>
-   <div class="card"><div class="h3">Site check / Проверка на месте</div>${tickBtns(c, 'OUT')}<input class="fin" style="margin-top:8px" placeholder="Remark / примечание" value="${esc((S2.c[c.t] || {}).R ? S2.c[c.t].R.v : '')}" onchange="cRem(decodeURIComponent('${enc(c.t)}'),this.value)"></div>
+   <div class="card"><div class="h3">Site check / Проверка на месте</div>${srcTbl(c, 'OUT')}<div style="font-size:12px;color:var(--mut);margin:10px 2px 4px">Site check on this phone / отметка на месте:</div>${tickBtns(c, 'OUT')}<input class="fin" style="margin-top:8px" placeholder="Remark / примечание" value="${esc((S2.c[c.t] || {}).R ? S2.c[c.t].R.v : '')}" onchange="cRem(decodeURIComponent('${enc(c.t)}'),this.value)"></div>
    <div class="card"><div class="h3">Pulling / Прокладка</div>${kv([['Status', s.p === true ? '✓ Completed' : (s.p === false ? '✗ Not completed' : '–')], ['Tracker', c.tp], ['Pull date', c.pd], ['IWP access ID', c.la], ['IWP qty / done', c.lq !== '' ? `${fmtn(c.lq)} / ${fmtn(c.lf)} m` : ''], ['Company', c.co]])}</div>
    <div class="card"><div class="h3">Termination / Подключение</div>${kv([['Status', s.t === true ? '✓ Completed' : (s.t === false ? '✗ Not completed' : '–')], ['Tracker', c.tt], ['From end date', c.tf], ['To end date', c.tto], ['IWP access ID', c.ta], ['IWP ends done', c.tq !== '' ? `${c.tfa} / ${c.tq}` : '']])}</div>
    ${lines.length ? `<div class="card"><div class="h3">IWP lines (${lines.length})</div><div class="list">${lines.map(y => { const s2 = ist(y); return `<button class="li" onclick="go('#/i/${y.i}')"><div class="m"><div class="t">${esc(y.g)}</div><div class="s">Access ID ${esc(y.acc)} · ${fmtn(y.f)}/${fmtn(y.q)} ${esc(y.u)} · ${esc(T.co[y.co])}</div></div><span class="badge ${s2.c}">${s2.l}</span><span class="chev">›</span></button>`; }).join('')}</div></div>` : ''}
@@ -591,7 +621,7 @@ function ownPunch() { const d = VS.OW.d; const one = {}; (S2.rx || []).filter(r 
   copyText(Object.values(one).map(r => [r.no, r.v === 'F' ? 'Fixed' : 'Not fixed', d.split('-').reverse().join('.'), r.tag, r.by].join('\t')).join('\n')).then(() => toast('Punch list copied')); }
 
 // ======== v3.2 modules ========
-const APPV = '4.1';
+const APPV = '4.2';
 const shortT = t => String(t || '').replace(/^G0-D(18|48)10BX0-/, '').replace(/^G0-D(18|48)01FX0-/, 'FX0-');
 const SYSN = {'EL-ESPS': ['Substation 10/0.4 kV & power supply', 'Подстанция 10/0,4 кВ'], 'EL-EMSV': ['Power installation (boards, UPS, motors)', 'Силовое электрооборудование'], 'EL-ESBZ': ['Power supply from utility substation', 'Электроснабжение от ПС'], 'EL-ELOV': ['Indoor lighting', 'Внутреннее освещение'], 'EL-EG02': ['Earthing & lightning protection', 'Заземление и молниезащита'], 'EL-EG01': ['Area earthing', 'Заземление площадки'], 'EH-EOES': ['Electric heating', 'Электрообогрев'], 'EH-AEOG': ['Heat tracing', 'Электрообогрев (кабель)'], 'EH-EOBK': ['Electric heating (other)', 'Электрообогрев'],
   'IN-DCS': ['Distributed Control System (DCS)', 'РСУ'], 'IN-ESD': ['Emergency Shutdown (ESD)', 'ПАЗ'], 'IN-SPAP': ['Fire alarm & fire fighting control (AFA&FFS)', 'АСПС и ПТ'], 'IN-GDSS': ['Gas detection', 'Контроль загазованности'], 'IN-ASUE': ['Utilities control system', 'АСУ ЭО (утилиты)'], 'IN-ASUS': ['Power supply control system', 'АСУ ЭС'], 'IN-ASKU': ['Utility metering (AUMS)', 'АСКУ ЭР'], 'IN-MAEC': ['Rotating equipment monitoring (CMS)', 'МСО и ВО'], 'IN-MFMS': ['Material flow metering (MFMS)', 'СУМП'], 'IN-AKVS': ['Emission monitoring (CEMS)', 'АКВС'], 'IN-INTS': ['Operator training simulator', 'Тренажёр оператора'], 'IN-INSS': ['Information security', 'СОИБ'], 'IN-AOVK': ['HVAC automation', 'Автоматизация ОВиК'], 'IN-AKMP': ['Analyzer system', 'Анализаторы'],
