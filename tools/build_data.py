@@ -15,7 +15,16 @@ Usage:
 import argparse, datetime, glob, json, os, re, sys, time
 
 SITES = {'ccr': (('G0-D1810BX0', 'G0-D1801FX0'), 'D1810|D1801'),
-         'd48': (('G0-D4810BX0', 'G0-D4801FX0'), 'D4810|D4801')}
+         'd48': (('G0-D4810BX0', 'G0-D4801FX0'), 'D4810|D4801'),
+         # cold cables = heat tracing (EH: EOES power supply + AEOG automation) in the areas whose AEOG drawings the user holds
+         'cold': (('G0-A10200X0', 'G0-D10250X0', 'G1-A30210X0'), 'A10200|D10250|A30210')}
+DISC_RX = {'cold': r'-EH-'}          # extra filter on the document number (discipline) for a site
+EH_TXT = re.compile(r'обогрев|heat trac|EOES|AEOG', re.I)
+
+
+def in_disc(doc):
+    rx = DISC_RX.get(SITE)
+    return not rx or re.search(rx, S(doc))
 SITE = 'ccr'
 CCR, SITE_RX = SITES['ccr']   # building tags of the selected site (name kept for history)
 PATTERNS = {
@@ -196,7 +205,7 @@ def build_items(rows, prev, T):
     prev_order = {r[0]: i for i, r in enumerate(prev['items'])}
     new = []
     for r in rows[5:]:
-        if len(r) < 47 or S(col(r, 2)) not in CCR:
+        if len(r) < 47 or S(col(r, 2)) not in CCR or not in_disc(col(r, 5)):
             continue
         acc = acc_s(col(r, 34))
         if not acc:
@@ -325,7 +334,7 @@ def build_cables(rows, prev, items, rawp_rows):
         if t in have:
             continue
         r = pick_row(cands)
-        if not (S(col(r, 14)) in CCR or S(col(r, 24)) in CCR or S(col(r, 25)) in CCR):
+        if not (S(col(r, 14)) in CCR or S(col(r, 24)) in CCR or S(col(r, 25)) in CCR) or not in_disc(col(r, 0)):
             continue
         if S(col(r, 35)):          # deleted / duplicated / in another project -> not added
             continue
@@ -536,6 +545,8 @@ def build_punch(mrows, rrows, prev):
         tit = S(col(r, 1))
         if not tit or not re.search(SITE_RX, tit) or not S(col(r, 0)) or S(col(r, 0)) == '#':
             continue
+        if DISC_RX.get(SITE) and not EH_TXT.search(' '.join(S(col(r, c)) for c in (5, 6, 8, 9, 10, 12, 13, 32))):
+            continue
         no = acc_s(col(r, 0))
         o = {'no': no, 'tit': tx('tit', (tit + ' ' + S(col(r, 2))).strip() if S(col(r, 2)) else tit + ' '),
              'sys': tx('sys', (S(col(r, 3)) + ' ' + S(col(r, 4))).strip()), 'sub': tx('sub', S(col(r, 5))),
@@ -562,6 +573,8 @@ def build_punch(mrows, rrows, prev):
     for r in (rrows or [])[1:]:
         t = S(col(r, 1))
         if t not in CCR or not S(col(r, 0)):
+            continue
+        if DISC_RX.get(SITE) and not EH_TXT.search(' '.join(S(col(r, c)) for c in (2, 3, 5, 6, 7, 9))):
             continue
         sub = S(col(r, 2))
         sy, sn = sub_info.get(sub, (tx('sys', ''), tx('subn', '')))
@@ -590,7 +603,7 @@ def build_reg(rows, prev):
     old = {r[0]: r for r in prev['reg']}
     best = {}
     for r in rows[2:]:
-        if len(r) < 30 or S(col(r, 8)) not in CCR or not S(col(r, 16)):
+        if len(r) < 30 or S(col(r, 8)) not in CCR or not S(col(r, 16)) or not in_disc(col(r, 16)):
             continue
         no = S(col(r, 16))
         d = col(r, 29)
@@ -727,7 +740,7 @@ def main():
     ap.add_argument('--base', default='data_base.json', help='last good data in the app schema (schema reference)')
     ap.add_argument('--current', default='data.json', help='current data.json; used for carry-forward if valid')
     ap.add_argument('--out', default='data.json')
-    ap.add_argument('--site', default='ccr', choices=sorted(SITES), help='ccr = G0-D1810/D1801, d48 = G0-D4810/D4801')
+    ap.add_argument('--site', default='ccr', choices=sorted(SITES), help='ccr = G0-D1810/D1801, d48 = G0-D4810/D4801, cold = heat tracing (EH) in A10200/D10250/A30210')
     a = ap.parse_args()
     global SITE, CCR, SITE_RX
     SITE = a.site
