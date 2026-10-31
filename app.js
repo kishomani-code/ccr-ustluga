@@ -132,6 +132,7 @@ function route() {
   if (k === 'cc' && window.OA) return OA.route(rest, true);   // v4.3 COLD CABLES
   if (k === 'bm' && window.OA) return OA.bulk(a);   // v4.3 bulk materials (tray, conduits, earthing, supports…)
   if (k === 'lt' && window.LT) return LT.route(rest);   // v4.4 LOTO
+  if (k === 'cr' && window.OA) return OA.canReport();   // v4.4 can report (bulk by cable progress)
   if (k === 'a') return actView(a);
   if (k === 'i') return itemView(Number(a));
   if (k === 'p') return a ? panelView(a) : panelList();
