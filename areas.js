@@ -91,7 +91,8 @@
      ${T2(`${OA.base()}/${enc(d.a)}/i`, '📋 IWP lines<br><span style="font-weight:400;font-size:12px">quantity · fact · remaining</span>', `${fm(idone)} / ${fm(I.length)} lines done`, P(idone, I.length), 'main')}
      ${T2(`${OA.base()}/${enc(d.a)}/p`, '🧾 Client punch<br><span style="font-weight:400;font-size:12px">master punch list · RHI responsible</span>', `${po} open · ${d.punch.length} total`, P(d.punch.length - po, d.punch.length))}
      ${T2(`${OA.base()}/${enc(d.a)}/r`, '🧾 RHI internal punch<br><span style="font-weight:400;font-size:12px">RHI QC register</span>', `${ro} open · ${d.rhi.length} total`, P(d.rhi.length - ro, d.rhi.length))}
-     ${T2(`${OA.base()}/${enc(d.a)}/d`, '🧵 Cable drums<br><span style="font-weight:400;font-size:12px">assigned drums · remaining</span>', `${d.drums.length} drums`)}</div>
+     ${T2(`${OA.base()}/${enc(d.a)}/d`, '🧵 Cable drums<br><span style="font-weight:400;font-size:12px">assigned drums · remaining</span>', `${d.drums.length} drums`)}
+     ${T2(`${OA.base()}/${enc(d.a)}/lt`, '🔒 LOTO<br><span style="font-weight:400;font-size:12px">which breaker feeds a JB / panel · live sources</span>', `${window.LT ? LT.live().filter(x => !x.area || x.area === d.a || true).length : 0} live sources declared`, null, 'main')}</div>
      ${d.cold && OA.dw[d.a] ? `<div class="sect">AEOG drawings (${OA.dw[d.a].length})</div><div class="list">${OA.dw[d.a].map(x => `<div class="li"><div class="m"><div class="t">${esc(x[0])}</div><div class="s">${esc(x[1])} · rev ${esc(x[2])} · ${esc(x[3])}</div></div></div>`).join('')}</div>` : ''}
      <div class="foot">Data ${esc(d.date)} · Md cable tracker, IWP status, master punch list, RHI punch register</div>`; };
 
