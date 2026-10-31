@@ -47,7 +47,7 @@
   // Can report → IWP daily report format
   XL.canReport = function () { if (!S2.owner) return ownerLogin(); const v = VS.CR || {}; const L = OA.canList().filter(r => (!v.g || r.x.g === v.g) && (!v.sy || (r.x.sy || '-') === v.sy)); if (!L.length) return toast('Nothing to export');
     const sh = XL.iwpSheet(L.map(r => ({x: r.x, q: r.g.sug}))); sh.rows[0][18] = today(); sh.rows[3][18] = 'can report (by cable progress)';
-    XL.save(`Can_report_${PRJ}_${fileDay()}.xlsx`, [sh, {name: 'Basis', rows: [['Access ID', 'Material', 'System', 'IWP qty', 'IWP fact', 'Can report', 'Basis']].concat(L.map(r => [Number(r.x.acc) || r.x.acc, T.desc[r.x.desc] || r.x.g, r.x.sy || '', r.x.q, r.x.f, r.g.sug, `cables ${r.g.basis} ${r.g.pct}% pulled (${r.g.d}/${r.g.n})`])), widths: [10, 60, 10, 9, 9, 10, 40], bold: [0], freeze: 1}]); };
+    XL.save(`Can_report_${PRJ}_${fileDay()}.xlsx`, [sh]); };
   // Owner daily import → IWP daily report + tracker update format
   XL.ownerDay = function () { if (!S2.owner) return ownerLogin(); const day = (VS.OW || {}).d; if (!day) return toast('Choose a day'); const L = aggDay(day); if (!L.length) return toast('Nothing for this day'); const dd = day.split('-').reverse().join('.');
     const sh = XL.iwpSheet(L.filter(x => x.y).map(x => ({x: x.y, q: x.q}))); sh.rows[0][18] = dd; L.filter(x => !x.y).forEach(x => sh.rows.push(['', '', '', '', '', '', '', '', [...x.tags].join(', '), '', '', '', Number(x.acc) || x.acc, '', '', '', '', '', x.q, 'Access ID not in this project IWP – ' + [...x.acts].join('; ')]));
