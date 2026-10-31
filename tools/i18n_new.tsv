@@ -1,0 +1,73 @@
+Mechanical completion	Механическая готовность	Mekanik tamamlama	मैकेनिकल कम्प्लीशन
+subsystems · MC ready · final RFI	подсистемы · готовность МГ · финальный RFI	alt sistemler · MC hazır · nihai RFI	सबसिस्टम · MC तैयार · फाइनल RFI
+MC ready	Готово к МГ	MC hazır	MC तैयार
+Not ready	Не готово	Hazır değil	तैयार नहीं
+Not ready for MC	Не готово к МГ	MC için hazır değil	MC के लिए तैयार नहीं
+subsystems	подсистем	alt sistem	सबसिस्टम
+open A-punch	открытых A-замечаний	açık A-punch	खुले A-पंच
+A-punch open	Открыты A-замечания	Açık A-punch	A-पंच खुले
+All RFI accepted	Все RFI приняты	Tüm RFI kabul	सभी RFI स्वीकृत
+all RFI accepted	все RFI приняты	tüm RFI kabul	सभी RFI स्वीकृत
+List	Список	Liste	सूची
+MC block diagram	Блок-схема МГ	MC blok şeması	MC ब्लॉक डायग्राम
+How the system works	Как работает система	Sistem nasıl çalışır	सिस्टम कैसे काम करता है
+Mechanical completion – subsystems	Механическая готовность – подсистемы	Mekanik tamamlama – alt sistemler	मैकेनिकल कम्प्लीशन – सबसिस्टम
+Subsystem code or name…	Код или название подсистемы…	Alt sistem kodu veya adı…	सबसिस्टम कोड या नाम…
+IWP activities	Работы IWP	IWP faaliyetleri	IWP गतिविधियाँ
+cables pulled	кабелей проложено	kablo çekildi	केबल खींची गई
+terminated	разделано	sonlandırıldı	टर्मिनेट
+laying RFI acc.	RFI прокладки принято	çekim RFI kabul	लेइंग RFI स्वीकृत
+term. RFI acc.	RFI разделки принято	sonl. RFI kabul	टर्म. RFI स्वीकृत
+equipment RFI acc.	RFI оборудования принято	ekipman RFI kabul	उपकरण RFI स्वीकृत
+client A open	A заказчика открыто	müşteri A açık	क्लाइंट A खुले
+client B open	B заказчика открыто	müşteri B açık	क्लाइंट B खुले
+RHI open	РХИ открыто	RHI açık	RHI खुले
+Cables RFI	RFI кабелей	Kablo RFI	केबल RFI
+Equipment RFI	RFI оборудования	Ekipman RFI	उपकरण RFI
+RHI RFI register	Реестр RFI РХИ	RHI RFI kaydı	RHI RFI रजिस्टर
+Final subsystem RFI	Финальный RFI подсистемы	Nihai alt sistem RFI	फाइनल सबसिस्टम RFI
+RHI RFIs	RFI РХИ	RHI RFI'ları	RHI RFI
+fully accepted	полностью принято	tamamen kabul	पूरी तरह स्वीकृत
+pending (new / planned)	ожидает (новый / план)	beklemede (yeni / planlı)	लंबित (नया / योजना)
+with rejected items	с отклонёнными	reddedilenli	अस्वीकृत आइटम सहित
+RFI No or cable / equipment tag…	№ RFI или тег кабеля / оборудования…	RFI No veya kablo / ekipman etiketi…	RFI नंबर या केबल / उपकरण टैग…
+Pending	Ожидает	Beklemede	लंबित
+All types	Все типы	Tüm tipler	सभी प्रकार
+Laying	Прокладка	Çekim	लेइंग
+Termination	Разделка	Sonlandırma	टर्मिनेशन
+Equipment	Оборудование	Ekipman	उपकरण
+Subsystem…	Подсистема…	Alt sistem…	सबसिस्टम…
+ready for final RFI	готово к финальному RFI	nihai RFI'ye hazır	फाइनल RFI के लिए तैयार
+AKT signed	АКТ подписан	AKT imzalı	AKT हस्ताक्षरित
+RFI open	RFI открыт	RFI açık	RFI खुला
+Subsystem	Подсистема	Alt sistem	सबसिस्टम
+Laying RFI	RFI прокладки	Çekim RFI	लेइंग RFI
+Term. RFI	RFI разделки	Sonl. RFI	टर्म. RFI
+Equip. RFI	RFI оборуд.	Ekip. RFI	उपकरण RFI
+A-punch	A-замечания	A-punch	A-पंच
+RFI (Cable RAWP)	RFI (Cable RAWP)	RFI (Kablo RAWP)	RFI (केबल RAWP)
+old client punch to report	старых замечаний заказчика к отчёту	raporlanacak eski müşteri punch	रिपोर्ट करने के लिए पुराने क्लाइंट पंच
+RHI punch to close	замечаний РХИ к закрытию	kapatılacak RHI punch	बंद करने के लिए RHI पंच
+client open · RHI closed	заказчик открыт · РХИ закрыт	müşteri açık · RHI kapalı	क्लाइंट खुला · RHI बंद
+Copy	Копировать	Kopyala	कॉपी
+owner	владелец	sahip	ओनर
+Overall dashboard (total project)	Общая панель (весь проект)	Genel gösterge (tüm proje)	ओवरऑल डैशबोर्ड (पूरा प्रोजेक्ट)
+Overall dashboard	Общая панель	Genel gösterge	ओवरऑल डैशबोर्ड
+total project · all areas	весь проект · все зоны	tüm proje · tüm alanlar	पूरा प्रोजेक्ट · सभी क्षेत्र
+Projects	Проекты	Projeler	प्रोजेक्ट
+Cold cables	Холодные кабели	Soğuk kablolar	कोल्ड केबल
+Other area	Другие зоны	Diğer alanlar	अन्य क्षेत्र
+Home	Главная	Ana sayfa	होम
+Back	Назад	Geri	वापस
+System block diagrams	Блок-схемы систем	Sistem blok şemaları	सिस्टम ब्लॉक डायग्राम
+Punch list	Список замечаний	Punch listesi	पंच लिस्ट
+Can report	Можно отчитать	Raporlanabilir	रिपोर्ट कर सकते हैं
+Language	Язык	Dil	भाषा
+Show total project on CCR / D48 home	Показывать весь проект на главной CCR / D48	CCR / D48 ana sayfada tüm projeyi göster	CCR / D48 होम पर पूरा प्रोजेक्ट दिखाएँ
+Management	Управление	Yönetim	प्रबंधन
+Manager dashboard	Панель руководителя	Yönetici paneli	मैनेजर डैशबोर्ड
+Cross-punch report	Перекрёстный отчёт по замечаниям	Çapraz punch raporu	क्रॉस-पंच रिपोर्ट
+Client punch – same tag & title	Замечание заказчика – тот же тег и титул	Müşteri punch – aynı etiket ve başlık	क्लाइंट पंच – वही टैग और टाइटल
+RHI punch – same tag & title	Замечание РХИ – тот же тег и титул	RHI punch – aynı etiket ve başlık	RHI पंच – वही टैग और टाइटल
+Sub-system AKT	АКТ подсистемы	Alt sistem AKT	सबसिस्टम AKT
+Loading RFI / subsystem data… (first time needs internet)	Загрузка RFI / подсистем… (в первый раз нужен интернет)	RFI / alt sistem verisi yükleniyor… (ilk sefer internet gerekir)	RFI / सबसिस्टम डेटा लोड हो रहा है… (पहली बार इंटरनेट चाहिए)

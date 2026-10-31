@@ -80,6 +80,14 @@ jobs:
             --date "$(TZ=Europe/Moscow date '+%d.%m.%Y')" 2>&1 | tee -a build_log.txt
           cp /tmp/cold_drawings.json areas/cold_drawings.json 2>/dev/null || true
 
+      - name: Build rfi_*.json (RFI register, subsystems, mechanical completion)
+        if: steps.chk.outputs.count != '0'
+        continue-on-error: true
+        run: |
+          set -o pipefail
+          echo "===== RFI / SUBSYSTEMS =====" | tee -a build_log.txt
+          python3 tools/build_rfi.py --input input --root . 2>&1 | tee -a build_log.txt
+
       - name: New cache name so phones load the new data
         if: steps.chk.outputs.count != '0'
         run: |
@@ -98,6 +106,6 @@ jobs:
           find input -type f -iname '*.xls*' -delete
           git config user.name ccr-auto-update
           git config user.email ccr-auto-update@users.noreply.github.com
-          git add -A input data.json data_d48.json data_cold.json areas sw.js
+          git add -A input data.json data_d48.json data_cold.json rfi_ccr.json rfi_d48.json rfi_cold.json areas sw.js
           git commit -m "Automatic data update" || echo "nothing to commit"
           git push

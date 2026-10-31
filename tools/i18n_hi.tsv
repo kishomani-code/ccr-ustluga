@@ -1,0 +1,929 @@
+Completed	पूरा हुआ
+COMPLETED	पूरा हुआ
+Complete	पूरा
+In progress	चालू है
+In Progress	चालू है
+IN PROGRESS	चालू है
+Not started	शुरू नहीं
+Not Started	शुरू नहीं
+NOT STARTED	शुरू नहीं
+On hold	रुका हुआ
+On Hold	रुका हुआ
+Accepted	स्वीकृत
+Accepted w/c	स्वीकृत (टिप्पणी सहित)
+Accepted with comments	टिप्पणी सहित स्वीकृत
+Submitted	जमा किया
+Submitted (pending)	जमा किया (बाकी)
+Rejected	अस्वीकृत
+Open	खुला
+Closed	बंद
+open	खुला
+closed	बंद
+Done	हो गया
+Not done	नहीं हुआ
+Partly	आंशिक
+Done (site)	हो गया (साइट)
+Not done (site)	नहीं हुआ (साइट)
+site	साइट
+# m (site)	# m (साइट)
+No status	कोई स्टेटस नहीं
+Termination open	टर्मिनेशन बाकी
+NOT PULLED	नहीं खींचा
+NOT READY	तैयार नहीं
+Not ready	तैयार नहीं
+Ready	तैयार
+Fixed	ठीक किया
+Not fixed	ठीक नहीं किया
+Not completed	पूरा नहीं हुआ
+Not complete	पूरा नहीं
+No RFI	कोई RFI नहीं
+Yes	हाँ
+No	नहीं
+CCR site app	CCR साइट ऐप
+v# · data #	v# · डेटा #
+data #	डेटा #
+IWP lines	IWP लाइनें
+lines done	लाइनें पूरी
+cables complete	केबल पूरी
+Alerts from site	साइट से अलर्ट
+# new	# नए
+new	नया
+issues · permits · revisions · TQ	समस्याएँ · परमिट · रिवीजन · TQ
+Send report to Paul	Paul को रिपोर्ट भेजें
+# new progress lines	# नई प्रोग्रेस लाइनें
+tap to set your name	अपना नाम सेट करें
+MAX progress group	MAX प्रोग्रेस ग्रुप
+MAX punch group	MAX पंच ग्रुप
+Manager dashboard	मैनेजर डैशबोर्ड
+overall %	कुल %
+panel progress table	पैनल प्रोग्रेस तालिका
+bottom-# timeline	नीचे के # की टाइमलाइन
+Construction	निर्माण
+Panel cable check	पैनल केबल जाँच
+pulled / terminated per panel	हर पैनल पर खींची / टर्मिनेट
+# panels	# पैनल
+# complete	# पूरे
+Interconnection cables	इंटरकनेक्शन केबल
+to/from other buildings	दूसरी बिल्डिंग से/तक
+Installation check	इंस्टॉलेशन जाँच
+panels, devices, trays, earthing	पैनल, डिवाइस, ट्रे, अर्थिंग
+# lines	# लाइनें
+#/# lines	#/# लाइनें
+Punch list (RHI)	पंच लिस्ट (RHI)
+Punch list	पंच लिस्ट
+# open	# खुले
+# closed	# बंद
+# to send	# भेजने हैं
+Rooms	कमरे
+room number → panels & cables	कमरा नंबर → पैनल और केबल
+# rooms	# कमरे
+Cable pulling	केबल पुलिंग
+Cable termination	केबल टर्मिनेशन
+Issues found	मिली समस्याएँ
+report to engineer	इंजीनियर को बताएं
+# not sent	# नहीं भेजे
+# total	# कुल
+Work permits	वर्क परमिट
+request from engineer	इंजीनियर से माँगें
+Inspection (RFI)	निरीक्षण (RFI)
+RFI Progress	RFI प्रोग्रेस
+RFI progress	RFI प्रोग्रेस
+cables & equipment RFI status	केबल और उपकरण RFI स्टेटस
+laying RFI accepted #/#	लेइंग RFI स्वीकृत #/#
+Ready for inspection	निरीक्षण के लिए तैयार
+work done · RFI not accepted	काम पूरा · RFI स्वीकृत नहीं
+work done	काम पूरा
+RFI not accepted	RFI स्वीकृत नहीं
+# cables to call	बुलाने के लिए # केबल
+Materials	सामग्री
+Cable drums	केबल ड्रम
+# drums	# ड्रम
+used / remaining	उपयोग / बाकी
+Material tracking	सामग्री ट्रैकिंग
+# ident codes by system	सिस्टम अनुसार # आइडेंट कोड
+MRF status	MRF स्टेटस
+# warehouse requests	# वेयरहाउस अनुरोध
+Systems	सिस्टम
+System block diagrams	सिस्टम ब्लॉक डायग्राम
+how systems work	सिस्टम कैसे काम करते हैं
+ready to start?	शुरू करने को तैयार?
+# ready	# तैयार
+# with issues	# में समस्या
+Cable glands	केबल ग्लैंड
+size · type RU/EN · sleeve · earthing	साइज़ · टाइप RU/EN · स्लीव · अर्थिंग
+Documents	दस्तावेज़
+CTQ register	CTQ रजिस्टर
+internal TQs	आंतरिक TQ
+what is on hold	क्या रुका है
+# items on hold	# आइटम रुके हैं
+Drawings register	ड्रॉइंग रजिस्टर
+# CCR docs	# CCR दस्तावेज़
+system → activity	सिस्टम → गतिविधि
+SF drawings (MTO)	SF ड्रॉइंग (MTO)
+# files	# फ़ाइलें
+rev & dates	रिव और तारीखें
+Drawing revisions	ड्रॉइंग रिवीजन
+# revised	# रिवाइज़्ड
+# after installation	# इंस्टॉलेशन के बाद
+Tools	टूल्स
+Engineering calculator	इंजीनियरिंग कैलकुलेटर
+current · voltage drop · OD · gland	करंट · वोल्टेज ड्रॉप · OD · ग्लैंड
+Site notes	साइट नोट्स
+# notes	# नोट्स
+Progress	प्रोग्रेस
+Daily progress entry	दैनिक प्रोग्रेस एंट्री
+Daily progress	दैनिक प्रोग्रेस
+# lines not sent	# लाइनें नहीं भेजीं
+Import progress (owner)	प्रोग्रेस इम्पोर्ट (मालिक)
+Import progress	प्रोग्रेस इम्पोर्ट
+# imported lines	# इम्पोर्ट लाइनें
+total IWP report	कुल IWP रिपोर्ट
+Total IWP report	कुल IWP रिपोर्ट
+Technician performance	टेक्नीशियन परफ़ॉर्मेंस
+# technicians	# टेक्नीशियन
+Punch daily progress	पंच दैनिक प्रोग्रेस
+site updates	साइट अपडेट
+Punch report to Paul	Paul को पंच रिपोर्ट
+Owner	मालिक
+Owner menu	मालिक मेन्यू
+unlocked	अनलॉक
+Import progress · total IWP report · technician performance	प्रोग्रेस इम्पोर्ट · कुल IWP रिपोर्ट · टेक्नीशियन परफ़ॉर्मेंस
+Password required	पासवर्ड ज़रूरी
+owner only	केवल मालिक
+Updates automatically when the phone is online	फ़ोन ऑनलाइन होने पर अपने आप अपडेट
+App version #	ऐप वर्ज़न #
+Showing last good data (#)	आखिरी सही डेटा दिखा रहे हैं (#)
+Today's automatic update	आज का ऑटो अपडेट
+All	सभी
+all	सभी
+All systems	सभी सिस्टम
+All systems (#)	सभी सिस्टम (#)
+Filter in this activity	इस गतिविधि में फ़िल्टर
+Show more	और दिखाएँ
+Show more (#)	और दिखाएँ (#)
+Show more (# left)	और दिखाएँ (# बाकी)
+Nothing found	कुछ नहीं मिला
+Nothing found. Type part of any ID	कुछ नहीं मिला। किसी ID का भाग लिखें
+type more characters	और अक्षर लिखें
+#/# lines done	#/# लाइनें पूरी
+lines	लाइनें
+Activity	गतिविधि
+IWP mapping	IWP मैपिंग
+Access ID	Access ID
+IWP access ID	IWP Access ID
+IWP type	IWP टाइप
+IWP qty / done	IWP मात्रा / पूरा
+Site progress	साइट प्रोग्रेस
+Site check	साइट जाँच
+Pulling	पुलिंग
+Termination	टर्मिनेशन
+Remark	टिप्पणी
+Your name	आपका नाम
+Cable gland	केबल ग्लैंड
+Status	स्टेटस
+From	से
+To	तक
+From room	कमरे से
+To room	कमरे तक
+Type	टाइप
+Cores	कोर
+Length	लंबाई
+Length m	लंबाई m
+Drum	ड्रम
+Document	दस्तावेज़
+Cable	केबल
+Cables	केबल
+Panel	पैनल
+Panels	पैनल
+Panels & boxes	पैनल और बॉक्स
+Tag	टैग
+Description	विवरण
+Responsible	ज़िम्मेदार
+Responsibility	ज़िम्मेदारी
+Responsible to fix	ठीक करने का ज़िम्मेदार
+Date	तारीख
+Report	रिपोर्ट
+Send	भेजें
+Copy	कॉपी
+Share	शेयर
+Share all	सब शेयर
+Filter	फ़िल्टर
+Search	खोजें
+Password	पासवर्ड
+Wrong password	गलत पासवर्ड
+Wrong PIN	गलत PIN
+Loading	लोड हो रहा है
+Error	त्रुटि
+No data	कोई डेटा नहीं
+Details	विवरण
+Back	वापस
+Home	होम
+Close	बंद करें
+Cancel	रद्द करें
+Save	सेव करें
+Unlock	अनलॉक करें
+Manager password	मैनेजर पासवर्ड
+Owner password	मालिक पासवर्ड
+Owner mode is ON	मालिक मोड चालू है
+Open import	इम्पोर्ट खोलें
+Turn off	बंद करें
+Pulled	खींची
+Pulled + terminated	खींची + टर्मिनेट
+pulled + terminated	खींची + टर्मिनेट
+pulled	खींची
+pulled only	सिर्फ़ खींची
+# pulled only	# सिर्फ़ खींची
+Term. this end	इस सिरे पर टर्मि.
+Term. other end	दूसरे सिरे पर टर्मि.
+Other end	दूसरा सिरा
+Terminal	टर्मिनल
+Terminal reference	टर्मिनल रेफ़रेंस
+Internal TQ (CTQ)	आंतरिक TQ (CTQ)
+Internal CTQ (#)	आंतरिक CTQ (#)
+Project TQ	प्रोजेक्ट TQ
+Project TQ (#)	प्रोजेक्ट TQ (#)
+Tracker remark	ट्रैकर टिप्पणी
+Tracker	ट्रैकर
+Punch	पंच
+Punch items (# · open #)	पंच आइटम (# · खुले #)
+Punch items	पंच आइटम
+punch items	पंच आइटम
+Punch № #	पंच № #
+Client punch	क्लाइंट पंच
+RHI punch	RHI पंच
+RHI punch for this tag (#)	इस टैग के RHI पंच (#)
+Client punch for this tag (#)	इस टैग के क्लाइंट पंच (#)
+RHI internal punch	RHI आंतरिक पंच
+RHI responsible	RHI ज़िम्मेदार
+All responsible	सभी ज़िम्मेदार
+By discipline	डिसिप्लिन अनुसार
+By subsystem	सबसिस्टम अनुसार
+By technician	टेक्नीशियन अनुसार
+By day (fixed)	दिन अनुसार (ठीक किए)
+Cross-punch report	क्रॉस-पंच रिपोर्ट
+Cross-punch report · # tags	क्रॉस-पंच रिपोर्ट · # टैग
+All open punch items (#)	सभी खुले पंच आइटम (#)
+Open A-punch (#)	खुले A-पंच (#)
+open A-punch	खुला A-पंच
+no open A-punch	कोई खुला A-पंच नहीं
+open cat A	खुला कैट A
+open cat B	खुला कैट B
+open cat C	खुला कैट C
+Cat #	कैट #
+All cat	सभी कैट
+Item	आइटम
+Category	श्रेणी
+Discipline	डिसिप्लिन
+Subsystem	सबसिस्टम
+Subsystem name	सबसिस्टम नाम
+System	सिस्टम
+Company	कंपनी
+Department	विभाग
+Subcontractor	सबकॉन्ट्रैक्टर
+EPC responsible	EPC ज़िम्मेदार
+punch fixed	पंच ठीक किया
+fixed today	आज ठीक किए
+fixed total (site)	कुल ठीक किए (साइट)
+fixed last # days	पिछले # दिनों में ठीक
+master punch list #	मास्टर पंच लिस्ट #
+Master punch #	मास्टर पंच #
+Equipment	उपकरण
+equipment	उपकरण
+Equipment installed	उपकरण लगाया
+Equip.	उपक.
+Equip	उपक.
+Installed / done	लगाया / पूरा
+Installation	इंस्टॉलेशन
+Installation lines	इंस्टॉलेशन लाइनें
+installation lines	इंस्टॉलेशन लाइनें
+Cable pulling, termination	केबल पुलिंग, टर्मिनेशन
+IWP completion	IWP पूरा होना
+CTQ on hold	CTQ पर रुका
+Punch open	पंच खुला
+Panel progress (#)	पैनल प्रोग्रेस (#)
+Timeline	टाइमलाइन
+Bottom # panels by completion	पूरा होने में नीचे के # पैनल
+# of # panels	#/# पैनल
+No panels match the filter	फ़िल्टर से कोई पैनल नहीं मिला
+Filter panel / description	पैनल / विवरण फ़िल्टर
+Filter panel / room	पैनल / कमरा फ़िल्टर
+IWP % = done IWP lines of the panel and its cables	IWP % = पैनल और उसकी केबलों की पूरी IWP लाइनें
+Cables pulled % = panel cables pulled	केबल खींची % = पैनल की खींची गई केबल
+Open punch = client + RHI punch on the panel tag and its cables	खुले पंच = पैनल टैग और उसकी केबलों पर क्लाइंट + RHI पंच
+Equipment % = installation lines of the panel tag	उपकरण % = पैनल टैग की इंस्टॉलेशन लाइनें
+IWP #–#%	IWP #–#%
+Open punch > #	खुले पंच > #
+Overall progress	कुल प्रोग्रेस
+# open punch	# खुले पंच
+Cables RFI (#)	केबल RFI (#)
+Equipment RFI (#)	उपकरण RFI (#)
+Total cables	कुल केबल
+RAWP scope	RAWP स्कोप
+Laying RFI submitted	लेइंग RFI जमा
+Laying RFI accepted	लेइंग RFI स्वीकृत
+Term. RFI submitted	टर्मि. RFI जमा
+Term. RFI accepted	टर्मि. RFI स्वीकृत
+# cables	# केबल
+Install. RFI submitted	इंस्टॉ. RFI जमा
+Install. RFI accepted	इंस्टॉ. RFI स्वीकृत
+equipment, devices, trays, earthing	उपकरण, डिवाइस, ट्रे, अर्थिंग
+Search cable number	केबल नंबर खोजें
+Search tag / Access ID	टैग / Access ID खोजें
+All panels (#)	सभी पैनल (#)
+no panel	कोई पैनल नहीं
+All activities (#)	सभी गतिविधियाँ (#)
+Laying RFI – all	लेइंग RFI – सभी
+Term. RFI – all	टर्मि. RFI – सभी
+RFI status – all	RFI स्टेटस – सभी
+Laying RFI	लेइंग RFI
+Term. RFI	टर्मि. RFI
+RFI status	RFI स्टेटस
+Cable No	केबल नं.
+Cable No.	केबल नं.
+# of # shown (# total)	#/# दिखाए (# कुल)
+No cables match the filter	फ़िल्टर से कोई केबल नहीं मिली
+No items match the filter	फ़िल्टर से कोई आइटम नहीं मिला
+Source: Cable RAWP inspection progress. Submitted = RFI raised, inspection pending (New task). Accepted includes "accepted with comments". Panel = panel where the cable starts (else where it ends)	स्रोत: केबल RAWP निरीक्षण प्रोग्रेस। जमा = RFI उठाया, निरीक्षण बाकी (नया टास्क)। स्वीकृत में "टिप्पणी सहित स्वीकृत" शामिल है। पैनल = जहाँ से केबल शुरू होती है (वरना जहाँ खत्म होती है)
+Source: E&I equipment control (CCR RFI records) matched to IWP installation lines	स्रोत: E&I उपकरण कंट्रोल (CCR RFI रिकॉर्ड) IWP इंस्टॉलेशन लाइनों से मिलाया
+CCR inspection status	CCR निरीक्षण स्टेटस
+Ready for laying inspection	लेइंग निरीक्षण के लिए तैयार
+Ready for term. inspection	टर्मि. निरीक्षण के लिए तैयार
+pulled · laying RFI not accepted	खींची · लेइंग RFI स्वीकृत नहीं
+pulled + terminated · term. RFI not accepted	खींची + टर्मिनेट · टर्मि. RFI स्वीकृत नहीं
+Cables to call	बुलाने के लिए केबल
+# complete · # pulled only	# पूरी · # सिर्फ़ खींची
+# cables ready for laying inspection, # cables ready for termination inspection	# केबल लेइंग निरीक्षण के लिए तैयार, # केबल टर्मिनेशन निरीक्षण के लिए तैयार
+cables ready for laying inspection	केबल लेइंग निरीक्षण के लिए तैयार
+cables ready for termination inspection	केबल टर्मिनेशन निरीक्षण के लिए तैयार
+Work type – all	काम का प्रकार – सभी
+Laying inspection	लेइंग निरीक्षण
+Termination inspection	टर्मिनेशन निरीक्षण
+Generate inspection list	निरीक्षण सूची बनाएँ
+all cables in the current filtered view · for MAX / WhatsApp	मौजूदा फ़िल्टर व्यू की सभी केबल · MAX / WhatsApp के लिए
+all cables in the current filtered view	मौजूदा फ़िल्टर व्यू की सभी केबल
+for MAX / WhatsApp	MAX / WhatsApp के लिए
+Pulled / terminated = IWP + cable tracker status, including ticks saved on this phone. RFI status from Cable RAWP inspection progress. Rejected or pending RFIs count as not accepted	खींची / टर्मिनेट = IWP + केबल ट्रैकर स्टेटस, इस फ़ोन पर सेव टिक सहित। RFI स्टेटस केबल RAWP निरीक्षण प्रोग्रेस से। अस्वीकृत या बाकी RFI को स्वीकृत नहीं गिना जाता
+Pulled + terminated – RFI not accepted (#)	खींची + टर्मिनेट – RFI स्वीकृत नहीं (#)
+Pulled, not terminated – laying RFI not accepted (intermediate) (#)	खींची, टर्मिनेट नहीं – लेइंग RFI स्वीकृत नहीं (बीच का) (#)
+None	कोई नहीं
+Call	बुलाएँ
+inspection	निरीक्षण
+Call inspection	निरीक्षण बुलाएँ
+Inspection list · # cables	निरीक्षण सूची · # केबल
+Send to MAX	MAX पर भेजें
+copies the text and opens the MAX progress group	टेक्स्ट कॉपी करके MAX प्रोग्रेस ग्रुप खोलता है
+copies the text and opens the MAX punch group	टेक्स्ट कॉपी करके MAX पंच ग्रुप खोलता है
+copies the text and opens the MAX group – then paste & send	टेक्स्ट कॉपी करके MAX ग्रुप खोलता है – फिर पेस्ट करके भेजें
+Copy for Paul	Paul के लिए कॉपी
+Share…	शेयर…
+After you open the group, the lines are marked as sent and will not be sent again	ग्रुप खोलने के बाद लाइनें भेजी हुई मानी जाएँगी और दोबारा नहीं भेजी जाएँगी
+Punch report → MAX punch group	पंच रिपोर्ट → MAX पंच ग्रुप
+Progress report → MAX progress group	प्रोग्रेस रिपोर्ट → MAX प्रोग्रेस ग्रुप
+Nothing new to report	रिपोर्ट करने को कुछ नया नहीं
+All entries are already sent	सभी एंट्री पहले ही भेजी जा चुकी हैं
+Show last sent report again	पिछली भेजी रिपोर्ट फिर दिखाएँ
+laying inspection needed	लेइंग निरीक्षण ज़रूरी
+termination inspection needed	टर्मिनेशन निरीक्षण ज़रूरी
+laying + termination inspection needed	लेइंग + टर्मिनेशन निरीक्षण ज़रूरी
+Panel: #	पैनल: #
+Room #	कमरा #
+No room	कोई कमरा नहीं
+Panels in this room	इस कमरे के पैनल
+Room number	कमरा नंबर
+panels & cables per room	हर कमरे के पैनल और केबल
+Incoming cables (#)	आने वाली केबल (#)
+Outgoing cables (#)	जाने वाली केबल (#)
+Cables connected to this item (#)	इस आइटम से जुड़ी केबल (#)
+Cables not complete (#)	अधूरी केबल (#)
+#/# cables complete	#/# केबल पूरी
+#/# cables pulled	#/# केबल खींची
+#/# cables	#/# केबल
+#/# both ends	#/# दोनों सिरे
+#% cables complete	#% केबल पूरी
+cables pulled	केबल खींची
+ends terminated	सिरे टर्मिनेट
+not terminated	टर्मिनेट नहीं
+Other IWP lines for this tag	इस टैग की अन्य IWP लाइनें
+IWP lines (#)	IWP लाइनें (#)
+Open full cable details	केबल का पूरा विवरण खोलें
+Terminations at this panel/device (LR drawing)	इस पैनल/डिवाइस पर टर्मिनेशन (LR ड्रॉइंग)
+End-to-end termination (LR drawing)	एंड-टू-एंड टर्मिनेशन (LR ड्रॉइंग)
+LR termination data not available yet	LR टर्मिनेशन डेटा अभी उपलब्ध नहीं
+Confirm terminal points before marking terminated	टर्मिनेट मार्क करने से पहले टर्मिनल पॉइंट जाँचें
+Terminal points changed	टर्मिनल पॉइंट बदले
+Actual pulled length	वास्तविक खींची लंबाई
+Actual pulled length, m	वास्तविक खींची लंबाई, m
+Actual pulled length, m (design # m)	वास्तविक खींची लंबाई, m (डिज़ाइन # m)
+Save m	m सेव करें
+design # m	डिज़ाइन # m
+pulled # m	खींची # m
+Pull date	पुलिंग तारीख
+Drum No	ड्रम नं.
+Drum length	ड्रम लंबाई
+Cables from this drum (#)	इस ड्रम की केबल (#)
+Used (cables)	उपयोग (केबल)
+Remaining	बाकी
+remaining #	बाकी #
+returned/actual #	वापस/वास्तविक #
+Hold	होल्ड
+Hold point	होल्ड पॉइंट
+hold point	होल्ड पॉइंट
+hold points	होल्ड पॉइंट
+# hold points	# होल्ड पॉइंट
+On hold – CTQ	रुका – CTQ
+Action	कार्रवाई
+Action required	कार्रवाई ज़रूरी
+Open CTQ details	CTQ विवरण खोलें
+CTQ / hold	CTQ / होल्ड
+CTQ / hold (#)	CTQ / होल्ड (#)
+CTQ No	CTQ नं.
+CTQ/TQ No	CTQ/TQ नं.
+CTQ open	CTQ खुला
+# CTQ open	# CTQ खुले
+Affected tags	प्रभावित टैग
+Affected works	प्रभावित काम
+work on hold	काम रुका
+# cables blocked	# केबल रुकी
+# cables already pulled before answer	# केबल जवाब से पहले ही खींची
+# linked items	# जुड़े आइटम
+# project TQ not closed	# प्रोजेक्ट TQ बंद नहीं
+No cable / panel / device from this CTQ was found in the app data (tags may be material codes or not in the trackers yet)	इस CTQ की कोई केबल / पैनल / डिवाइस ऐप डेटा में नहीं मिली (टैग मटेरियल कोड हो सकते हैं या अभी ट्रैकर में नहीं)
+TQ answer / status	TQ जवाब / स्टेटस
+TQ reference	TQ रेफ़रेंस
+TQ No	TQ नं.
+TQs (owner)	TQ (मालिक)
+Subject	विषय
+Title	शीर्षक
+Issued	जारी
+Issue date	जारी तारीख
+Issued by	जारीकर्ता
+Received	प्राप्त
+received by	प्राप्तकर्ता
+Impact	प्रभाव
+Classification	वर्गीकरण
+Delay	देरी
+High	ऊँचा
+Medium	मध्यम
+Low	कम
+Drawing	ड्रॉइंग
+drawing	ड्रॉइंग
+Revision	रिवीजन
+Rev	रिव
+Rev #	रिव #
+rev #	रिव #
+Sheets / pages	शीट / पेज
+New in revision	रिवीजन में नया
+Removed in revision	रिवीजन में हटाया
+Quantity changed	मात्रा बदली
+Change notices (Изм.)	बदलाव नोटिस (Изм.)
+Check rework risk	रीवर्क जोखिम जाँचें
+check and rework if needed	जाँचें, ज़रूरत हो तो रीवर्क करें
+rev came after installation	इंस्टॉलेशन के बाद रिव आया
+rev after installation	इंस्टॉलेशन के बाद रिव
+After installation #	इंस्टॉलेशन के बाद #
+what changed	क्या बदला
+# changes	# बदलाव
+changes	बदलाव
+older revision	पुराना रिवीजन
+current file	मौजूदा फ़ाइल
+latest revision & dates	नवीनतम रिवीजन और तारीखें
+Dates are taken from each SF drawing	तारीखें हर SF ड्रॉइंग से ली गई हैं
+Material	सामग्री
+Ident code	आइडेंट कोड
+Ident code / cable type	आइडेंट कोड / केबल टाइप
+cable ident codes per system (design vs pulled)	हर सिस्टम के केबल आइडेंट कोड (डिज़ाइन बनाम खींची)
+Quantity	मात्रा
+Qty	मात्रा
+Stock	स्टॉक
+Warehouse	वेयरहाउस
+Storage	भंडारण
+MRF No	MRF नं.
+MRF date	MRF तारीख
+Material requests (MRF)	सामग्री अनुरोध (MRF)
+MRF / warehouse issue (#)	MRF / वेयरहाउस इशू (#)
+No MRF found	कोई MRF नहीं मिला
+# MRF from warehouse	वेयरहाउस से # MRF
+Unique tag	यूनिक टैग
+Tag description	टैग विवरण
+Location / zone	स्थान / ज़ोन
+Zone	ज़ोन
+Area	क्षेत्र
+Stage	चरण
+Section	सेक्शन
+Source	स्रोत
+Remarks	टिप्पणियाँ
+Pulled length # m (actual)	खींची लंबाई # m (वास्तविक)
+Inspection	निरीक्षण
+Inspection list	निरीक्षण सूची
+Today's site entries (#)	आज की साइट एंट्री (#)
+No entries today. Tick cables in Panel check	आज कोई एंट्री नहीं। पैनल जाँच में केबल टिक करें
+Send report to Paul (# new lines)	Paul को रिपोर्ट भेजें (# नई लाइनें)
+Today	आज
+today	आज
+Ranking	रैंकिंग
+who reported how much	किसने कितना रिपोर्ट किया
+technicians reported	टेक्नीशियन ने रिपोर्ट किया
+lines reported	रिपोर्ट की लाइनें
+Pulling m / person / day	पुलिंग m / व्यक्ति / दिन
+Terminations ends / person / day	टर्मिनेशन सिरे / व्यक्ति / दिन
+Installation items / person / day	इंस्टॉलेशन आइटम / व्यक्ति / दिन
+Manpower suggestion	मैनपावर सुझाव
+People available	उपलब्ध लोग
+Minimum crew size	न्यूनतम क्रू साइज़
+Suggested crews (top fronts)	सुझाए क्रू (मुख्य फ्रंट)
+Total suggested	कुल सुझाव
+# people	# लोग
+people	लोग
+# man-days	# मैन-डे
+# work fronts	# वर्क फ्रंट
+≈ # days	≈ # दिन
+# days	# दिन
+Paste messages from MAX	MAX से मैसेज पेस्ट करें
+Paste reports from MAX	MAX से रिपोर्ट पेस्ट करें
+Import	इम्पोर्ट
+Import reports	रिपोर्ट इम्पोर्ट
+Clear imported	इम्पोर्ट हटाएँ
+Clear all imported reports?	सभी इम्पोर्ट रिपोर्ट हटाएँ?
+No imports yet	अभी कोई इम्पोर्ट नहीं
+No reports imported yet	अभी कोई रिपोर्ट इम्पोर्ट नहीं
+Copy for Excel (Daily Input)	Excel के लिए कॉपी (Daily Input)
+Excel / CSV	Excel / CSV
+Mark exported	एक्सपोर्ट मार्क करें
+No progress for this day	इस दिन कोई प्रोग्रेस नहीं
+Import / IWP report	इम्पोर्ट / IWP रिपोर्ट
+Calculator	कैलकुलेटर
+Current	करंट
+Voltage	वोल्टेज
+Power	पावर
+Voltage drop & cable size	वोल्टेज ड्रॉप और केबल साइज़
+Cable OD & gland selection	केबल OD और ग्लैंड चयन
+Cable OD	केबल OD
+Gland size	ग्लैंड साइज़
+Gland	ग्लैंड
+Quick reference	त्वरित संदर्भ
+Unit converter	यूनिट कन्वर्टर
+Ohm's law	ओम का नियम
+Fill any two	कोई दो भरें
+Copper	कॉपर
+Aluminium	एल्यूमिनियम
+Conductor	कंडक्टर
+Allowed drop	अनुमत ड्रॉप
+Length (one way)	लंबाई (एक तरफ़)
+Cable size	केबल साइज़
+Earthing	अर्थिंग
+Settings	सेटिंग्स
+New note	नया नोट
+Edit note	नोट बदलें
+No notes yet	अभी कोई नोट नहीं
+No notes	कोई नोट नहीं
+Search notes	नोट खोजें
+# notes on this phone	इस फ़ोन पर # नोट
+Report new issue	नई समस्या बताएं
+Report issue	समस्या बताएं
+No issues reported	कोई समस्या नहीं बताई
+Request permit	परमिट माँगें
+Permit request	परमिट अनुरोध
+No permit requests	कोई परमिट अनुरोध नहीं
+Send issues to Paul (# new)	Paul को समस्याएँ भेजें (# नई)
+Send permit requests to Paul (# new)	Paul को परमिट अनुरोध भेजें (# नए)
+No alerts	कोई अलर्ट नहीं
+Issues #	समस्याएँ #
+Permits #	परमिट #
+Revisions #	रिवीजन #
+System block diagram	सिस्टम ब्लॉक डायग्राम
+ready to start	शुरू करने को तैयार
+Ready to start = all cables pulled + terminated	शुरू करने को तैयार = सभी केबल खींची + टर्मिनेट
+green = ready to start commissioning	हरा = कमीशनिंग शुरू करने को तैयार
+red = issue	लाल = समस्या
+systems ready	तैयार सिस्टम
+systems with issues	समस्या वाले सिस्टम
+Electrical	इलेक्ट्रिकल
+Instrument	इंस्ट्रूमेंट
+Telecom	टेलीकॉम
+Fire	फ़ायर
+Safety	सेफ़्टी
+Control & safety	कंट्रोल और सेफ़्टी
+Power & earthing	पावर और अर्थिंग
+Other	अन्य
+Other / general	अन्य / सामान्य
+Cable tag / type / panel	केबल टैग / टाइप / पैनल
+Find IWP line (access ID	IWP लाइन खोजें (access ID
+or find a line above	या ऊपर लाइन खोजें
+ID search	ID खोज
+Zoom	ज़ूम
+Gland list CSV	ग्लैंड सूची CSV
+Copy failed – use CSV	कॉपी नहीं हुआ – CSV इस्तेमाल करें
+Nothing to export	एक्सपोर्ट को कुछ नहीं
+Answer copied – paste to the technician in MAX	जवाब कॉपी हुआ – MAX में टेक्नीशियन को पेस्ट करें
+Choose system and describe the work	सिस्टम चुनें और काम लिखें
+Choose system and write the issue	सिस्टम चुनें और समस्या लिखें
+Copied for Paul	Paul के लिए कॉपी हुआ
+Copied	कॉपी हुआ
+Could not save - send the report now	सेव नहीं हुआ - अभी रिपोर्ट भेजें
+Enter the pulled length in metres	खींची लंबाई मीटर में लिखें
+Enter the quantity done	पूरी मात्रा लिखें
+New data downloaded – reopen the app	नया डेटा डाउनलोड हुआ – ऐप दोबारा खोलें
+No punch updates yet	अभी कोई पंच अपडेट नहीं
+No report found – paste text starting with "Reported by:"	कोई रिपोर्ट नहीं मिली – "Reported by:" से शुरू होने वाला टेक्स्ट पेस्ट करें
+Nothing for this day	इस दिन के लिए कुछ नहीं
+Nothing new to send	भेजने को कुछ नया नहीं
+Press and hold in the box → Paste	बॉक्स में दबाकर रखें → पेस्ट
+Progress saved	प्रोग्रेस सेव हुई
+Pulled length saved	खींची लंबाई सेव हुई
+Punch list copied	पंच लिस्ट कॉपी हुई
+Write something	कुछ लिखें
+# alerts added	# अलर्ट जोड़े
+# new alerts (issues / permits)	# नए अलर्ट (समस्याएँ / परमिट)
+Copied # lines – paste in Daily Input cell A	# लाइनें कॉपी हुईं – Daily Input सेल A में पेस्ट करें
+Report with # punch items ready - send it to Paul	# पंच आइटम वाली रिपोर्ट तैयार - Paul को भेजें
+Copied ✓ – in MAX press and hold, Paste, Send	कॉपी हुआ ✓ – MAX में दबाकर रखें, पेस्ट, भेजें
+Copy the text, then paste in MAX	टेक्स्ट कॉपी करें, फिर MAX में पेस्ट करें
+Select the text and copy	टेक्स्ट चुनें और कॉपी करें
+New data loaded	नया डेटा लोड हुआ
+In MAX: press and hold the report message → Copy. Paste one or many reports here. Lines already imported are skipped	MAX में: रिपोर्ट मैसेज दबाकर रखें → कॉपी। एक या कई रिपोर्ट यहाँ पेस्ट करें। पहले से इम्पोर्ट लाइनें छोड़ दी जाती हैं
+e.g. Ivanov A	जैसे Ivanov A
+Reported by	रिपोर्टकर्ता
+CCR progress – RHI (# lines)	CCR प्रोग्रेस – RHI (# लाइनें)
+CCR punch check (# fixed, # not fixed)	CCR पंच जाँच (# ठीक, # ठीक नहीं)
+By	द्वारा
+Punch No	पंच नं.
+Punch No.	पंच नं.
+CCR – tags with both client punch and RHI punch	CCR – जिन टैग पर क्लाइंट पंच और RHI पंच दोनों हैं
+Client	क्लाइंट
+CCR – RHI RFI not accepted	CCR – RHI RFI स्वीकृत नहीं
+Pulled + terminated (#)	खींची + टर्मिनेट (#)
+Pulled, not terminated (#)	खींची, टर्मिनेट नहीं (#)
+No cables in this view	इस व्यू में कोई केबल नहीं
+panel	पैनल
+none	कोई नहीं
+laying only	सिर्फ़ लेइंग
+termination only	सिर्फ़ टर्मिनेशन
+search	खोजें
+from end	शुरुआती सिरा
+to end	आखिरी सिरा
+Cable type (mark)	केबल टाइप (मार्क)
+Type EN	टाइप EN
+Type RU	टाइप RU
+estimated from cores and size	कोर और साइज़ से अनुमानित
+OD is estimated	OD अनुमानित है
+Typical selection. Confirm against the design gland schedule / manufacturer chart and the hazardous area drawing	सामान्य चयन। डिज़ाइन ग्लैंड शेड्यूल / निर्माता चार्ट और हैज़र्डस एरिया ड्रॉइंग से पुष्टि करें
+measure the real cable or check the cable datasheet before ordering glands	ग्लैंड ऑर्डर करने से पहले असली केबल नापें या केबल डेटाशीट देखें
+enter OD in calculator	कैलकुलेटर में OD डालें
+Sleeve / accessories	स्लीव / एक्सेसरीज़
+armoured	आर्मर्ड
+screened	स्क्रीन्ड
+Double-compression gland for armoured cable	आर्मर्ड केबल के लिए डबल-कम्प्रेशन ग्लैंड
+Polyamide gland for unarmoured cable	अनआर्मर्ड केबल के लिए पॉलीएमाइड ग्लैंड
+PVC shroud over gland	ग्लैंड पर PVC श्राउड
+Earth tag for armour → PE bar	आर्मर के लिए अर्थ टैग → PE बार
+PE core to earth terminal	PE कोर को अर्थ टर्मिनल पर
+Armour earthed both ends via gland earth tag to PE	आर्मर दोनों सिरों पर ग्लैंड अर्थ टैग से PE पर अर्थ
+Lock nut + sealing washer; IP washer on threaded entry	लॉक नट + सीलिंग वॉशर; थ्रेडेड एंट्री पर IP वॉशर
+Hazardous area (Ex equipment)	हैज़र्डस एरिया (Ex उपकरण)
+safe area	सुरक्षित एरिया
+control room	कंट्रोल रूम
+Schemes / MTO	स्कीम / MTO
+Specs / data sheets	स्पेक / डेटाशीट
+When a new drawing revision is loaded	जब नया ड्रॉइंग रिवीजन लोड हो
+changes are compared with the old revision. ⚠ = the work was already done before the revision came	बदलाव पुराने रिवीजन से मिलाए जाते हैं। ⚠ = रिवीजन आने से पहले काम हो चुका था
+older	पुराना
+old	पुराना
+New #	नया #
+New	नया
+Last date	आखिरी तारीख
+last date #	आखिरी तारीख #
+From end date	शुरुआती सिरा तारीख
+To end date	आखिरी सिरा तारीख
+Waiting fronts (no crew now	इंतज़ार वाले फ्रंट (अभी क्रू नहीं
+Split by remaining man-days; fronts with open A-punch or no progress in the last # days get extra weight. Adjust rates to your crews	बाकी मैन-डे के अनुसार बाँटा; खुले A-पंच वाले या पिछले # दिनों में बिना प्रोग्रेस वाले फ्रंट को ज़्यादा वज़न। रेट अपने क्रू अनुसार बदलें
+# people in # crews (min # per crew). Biggest / most delayed fronts first	# लोग, # क्रू में (हर क्रू में कम से कम #)। सबसे बड़े / सबसे देरी वाले फ्रंट पहले
+Same cable reported by # people on the same day is counted once. Format = Daily Input sheet	एक ही दिन # लोगों द्वारा रिपोर्ट की गई एक केबल एक बार गिनी जाती है। फ़ॉर्मेट = Daily Input शीट
+No reports yet. Tap “Paste MAX reports” and paste the messages from the groups	अभी कोई रिपोर्ट नहीं। “Paste MAX reports” दबाएँ और ग्रुप के मैसेज पेस्ट करें
+select all report messages in the group → Copy → paste here (#+ at once is fine)	ग्रुप में सभी रिपोर्ट मैसेज चुनें → कॉपी → यहाँ पेस्ट करें (#+ एक साथ ठीक है)
+paste MAX messages	MAX मैसेज पेस्ट करें
+all in one paste	सब एक बार में पेस्ट
+start fresh	नए सिरे से शुरू
+import progress	प्रोग्रेस इम्पोर्ट
+technician performance	टेक्नीशियन परफ़ॉर्मेंस
+issues and permit requests	समस्याएँ और परमिट अनुरोध
+report site issues to the engineer	साइट की समस्याएँ इंजीनियर को बताएं
+request permit from the engineer	इंजीनियर से परमिट माँगें
+opens Paul's MAX chat	Paul की MAX चैट खोलता है
+only to engineer	सिर्फ़ इंजीनियर को
+progress overview	प्रोग्रेस सारांश
+daily progress	दैनिक प्रोग्रेस
+site updates from technicians	टेक्नीशियन से साइट अपडेट
+punch	पंच
+progress	प्रोग्रेस
+cable	केबल
+cables	केबल
+panels	पैनल
+devices	डिवाइस
+trays	ट्रे
+earthing	अर्थिंग
+tag	टैग
+type	टाइप
+size	साइज़
+date	तारीख
+name	नाम
+code	कोड
+system	सिस्टम
+subsystem	सबसिस्टम
+drawing)	ड्रॉइंग)
+access IDs	access ID
+installe	इंस्टॉल
+check Drawing revisions	ड्रॉइंग रिवीजन जाँचें
+check zone drawing	ज़ोन ड्रॉइंग जाँचें
+check / rework	जाँच / रीवर्क
+to check	जाँचना है
+no rework	कोई रीवर्क नहीं
+tap for cable list	केबल सूची के लिए टैप करें
+block diagram	ब्लॉक डायग्राम
+pick system → activity	सिस्टम चुनें → गतिविधि
+name or panel	नाम या पैनल
+e.g. # or JB-#	जैसे # या JB-#
+or measured OD	या मापा OD
+or current I	या करंट I
+signals / interlocks	सिग्नल / इंटरलॉक
+power	पावर
+network	नेटवर्क
+building	बिल्डिंग
+one end outside CCR	एक सिरा CCR के बाहर
+Boxes = panels / equipment (dashed = group of field devices). Lines = cables from → to. Red = not pulled/terminated	बॉक्स = पैनल / उपकरण (डैश = फ़ील्ड डिवाइस का ग्रुप)। लाइनें = केबल से → तक। लाल = खींची/टर्मिनेट नहीं
+no CTQ/hold. Tap a block to see how the system is connected	कोई CTQ/होल्ड नहीं। सिस्टम कैसे जुड़ा है देखने के लिए ब्लॉक टैप करें
+CTQ/hold or A-punch. Tap a line for its cables	CTQ/होल्ड या A-पंच। केबल देखने के लिए लाइन टैप करें
+Indoor CCR	इनडोर CCR
+Outdoor / other area	आउटडोर / अन्य एरिया
+Power supply	पावर सप्लाई
+item #	आइटम #
+items on hold	रुके आइटम
+# items	# आइटम
+# tags	# टैग
+# more	# और
+More	और
+left	बाकी
+total	कुल
+within #	# के अंदर
+above #	# से ऊपर
+Smallest size for ≤ #	≤ # के लिए सबसे छोटा साइज़
+Total	कुल
+Delete	हटाएँ
+Edit	बदलें
+Work	काम
+Workers	वर्कर
+Location	स्थान
+Permit	परमिट
+Comment	टिप्पणी
+System...	सिस्टम...
+Choose system… (#)	सिस्टम चुनें… (#)
+Issue history	समस्या इतिहास
+File	फ़ाइल
+Files	फ़ाइलें
+Insulation test	इंसुलेशन टेस्ट
+DECT radio access	DECT रेडियो एक्सेस
+Electric heating	इलेक्ट्रिक हीटिंग
+Heat tracing	हीट ट्रेसिंग
+Gas detection	गैस डिटेक्शन
+Fire alarm (building)	फ़ायर अलार्म (बिल्डिंग)
+Fire alarm & fire fighting control	फ़ायर अलार्म और फ़ायर फ़ाइटिंग कंट्रोल
+Fire safety automation (area)	फ़ायर सेफ़्टी ऑटोमेशन (एरिया)
+Earthing & lightning protection	अर्थिंग और लाइटनिंग प्रोटेक्शन
+Indoor lighting	इनडोर लाइटिंग
+Information security	सूचना सुरक्षा
+Local warning system	लोकल वार्निंग सिस्टम
+Master clock	मास्टर क्लॉक
+Process CCTV	प्रोसेस CCTV
+Operator training simulator	ऑपरेटर ट्रेनिंग सिम्युलेटर
+Video conferencing	वीडियो कॉन्फ़्रेंसिंग
+HVAC automation	HVAC ऑटोमेशन
+Utilities control system	यूटिलिटी कंट्रोल सिस्टम
+Power supply control system	पावर सप्लाई कंट्रोल सिस्टम
+Analyzer system	एनालाइज़र सिस्टम
+Emergency Shutdown (ESD)	इमरजेंसी शटडाउन (ESD)
+Distributed Control System (DCS)	डिस्ट्रिब्यूटेड कंट्रोल सिस्टम (DCS)
+Structured cabling (SCS)	स्ट्रक्चर्ड केबलिंग (SCS)
+Fibre network (FTN)	फ़ाइबर नेटवर्क (FTN)
+TV antenna (CATV)	TV एंटीना (CATV)
+PA/GA & dispatch intercom	PA/GA और डिस्पैच इंटरकॉम
+Emission monitoring (CEMS)	उत्सर्जन मॉनिटरिंग (CEMS)
+Material flow metering (MFMS)	मटेरियल फ़्लो मीटरिंग (MFMS)
+Utility metering (AUMS)	यूटिलिटी मीटरिंग (AUMS)
+Rotating equipment monitoring (CMS)	रोटेटिंग उपकरण मॉनिटरिंग (CMS)
+Power supply from utility substation	यूटिलिटी सबस्टेशन से पावर सप्लाई
+Substation #/# kV & power supply	सबस्टेशन #/# kV और पावर सप्लाई
+Transformer #/# kV	ट्रांसफ़ॉर्मर #/# kV
+What is wrong? (terminal / core / marking)	क्या गलत है? (टर्मिनल / कोर / मार्किंग)
+Terminations at this panel (LR drawing)	इस पैनल पर टर्मिनेशन (LR ड्रॉइंग)
+Terminations at this device (LR drawing)	इस डिवाइस पर टर्मिनेशन (LR ड्रॉइंग)
+LR drawing	LR ड्रॉइंग
+Installation (IWP)	इंस्टॉलेशन (IWP)
+Room	कमरा
+# of # (#%)	#/# (#%)
+# CCR documents	# CCR दस्तावेज़
+# SF documents	# SF दस्तावेज़
+# CTQ/hold	# CTQ/होल्ड
+# A-punch	# A-पंच
+# after install	# इंस्टॉल के बाद
+# day(s)	# दिन
+# ident codes	# आइडेंट कोड
+# lines not sent yet	# लाइनें अभी नहीं भेजीं
+# open / #	# खुले / #
+A open #	A खुले #
+# revised drawings	# रिवाइज़्ड ड्रॉइंग
+Revised drawings	रिवाइज़्ड ड्रॉइंग
+revised drawings	रिवाइज़्ड ड्रॉइंग
+#% closed	#% बंद
+#/# complete	#/# पूरे
+Current ⇄ power	करंट ⇄ पावर
+(check current rating too)	(करंट रेटिंग भी जाँचें)
+Comments	टिप्पणियाँ
+EP remarks	EP टिप्पणी
+EP status	EP स्टेटस
+Owner status	मालिक स्टेटस
+Efficiency η (motor)	एफ़िशिएंसी η (मोटर)
+Efficiency η (motor), %	एफ़िशिएंसी η (मोटर), %
+Filter items	आइटम फ़िल्टर
+IWP % – any	IWP % – कोई भी
+IWP ends done	IWP सिरे पूरे
+Item / type	आइटम / टाइप
+Lines (#)	लाइनें (#)
+No site entry yet	अभी कोई साइट एंट्री नहीं
+No site update yet	अभी कोई साइट अपडेट नहीं
+Power P	पावर P
+Power P, kW	पावर P, kW
+Voltage U	वोल्टेज U
+Voltage U, V	वोल्टेज U, V
+Punch report (#)	पंच रिपोर्ट (#)
+RHI RFI not accepted	RHI RFI स्वीकृत नहीं
+work done · RHI RFI not accepted	काम पूरा · RHI RFI स्वीकृत नहीं
+TQ register #	TQ रजिस्टर #
+progress update group	प्रोग्रेस अपडेट ग्रुप
+a box for the panel	पैनल के लिए बॉक्स
+all time	पूरा समय
+any	कोई भी
+cable # m	केबल # m
+cable OD	केबल OD
+cable type	केबल टाइप
+cables not complete (of #)	अधूरी केबल (# में से)
+client #	क्लाइंट #
+days	दिन
+design	डिज़ाइन
+device → comment	डिवाइस → टिप्पणी
+doc No	डॉक नं.
+drum	ड्रम
+electrical basics	इलेक्ट्रिकल बेसिक्स
+from / to	से / तक
+gland selection	ग्लैंड चयन
+gland size	ग्लैंड साइज़
+ident code	आइडेंट कोड
+imported lines	इम्पोर्ट लाइनें
+including	सहित
+last # days	पिछले # दिन
+panels / boxes	पैनल / बॉक्स
+project TQ	प्रोजेक्ट TQ
+punch No	पंच नं.
+revision #	रिवीजन #
+sleeve	स्लीव
+system-wise	सिस्टम अनुसार
+text	टेक्स्ट
+title	शीर्षक
+tracker	ट्रैकर
+type RU/EN	टाइप RU/EN
+workers	वर्कर
+Ø conductor # mm	Ø कंडक्टर # mm
+Cores × size (e.g. #x# / #x#x#)	कोर × साइज़ (जैसे #x# / #x#x#)
+Armour earthed both ends; instrument screen earthed one end (control room)	आर्मर दोनों सिरों पर अर्थ; इंस्ट्रूमेंट स्क्रीन एक सिरे पर अर्थ (कंट्रोल रूम)
+Heat-shrink sleeve at cable end / core ferrules (кембрики) + core markers	केबल सिरे पर हीट-श्रिंक स्लीव / कोर फ़ेरूल (кембрики) + कोर मार्कर
+LV power/control cables at #–# V DC	#–# V DC पर LV पावर/कंट्रोल केबल
+instrument cables at # V DC (disconnect electronics first)	# V DC पर इंस्ट्रूमेंट केबल (पहले इलेक्ट्रॉनिक्स अलग करें)
+last issue (status/rev/date) and the latest change notice (Изм.). ✓ = current file you have	आखिरी इशू (स्टेटस/रिव/तारीख) और नया बदलाव नोटिस (Изм.)। ✓ = आपके पास मौजूदा फ़ाइल
+Power installation (boards, UPS, motors)	पावर इंस्टॉलेशन (बोर्ड, UPS, मोटर)
+Fire alarm & fire fighting control (AFA&FFS)	फ़ायर अलार्म और फ़ायर फ़ाइटिंग कंट्रोल (AFA&FFS)
+Subtitle	उपशीर्षक
+IP#/# (brass)	IP#/# (पीतल)
+#-phase	#-फ़ेज़
+#-phase / DC	#-फ़ेज़ / DC
+#φ motor # V	#φ मोटर # V
+A per kW	A प्रति kW
+inch	इंच
+# changes on finished work (New in revision)	पूरे काम पर # बदलाव (रिवीजन में नया)
+# changes on finished work (Quantity changed)	पूरे काम पर # बदलाव (मात्रा बदली)
+# changes on finished work (Terminal points changed)	पूरे काम पर # बदलाव (टर्मिनल पॉइंट बदले)
+All site updates (#)	सभी साइट अपडेट (#)
+Qty done today (m)	आज पूरी मात्रा (m)
+Qty done today (pc)	आज पूरी मात्रा (pc)
+Revision came after installation (material installed)	इंस्टॉलेशन के बाद रिवीजन आया (सामग्री लगी)
+Revision came after installation (pulled + terminated)	इंस्टॉलेशन के बाद रिवीजन आया (खींची + टर्मिनेट)
+Revision came after installation (pulled)	इंस्टॉलेशन के बाद रिवीजन आया (खींची)
+Equipment / device tags (#)	उपकरण / डिवाइस टैग (#)
+Cable drums (#)	केबल ड्रम (#)
+Power supply (# kV), CCR building	पावर सप्लाई (# kV), CCR बिल्डिंग
+Power supply (# kV), CCR	पावर सप्लाई (# kV), CCR
+Set name	नाम सेट करें
+Password required – owner only	पासवर्ड ज़रूरी – केवल मालिक
+Owner menu – unlocked	मालिक मेन्यू – अनलॉक
+Length, m	लंबाई, m
+Length (m)	लंबाई (m)
+Cable not in cable list yet	केबल अभी केबल सूची में नहीं
+Client # open · RHI internal # open	क्लाइंट # खुले · RHI आंतरिक # खुले
+CCR · RHI internal punch	CCR · RHI आंतरिक पंच

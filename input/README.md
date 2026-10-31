@@ -11,8 +11,8 @@ File names must contain (upper/lower case and _ or space do not matter):
 | Cable tracker | `Cable_Tracker` |
 | RHI internal punch | `Internal_Punch` |
 | Master (client) punch | `Master_Punch_List` |
-| E&I equipment control | `Equipment_Control` |
-| Cable RAWP | `RAWP` |
+| E&I equipment control (equipment RFI, subsystem) | `Equipment_Control` |
+| Cable RAWP inspection progress (final cable RFI, IWP unique name, subsystem AKT) | `RAWP` |
 | Documents register | `documents register` |
 | Project TQ register | `Technical Query Register` |
 | CTQ register | `CTQ Register` or `CCR TQ_Register` |

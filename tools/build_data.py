@@ -386,20 +386,27 @@ def build_cables(rows, prev, items, rawp_rows):
     rw = 0
     if rawp_rows:
         ix = {c[K['t']]: c for c in cables}
+        # R57+ layout (header 'Project TAG' on row 3): tag 10, laying phys 15 / RFI 17 / result 18 / date 19,
+        # termination phys 22 / RFI 24 / result 25 / date 26.  Older R51 layout: 8 / 13,15,16,17 / 20,22,23,24
+        hdr = [S(x) for x in (rawp_rows[2] if len(rawp_rows) > 2 else [])]
+        if 'Project TAG' in hdr:
+            P = dict(tag=hdr.index('Project TAG'), lp=15, lr=17, ls=18, ld=19, tp=22, tr=24, ts=25, td=26)
+        else:
+            P = dict(tag=8, lp=13, lr=15, ls=16, ld=17, tp=20, tr=22, ts=23, td=24)
         for r in rawp_rows[3:]:
-            c = ix.get(S(col(r, 8)))
+            c = ix.get(S(col(r, P['tag'])))
             if not c:
                 continue
-            ld, td = xdate(col(r, 17), '%d.%m.%y'), xdate(col(r, 24), '%d.%m.%y')
-            if num(col(r, 13)) >= 1 and ld and not c[K['pd']]:
+            ld, td = xdate(col(r, P['ld']), '%d.%m.%y'), xdate(col(r, P['td']), '%d.%m.%y')
+            if num(col(r, P['lp'])) >= 1 and ld and not c[K['pd']]:
                 c[K['pd']] = ld
-            if num(col(r, 20)) >= 1 and td and not c[K['tf']] and not c[K['tto']]:
+            if num(col(r, P['tp'])) >= 1 and td and not c[K['tf']] and not c[K['tto']]:
                 c[K['tf']] = td
             info = []
-            if S(col(r, 15)):
-                info.append(f'Laying RFI {S(col(r, 15))} {S(col(r, 16))}'.strip())
-            if S(col(r, 22)):
-                info.append(f'Term. RFI {S(col(r, 22))} {S(col(r, 23))}'.strip())
+            if S(col(r, P['lr'])):
+                info.append(f"Laying RFI {S(col(r, P['lr']))} {S(col(r, P['ls']))}".strip())
+            if S(col(r, P['tr'])):
+                info.append(f"Term. RFI {S(col(r, P['tr']))} {S(col(r, P['ts']))}".strip())
             cm = re.sub(r'\s*\[RAWP:[^\]]*\]', '', c[K['cm']] or '')
             if info:
                 cm = (cm + ' ' if cm else '') + '[RAWP: ' + '; '.join(info) + ']'

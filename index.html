@@ -74,18 +74,18 @@ select{width:100%;padding:10px;border:1px solid var(--line);border-radius:9px;fo
 
 <script>
 var LL=(function(){try{return localStorage.getItem('ccr_lang')==='ru'}catch(e){return false}})();
-function LT(en,ru){return LL?ru:en;}
+function LTX(en,ru){return LL?ru:en;}
 (function(){if(!LL)return;document.documentElement.lang='ru';var g=function(i){return document.getElementById(i);};
  g('wl1').textContent='Усть-Луга ГПЗ';g('wl2').textContent='Отдел электрики и КИПиА · Ренконс';g('wl3').textContent='Приложение CCR v3.10 · G0-D1810BX0 / G0-D1801FX0';
  g('ldt').textContent='Загрузка данных... в первый раз нужен интернет (≈10 МБ), затем работает офлайн';g('q').placeholder='Поиск по ID: тег · кабель · Access ID · замечание · CTQ · документ';
  g('ttl').textContent='Приложение CCR';var b=g('lang');b.children[0].className='';b.children[2].className='on';})();
-window.onerror=function(m,u,l){var e=document.getElementById('main');if(e)e.innerHTML='<div class="card" style="border-left:5px solid #b42318"><b>'+LT('App error','Ошибка приложения')+'</b><div style="font-size:13px;margin-top:6px">'+String(m).replace(/</g,'&lt;')+' ('+LT('line','строка')+' '+l+')</div><div style="font-size:12px;color:#687384;margin-top:8px">'+LT('Send this screenshot to Paul. Try: close the app, open again with internet.','Отправьте этот скриншот Паулю. Попробуйте: закройте приложение и откройте снова с интернетом.')+'</div></div>';};
-(function(){var V='44';var main=document.getElementById('main');
- function fail(e){main.innerHTML='<div class="card"><b>'+LT('Could not load data','Не удалось загрузить данные')+'</b><div style="font-size:13px;margin-top:6px">'+e+'</div><div style="font-size:12px;color:#687384;margin-top:8px">'+LT('Open once with internet, then it works offline.','Откройте один раз с интернетом, затем приложение работает офлайн.')+'</div><button class="more" onclick="location.reload()">'+LT('Try again','Повторить')+'</button></div>';}
+window.onerror=function(m,u,l){var e=document.getElementById('main');if(e)e.innerHTML='<div class="card" style="border-left:5px solid #b42318"><b>'+LTX('App error','Ошибка приложения')+'</b><div style="font-size:13px;margin-top:6px">'+String(m).replace(/</g,'&lt;')+' ('+LTX('line','строка')+' '+l+')</div><div style="font-size:12px;color:#687384;margin-top:8px">'+LTX('Send this screenshot to Paul. Try: close the app, open again with internet.','Отправьте этот скриншот Паулю. Попробуйте: закройте приложение и откройте снова с интернетом.')+'</div></div>';};
+(function(){var V='45';var main=document.getElementById('main');
+ function fail(e){main.innerHTML='<div class="card"><b>'+LTX('Could not load data','Не удалось загрузить данные')+'</b><div style="font-size:13px;margin-top:6px">'+e+'</div><div style="font-size:12px;color:#687384;margin-top:8px">'+LTX('Open once with internet, then it works offline.','Откройте один раз с интернетом, затем приложение работает офлайн.')+'</div><button class="more" onclick="location.reload()">'+LTX('Try again','Повторить')+'</button></div>';}
  function ok(d){return d&&typeof d==='object'&&Array.isArray(d.items)&&d.items.length&&Array.isArray(d.items[0])&&Array.isArray(d.IK)&&Array.isArray(d.cables)&&Array.isArray(d.CK);}
  function get(u){return fetch(u+'?v='+V+'&t='+Date.now()).then(function(r){if(!r.ok)throw 'HTTP '+r.status+' '+u;return r.json();});}
- function load(f,next,must){var s=document.createElement('script');s.src=f+'?v='+V;s.onload=next;s.onerror=function(){if(must)fail(f+LT(' missing',' отсутствует'));else next();};document.body.appendChild(s);}
- function start(d){window.__D=d;load('translations.js',function(){if(typeof window.t!=='function')window.t=function(k){return k;};load('app.js',function(){load('areas.js',function(){load('loto.js',function(){load('xl.js',null,false);},false);},false);},true);},false);}
+ function load(f,next,must){var s=document.createElement('script');s.src=f+'?v='+V;s.onload=next;s.onerror=function(){if(must)fail(f+LTX(' missing',' отсутствует'));else next();};document.body.appendChild(s);}
+ function start(d){window.__D=d;load('translations.js',function(){if(typeof window.t!=='function')window.t=function(k){return k;};load('app.js',function(){load('areas.js',function(){load('loto.js',function(){load('xl.js',function(){load('mc.js',null,false);},false);},false);},false);},true);},false);}
  var t=document.getElementById('ldt');
  var P=null;try{P=sessionStorage.getItem('proj');}catch(e){}
  var u=(location.hash.match(/[?&]p=(ccr|d48|cold)/i)||[])[1];if(u)P=u.toUpperCase();
@@ -93,12 +93,12 @@ window.onerror=function(m,u,l){var e=document.getElementById('main');if(e)e.inne
  if(P!=='CCR'&&P!=='D48'&&P!=='COLD'){pick();return;}
  window.__P=P;try{sessionStorage.setItem('proj',P);localStorage.setItem('proj_last',P);}catch(e){}
  var w3=document.getElementById('wl3');if(w3)w3.textContent=P==='D48'?'D48 · G0-D4810BX0 / G0-D4801FX0':P==='COLD'?'Cold cables · heat tracing · A10200 / D10250 / A30210':'CCR · G0-D1810BX0 / G0-D1801FX0';
- document.getElementById('ttl').textContent=P==='D48'?LT('D48 · GPP E&I','D48 · ГПЗ'):P==='COLD'?LT('Cold cables · GPP E&I','Холодные кабели · ГПЗ'):LT('CCR · GPP E&I','CCR · ГПЗ');
+ document.getElementById('ttl').textContent=P==='D48'?LTX('D48 · GPP E&I','D48 · ГПЗ'):P==='COLD'?LTX('Cold cables · GPP E&I','Холодные кабели · ГПЗ'):LTX('CCR · GPP E&I','CCR · ГПЗ');
  var DF=P==='D48'?'data_d48.json':P==='COLD'?'data_cold.json':'data.json',BF=P==='D48'?'data_d48.json':P==='COLD'?'data_cold.json':'data_base.json',EF=P==='D48'?'eng_d48.json':P==='COLD'?'eng_cold.json':'eng_ccr.json';
  function pick(){var last='';try{last=localStorage.getItem('proj_last')||'';}catch(e){}
-  var w=document.getElementById('wl3');if(w)w.textContent=LT('Ust-Luga Gas Processing Plant (GPP) · Electrical and Instrumentation Department · v4.4','Усть-Луга ГПЗ · Отдел электрики и КИПиА · v4.4');document.getElementById('ttl').textContent=LT('Ust-Luga GPP · E&I','Усть-Луга ГПЗ · Э и КИПиА');
+  var w=document.getElementById('wl3');if(w)w.textContent=LTX('Ust-Luga Gas Processing Plant (GPP) · Electrical and Instrumentation Department · v4.4','Усть-Луга ГПЗ · Отдел электрики и КИПиА · v4.4');document.getElementById('ttl').textContent=LTX('Ust-Luga GPP · E&I','Усть-Луга ГПЗ · Э и КИПиА');
   var b=function(k,a,c){return '<button onclick="window.__pick(\''+k+'\')" style="display:block;width:100%;max-width:340px;margin:10px auto;padding:16px;border-radius:14px;border:2px solid '+(last===k?'#c55a11':'#023362')+';background:#023362;color:#fff;font:inherit;text-align:left;cursor:pointer"><b style="font-size:20px">'+a+'</b><div style="font-size:13px;opacity:.85;margin-top:3px">'+c+'</div></button>';};
-  if(t)t.innerHTML='<div style="font-size:15px;font-weight:700;color:#023362;margin:6px 0 4px">'+LT('Choose project','Выберите объект')+'</div>'+b('CCR','🏢 CCR',LT('Central Control Room · G0-D1810BX0 / G0-D1801FX0','Центральная операторная · G0-D1810BX0 / G0-D1801FX0'))+b('D48','⚡ D48',LT('Utilities Substation & IRR · G0-D4810BX0 / G0-D4801FX0','Подстанция ТОЗХ с аппаратной · G0-D4810BX0 / G0-D4801FX0'))+b('COLD','❄️ Cold cables',LT('Electrical heat tracing (EOES / AEOG) · A10200 / D10250 / A30210 · report to Sri','Электрообогрев (EOES / AEOG) · A10200 / D10250 / A30210 · отчёт Шри'));}
+  if(t)t.innerHTML='<div style="font-size:15px;font-weight:700;color:#023362;margin:6px 0 4px">'+LTX('Choose project','Выберите объект')+'</div>'+b('CCR','🏢 CCR',LTX('Central Control Room · G0-D1810BX0 / G0-D1801FX0','Центральная операторная · G0-D1810BX0 / G0-D1801FX0'))+b('D48','⚡ D48',LTX('Utilities Substation & IRR · G0-D4810BX0 / G0-D4801FX0','Подстанция ТОЗХ с аппаратной · G0-D4810BX0 / G0-D4801FX0'))+b('COLD','❄️ Cold cables',LTX('Electrical heat tracing (EOES / AEOG) · A10200 / D10250 / A30210 · report to Sri','Электрообогрев (EOES / AEOG) · A10200 / D10250 / A30210 · отчёт Шри'));}
  // v4.1: data is kept on the phone (Cache Storage). Open / switch project = saved copy at once;
  // the newest data is downloaded in the background and offered with a "tap to load" bar.
  var DC='appdata-v1',FRESH=15*60*1000;
@@ -108,15 +108,15 @@ window.onerror=function(m,u,l){var e=document.getElementById('main');if(e)e.inne
  function bar(msg){var b=document.createElement('div');b.style.cssText='position:fixed;left:12px;right:12px;bottom:14px;z-index:9999;background:#023362;color:#fff;padding:12px 14px;border-radius:12px;font:14px/1.3 inherit;box-shadow:0 4px 14px rgba(0,0,0,.25);cursor:pointer';b.innerHTML=msg;b.onclick=function(){location.reload();};document.body.appendChild(b);}
  function bg(cd){if(age(DF)<FRESH&&age(EF)<FRESH)return;setTimeout(function(){
    net(EF).catch(function(){});
-   net(DF).then(function(d){if(ok(d)&&d.meta&&cd.meta&&d.meta.ver!==cd.meta.ver)bar('🔄 '+LT('New data','Новые данные')+' '+(d.meta.date||'')+' – '+LT('tap to load','нажмите, чтобы загрузить'));}).catch(function(){});},2500);}
+   net(DF).then(function(d){if(ok(d)&&d.meta&&cd.meta&&d.meta.ver!==cd.meta.ver)bar('🔄 '+LTX('New data','Новые данные')+' '+(d.meta.date||'')+' – '+LTX('tap to load','нажмите, чтобы загрузить'));}).catch(function(){});},2500);}
  function eng(d){return net(EF).catch(function(){return cget(EF);}).then(function(e){window.__E=e||{};return d;});}
- function online(){return net(DF).then(function(d){if(ok(d))return d;if(t)t.textContent=LT('Daily data has a different format – loading last good data...','Ежедневные данные в другом формате – загружаю последние рабочие данные...');
+ function online(){return net(DF).then(function(d){if(ok(d))return d;if(t)t.textContent=LTX('Daily data has a different format – loading last good data...','Ежедневные данные в другом формате – загружаю последние рабочие данные...');
    return get(BF).then(function(b){if(!ok(b))throw BF+' has wrong format';b.__fb={date:(d&&d.meta&&d.meta.date)||'?',ver:(d&&d.meta&&d.meta.ver)||''};return b;});})
- .catch(function(e){if(t)t.textContent=LT('Loading last good data...','Загрузка последних рабочих данных...');return get(BF).then(function(b){if(!ok(b))throw e;b.__fb={date:'?',ver:'',err:String(e)};return b;});})
- .then(eng).then(function(d){if(t)t.textContent=LT('Preparing your app...','Подготовка приложения...');start(d);}).catch(function(e){fail(e);});}
+ .catch(function(e){if(t)t.textContent=LTX('Loading last good data...','Загрузка последних рабочих данных...');return get(BF).then(function(b){if(!ok(b))throw e;b.__fb={date:'?',ver:'',err:String(e)};return b;});})
+ .then(eng).then(function(d){if(t)t.textContent=LTX('Preparing your app...','Подготовка приложения...');start(d);}).catch(function(e){fail(e);});}
  cget(DF).then(function(cd){
    if(!ok(cd))return online();
-   if(t)t.textContent=LT('Opening saved data...','Открываю сохранённые данные...');
+   if(t)t.textContent=LTX('Opening saved data...','Открываю сохранённые данные...');
    return cget(EF).then(function(ce){window.__E=ce||{};start(cd);bg(cd);});
  }).catch(function(){online();});})();
 </script>
