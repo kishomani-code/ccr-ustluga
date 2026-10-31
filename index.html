@@ -85,7 +85,7 @@ window.onerror=function(m,u,l){var e=document.getElementById('main');if(e)e.inne
  function ok(d){return d&&typeof d==='object'&&Array.isArray(d.items)&&d.items.length&&Array.isArray(d.items[0])&&Array.isArray(d.IK)&&Array.isArray(d.cables)&&Array.isArray(d.CK);}
  function get(u){return fetch(u+'?v='+V+'&t='+Date.now()).then(function(r){if(!r.ok)throw 'HTTP '+r.status+' '+u;return r.json();});}
  function load(f,next,must){var s=document.createElement('script');s.src=f+'?v='+V;s.onload=next;s.onerror=function(){if(must)fail(f+LT(' missing',' отсутствует'));else next();};document.body.appendChild(s);}
- function start(d){window.__D=d;load('translations.js',function(){if(typeof window.t!=='function')window.t=function(k){return k;};load('app.js',function(){load('areas.js',function(){load('loto.js',null,false);},false);},true);},false);}
+ function start(d){window.__D=d;load('translations.js',function(){if(typeof window.t!=='function')window.t=function(k){return k;};load('app.js',function(){load('areas.js',function(){load('loto.js',function(){load('xl.js',null,false);},false);},false);},true);},false);}
  var t=document.getElementById('ldt');
  var P=null;try{P=sessionStorage.getItem('proj');}catch(e){}
  var u=(location.hash.match(/[?&]p=(ccr|d48|cold)/i)||[])[1];if(u)P=u.toUpperCase();
