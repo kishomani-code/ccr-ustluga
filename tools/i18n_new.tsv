@@ -71,3 +71,7 @@ Client punch – same tag & title	Замечание заказчика – то
 RHI punch – same tag & title	Замечание РХИ – тот же тег и титул	RHI punch – aynı etiket ve başlık	RHI पंच – वही टैग और टाइटल
 Sub-system AKT	АКТ подсистемы	Alt sistem AKT	सबसिस्टम AKT
 Loading RFI / subsystem data… (first time needs internet)	Загрузка RFI / подсистем… (в первый раз нужен интернет)	RFI / alt sistem verisi yükleniyor… (ilk sefer internet gerekir)	RFI / सबसिस्टम डेटा लोड हो रहा है… (पहली बार इंटरनेट चाहिए)
+Or browse by system and activity	Или выбрать систему и вид работ	Veya sistem ve iş türüne göre gözat	या सिस्टम और काम के प्रकार से देखें
+🔎 What do you need? e.g. fire and gas, lighting cable, DCS termination	🔎 Что нужно? напр. пожарная сигнализация, освещение кабель, DCS подключение	🔎 Ne lazım? örn. fire and gas, aydınlatma kablo, DCS bağlantı	🔎 क्या चाहिए? जैसे fire and gas, lighting cable, DCS termination
+Nothing found – try another word (system, activity or drawing No)	Ничего не найдено – попробуйте другое слово (система, вид работ или № чертежа)	Bulunamadı – başka bir kelime deneyin (sistem, iş veya çizim No)	कुछ नहीं मिला – दूसरा शब्द आज़माएँ (सिस्टम, काम या ड्रॉइंग नंबर)
+✕ clear	✕ очистить	✕ temizle	✕ साफ़ करें

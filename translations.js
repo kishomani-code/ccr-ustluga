@@ -988,7 +988,11 @@ var RU = {
 "Client punch – same tag & title": "Замечание заказчика – тот же тег и титул",
 "RHI punch – same tag & title": "Замечание РХИ – тот же тег и титул",
 "Sub-system AKT": "АКТ подсистемы",
-"Loading RFI / subsystem data… (first time needs internet)": "Загрузка RFI / подсистем… (в первый раз нужен интернет)"
+"Loading RFI / subsystem data… (first time needs internet)": "Загрузка RFI / подсистем… (в первый раз нужен интернет)",
+"Or browse by system and activity": "Или выбрать систему и вид работ",
+"🔎 What do you need? e.g. fire and gas, lighting cable, DCS termination": "🔎 Что нужно? напр. пожарная сигнализация, освещение кабель, DCS подключение",
+"Nothing found – try another word (system, activity or drawing No)": "Ничего не найдено – попробуйте другое слово (система, вид работ или № чертежа)",
+"✕ clear": "✕ очистить"
 };
 // Labels that were already bilingual ("English / Русский") – show only one language.
 var TRK = {
@@ -1064,7 +1068,11 @@ var TRK = {
 "Client punch – same tag & title": "Müşteri punch – aynı etiket ve başlık",
 "RHI punch – same tag & title": "RHI punch – aynı etiket ve başlık",
 "Sub-system AKT": "Alt sistem AKT",
-"Loading RFI / subsystem data… (first time needs internet)": "RFI / alt sistem verisi yükleniyor… (ilk sefer internet gerekir)"
+"Loading RFI / subsystem data… (first time needs internet)": "RFI / alt sistem verisi yükleniyor… (ilk sefer internet gerekir)",
+"Or browse by system and activity": "Veya sistem ve iş türüne göre gözat",
+"🔎 What do you need? e.g. fire and gas, lighting cable, DCS termination": "🔎 Ne lazım? örn. fire and gas, aydınlatma kablo, DCS bağlantı",
+"Nothing found – try another word (system, activity or drawing No)": "Bulunamadı – başka bir kelime deneyin (sistem, iş veya çizim No)",
+"✕ clear": "✕ temizle"
 };
 var HI = {
 "Completed": "पूरा हुआ",
@@ -2053,7 +2061,11 @@ var HI = {
 "Client punch – same tag & title": "क्लाइंट पंच – वही टैग और टाइटल",
 "RHI punch – same tag & title": "RHI पंच – वही टैग और टाइटल",
 "Sub-system AKT": "सबसिस्टम AKT",
-"Loading RFI / subsystem data… (first time needs internet)": "RFI / सबसिस्टम डेटा लोड हो रहा है… (पहली बार इंटरनेट चाहिए)"
+"Loading RFI / subsystem data… (first time needs internet)": "RFI / सबसिस्टम डेटा लोड हो रहा है… (पहली बार इंटरनेट चाहिए)",
+"Or browse by system and activity": "या सिस्टम और काम के प्रकार से देखें",
+"🔎 What do you need? e.g. fire and gas, lighting cable, DCS termination": "🔎 क्या चाहिए? जैसे fire and gas, lighting cable, DCS termination",
+"Nothing found – try another word (system, activity or drawing No)": "कुछ नहीं मिला – दूसरा शब्द आज़माएँ (सिस्टम, काम या ड्रॉइंग नंबर)",
+"✕ clear": "✕ साफ़ करें"
 };
 var GLOSS = {
 "Коробка соединительная": "Junction box",

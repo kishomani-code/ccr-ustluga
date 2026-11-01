@@ -195,7 +195,7 @@ function home() {
    <div class="sect">📦 Materials</div><div class="grid">
     ${T2('#/dr', '🧵 Cable drums', `${DR.length} drums · used / remaining`)}${T2('#/mt', '📋 Material tracking', `${D.mat.length} ident codes by system`)}${T2('#/mr', '🏬 MRF status', `${MRF.length} warehouse requests`)}</div>
    <div class="sect">🧭 Systems</div><div class="grid">${(() => { const st = Object.keys(SG).map(sysStat).filter(Boolean); const rd = st.filter(x => x.ok).length; return T2('#/bd', '🧭 System block diagrams<br><span style="font-weight:400;font-size:12px">how systems work · ready to start?</span>', `${rd} ready · ${st.length - rd} with issues`, st.length ? Math.round(100 * rd / st.length) : 0, 'main'); })()}${T2('#/gl', '🔩 Cable glands', 'size · type RU/EN · sleeve · earthing')}</div>
-   <div class="sect">📑 Documents</div><div class="grid">${T2('#/ctq', '❓ CTQ register<br><span style="font-weight:400;font-size:12px">internal TQs · what is on hold</span>', `${CTQ.filter(ctqOpen).length} open · ${Object.keys(HOLD).length} items on hold`, null, 'main')}${T2('#/dg', '📐 Drawings register', `${RG.length} ${PRJ} docs · system → activity`)}${T2('#/sf', '📋 SF drawings (MTO)', `${SF.length} files · rev & dates`)}${T2('#/rv', '📄 Drawing revisions', `${RV.length} revised · ${RV.reduce((x, r) => x + r.ch.filter(rvDone).length, 0)} after installation`)}</div>
+   <div class="sect">📑 Documents</div><div class="grid">${T2('#/ctq', '❓ CTQ register<br><span style="font-weight:400;font-size:12px">internal TQs · what is on hold</span>', `${CTQ.filter(ctqOpen).length} open · ${Object.keys(HOLD).length} items on hold`, null, 'main')}${T2('#/dg', '📐 Drawings register', `${RG.length} ${PRJ} docs · 🔎 search by keyword`)}${T2('#/sf', '📋 SF drawings (MTO)', `${SF.length} files · rev & dates`)}${T2('#/rv', '📄 Drawing revisions', `${RV.length} revised · ${RV.reduce((x, r) => x + r.ch.filter(rvDone).length, 0)} after installation`)}</div>
    ${engTiles()}
    <div class="sect">🛠️ Tools</div><div class="grid">${T2('#/nt', '📝 Site notes', `${(S2.notes || []).length} notes`)}</div>
    <div class="sect">📈 Progress</div><div class="grid">${T2('#/dp', '✍️ Daily progress entry', `${pend} lines not sent`)}${S2.owner ? T2('#/ow', '🔑 Import progress (owner)', `${(S2.rx || []).length} imported lines · total IWP report`, null, 'main') + T2('#/tp', '👷 Technician performance', `${new Set(perfRows().map(r => r.by)).size} technicians`, null, 'main') : ''}${T2('#/pp', '📊 Punch daily progress', 'site updates')}</div>
@@ -511,16 +511,91 @@ const ACTS = [['pull', '🧵 Cable pulling', ['LC', 'LA', 'LD'], 'LC = cable rou
   ['sch', '📐 Schemes / MTO', ['SF', 'BB', 'PB', 'RX'], 'SF = functional / structural schemes with material (ident codes), BB = bill of materials.'],
   ['ds', '📄 Specs / data sheets', ['DS'], 'DS = data sheets / specifications.'], ['oth', '📁 Other / general', [], 'General albums (architecture, interiors, civil…).']];
 const actOf = ty => (ACTS.find(a => a[2].includes(ty)) || ACTS[ACTS.length - 1])[0];
+// ===== smart drawing search: type what you need (EN / RU), e.g. "fire and gas", "lighting cable routing", "earthing", "cctv termination"
+const DKW = [
+  ['Fire & gas', ['fire and gas', 'fire & gas', 'f&g', 'fng', 'f and g'], ['FA', 'FA-PSGN', 'FA-SPBA', 'FA-GPTS', 'IN-SPAP', 'IN-GDSS', 'BQ-PSGN', 'BQ-SPBA', 'BQ-GPTS', 'BQ-SPAP', 'BQ-GDSS'], ['fire', 'gas detect', 'пожар', 'газ']],
+  ['Fire alarm / fire fighting', ['fire alarm', 'fire fighting', 'сигнализ', 'аупт', 'apt', 'firefighting', 'fire', 'detector', 'detectors', 'smoke', 'sprinkler', 'extinguish', 'extinguishing', 'afa', 'psgn', 'spba', 'gpts', 'spap', 'пожар', 'пожарн', 'извещат', 'пожаротуш', 'аупс', 'спба'], ['FA', 'FA-PSGN', 'FA-SPBA', 'FA-GPTS', 'IN-SPAP', 'BQ-PSGN', 'BQ-SPBA', 'BQ-GPTS', 'BQ-SPAP'], ['fire', 'пожар']],
+  ['Gas detection', ['gas detection', 'gas detector', 'gas', 'gdss', 'газ', 'газоанализ', 'загазован'], ['IN-GDSS', 'BQ-GDSS', 'FA-GPTS', 'BQ-GPTS'], ['gas detect', 'gas detector', 'газ']],
+  ['Lighting', ['lighting', 'light', 'lights', 'lamp', 'lamps', 'luminaire', 'elov', 'освещ', 'светил'], ['EL-ELOV', 'BQ-ELOV'], ['lighting', 'освещ']],
+  ['Power / sockets', ['power installation', 'power', 'socket', 'sockets', 'emsv', 'силов', 'розетк'], ['EL-EMSV', 'BQ-EMSV'], ['power installation', 'силов']],
+  ['Power supply / substation', ['power supply', 'substation', 'switchgear', 'sld', 'single line', 'esps', 'электроснаб', 'подстанц', 'щит'], ['EL-ESPS', 'BQ-ESPS', 'IN-ASUS', 'BQ-ASUS'], ['power supply', 'single line', 'электроснаб']],
+  ['Earthing / lightning', ['earthing', 'earth', 'grounding', 'ground', 'bonding', 'lightning', 'eg01', 'eg02', 'заземл', 'молни'], ['EL-EG01', 'EL-EG02', 'BQ-EG01', 'BQ-EG02'], ['earthing', 'lightning', 'заземл']],
+  ['DCS', ['dcs', 'distributed control', 'control system', 'рсу'], ['IN-DCS', 'BQ-DCS'], ['distributed control']],
+  ['ESD', ['esd', 'emergency shutdown', 'shutdown', 'паз', 'противоаварийн'], ['IN-ESD', 'BQ-ESD'], ['shutdown']],
+  ['HVAC', ['hvac', 'ventilation', 'ahu', 'air condition', 'heating', 'ovkv', 'aovk', 'вентил', 'кондиц', 'отоплен'], ['HV', 'HV-OVKV', 'IN-AOVK', 'BQ-OVKV', 'BQ-AOVK'], ['hvac', 'ventilation']],
+  ['Telecom (all)', ['telecom', 'telecommunication', 'communication', 'связь', 'слаботоч'], ['TE-*', 'BQ-ECHS', 'BQ-FTSV', 'BQ-GGSO', 'BQ-LSOP', 'BQ-LVST', 'BQ-RPTV', 'BQ-SARD', 'BQ-SKST', 'BQ-SSKT', 'BQ-VKSV'], []],
+  ['CCTV', ['cctv', 'camera', 'cameras', 'video surveillance', 'rptv', 'видеонаблюд', 'камер'], ['TE-RPTV', 'BQ-RPTV'], ['cctv']],
+  ['PAGA / warning', ['paga', 'public address', 'general alarm', 'loudspeaker', 'announcement', 'ggso', 'lsop', 'warning', 'оповещ', 'громкоговор'], ['TE-GGSO', 'TE-LSOP', 'BQ-GGSO', 'BQ-LSOP'], ['public address', 'warning']],
+  ['LAN / SCS', ['lan', 'network', 'scs', 'structured cabling', 'lvst', 'skst', 'fiber', 'fibre', 'optic', 'сеть', 'скс', 'оптик'], ['TE-LVST', 'TE-SKST', 'BQ-LVST', 'BQ-SKST'], ['lan', 'structured cabling']],
+  ['Clock', ['clock', 'echs', 'часы', 'часофик'], ['TE-ECHS', 'BQ-ECHS'], ['clock']],
+  ['Telephone', ['telephone', 'phone', 'ftn', 'ftsv', 'телефон'], ['TE-FTSV', 'BQ-FTSV'], ['ftn']],
+  ['Radio / DECT', ['radio', 'dect', 'sard', 'радио'], ['TE-SARD', 'BQ-SARD'], ['radio']],
+  ['TV / video conference', ['tv', 'catv', 'antenna', 'video conference', 'vcs', 'sskt', 'vksv', 'телевид', 'видеоконф'], ['TE-SSKT', 'TE-VKSV', 'BQ-SSKT', 'BQ-VKSV'], ['television', 'conferenc']],
+  ['Metering', ['metering', 'meter', 'askue', 'asku', 'mfms', 'flow', 'учет', 'учёт'], ['IN-ASKU', 'IN-MFMS', 'BQ-ASKU', 'BQ-MFMS'], ['metering']],
+  ['Utilities / power control', ['utilities control', 'asue', 'asus', 'power control', 'асу'], ['IN-ASUE', 'IN-ASUS', 'BQ-ASUE', 'BQ-ASUS'], ['control system']],
+  ['Emission monitoring', ['emission', 'cems', 'akvs', 'выброс'], ['IN-AKVS', 'BQ-AKVS'], ['emission']],
+  ['Rotating equipment monitoring', ['vibration', 'rotating', 'maec', 'вибрац'], ['IN-MAEC', 'BQ-MAEC'], ['rotating']],
+  ['Training simulator', ['simulator', 'training', 'ints', 'тренажер', 'тренажёр'], ['IN-INTS', 'BQ-INTS'], ['simulator']],
+  ['Architecture / interior', ['architecture', 'architectural', 'interior', 'furniture', 'room layout', 'архитект', 'интерьер'], ['AR', 'AR-AIAR', 'AR-AR01', 'AR-AR02'], ['architect', 'interior']],
+  ['Civil / foundations', ['civil', 'foundation', 'piles', 'pile', 'concrete', 'фундамент', 'свай', 'бетон'], ['CI', 'CI-KJ01', 'CI-KJ02', 'CI-KJ03', 'CI-KJ04', 'CI-GTMG'], ['concrete', 'pile']],
+  ['Steel structures', ['steel', 'structure', 'structures', 'металлоконстр'], ['ST-KM01', 'ST-KM02'], ['steel structure']],
+  ['Water / sewage', ['water', 'sewage', 'plumbing', 'водоснаб', 'канализ'], ['WS-VSVK', 'BQ-VSVK'], ['water']],
+];
+const DACT = [
+  ['Cable routing / cable list', ['cable routing', 'cable route', 'cable schedule', 'cable list', 'cable journal', 'cable', 'cables', 'routing', 'pulling', 'кабел', 'трасс', 'журнал'], ['LC', 'LA', 'LD'], ['cable']],
+  ['Termination / connection', ['termination', 'terminate', 'connection', 'wiring', 'terminal', 'terminals', 'loop', 'подключ', 'расключ', 'клемм', 'соединен'], ['LR', 'ZK', 'ZQ', 'CC'], ['connection', 'wiring', 'терминал']],
+  ['Installation / layout', ['installation', 'install', 'layout', 'arrangement', 'location', 'mounting', 'plan', 'монтаж', 'расстанов', 'план', 'располож'], ['ZA', 'ZL', 'ZY', 'ZM', 'ZG', 'BT', 'BC'], ['layout', 'arrangement', 'installation']],
+  ['MTO / material', ['mto', 'material', 'materials', 'specification', 'ident', 'boq', 'quantities', 'спецификац', 'материал'], ['SF', 'BB'], ['material take-off', 'quantities']],
+  ['Block / single line diagram', ['block diagram', 'diagram', 'single line', 'scheme', 'схема'], [], ['diagram', 'схема']],
+  ['Datasheet', ['datasheet', 'data sheet', 'datasheets', 'опросн'], ['DS'], ['datasheet', 'data sheet']],
+];
+const DSTOP = new Set(['ccr', 'central', 'room', 'building', 'area', 'the', 'and', 'of', 'for', 'in', 'to', 'a', 'i', 'my', 'me', 'need', 'want', 'show', 'give', 'all', 'related', 'drawing', 'drawings', 'doc', 'docs', 'document', 'documents', 'please', 'система', 'системы', 'чертеж', 'чертежи', 'чертёж', 'для', 'и', 'все', 'по', 'цо', 'g0-d1810bx0', 'g0-d1801fx0', 'system', 'systems']);
+function dsParse(q) {
+  let t = ' ' + String(q || '').toLowerCase().replace(/[,;/]+/g, ' ').replace(/\s+/g, ' ') + ' ';
+  const con = [], act = [], free = [];
+  const grab = (list, out) => { const all = []; list.forEach((c, ci) => c[1].forEach(w => all.push([w, ci]))); all.sort((a, b) => b[0].length - a[0].length);
+    all.forEach(([w, ci]) => { const re = new RegExp('(^|\\s)' + w.replace(/[.*+?^${}()|[\]\\&]/g, '\\$&') + '\\S*(?=\\s)', 'g'); if (re.test(t)) { if (!out.includes(ci)) out.push(ci); t = t.replace(re, ' '); } }); };
+  grab(DKW, con); grab(DACT, act);
+  t.split(' ').filter(w => w && !DSTOP.has(w) && w.length > 1).forEach(w => free.push(w));
+  // "fire and gas" also brings the separate fire and gas groups
+  return {con, act, free};
+}
+const dsSys = (codes, sys) => codes.some(c => c.endsWith('*') ? sys.startsWith(c.slice(0, -1)) : sys === c);
+function dsMatch(r, p) {
+  const txt = (r.no + ' ' + r.en + ' ' + r.ru).toLowerCase(); let score = 0;
+  if (p.con.length) { const ok = p.con.some(ci => dsSys(DKW[ci][2], r.sys) || DKW[ci][3].some(k => txt.includes(k))); if (!ok) return -1; score += 10; if (p.con.some(ci => dsSys(DKW[ci][2], r.sys))) score += 5; }
+  if (p.act.length) { const ok = p.act.some(ai => DACT[ai][2].includes(r.ty) || DACT[ai][3].some(k => txt.includes(k))); if (!ok) return -1; score += 8; if (p.act.some(ai => DACT[ai][2].includes(r.ty))) score += 4; }
+  const soft = p.con.length || p.act.length;
+  for (const w of p.free) { if (txt.includes(w)) score += 3; else if (!soft) return -1; }
+  if (/^(EL|IN|TE|FA)/.test(r.sys)) score += 2;
+  if (r.sys.startsWith('BQ')) score -= 3;
+  if (r.ty === 'BB' || r.ty === 'WB') score -= 2;
+  return score;
+}
+function dsRun(p, list) { return list.map(r => [dsMatch(r, p), r]).filter(x => x[0] >= 0).sort((a, b) => b[0] - a[0] || a[1].sys.localeCompare(b[1].sys) || a[1].no.localeCompare(b[1].no)).map(x => x[1]); }
+function dsSearch(q, list) { const p = dsParse(q); if (!p.con.length && !p.act.length && !p.free.length) return {p, L: list.slice(), fb: ''};
+  let L = dsRun(p, list), fb = '';
+  if (!L.length && p.act.length && p.con.length) { L = dsRun({con: p.con, act: [], free: p.free}, list); if (L.length) fb = 'No ' + p.act.map(i => DACT[i][0].toLowerCase()).join(' / ') + ' drawing for this system in the register – showing all its documents.'; }
+  return {p, L, fb}; }
+const DS_EX = ['fire and gas', 'fire alarm cable', 'lighting layout', 'earthing', 'DCS termination', 'CCTV', 'PAGA', 'power supply single line', 'HVAC automation', 'пожарная сигнализация'];
 function regHome() { VS.RG = VS.RG || {sy: '', a: '', q: ''}; const v = VS.RG; const syss = [...new Set(RG.map(r => r.sys))].sort();
-  setHead('Drawings register', `${RG.length} CCR documents · pick system → activity`);
+  setHead('Drawings register', `${RG.length} ${PRJ} documents · type what you need`);
   const L0 = RG.filter(r => !v.sy || r.sys === v.sy);
-  main.innerHTML = `<select onchange="VS.RG.sy=this.value;VS.RG.a='';regHome()"><option value="">1) Choose system… (${syss.length})</option>${syss.map(y => `<option ${v.sy === y ? 'selected' : ''}>${esc(y)} (${RG.filter(r => r.sys === y).length})</option>`).join('')}</select>
-   <div class="sect">2) Activity</div><div class="chips" style="flex-wrap:wrap">${ACTS.map(a => { const n = L0.filter(r => actOf(r.ty) === a[0]).length; return n ? `<button class="chip ${v.a === a[0] ? 'on' : ''}" onclick="VS.RG.a=VS.RG.a==='${a[0]}'?'':'${a[0]}';regHome()">${a[1]} · ${n}</button>` : ''; }).join('')}</div>
-   ${v.a ? `<div class="note" style="background:#eef3f8">💡 ${esc(ACTS.find(a => a[0] === v.a)[3])}</div>` : ''}
-   <input class="fin" style="margin-top:8px" placeholder="Filter: doc No, title…" value="${esc(v.q)}" oninput="VS.RG.q=this.value;rgList()"><div id="rgl"></div>`; rgList(); }
-function rgList() { const v = VS.RG, ql = v.q.trim().toLowerCase(); const L = RG.filter(r => (!v.sy || r.sys === v.sy) && (!v.a || actOf(r.ty) === v.a) && (!ql || (r.no + ' ' + r.en + ' ' + r.ru).toLowerCase().includes(ql)));
+  main.innerHTML = `<input id="rgq" class="fin" style="font-size:16px" placeholder="🔎 What do you need? e.g. fire and gas, lighting cable, DCS termination" value="${esc(v.q)}" oninput="VS.RG.q=this.value;rgList()">
+   <div class="chips" style="flex-wrap:wrap;margin:6px 0">${DS_EX.map(x => `<button class="chip ${v.q === x ? 'on' : ''}" onclick="VS.RG.q='${x}';regHome()">${esc(x)}</button>`).join('')}${v.q ? `<button class="chip" onclick="VS.RG.q='';regHome()">✕ clear</button>` : ''}</div>
+   <div id="rgp"></div>
+   <details ${v.sy || v.a ? 'open' : ''}><summary class="sect" style="cursor:pointer">Or browse by system and activity</summary>
+   <select onchange="VS.RG.sy=this.value;VS.RG.a='';regHome()"><option value="">All systems (${syss.length})</option>${syss.map(y => `<option value="${esc(y)}" ${v.sy === y ? 'selected' : ''}>${esc(y)} (${RG.filter(r => r.sys === y).length})</option>`).join('')}</select>
+   <div class="chips" style="flex-wrap:wrap">${ACTS.map(a => { const n = L0.filter(r => actOf(r.ty) === a[0]).length; return n ? `<button class="chip ${v.a === a[0] ? 'on' : ''}" onclick="VS.RG.a=VS.RG.a==='${a[0]}'?'':'${a[0]}';regHome()">${a[1]} · ${n}</button>` : ''; }).join('')}</div>
+   ${v.a ? `<div class="note" style="background:#eef3f8">💡 ${esc(ACTS.find(a => a[0] === v.a)[3])}</div>` : ''}</details>
+   <div id="rgl"></div>`; rgList(); }
+function rgList() { const v = VS.RG; const base = RG.filter(r => (!v.sy || r.sys === v.sy) && (!v.a || actOf(r.ty) === v.a));
+  const res = dsSearch(v.q, base), L = res.L, p = res.p;
+  const pe = document.getElementById('rgp');
+  if (pe) pe.innerHTML = v.q.trim() ? `<div class="note" style="background:#eef3f8">${L.length} documents · searching: ${[...p.con.map(i => '<b>' + esc(DKW[i][0]) + '</b>'), ...p.act.map(i => '<b>' + esc(DACT[i][0]) + '</b>'), ...p.free.map(w => '“' + esc(w) + '”')].join(' + ') || '–'}${res.fb ? '<br>⚠ ' + esc(res.fb) : ''}</div>` : '';
   const by = {}; L.forEach(r => (by[r.sys] = by[r.sys] || []).push(r));
-  document.getElementById('rgl').innerHTML = L.length ? `<div class="list">${Object.entries(by).sort().map(([s, rs]) => `<div class="gh">${esc(s)} · ${rs.length}</div>` + rs.map(r => `<div class="li"><div class="m"><div class="t">${esc(r.no)}</div><div class="s" style="white-space:normal">${esc(r.en)}</div><div class="s" style="white-space:normal">${esc(r.ru)}</div></div><div class="r"><span class="badge ${/IFC|AFC|AS/i.test(r.st) ? 'b-ok' : 'b-part'}">Rev ${esc(r.rev)}</span><div>${esc(r.st)}</div><div>${esc(r.dt)}</div><div>${esc(r.ty)}</div></div></div>`).join('')).join('')}</div>` : '<div class="empty">Nothing found</div>'; }
+  const groups = v.q.trim() ? [...new Set(L.map(r => r.sys))].map(s => [s, by[s]]) : Object.entries(by).sort();
+  document.getElementById('rgl').innerHTML = L.length ? `<div class="list">${groups.map(([s, rs]) => `<div class="gh">${esc(s)} · ${rs.length}</div>` + rs.map(r => `<div class="li"><div class="m"><div class="t">${esc(r.no)}</div><div class="s" style="white-space:normal">${esc(r.en)}</div><div class="s" style="white-space:normal">${esc(r.ru)}</div></div><div class="r"><span class="badge ${/IFC|AFC|AS/i.test(r.st) ? 'b-ok' : 'b-part'}">Rev ${esc(r.rev)}</span><div>${esc(r.st)}</div><div>${esc(r.dt)}</div><div>${esc(r.ty)}</div></div></div>`).join('')).join('')}</div>` : '<div class="empty">Nothing found – try another word (system, activity or drawing No)</div>'; }
 // ===== daily progress entry
 function progHome() { VS.DP = VS.DP || {q: ''}; const v = VS.DP; const pend = progLines(true); setHead('Daily progress', `${pend.length} lines not sent yet`);
   const mine = progLines(false).filter(l => dkey(l.t) === dkey(Date.now()));
@@ -633,7 +708,7 @@ function ownPunch() { const d = VS.OW.d; const one = {}; (S2.rx || []).filter(r 
   copyText(Object.values(one).map(r => [r.no, r.v === 'F' ? 'Fixed' : 'Not fixed', d.split('-').reverse().join('.'), r.tag, r.by].join('\t')).join('\n')).then(() => toast('Punch list copied')); }
 
 // ======== v3.2 modules ========
-const APPV = '4.5';
+const APPV = '4.6';
 const shortT = t => String(t || '').replace(/^G0-D(18|48)10BX0-/, '').replace(/^G0-D(18|48)01FX0-/, 'FX0-');
 const SYSN = {'EL-ESPS': ['Substation 10/0.4 kV & power supply', 'Подстанция 10/0,4 кВ'], 'EL-EMSV': ['Power installation (boards, UPS, motors)', 'Силовое электрооборудование'], 'EL-ESBZ': ['Power supply from utility substation', 'Электроснабжение от ПС'], 'EL-ELOV': ['Indoor lighting', 'Внутреннее освещение'], 'EL-EG02': ['Earthing & lightning protection', 'Заземление и молниезащита'], 'EL-EG01': ['Area earthing', 'Заземление площадки'], 'EH-EOES': ['Electric heating', 'Электрообогрев'], 'EH-AEOG': ['Heat tracing', 'Электрообогрев (кабель)'], 'EH-EOBK': ['Electric heating (other)', 'Электрообогрев'],
   'IN-DCS': ['Distributed Control System (DCS)', 'РСУ'], 'IN-ESD': ['Emergency Shutdown (ESD)', 'ПАЗ'], 'IN-SPAP': ['Fire alarm & fire fighting control (AFA&FFS)', 'АСПС и ПТ'], 'IN-GDSS': ['Gas detection', 'Контроль загазованности'], 'IN-ASUE': ['Utilities control system', 'АСУ ЭО (утилиты)'], 'IN-ASUS': ['Power supply control system', 'АСУ ЭС'], 'IN-ASKU': ['Utility metering (AUMS)', 'АСКУ ЭР'], 'IN-MAEC': ['Rotating equipment monitoring (CMS)', 'МСО и ВО'], 'IN-MFMS': ['Material flow metering (MFMS)', 'СУМП'], 'IN-AKVS': ['Emission monitoring (CEMS)', 'АКВС'], 'IN-INTS': ['Operator training simulator', 'Тренажёр оператора'], 'IN-INSS': ['Information security', 'СОИБ'], 'IN-AOVK': ['HVAC automation', 'Автоматизация ОВиК'], 'IN-AKMP': ['Analyzer system', 'Анализаторы'],
@@ -1055,9 +1130,14 @@ function searchView(q) {
   setHead('ID search', q); if (qbox.value !== q) qbox.value = q;
   const n = N(q); if (n.length < 2) { main.innerHTML = '<div class="empty">Type at least 2 characters</div>'; return; }
   const G = idSearch(q); VS.SG = VS.SG && VS.SG.q === q ? VS.SG : {q, f: ''}; const f = VS.SG.f;
-  main.innerHTML = G.length ? `<div class="chips"><button class="chip ${!f ? 'on' : ''}" onclick="VS.SG.f='';searchView(VS.SG.q)">All ${G.reduce((a, g) => a + g.n, 0)}</button>${G.map(g => `<button class="chip ${f === g.key ? 'on' : ''}" onclick="VS.SG.f='${g.key}';searchView(VS.SG.q)">${g.title.split(' ')[0]} ${g.n}</button>`).join('')}</div>` +
+  const dp = dsParse(q); let dHtml = '';
+  if (dp.con.length || dp.act.length) { const R = dsSearch(q, RG);
+    if (R.L.length) dHtml = `<div class="sect">📐 Drawings for “${esc(q)}” (${R.L.length})</div><div class="list">${R.L.slice(0, 8).map(r => `<div class="li"><div class="m"><div class="t">${esc(r.no)}</div><div class="s" style="white-space:normal">${esc(r.en)}</div></div><div class="r"><span class="badge ${/IFC|AFC|AS/i.test(r.st) ? 'b-ok' : 'b-part'}">Rev ${esc(r.rev)}</span><div>${esc(r.st)}</div></div></div>`).join('')}</div>
+      <button class="chip on" style="margin:6px 0 10px" onclick="VS.RG={sy:'',a:'',q:VS.SG.q};go('#/dg')">Show all ${R.L.length} in drawings register ›</button>`; }
+  if (!G.length && dHtml) { main.innerHTML = dHtml; return; }
+  main.innerHTML = dHtml + (G.length ? `<div class="chips"><button class="chip ${!f ? 'on' : ''}" onclick="VS.SG.f='';searchView(VS.SG.q)">All ${G.reduce((a, g) => a + g.n, 0)}</button>${G.map(g => `<button class="chip ${f === g.key ? 'on' : ''}" onclick="VS.SG.f='${g.key}';searchView(VS.SG.q)">${g.title.split(' ')[0]} ${g.n}</button>`).join('')}</div>` +
     G.filter(g => !f || g.key === f).map(g => `<div class="sect">${g.title} (${g.n})</div><div class="list">${g.html}</div>`).join('')
-    : '<div class="empty">Nothing found. Type part of any ID: tag, cable, panel, Access ID, punch No, CTQ/TQ No, document No (e.g. JB-541, CA-1001, 88647, CTQ-18).</div>';
+    : '<div class="empty">Nothing found. Type part of any ID: tag, cable, panel, Access ID, punch No, CTQ/TQ No, document No (e.g. JB-541, CA-1001, 88647, CTQ-18) – or what you need, e.g. fire and gas, lighting cable.</div>');
 }
 // ---- LR end-to-end termination
 const cleanTb = s => { const P = String(s || '').trim().replace(/[«_].*$/, '').replace(/(\d)(?=[A-Z]{2,}\d)/g, '$1|').split('|'); const out = [P[0]]; P.slice(1).forEach(x => { if (!out.some(o => o.endsWith(x))) out.push(x); }); return out.join(' / '); }; // PDF text may join two strip names
