@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>GPP E&amp;I Owner</title>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon-192.png">
+<meta name="theme-color" content="#0f2747">
+<style>
+:root{--bg:#eef2f7;--card:#fff;--ink:#14213d;--mut:#5b6b82;--line:#d9e1ec;--acc:#0f2747;--ok:#1f7a45;--bad:#b42318;--warn:#b26b00}
+*{box-sizing:border-box}body{margin:0;font:14px/1.45 "Segoe UI",Arial,sans-serif;background:var(--bg);color:var(--ink)}
+header{background:var(--acc);color:#fff;padding:14px 22px;display:flex;align-items:center;gap:12px}
+header img{width:34px;height:34px;border-radius:7px;background:#fff}header b{font-size:17px}header span{opacity:.75;font-size:12px;display:block}
+main{max-width:860px;margin:22px auto;padding:0 16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:18px 20px;margin-bottom:14px}
+h2{margin:0 0 4px;font-size:18px}p.mut{color:var(--mut);margin:0 0 14px}
+.row{display:flex;align-items:center;gap:12px;padding:10px 0;border-top:1px solid var(--line)}
+.row:first-of-type{border-top:0}.row .t{flex:1}.row .t small{display:block;color:var(--mut)}
+.st{min-width:92px;text-align:center;font-weight:600;font-size:12px;padding:4px 8px;border-radius:12px;background:#e8edf4;color:var(--mut)}
+.st.ok{background:#e3f4ea;color:var(--ok)}.st.bad{background:#fbe7e5;color:var(--bad)}.st.warn{background:#fff3df;color:var(--warn)}
+button{font:inherit;border:1px solid var(--acc);background:var(--acc);color:#fff;border-radius:7px;padding:7px 14px;cursor:pointer}
+button.sec{background:#fff;color:var(--acc)}button:disabled{opacity:.45;cursor:default}
+input[type=password]{font:inherit;padding:9px 12px;border:1px solid var(--line);border-radius:7px;width:220px}
+#res{white-space:pre-wrap;font:12px Consolas,monospace;background:#f6f8fb;border:1px solid var(--line);border-radius:7px;padding:10px;margin-top:10px;display:none}
+.foot{color:var(--mut);font-size:12px;text-align:center;margin:20px 0}
+</style>
+</head>
+<body>
+<header><img src="icon-192.png" alt=""><div><b>GPP E&amp;I Owner</b><span>Ust-Luga GPP · Electrical &amp; Instrumentation · RHI</span></div></header>
+<main>
+<div class="card" id="login">
+  <h2>Owner login</h2><p class="mut">Owner password required.</p>
+  <input type="password" id="pw" placeholder="Password" onkeydown="if(event.key==='Enter')login()"> <button onclick="login()">Unlock</button>
+  <div id="pwmsg" style="color:var(--bad);margin-top:8px"></div>
+</div>
+
+<div class="card" id="check" style="display:none">
+  <h2>Test – does your company PC allow this app?</h2>
+  <p class="mut">Run the 4 checks. If all are green, the full owner app (IWP daily report, tracker update, RFI accepted → IWP, RHI punch to close) will work on this PC.</p>
+  <div class="row"><div class="t"><b>1. App runs</b><small>Browser and scripts are allowed</small></div><span class="st ok" id="s1">OK</span></div>
+  <div class="row"><div class="t"><b>2. Install as Windows app</b><small>Adds "GPP Owner" to the Start menu / desktop – no admin rights needed</small></div><button class="sec" id="inst" onclick="install()">Install</button><span class="st" id="s2">not tested</span></div>
+  <div class="row"><div class="t"><b>3. Read your Excel file</b><small>Choose e.g. Md_EL_IWP_Status or Md_Cable_Tracker (.xlsb / .xlsx). The file stays on your PC – nothing is uploaded.</small></div><button class="sec" onclick="document.getElementById('f').click()">Choose file</button><input type="file" id="f" accept=".xlsx,.xlsb,.xlsm,.xls" style="display:none" onchange="readX(this.files[0])"><span class="st" id="s3">not tested</span></div>
+  <div class="row"><div class="t"><b>4. Save an Excel file</b><small>Creates a small test Excel in your Downloads folder</small></div><button class="sec" onclick="saveX()">Save test</button><span class="st" id="s4">not tested</span></div>
+  <div id="res"></div>
+</div>
+<div class="foot">Works offline after the first open · your Excel files are read only on this PC</div>
+</main>
+<script src="xlsx.full.min.js"></script>
+<script>
+const PW='548477';let deferred=null;
+const $=id=>document.getElementById(id);
+const st=(id,cls,txt)=>{const e=$(id);e.className='st '+cls;e.textContent=txt;};
+function login(){if($('pw').value===PW){try{sessionStorage.setItem('own','1')}catch(e){};show()}else $('pwmsg').textContent='Wrong password';}
+function show(){$('login').style.display='none';$('check').style.display='block';
+  if(window.matchMedia('(display-mode: standalone)').matches){st('s2','ok','Installed ✓');$('inst').style.display='none';}}
+try{if(sessionStorage.getItem('own')==='1')show()}catch(e){}
+if(typeof XLSX==='undefined')st('s1','bad','Blocked');
+window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferred=e;st('s2','warn','Ready');});
+window.addEventListener('appinstalled',()=>{st('s2','ok','Installed ✓');$('inst').style.display='none';});
+function install(){if(deferred){deferred.prompt();deferred.userChoice.then(c=>{if(c.outcome!=='accepted')st('s2','warn','Cancelled');deferred=null;});}
+  else st('s2','bad','Use menu');
+  if(!deferred&&!window.matchMedia('(display-mode: standalone)').matches){const r=$('res');r.style.display='block';r.textContent='Install from the browser menu instead:\n  Edge:   ⋯ menu → Apps → Install this site as an app\n  Chrome: ⋮ menu → Cast, save and share → Install page as app\nIf the menu item is missing or greyed out, your company has blocked app install – the app still works in a normal browser tab.';}}
+function readX(file){if(!file)return;st('s3','warn','Reading…');const t0=Date.now();const r=new FileReader();
+  r.onload=e=>{setTimeout(()=>{try{const wb=XLSX.read(new Uint8Array(e.target.result),{type:'array',dense:true,cellStyles:false,cellHTML:false,cellFormula:false});
+      const lines=wb.SheetNames.map(n=>{const ws=wb.Sheets[n];const rg=ws['!ref']?XLSX.utils.decode_range(ws['!ref']):null;return `  ${n}: ${rg?rg.e.r+1:0} rows × ${rg?rg.e.c+1:0} columns`;});
+      st('s3','ok','OK ✓');const o=$('res');o.style.display='block';o.textContent=`${file.name} (${(file.size/1048576).toFixed(1)} MB) read in ${((Date.now()-t0)/1000).toFixed(1)} s\n`+lines.join('\n');
+    }catch(err){st('s3','bad','Failed');const o=$('res');o.style.display='block';o.textContent='Could not read: '+err.message;}},30);};
+  r.onerror=()=>st('s3','bad','Blocked');r.readAsArrayBuffer(file);}
+function saveX(){try{const ws=XLSX.utils.aoa_to_sheet([['GPP E&I Owner – test file'],['Date',new Date().toLocaleString('ru-RU')],['If you can open this, saving works.']]);
+  const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,'Test');XLSX.writeFile(wb,'GPP_Owner_test.xlsx');st('s4','ok','Saved ✓');}catch(e){st('s4','bad','Failed');}}
+if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
+</script>
+</body>
+</html>
