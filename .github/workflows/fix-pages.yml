@@ -1,0 +1,26 @@
+# One-time fix: cancel the stuck GitHub Pages deployment (v4.6, 60e661e) and request a fresh Pages build.
+name: Fix stuck Pages deployment
+on:
+  push:
+    paths: ['.github/workflows/fix-pages.yml']
+  workflow_dispatch:
+permissions:
+  pages: write
+  contents: read
+  deployments: write
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Cancel stuck deployment and rebuild
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          R=${{ github.repository }}
+          echo "== cancel stuck Pages deployment"
+          gh api -X POST repos/$R/pages/deployments/60e661ef97dd9ac28c681f36ee969278a6afa8ea/cancel && echo cancelled || echo "cancel call failed"
+          sleep 15
+          echo "== Pages info"
+          gh api repos/$R/pages || true
+          echo "== request a new Pages build"
+          gh api -X POST repos/$R/pages/builds || echo "build request failed"
