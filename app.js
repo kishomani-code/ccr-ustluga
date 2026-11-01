@@ -125,7 +125,7 @@ window.addEventListener('hashchange', () => route());
 qbox.addEventListener('input', () => { clearTimeout(qbox.t); qbox.t = setTimeout(() => { const v = qbox.value.trim(); if (v.length >= 2) history.replaceState(null, '', '#/s/' + enc(v)), route(); else if (!v && location.hash.startsWith('#/s/')) go('#/'); }, 160); });
 function setHead(t, s) { document.getElementById('ttl').textContent = t; document.getElementById('st').textContent = s || ''; document.getElementById('bk').style.visibility = (location.hash && location.hash !== '#/') ? 'visible' : 'hidden'; }
 function route() {
-  const h = location.hash.replace(/^#\//, ''); const [k, ...rest] = h.split('/'); const a = dec(rest.join('/'));
+  const h = location.hash.replace(/^#\//, '').replace(/[?&]p=(ccr|d48|cold)$/i, ''); const [k, ...rest] = h.split('/'); const a = dec(rest.join('/'));
   window.scrollTo(0, 0);
   if (!k) return home();
   if (k === 'oa' && window.OA) return OA.route(rest);   // v4.3 OTHER AREA
