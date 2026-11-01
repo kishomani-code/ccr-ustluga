@@ -45,6 +45,6 @@ def put(var, obj, s):
     return s[:i] + js + s[i:]
 
 
-s = put('RU', ru, s); s = put('BI', bi, s); s = put('TRK', trk, s); s = put('HI', hi, s); s = put('GLOSS', gl, s)
+s = put('RU', ru, s); s = put('BI', bi, s); s = put('GLOSS', gl, s)   # Turkish / Hindi removed (EN + RU only)
 open(p, 'w', encoding='utf-8').write(s)
 print('RU', len(ru), 'BI', len(bi), 'TR', len(trk), 'HI', len(hi), 'GLOSS', len(gl))

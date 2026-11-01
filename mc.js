@@ -149,7 +149,7 @@
   const showTot = () => { try { return localStorage.getItem('gpp_showtot') === '1'; } catch (e) { return false; } };
   MC.side = function () { let m = document.getElementById('sidem'); if (m) { m.remove(); return; }
     const it = (ic, l, h, on, nt) => `<button class="smi ${on ? 'on' : ''}" ${nt ? 'data-nt="1"' : ''} onclick="document.getElementById('sidem').remove();${h}">${ic} ${nt ? l : t(l)}</button>`;
-    const L = [['en', 'English'], ['ru', 'Русский'], ['tr', 'Türkçe'], ['hi', 'हिन्दी']];
+    const L = [['en', 'English'], ['ru', 'Русский']];
     m = document.createElement('div'); m.id = 'sidem';
     m.innerHTML = `<div class="smb" onclick="document.getElementById('sidem').remove()"></div><nav class="smp"><div class="smh">Ust-Luga GPP · E&I</div>
       ${it('📊', 'Overall dashboard (total project)', "go('#/td')")}
