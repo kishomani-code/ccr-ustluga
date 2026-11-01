@@ -36,11 +36,12 @@ def main():
     ap.add_argument('--sites', default='ccr,d48,cold')
     a = ap.parse_args()
     F = B.find_files(a.input)
-    f_iwp, f_raw, f_eq = F.get('iwp'), F.get('rawp'), F.get('equip')
+    f_iwp, f_raw, f_eq, f_trk = F.get('iwp'), F.get('rawp'), F.get('equip'), F.get('cables')
     print('IWP status:', f_iwp and os.path.basename(f_iwp)); print('RAWP:', f_raw and os.path.basename(f_raw)); print('Equipment:', f_eq and os.path.basename(f_eq))
     iwp = read(f_iwp, 'EL_IWP_Status') if f_iwp else None
     raw = read(f_raw, 'Cable_list') if f_raw else None
     eq = read(f_eq, 'E&I_Equipment') if f_eq else None
+    trk = read(f_trk, B.SHEETS['cables']) if f_trk else None
     for site in a.sites.split(','):
         titles, _ = B.SITES[site]
         disc = B.DISC_RX.get(site)
@@ -125,16 +126,30 @@ def main():
                             S(col(r, 26)), xdate(col(r, 32)), num(col(r, 33)), S(col(r, 21)), S(col(r, 0))])
         else:
             eqo = prev.get('eq', [])
+        # ---- Cable tracker: RHI RFI number / date (columns '№ RFI' / 'Дата RFI') per cable
+        trf = {}
+        if trk:
+            h = [S(x) for x in (trk[4] if len(trk) > 4 else [])]
+            cn = h.index('№ RFI') if '№ RFI' in h else 57
+            cd = h.index('Дата RFI') if 'Дата RFI' in h else 58
+            for r in trk[5:]:
+                tag = S(col(r, 21))
+                if tag in ctags:
+                    no = S(col(r, cn))
+                    if no and tag not in trf:
+                        trf[tag] = [no, xdate(col(r, cd))]
+        else:
+            trf = prev.get('trf', {})
         # subsystems also from the punch list of the site (so MC shows punch-only subsystems too)
         for code in nm:
             if re.match(r'G\d-\d', code):
                 ssi(code)
         out = {'date': datetime.date.today().strftime('%d.%m.%Y'),
                'src': ' · '.join(os.path.basename(f) for f in (f_iwp, f_raw, f_eq) if f) or prev.get('src', ''),
-               'ss': SS, 'acc': acc2, 'cab': cab, 'eq': eqo}
+               'ss': SS, 'acc': acc2, 'cab': cab, 'eq': eqo, 'trf': trf, 'trk': os.path.basename(f_trk) if f_trk else prev.get('trk', '')}
         out = B.scrub_all(out)
         json.dump(out, open(out_p, 'w', encoding='utf-8'), ensure_ascii=False, separators=(',', ':'))
-        print(f'{site}: {len(SS)} subsystems · {len(acc2)} IWP lines · {len(cab)} cables with RFI · {len(eqo)} equipment rows -> {out_p} ({os.path.getsize(out_p):,} bytes)')
+        print(f'{site}: {len(trf)} cables with RHI RFI in tracker · {len(SS)} subsystems · {len(acc2)} IWP lines · {len(cab)} cables with RFI · {len(eqo)} equipment rows -> {out_p} ({os.path.getsize(out_p):,} bytes)')
 
 
 if __name__ == '__main__':
