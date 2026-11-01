@@ -8,68 +8,325 @@
 <link rel="icon" href="icon-192.png">
 <meta name="theme-color" content="#0f2747">
 <style>
-:root{--bg:#eef2f7;--card:#fff;--ink:#14213d;--mut:#5b6b82;--line:#d9e1ec;--acc:#0f2747;--ok:#1f7a45;--bad:#b42318;--warn:#b26b00}
-*{box-sizing:border-box}body{margin:0;font:14px/1.45 "Segoe UI",Arial,sans-serif;background:var(--bg);color:var(--ink)}
-header{background:var(--acc);color:#fff;padding:14px 22px;display:flex;align-items:center;gap:12px}
-header img{width:34px;height:34px;border-radius:7px;background:#fff}header b{font-size:17px}header span{opacity:.75;font-size:12px;display:block}
-main{max-width:860px;margin:22px auto;padding:0 16px}
-.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:18px 20px;margin-bottom:14px}
-h2{margin:0 0 4px;font-size:18px}p.mut{color:var(--mut);margin:0 0 14px}
-.row{display:flex;align-items:center;gap:12px;padding:10px 0;border-top:1px solid var(--line)}
-.row:first-of-type{border-top:0}.row .t{flex:1}.row .t small{display:block;color:var(--mut)}
-.st{min-width:92px;text-align:center;font-weight:600;font-size:12px;padding:4px 8px;border-radius:12px;background:#e8edf4;color:var(--mut)}
-.st.ok{background:#e3f4ea;color:var(--ok)}.st.bad{background:#fbe7e5;color:var(--bad)}.st.warn{background:#fff3df;color:var(--warn)}
-button{font:inherit;border:1px solid var(--acc);background:var(--acc);color:#fff;border-radius:7px;padding:7px 14px;cursor:pointer}
-button.sec{background:#fff;color:var(--acc)}button:disabled{opacity:.45;cursor:default}
-input[type=password]{font:inherit;padding:9px 12px;border:1px solid var(--line);border-radius:7px;width:220px}
-#res{white-space:pre-wrap;font:12px Consolas,monospace;background:#f6f8fb;border:1px solid var(--line);border-radius:7px;padding:10px;margin-top:10px;display:none}
-.foot{color:var(--mut);font-size:12px;text-align:center;margin:20px 0}
+:root{--bg:#eef2f7;--card:#fff;--ink:#14213d;--mut:#5b6b82;--line:#d9e1ec;--acc:#0f2747;--acc2:#1d4e89;--ok:#1f7a45;--bad:#b42318;--warn:#b26b00;--sel:#e8f0fb}
+*{box-sizing:border-box}html,body{height:100%}body{margin:0;font:13.5px/1.45 "Segoe UI",Arial,sans-serif;background:var(--bg);color:var(--ink)}
+header{background:var(--acc);color:#fff;padding:10px 18px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:5}
+header img{width:30px;height:30px;border-radius:6px;background:#fff}header .tt b{font-size:16px}header .tt span{opacity:.75;font-size:11.5px;display:block}
+header .sp{flex:1}header label{font-size:12px;opacity:.85}header input[type=date]{font:inherit;border:0;border-radius:6px;padding:4px 8px;margin-left:6px}
+.wrap{display:flex;min-height:calc(100% - 52px)}
+nav{width:215px;background:#fff;border-right:1px solid var(--line);padding:10px 0;flex-shrink:0}
+nav a{display:flex;align-items:center;gap:9px;padding:9px 16px;color:var(--ink);text-decoration:none;cursor:pointer;border-left:3px solid transparent}
+nav a:hover{background:#f4f7fb}nav a.on{background:var(--sel);border-left-color:var(--acc2);font-weight:600}
+nav a .n{margin-left:auto;font-size:11px;background:#e8edf4;color:var(--mut);border-radius:9px;padding:0 7px}nav a .n.hot{background:#fde7d2;color:#9a4b00}
+nav .grp{font-size:11px;color:var(--mut);text-transform:uppercase;letter-spacing:.05em;padding:12px 16px 4px}
+main{flex:1;padding:18px 22px;min-width:0}
+h2{margin:0 0 2px;font-size:19px}p.mut{color:var(--mut);margin:0 0 14px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:9px;padding:14px 16px;margin-bottom:14px}
+.card h3{margin:0 0 8px;font-size:14.5px}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;margin-bottom:14px}
+.kpi{background:#fff;border:1px solid var(--line);border-radius:9px;padding:10px 14px}.kpi b{font-size:22px;display:block}.kpi span{color:var(--mut);font-size:12px}
+.kpi.hot b{color:#9a4b00}
+button{font:inherit;border:1px solid var(--acc2);background:var(--acc2);color:#fff;border-radius:6px;padding:6px 13px;cursor:pointer;white-space:nowrap}
+button.sec{background:#fff;color:var(--acc2)}button.lnk{border:0;background:none;color:var(--acc2);padding:2px 4px}button:disabled{opacity:.45;cursor:default}
+button.danger{background:#fff;color:var(--bad);border-color:#e5b4ae}
+.bar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:10px}.bar .sp{flex:1}
+input.f,select.f,textarea.f{font:inherit;border:1px solid var(--line);border-radius:6px;padding:6px 9px;background:#fff}
+textarea.f{width:100%;min-height:86px;font:12.5px Consolas,monospace}
+table{border-collapse:collapse;width:100%;background:#fff}th,td{border-bottom:1px solid var(--line);padding:5px 7px;text-align:left;vertical-align:top;font-size:12.5px}
+th{background:#f4f7fb;position:sticky;top:52px;z-index:1;font-weight:600;color:#33415c;white-space:nowrap}
+td.num,th.num{text-align:right;white-space:nowrap}tr:hover td{background:#fafcff}
+td input.q{width:72px;text-align:right;font:inherit;border:1px solid var(--line);border-radius:5px;padding:2px 5px}
+td input.t{width:120px;font:inherit;border:1px solid var(--line);border-radius:5px;padding:2px 5px}
+.tw{max-height:62vh;overflow:auto;border:1px solid var(--line);border-radius:8px}.tw th{top:0}
+.pill{display:inline-block;font-size:11px;border-radius:9px;padding:1px 8px;background:#e8edf4;color:var(--mut);white-space:nowrap}
+.pill.ok{background:#e3f4ea;color:var(--ok)}.pill.bad{background:#fbe7e5;color:var(--bad)}.pill.warn{background:#fff3df;color:var(--warn)}
+.files{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:12px}
+.fc{background:#fff;border:1px solid var(--line);border-radius:9px;padding:12px 14px;display:flex;flex-direction:column;gap:6px}
+.fc .h{display:flex;align-items:center;gap:8px}.fc .h b{flex:1}.fc small{color:var(--mut)}
+.drop{border:2px dashed #b8c6da;border-radius:9px;padding:16px;text-align:center;color:var(--mut);margin-bottom:12px;background:#f8fafd}
+.drop.ov{border-color:var(--acc2);background:#eaf2ff}
+.mut{color:var(--mut)}.small{font-size:12px}.err{color:var(--bad)}
+#toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:#14213d;color:#fff;padding:9px 16px;border-radius:8px;display:none;z-index:9;max-width:80%}
+#busy{position:fixed;inset:0;background:rgba(15,39,71,.35);display:none;align-items:center;justify-content:center;z-index:8}
+#busy div{background:#fff;padding:18px 26px;border-radius:10px;min-width:300px;text-align:center}
+.spin{width:26px;height:26px;border:3px solid #d7e1ee;border-top-color:var(--acc2);border-radius:50%;animation:sp 1s linear infinite;margin:0 auto 10px}@keyframes sp{to{transform:rotate(360deg)}}
+#login{max-width:380px;margin:80px auto}
+.cmp{display:grid;grid-template-columns:1fr 1fr;gap:6px}.cmp div{background:#f6f8fb;border-radius:6px;padding:5px 8px}
+@media (max-width:760px){nav{display:none}.wrap{display:block}}
 </style>
 </head>
 <body>
-<header><img src="icon-192.png" alt=""><div><b>GPP E&amp;I Owner</b><span>Ust-Luga GPP · Electrical &amp; Instrumentation · RHI</span></div></header>
-<main>
-<div class="card" id="login">
-  <h2>Owner login</h2><p class="mut">Owner password required.</p>
-  <input type="password" id="pw" placeholder="Password" onkeydown="if(event.key==='Enter')login()"> <button onclick="login()">Unlock</button>
-  <div id="pwmsg" style="color:var(--bad);margin-top:8px"></div>
+<header><img src="icon-192.png" alt=""><div class="tt"><b>GPP E&amp;I Owner</b><span>Ust-Luga GPP · Electrical &amp; Instrumentation · RHI</span></div><div class="sp"></div>
+<label>Report date <input type="date" id="rdate" onchange="setDate(this.value)"></label></header>
+<div id="login" class="card"><h2>Owner login</h2><p class="mut">Owner password required.</p>
+<input class="f" type="password" id="pw" placeholder="Password" style="width:200px" onkeydown="if(event.key==='Enter')login()"> <button onclick="login()">Unlock</button><div id="pwmsg" class="err" style="margin-top:8px"></div></div>
+<div class="wrap" id="app" style="display:none">
+<nav id="nav"></nav>
+<main id="main"></main>
 </div>
-
-<div class="card" id="check" style="display:none">
-  <h2>Test – does your company PC allow this app?</h2>
-  <p class="mut">Run the 4 checks. If all are green, the full owner app (IWP daily report, tracker update, RFI accepted → IWP, RHI punch to close) will work on this PC.</p>
-  <div class="row"><div class="t"><b>1. App runs</b><small>Browser and scripts are allowed</small></div><span class="st ok" id="s1">OK</span></div>
-  <div class="row"><div class="t"><b>2. Install as Windows app</b><small>Adds "GPP Owner" to the Start menu / desktop – no admin rights needed</small></div><button class="sec" id="inst" onclick="install()">Install</button><span class="st" id="s2">not tested</span></div>
-  <div class="row"><div class="t"><b>3. Read your Excel file</b><small>Choose e.g. Md_EL_IWP_Status or Md_Cable_Tracker (.xlsb / .xlsx). The file stays on your PC – nothing is uploaded.</small></div><button class="sec" onclick="document.getElementById('f').click()">Choose file</button><input type="file" id="f" accept=".xlsx,.xlsb,.xlsm,.xls" style="display:none" onchange="readX(this.files[0])"><span class="st" id="s3">not tested</span></div>
-  <div class="row"><div class="t"><b>4. Save an Excel file</b><small>Creates a small test Excel in your Downloads folder</small></div><button class="sec" onclick="saveX()">Save test</button><span class="st" id="s4">not tested</span></div>
-  <div id="res"></div>
-</div>
-<div class="foot">Works offline after the first open · your Excel files are read only on this PC</div>
-</main>
+<div id="busy"><div><div class="spin"></div><b id="busyT">Reading…</b><div class="small mut" id="busyS"></div></div></div>
+<div id="toast"></div>
 <script src="xlsx.full.min.js"></script>
+<script src="jszip.min.js"></script>
 <script>
-const PW='548477';let deferred=null;
-const $=id=>document.getElementById(id);
-const st=(id,cls,txt)=>{const e=$(id);e.className='st '+cls;e.textContent=txt;};
-function login(){if($('pw').value===PW){try{sessionStorage.setItem('own','1')}catch(e){};show()}else $('pwmsg').textContent='Wrong password';}
-function show(){$('login').style.display='none';$('check').style.display='block';
-  if(window.matchMedia('(display-mode: standalone)').matches){st('s2','ok','Installed ✓');$('inst').style.display='none';}}
-try{if(sessionStorage.getItem('own')==='1')show()}catch(e){}
-if(typeof XLSX==='undefined')st('s1','bad','Blocked');
-window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferred=e;st('s2','warn','Ready');});
-window.addEventListener('appinstalled',()=>{st('s2','ok','Installed ✓');$('inst').style.display='none';});
-function install(){if(deferred){deferred.prompt();deferred.userChoice.then(c=>{if(c.outcome!=='accepted')st('s2','warn','Cancelled');deferred=null;});}
-  else st('s2','bad','Use menu');
-  if(!deferred&&!window.matchMedia('(display-mode: standalone)').matches){const r=$('res');r.style.display='block';r.textContent='Install from the browser menu instead:\n  Edge:   ⋯ menu → Apps → Install this site as an app\n  Chrome: ⋮ menu → Cast, save and share → Install page as app\nIf the menu item is missing or greyed out, your company has blocked app install – the app still works in a normal browser tab.';}}
-function readX(file){if(!file)return;st('s3','warn','Reading…');const t0=Date.now();const r=new FileReader();
-  r.onload=e=>{setTimeout(()=>{try{const wb=XLSX.read(new Uint8Array(e.target.result),{type:'array',dense:true,cellStyles:false,cellHTML:false,cellFormula:false});
-      const lines=wb.SheetNames.map(n=>{const ws=wb.Sheets[n];const rg=ws['!ref']?XLSX.utils.decode_range(ws['!ref']):null;return `  ${n}: ${rg?rg.e.r+1:0} rows × ${rg?rg.e.c+1:0} columns`;});
-      st('s3','ok','OK ✓');const o=$('res');o.style.display='block';o.textContent=`${file.name} (${(file.size/1048576).toFixed(1)} MB) read in ${((Date.now()-t0)/1000).toFixed(1)} s\n`+lines.join('\n');
-    }catch(err){st('s3','bad','Failed');const o=$('res');o.style.display='block';o.textContent='Could not read: '+err.message;}},30);};
-  r.onerror=()=>st('s3','bad','Blocked');r.readAsArrayBuffer(file);}
-function saveX(){try{const ws=XLSX.utils.aoa_to_sheet([['GPP E&I Owner – test file'],['Date',new Date().toLocaleString('ru-RU')],['If you can open this, saving works.']]);
-  const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,'Test');XLSX.writeFile(wb,'GPP_Owner_test.xlsx');st('s4','ok','Saved ✓');}catch(e){st('s4','bad','Failed');}}
-if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
+'use strict';
+const PW = '548477', VER = '1.0';
+const $ = id => document.getElementById(id);
+const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;'}[c]));
+const N = v => { const n = Number(v); return isFinite(n) ? n : 0; };
+const r2 = v => Math.round(v * 100) / 100;
+const fm = v => (Math.round(v * 100) / 100).toLocaleString('ru-RU');
+const NT = s => String(s || '').toUpperCase().replace(/[^A-Z0-9А-ЯЁ]/g, '');
+function toast(t, ms) { const e = $('toast'); e.textContent = t; e.style.display = 'block'; clearTimeout(toast.t); toast.t = setTimeout(() => e.style.display = 'none', ms || 2600); }
+function busy(on, t, s) { $('busy').style.display = on ? 'flex' : 'none'; if (t) $('busyT').textContent = t; $('busyS').textContent = s || ''; }
+const LS = {get(k, d) { try { const v = localStorage.getItem('gppo_' + k); return v == null ? d : JSON.parse(v); } catch (e) { return d; } }, set(k, v) { try { localStorage.setItem('gppo_' + k, JSON.stringify(v)); } catch (e) {} }};
+
+// ---------------- settings & state
+const ST = {titles: LS.get('titles', 'G0-D1810BX0; G0-D1801FX0'), date: '', page: LS.get('page', 'files')};
+const titles = () => ST.titles.split(/[;,\s]+/).map(s => s.trim()).filter(Boolean);
+const DATA = {};            // kind -> {name, at, res}
+const REP = LS.get('rep', {});    // IWP daily report lines: acc -> {q, src}
+const PUL = LS.get('pul', []);    // tracker pulls: {tag, m, drum, iwp}
+const TER = LS.get('ter', []);    // tracker terminations: {tag, side}
+const saveRep = () => { LS.set('rep', REP); LS.set('pul', PUL); LS.set('ter', TER); };
+function setDate(v) { ST.date = v; render(); }
+const dIso = () => ST.date || new Date().toISOString().slice(0, 10);
+const dRu = () => dIso().split('-').reverse().join('.');
+const dSerial = () => { const [y, m, d] = dIso().split('-').map(Number); return Math.round((Date.UTC(y, m - 1, d) - Date.UTC(1899, 11, 30)) / 864e5); };
+
+// ---------------- IndexedDB cache of the parsed files
+const IDB = {db: null, open() { return new Promise(res => { try { const r = indexedDB.open('gpp_owner', 1); r.onupgradeneeded = () => r.result.createObjectStore('d'); r.onsuccess = () => { IDB.db = r.result; res(); }; r.onerror = () => res(); } catch (e) { res(); } }); },
+  put(k, v) { return new Promise(res => { if (!IDB.db) return res(); try { const t = IDB.db.transaction('d', 'readwrite'); t.objectStore('d').put(v, k); t.oncomplete = res; t.onerror = res; } catch (e) { res(); } }); },
+  all() { return new Promise(res => { if (!IDB.db) return res({}); const o = {}; try { const t = IDB.db.transaction('d'); const c = t.objectStore('d').openCursor(); c.onsuccess = () => { const x = c.result; if (x) { o[x.key] = x.value; x.continue(); } else res(o); }; c.onerror = () => res(o); } catch (e) { res(o); } }); },
+  del(k) { return new Promise(res => { if (!IDB.db) return res(); try { const t = IDB.db.transaction('d', 'readwrite'); t.objectStore('d').delete(k); t.oncomplete = res; } catch (e) { res(); } }); }};
+
+// ---------------- source files
+const KINDS = [
+  {k: 'iwp', nm: 'IWP status', pat: /iwp.?status/i, ex: 'Md_EL_IWP_Status_dd.mm.yyyy.xlsb', use: 'IWP report · RFI → IWP'},
+  {k: 'trk', nm: 'Cable tracker', pat: /cable.?tracker/i, ex: 'Md_Cable_Tracker_L3_dd.mm.yyyy.xlsb', use: 'IWP report · tracker update'},
+  {k: 'rawp', nm: 'Cable RAWP', pat: /rawp/i, ex: 'Cable_RAWP_Inspection_Progress_Rxx.xlsb', use: 'RFI accepted → IWP'},
+  {k: 'mpunch', nm: 'Master (client) punch', pat: /master.?punch/i, ex: 'Master_Punch_List_dd.mm.yyyy.xlsx', use: 'RHI punch to close'},
+  {k: 'rpunch', nm: 'RHI internal punch', pat: /internal.?punch/i, ex: 'EI_Internal_Punch_register.xlsx', use: 'RHI punch to close'}];
+function kindOf(name) { const k = KINDS.find(x => x.pat.test(name)); return k && k.k; }
+function parseFile(kind, file) { return new Promise((res, rej) => { const rd = new FileReader();
+  rd.onload = () => { const w = new Worker('worker.js'); w.onmessage = e => { w.terminate(); e.data.ok ? res(e.data.res) : rej(new Error(e.data.err)); };
+    w.onerror = e => { w.terminate(); rej(new Error(e.message || 'Worker failed (file too big for memory?)')); };
+    w.postMessage({kind, buf: rd.result, titles: titles()}, [rd.result]); };
+  rd.onerror = () => rej(new Error('Cannot read the file')); rd.readAsArrayBuffer(file); }); }
+async function loadFiles(files) { const list = [...files].map(f => ({f, k: kindOf(f.name)}));
+  const bad = list.filter(x => !x.k); if (bad.length) toast('Not recognised: ' + bad.map(x => x.f.name).join(', '), 5000);
+  for (const x of list.filter(x => x.k)) { const K = KINDS.find(y => y.k === x.k);
+    busy(true, `Reading ${K.nm}…`, `${x.f.name} · ${(x.f.size / 1048576).toFixed(1)} MB · big files take 10–40 s`);
+    try { const res = await parseFile(x.k, x.f); const v = {name: x.f.name, at: Date.now(), mod: x.f.lastModified, res, titles: ST.titles};
+      DATA[x.k] = v; await IDB.put(x.k, v); IX = null; toast(`${K.nm}: ${res.n.toLocaleString()} rows read in ${res.sec.toFixed(0)} s`); }
+    catch (e) { busy(false); alertBox(`${K.nm}: ${e.message}`); } }
+  busy(false); render(); }
+function alertBox(t) { const m = $('main'); m.insertAdjacentHTML('afterbegin', `<div class="card err">${esc(t)}</div>`); }
+function pick(kind) { const i = document.createElement('input'); i.type = 'file'; i.accept = '.xlsx,.xlsb,.xlsm,.xls'; i.multiple = !kind; i.onchange = () => loadFiles(i.files); i.click(); }
+
+// ---------------- indexes built from the loaded data
+let IX = null;
+const isLay = m => /cable (laying|pulling)/i.test(m || ''), isTerm = m => /cable termination/i.test(m || '');
+function ix() { if (IX) return IX; const I = {acc: {}, tag: {}, trk: {}, rawp: [], ok: {}};
+  const iw = DATA.iwp && DATA.iwp.res.rows || [];
+  iw.forEach((r, i) => { const a = String(r[12] == null ? '' : r[12]).replace(/\.0+$/, ''); if (!a) return; const o = {i, r, acc: a, map: r[0], tag: String(r[8] || ''), q: N(r[13]), f: N(r[14]), co: r[17] || ''};
+    I.acc[a] = o; const t = NT(o.tag); if (t) (I.tag[t] = I.tag[t] || []).push(o); });
+  (DATA.trk && DATA.trk.res.rows || []).forEach(r => { I.trk[NT(r[0])] = r; });
+  return IX = I; }
+const lines = (tag, fn) => (ix().tag[NT(tag)] || []).filter(o => fn(o.map));
+const left = o => r2(Math.max(o.q - o.f - N((REP[o.acc] || {}).q), 0));
+function distribute(L, qty) { const out = []; let rest = qty; L.forEach(o => { if (rest <= 0.001) return; const room = r2(Math.max(o.q - o.f, 0)); const q = r2(Math.min(room, rest)); if (q > 0) { out.push([o, q]); rest = r2(rest - q); } }); return {out, rest}; }
+function addRep(acc, q, src) { if (!(q > 0)) return; const e = REP[acc]; REP[acc] = {q: e ? Math.max(e.q, q) : q, src: e && e.src !== src ? e.src + ' + ' + src : src}; }
+
+// ---------------- IWP daily report: tracker pulled metres not yet in IWP (CCR cables)
+function autoIWP() { const I = ix(), out = [], noline = [];
+  (DATA.trk && DATA.trk.res.rows || []).forEach(t => { const act = N(t[11]); if (act <= 0) return;
+    const L = lines(t[0], isLay); if (!L.length) { noline.push(t); return; }
+    const fact = L.reduce((s, o) => s + o.f, 0), site = L.reduce((s, o) => s + o.q, 0);
+    if (act <= fact + 0.5 || fact >= site - 0.01) return;
+    const want = r2(Math.min(act, site) - fact); const d = distribute(L, want);
+    d.out.forEach(([o, q]) => out.push({o, q, t, act, over: act > site + 0.5})); });
+  return {out, noline}; }
+// client RFI accepted -> IWP not 100 %
+const acc_ = s => /accept|принят/i.test(s || '') && !/reject|отклон/i.test(s || '');
+function rfiIWP() { const out = [], miss = [];
+  (DATA.rawp && DATA.rawp.res.rows || []).forEach(r => {
+    [['Pulling', isLay, 2, 3, 4, 5], ['Termination', isTerm, 6, 7, 8, 9]].forEach(([act, fn, iI, iN, iR, iD]) => {
+      if (!acc_(r[iR])) return; if (act === 'Termination' && r[6] && r[6] === r[2]) return;
+      const L = lines(r[0], fn); if (!L.length) { if (r[iI] && r[iI] !== '-') miss.push({r, act, rf: r[iN], dt: r[iD]}); return; }
+      L.forEach(o => { const rem = r2(o.q - o.f); if (rem > 0.001) out.push({o, q: rem, r, act, rf: r[iN], res: r[iR], dt: r[iD]}); }); }); });
+  return {out, miss}; }
+// RHI punch open, all client punches with the same tag + title closed
+const closed = s => /закр|clos|отмен|cancel/i.test(s || '');
+function punchClose() { const G = {}; const key = (tag, tit) => NT(tag) + '|' + tit;
+  (DATA.mpunch && DATA.mpunch.res.rows || []).forEach(p => { if (!NT(p[3])) return; const g = G[key(p[3], p[1])] = G[key(p[3], p[1])] || {c: [], r: []}; g.c.push(p); });
+  (DATA.rpunch && DATA.rpunch.res.rows || []).forEach(p => { if (!NT(p[3])) return; const g = G[key(p[3], p[1])]; if (g) g.r.push(p); });
+  const out = []; const dk = s => String(s || '').split('.').reverse().join('');
+  Object.values(G).forEach(g => { if (!g.r.length || g.c.some(p => !closed(p[7]))) return; const cl = g.c.slice().sort((a, b) => dk(b[8]).localeCompare(dk(a[8])));
+    g.r.filter(p => !closed(p[6])).forEach(p => out.push({p, cl})); });
+  return out; }
+
+// ---------------- Excel writer that keeps the user's sample styling (template xlsx + style row)
+const XE = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/[\x00-\x08\x0B\x0C\x0E-\x1F]/g, '');
+const colL = n => { let s = ''; n++; while (n) { const m = (n - 1) % 26; s = String.fromCharCode(65 + m) + s; n = (n - m - 1) / 26; } return s; };
+function fillSheet(xml, styleRow, data) {
+  const rx = new RegExp(`<row r="${styleRow}"[^>]*?(?:/>|>([\\s\\S]*?)</row>)`); const m = xml.match(rx); if (!m) throw new Error('template style row missing');
+  const rowAttr = (m[0].match(/^<row([^>]*?)\/?>/)[1] || '').replace(/\s*r="\d+"/, '').replace(/\s*spans="[^"]*"/, '');
+  const st = []; (m[1] || '').replace(/<c r="([A-Z]+)\d+"([^>]*?)(?:\/>|>)/g, (_, c, a) => { const s = (a.match(/\ss="(\d+)"/) || [])[1]; let n = 0; for (const ch of c) n = n * 26 + ch.charCodeAt(0) - 64; st[n - 1] = s; return ''; });
+  // drop the style row and every row after it
+  const head = xml.slice(0, xml.indexOf('<sheetData>') + 11), body = xml.slice(xml.indexOf('<sheetData>') + 11, xml.indexOf('</sheetData>')), tail = xml.slice(xml.indexOf('</sheetData>'));
+  const keep = (body.match(/<row\b[^>]*\/>|<row\b[^>]*[^\/]>[\s\S]*?<\/row>/g) || []).filter(r => Number(r.match(/ r="(\d+)"/)[1]) < styleRow).join('');
+  let out = ''; data.forEach((row, i) => { const rn = styleRow + i; out += `<row r="${rn}"${rowAttr}>`;
+    row.forEach((v, c) => { const ref = colL(c) + rn, s = st[c] != null ? ` s="${st[c]}"` : '';
+      if (v === null || v === undefined || v === '') out += `<c r="${ref}"${s}/>`;
+      else if (typeof v === 'boolean') out += `<c r="${ref}"${s} t="b"><v>${v ? 1 : 0}</v></c>`;
+      else if (typeof v === 'number' && isFinite(v)) out += `<c r="${ref}"${s}><v>${v}</v></c>`;
+      else out += `<c r="${ref}"${s} t="inlineStr"><is><t xml:space="preserve">${XE(v)}</t></is></c>`; });
+    out += '</row>'; });
+  const last = styleRow + Math.max(data.length, 1) - 1; const ncol = Math.max(st.length, 1);
+  return (head + keep + out + tail).replace(/<dimension ref="[^"]*"\/>/, `<dimension ref="A1:${colL(ncol - 1)}${last}"/>`); }
+async function saveTpl(tpl, sheets, name, patch) { const buf = await (await fetch(tpl)).arrayBuffer(); const z = await JSZip.loadAsync(buf);
+  for (const [path, styleRow, data] of sheets) { let x = await z.file(path).async('string'); x = fillSheet(x, styleRow, data); if (patch) x = patch(path, x); z.file(path, x); }
+  const blob = await z.generateAsync({type: 'blob', mimeType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', compression: 'DEFLATE'}); dl(blob, name); }
+function dl(blob, name) { const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name; document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 2000); toast('Saved to Downloads: ' + name, 3500); }
+const numv = v => { if (v === null || v === undefined || v === '') return null; if (typeof v === 'number' || typeof v === 'boolean') return v; const s = String(v).trim(); return /^-?\d+(\.\d+)?$/.test(s) ? Number(s) : s; };
+const iwpRow = (o, q) => o.r.map((v, c) => c === 12 ? (Number(v) || v) : numv(v)).concat([q]);
+async function exportIWP(L, fname) { if (!L.length) return toast('Nothing to export');
+  await saveTpl('tpl_iwp.xlsx', [['xl/worksheets/sheet1.xml', 5, L.map(x => iwpRow(x.o, x.q))]], fname,
+    (p, x) => x.replace(/(<c r="S1"[^>]*>)<v>[^<]*<\/v>/, `$1<v>${dSerial()}</v>`)); }
+async function exportTracker() { const I = ix(); const loc = t => { const m = String(t[4]).match(/\((G\d-[A-Z0-9]+)\)/); return m ? m[1] : t[1]; };
+  const pr = PUL.map(p => { const t = I.trk[NT(p.tag)]; return t ? [loc(t), t[2], numv(t[3]), t[0], t[5], p.drum || t[6], numv(t[7]), t[8], t[9], N(p.m), dRu(), 'RHI'] : ['', '', '', p.tag, '', p.drum || '', '', '', '', N(p.m), dRu(), 'RHI']; });
+  const tr = TER.map(e => { const t = I.trk[NT(e.tag)]; const sd = termSide(e); return [t ? t[1] : '', t ? t[2] : '', t ? numv(t[3]) : '', t ? t[0] : e.tag, sd === 'from' ? dRu() : null, sd === 'to' ? dRu() : null, 1]; });
+  if (!pr.length && !tr.length) return toast('Nothing to export');
+  await saveTpl('tpl_trk.xlsx', [['xl/worksheets/sheet1.xml', 6, pr], ['xl/worksheets/sheet2.xml', 2, tr]], `Tracker_update_${dRu()}.xlsx`); }
+function termSide(e) { const t = ix().trk[NT(e.tag)]; const want = e.side || 'from'; if (!t) return want; const hasF = !!t[14], hasT = !!t[15];
+  if (want === 'from' && hasF && !hasT) return 'to'; if (want === 'to' && hasT && !hasF) return 'from'; return want; }
+function plainXlsx(name, sheetName, rows, widths) { const ws = XLSX.utils.aoa_to_sheet(rows); ws['!cols'] = widths.map(w => ({wch: w})); ws['!autofilter'] = {ref: XLSX.utils.encode_range({s: {r: 0, c: 0}, e: {r: rows.length - 1, c: rows[0].length - 1}})};
+  const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, sheetName); XLSX.writeFile(wb, name); toast('Saved to Downloads: ' + name, 3500); }
+
+// ---------------- pages
+const PAGES = [
+  ['grp', 'Data'], ['files', '📂 Files'],
+  ['grp', 'Daily'], ['iwp', '📈 IWP daily report'], ['trk', '🧵 Tracker update'],
+  ['grp', 'Checks'], ['rfi', '✅ Client RFI accepted → IWP'], ['pun', '🔧 RHI punch to close'],
+  ['grp', ''], ['set', '⚙️ Settings']];
+function navCount(k) { try { if (k === 'iwp') return Object.keys(REP).length; if (k === 'trk') return PUL.length + TER.length; if (k === 'rfi' && DATA.rawp && DATA.iwp) return rfiIWP().out.length; if (k === 'pun' && DATA.mpunch && DATA.rpunch) return punchClose().length; if (k === 'files') return KINDS.filter(x => DATA[x.k]).length + '/5'; } catch (e) {} return ''; }
+function renderNav() { $('nav').innerHTML = PAGES.map(([k, l]) => k === 'grp' ? `<div class="grp">${l}</div>` : `<a class="${ST.page === k ? 'on' : ''}" onclick="go('${k}')">${l}${(() => { const n = navCount(k); return n !== '' && n !== 0 ? `<span class="n ${k === 'rfi' || k === 'pun' ? 'hot' : ''}">${n}</span>` : ''; })()}</a>`).join(''); }
+function go(k) { ST.page = k; LS.set('page', k); render(); window.scrollTo(0, 0); }
+function render() { renderNav(); const f = {files: pFiles, iwp: pIWP, trk: pTrk, rfi: pRFI, pun: pPun, set: pSet}[ST.page] || pFiles; f(); }
+const need = ks => { const m = ks.filter(k => !DATA[k]); return m.length ? `<div class="card">Load first: ${m.map(k => `<b>${KINDS.find(x => x.k === k).nm}</b>`).join(', ')} <button class="sec" onclick="go('files')">Go to Files</button></div>` : ''; };
+const ago = t => { const m = Math.round((Date.now() - t) / 60000); return m < 60 ? m + ' min ago' : m < 1440 ? Math.round(m / 60) + ' h ago' : Math.round(m / 1440) + ' days ago'; };
+
+function pFiles() { $('main').innerHTML = `<h2>Files</h2><p class="mut">Choose your Excel files – they are read only on this PC and remembered, so next time you only load what changed. Titles: <b>${esc(titles().join(', '))}</b> (change in Settings).</p>
+  <div class="drop" id="drop">Drag &amp; drop the files here (several at once) – or <button onclick="pick()">Choose files…</button><div class="small" style="margin-top:6px">The file name tells the app what it is: IWP_Status · Cable_Tracker · RAWP · Master_Punch · Internal_Punch</div></div>
+  <div class="files">${KINDS.map(K => { const d = DATA[K.k]; const old = d && d.titles !== ST.titles;
+    return `<div class="fc"><div class="h"><b>${K.nm}</b>${d ? `<span class="pill ${old ? 'warn' : 'ok'}">${old ? 'reload – titles changed' : 'loaded'}</span>` : '<span class="pill">not loaded</span>'}</div>
+    <small>${d ? `${esc(d.name)}<br>${d.res.n.toLocaleString()} rows (our titles) · loaded ${ago(d.at)}` : esc(K.ex)}</small><small>Used for: ${esc(K.use)}</small>
+    <div><button class="sec" onclick="pick('${K.k}')">${d ? 'Load newer…' : 'Choose…'}</button></div></div>`; }).join('')}</div>`;
+  const dz = $('drop'); ['dragenter', 'dragover'].forEach(ev => dz.addEventListener(ev, e => { e.preventDefault(); dz.classList.add('ov'); }));
+  ['dragleave', 'drop'].forEach(ev => dz.addEventListener(ev, e => { e.preventDefault(); dz.classList.remove('ov'); }));
+  dz.addEventListener('drop', e => loadFiles(e.dataTransfer.files)); }
+
+// ---- IWP daily report page
+const VS = {iwpTab: 'rep', q: '', rfiA: '', punQ: ''};
+function pIWP() { const m = need(['iwp']); if (m) { $('main').innerHTML = `<h2>IWP daily report</h2>${m}`; return; }
+  const A = DATA.trk ? autoIWP() : {out: [], noline: []}; const keys = Object.keys(REP); const I = ix();
+  const tot = keys.reduce((s, a) => s + N(REP[a].q), 0);
+  $('main').innerHTML = `<h2>IWP daily report · ${dRu()}</h2><p class="mut">Your sample format: Sheet1 · Mapping … Company · the quantity to report goes only in the date column. SITE_QTY and Site Progress stay as in IWP.</p>
+  <div class="kpis"><div class="kpi"><b>${keys.length}</b><span>lines in today's report</span></div><div class="kpi"><b>${fm(tot)}</b><span>total quantity to report</span></div><div class="kpi ${A.out.length ? 'hot' : ''}"><b>${A.out.length}</b><span>tracker pulled · not in IWP</span></div></div>
+  <div class="card"><h3>1 · Add lines</h3>
+   <div class="bar"><button ${DATA.trk ? '' : 'disabled'} onclick="addAuto()">➕ Add all tracker-pulled not in IWP (${A.out.length})</button><span class="mut small">${DATA.trk ? 'CCR cables: tracker actual metres more than IWP fact (cable laying lines)' : 'load the cable tracker to use this'}</span></div>
+   <div class="small mut" style="margin-bottom:4px">Or paste from site messages – one line each: <b>Access ID qty</b> or <b>cable tag metres</b> (add the word <b>term</b> for a termination line):</div>
+   <textarea class="f" id="paste" placeholder="85727 40&#10;G0-D1810BX0-JL-PD-1003-CJ-1001 20&#10;G0-D1801FX0-BIAL-209-C01 term 1"></textarea>
+   <div class="bar" style="margin-top:6px"><button onclick="addPaste()">Add pasted lines</button><span id="pmsg" class="small"></span></div></div>
+  <div class="card"><div class="bar"><h3 style="margin:0">2 · Today's report (${keys.length})</h3><span class="sp"></span><button class="danger" onclick="if(confirm('Clear all lines of today\\'s report?')){for(const k in REP)delete REP[k];saveRep();render()}">Clear</button><button onclick="expRep()">⬇ Export IWP_daily_report_${dRu()}.xlsx</button></div>
+   ${keys.length ? `<div class="tw"><table><thead><tr><th>Access ID</th><th>Mapping</th><th>TAG NO</th><th class="num">SITE_QTY</th><th class="num">Fact</th><th class="num">Remaining</th><th class="num">Report</th><th>Company</th><th>From</th><th></th></tr></thead><tbody>
+   ${keys.map(a => { const o = I.acc[a], e = REP[a]; const bad = !o ? 'not in IWP' : N(e.q) > r2(o.q - o.f) + 0.001 ? 'more than remaining' : '';
+     return `<tr><td>${esc(a)}</td><td>${esc(o ? o.map : '')}</td><td>${esc(o ? o.tag : '')}</td><td class="num">${o ? fm(o.q) : ''}</td><td class="num">${o ? fm(o.f) : ''}</td><td class="num">${o ? fm(o.q - o.f) : ''}</td>
+     <td class="num"><input class="q" value="${e.q}" onchange="REP['${a}'].q=N(this.value);saveRep();renderNav()"></td><td>${esc(o ? o.co : '')}</td><td class="small mut">${esc(e.src)}${bad ? ` <span class="pill bad">${bad}</span>` : ''}</td><td><button class="lnk" onclick="delete REP['${a}'];saveRep();render()">✕</button></td></tr>`; }).join('')}</tbody></table></div>` : '<div class="mut">No lines yet.</div>'}</div>
+  ${A.noline.length ? `<div class="card"><h3>Pulled in tracker – no IWP cable laying line (${A.noline.length}) · ask Paul</h3><div class="small">${A.noline.slice(0, 60).map(t => esc(t[0]) + ' · ' + fm(t[11]) + ' m').join('<br>')}${A.noline.length > 60 ? '<br>…' : ''}</div></div>` : ''}`; }
+function addAuto() { const A = autoIWP(); A.out.forEach(x => addRep(x.o.acc, x.q, 'tracker')); saveRep(); toast(`${A.out.length} lines added`); render(); }
+function addPaste() { const I = ix(); let ok = 0; const bad = [];
+  $('paste').value.split(/\n/).map(s => s.trim()).filter(Boolean).forEach(l => { const tk = l.split(/[\s\t;]+/); const term = /\bterm/i.test(l);
+    const nums = tk.filter(x => /^\d+([.,]\d+)?$/.test(x)).map(x => x.replace(',', '.'));
+    const acc = tk.find(x => I.acc[x.replace(/\.0+$/, '')]); const tag = tk.find(x => /[A-Z].*-/.test(x) && I.tag[NT(x)]);
+    if (acc && !tag) { const q = N(nums.filter(n => n !== acc).pop() || 0); if (q > 0) { addRep(acc, q, 'pasted'); ok++; } else bad.push(l + ' (no qty)'); return; }
+    if (tag) { const q = N(nums.pop() || 0); const L = lines(tag, term ? isTerm : isLay); if (!L.length) { bad.push(l + ' (no IWP ' + (term ? 'termination' : 'laying') + ' line)'); return; }
+      const d = distribute(L, q); d.out.forEach(([o, qq]) => addRep(o.acc, qq, 'pasted')); ok++; if (d.rest > 0.01) bad.push(l + ` (only ${fm(q - d.rest)} left in IWP)`); return; }
+    bad.push(l + ' (not found in IWP)'); });
+  saveRep(); render(); $('pmsg').innerHTML = `${ok} added${bad.length ? ` · <span class="err">${bad.length} not added:</span><br><span class="err">${bad.map(esc).join('<br>')}</span>` : ''}`; }
+function expRep() { const I = ix(); const L = Object.keys(REP).filter(a => I.acc[a] && N(REP[a].q) > 0).map(a => ({o: I.acc[a], q: N(REP[a].q)}));
+  exportIWP(L, `IWP_daily_report_${dRu()}.xlsx`); }
+
+// ---- tracker update page
+function pTrk() { const m = need(['trk']); if (m) { $('main').innerHTML = `<h2>Tracker update</h2>${m}`; return; } const I = ix();
+  $('main').innerHTML = `<h2>Tracker update · ${dRu()}</h2><p class="mut">Your tracker sample: sheet "Cable pulling" (actual metres, drum, date) and sheet "Termination" (From / To date). If the tracker already has the From date, the end goes to To automatically.</p>
+  <div class="card"><h3>Cable pulling (${PUL.length})</h3><div class="small mut">Paste: <b>cable tag metres [drum]</b> – drum is taken from the tracker final distribution if empty</div>
+   <textarea class="f" id="pp" placeholder="G0-D1810BX0-JL-PD-1003-CJ-1001 20&#10;G0-D1801FX0-JF01-JB-924-C01 45 GMR10755/1"></textarea>
+   <div class="bar" style="margin-top:6px"><button onclick="addPul()">Add</button><label class="small"><input type="checkbox" id="pi" checked> also add the metres to today's IWP report</label><span id="ppm" class="small"></span></div>
+   ${PUL.length ? `<div class="tw"><table><thead><tr><th>Cable tag</th><th>Type</th><th class="num">Design m</th><th class="num">Actual m</th><th>Drum</th><th>Tracker status</th><th></th></tr></thead><tbody>${PUL.map((p, i) => { const t = I.trk[NT(p.tag)];
+     return `<tr><td>${esc(p.tag)}${t ? '' : ' <span class="pill bad">not in tracker</span>'}</td><td>${t ? esc(t[8] + ' ' + t[9]) : ''}</td><td class="num">${t ? fm(t[10]) : ''}</td><td class="num"><input class="q" value="${p.m}" onchange="PUL[${i}].m=N(this.value);saveRep()"></td>
+     <td><input class="t" value="${esc(p.drum || (t ? t[6] : ''))}" onchange="PUL[${i}].drum=this.value;saveRep()"></td><td class="small">${t ? esc(t[13] || '') + (N(t[11]) ? ' · ' + fm(t[11]) + ' m already' : '') : ''}</td><td><button class="lnk" onclick="PUL.splice(${i},1);saveRep();render()">✕</button></td></tr>`; }).join('')}</tbody></table></div>` : ''}</div>
+  <div class="card"><h3>Termination (${TER.length})</h3><div class="small mut">Paste: <b>cable tag [from|to]</b> – one end per line</div>
+   <textarea class="f" id="tp" placeholder="G0-D1801FX0-BIAL-209-C01 from&#10;G0-D1801FX0-BR-022-N01 to"></textarea>
+   <div class="bar" style="margin-top:6px"><button onclick="addTer()">Add</button><label class="small"><input type="checkbox" id="ti" checked> also add 1 end to the IWP termination line</label><span id="tpm" class="small"></span></div>
+   ${TER.length ? `<div class="tw"><table><thead><tr><th>Cable tag</th><th>Asked</th><th>Goes to</th><th>Tracker From</th><th>Tracker To</th><th></th></tr></thead><tbody>${TER.map((e, i) => { const t = I.trk[NT(e.tag)]; const sd = termSide(e);
+     return `<tr><td>${esc(e.tag)}${t ? '' : ' <span class="pill bad">not in tracker</span>'}</td><td>${esc(e.side || 'from')}</td><td><b>${sd === 'from' ? 'From' : 'To'}</b>${sd !== (e.side || 'from') ? ' <span class="pill warn">switched</span>' : ''}</td><td>${t ? esc(t[14]) : ''}</td><td>${t ? esc(t[15]) : ''}</td><td><button class="lnk" onclick="TER.splice(${i},1);saveRep();render()">✕</button></td></tr>`; }).join('')}</tbody></table></div>` : ''}</div>
+  <div class="bar"><button onclick="exportTracker()">⬇ Export Tracker_update_${dRu()}.xlsx</button><button class="danger" onclick="if(confirm('Clear the tracker update lists?')){PUL.length=0;TER.length=0;saveRep();render()}">Clear lists</button><button class="sec" onclick="go('iwp')">Go to IWP report →</button></div>`; }
+function addPul() { const I = ix(); let n = 0; const bad = []; const toI = $('pi').checked;
+  $('pp').value.split(/\n/).map(s => s.trim()).filter(Boolean).forEach(l => { const tk = l.split(/[\s\t;]+/); const tag = tk[0]; const m = N((tk[1] || '').replace(',', '.')); const drum = tk.slice(2).join(' ');
+    if (!(m > 0)) { bad.push(l + ' (no metres)'); return; } const t = I.trk[NT(tag)]; PUL.push({tag: t ? t[0] : tag, m, drum}); n++;
+    if (toI) { const L = lines(tag, isLay); if (L.length) { const d = distribute(L, m); d.out.forEach(([o, q]) => addRep(o.acc, q, 'pulled')); } else bad.push(tag + ' (no IWP laying line – tracker only)'); } });
+  saveRep(); render(); $('ppm').innerHTML = `${n} added${bad.length ? `<br><span class="err">${bad.map(esc).join('<br>')}</span>` : ''}`; }
+function addTer() { const I = ix(); let n = 0; const bad = []; const toI = $('ti').checked;
+  $('tp').value.split(/\n/).map(s => s.trim()).filter(Boolean).forEach(l => { const tk = l.split(/[\s\t;]+/); const tag = tk[0]; const side = /\bto\b/i.test(l) ? 'to' : 'from'; const t = I.trk[NT(tag)];
+    TER.push({tag: t ? t[0] : tag, side}); n++;
+    if (toI) { const L = lines(tag, isTerm); const o = L.find(x => left(x) >= 1) || null; if (o) addRep(o.acc, N((REP[o.acc] || {}).q) + 1, 'terminated'); else bad.push(tag + ' (no open IWP termination line)'); } });
+  saveRep(); render(); $('tpm').innerHTML = `${n} added${bad.length ? `<br><span class="err">${bad.map(esc).join('<br>')}</span>` : ''}`; }
+
+// ---- RFI accepted page
+function pRFI() { const m = need(['iwp', 'rawp']); if (m) { $('main').innerHTML = `<h2>Client RFI accepted → IWP</h2>${m}`; return; }
+  const R = rfiIWP(); const nq = NT(VS.q); const L = R.out.filter(x => (!VS.rfiA || x.act === VS.rfiA) && (!nq || NT(x.o.tag + x.o.acc + x.rf).includes(nq)));
+  const tot = L.reduce((s, x) => s + x.q, 0);
+  $('main').innerHTML = `<h2>Client RFI accepted → IWP</h2><p class="mut">Client RFI accepted (Cable RAWP) means the work is finished – the IWP line must be 100 %. The remaining quantity can be reported.</p>
+  <div class="kpis"><div class="kpi hot"><b>${R.out.length}</b><span>IWP lines not 100 %</span></div><div class="kpi"><b>${fm(R.out.reduce((s, x) => s + x.q, 0))}</b><span>quantity remaining</span></div><div class="kpi"><b>${R.miss.length}</b><span>accepted · no IWP line (ask Paul)</span></div></div>
+  <div class="bar"><input class="f" placeholder="Search tag / Access ID / RFI…" value="${esc(VS.q)}" oninput="VS.q=this.value;clearTimeout(VS.t);VS.t=setTimeout(pRFI,300)" style="width:260px">
+   <select class="f" onchange="VS.rfiA=this.value;pRFI()"><option value="">Pulling + termination</option><option ${VS.rfiA === 'Pulling' ? 'selected' : ''}>Pulling</option><option ${VS.rfiA === 'Termination' ? 'selected' : ''}>Termination</option></select>
+   <span class="sp"></span><button class="sec" onclick="rfiToRep()">➕ Add these ${L.length} to today's IWP report</button><button onclick="rfiExp()">⬇ Export IWP format</button></div>
+  <div class="tw"><table><thead><tr><th>Cable tag</th><th>Activity</th><th>Access ID</th><th class="num">SITE_QTY</th><th class="num">Fact</th><th class="num">Report</th><th>Company</th><th>Client RFI</th><th>Date</th></tr></thead><tbody>
+  ${L.slice(0, 1500).map(x => `<tr><td>${esc(x.o.tag)}</td><td>${x.act}</td><td>${esc(x.o.acc)}</td><td class="num">${fm(x.o.q)}</td><td class="num">${fm(x.o.f)}</td><td class="num"><b>${fm(x.q)}</b></td><td>${esc(x.o.co)}</td><td class="small">${esc(x.rf)} <span class="pill ok">${/comment|замечан/i.test(x.res) ? 'accepted w/c' : 'accepted'}</span></td><td>${esc(x.dt)}</td></tr>`).join('')}
+  </tbody></table></div><div class="small mut" style="margin-top:6px">${L.length} lines · ${fm(tot)} quantity</div>
+  ${R.miss.length ? `<div class="card" style="margin-top:12px"><h3>Client RFI accepted – IWP line not found (${R.miss.length})</h3><div class="small">${R.miss.slice(0, 80).map(x => esc(`${x.r[0]} · ${x.act} · ${x.rf}`)).join('<br>')}</div></div>` : ''}`; }
+const rfiList = () => { const nq = NT(VS.q); return rfiIWP().out.filter(x => (!VS.rfiA || x.act === VS.rfiA) && (!nq || NT(x.o.tag + x.o.acc + x.rf).includes(nq))); };
+function rfiToRep() { const L = rfiList(); L.forEach(x => addRep(x.o.acc, x.q, 'RFI accepted')); saveRep(); toast(`${L.length} lines added to today's report`); renderNav(); }
+function rfiExp() { const seen = {}; const L = rfiList().filter(x => !seen[x.o.acc] && (seen[x.o.acc] = 1)); exportIWP(L, `IWP_report_RFI_accepted_${dRu()}.xlsx`); }
+
+// ---- RHI punch to close
+function pPun() { const m = need(['mpunch', 'rpunch']); if (m) { $('main').innerHTML = `<h2>RHI punch to close</h2>${m}`; return; }
+  const all = punchClose(); const nq = NT(VS.punQ); const L = all.filter(x => !nq || NT(x.p[0] + x.p[3] + x.p[2] + x.cl.map(c => c[0]).join('')).includes(nq));
+  $('main').innerHTML = `<h2>RHI punch to close</h2><p class="mut">RHI punch still open, and every client punch on the same tag and title is closed. The registers have no link between the two punch numbers – compare the descriptions before closing.</p>
+  <div class="kpis"><div class="kpi hot"><b>${all.length}</b><span>RHI punch can be closed</span></div><div class="kpi"><b>${new Set(all.map(x => x.p[3])).size}</b><span>tags</span></div></div>
+  <div class="bar"><input class="f" placeholder="Search tag / punch No / subsystem…" value="${esc(VS.punQ)}" oninput="VS.punQ=this.value;clearTimeout(VS.t);VS.t=setTimeout(pPun,300)" style="width:280px"><span class="sp"></span><button onclick="punExp()">⬇ Export Excel</button></div>
+  <div class="tw"><table><thead><tr><th>RHI No</th><th>Tag</th><th>RHI description</th><th>Status</th><th>Client punch (closed)</th><th>Client description</th><th>Closed</th></tr></thead><tbody>
+  ${L.map(x => `<tr><td>${esc(x.p[0])}</td><td>${esc(x.p[3])}<div class="small mut">${esc(x.p[1])} · ${esc(x.p[2])}</div></td><td>${esc(x.p[4])}</td><td><span class="pill warn">${esc(x.p[6])}</span></td><td>${esc(x.cl.map(c => c[0]).join(', '))}</td><td>${esc(x.cl[0][4] || x.cl[0][5])}</td><td>${esc(x.cl[0][8])}</td></tr>`).join('')}</tbody></table></div>`; }
+function punExp() { const nq = NT(VS.punQ); const L = punchClose().filter(x => !nq || NT(x.p[0] + x.p[3] + x.p[2] + x.cl.map(c => c[0]).join('')).includes(nq)); if (!L.length) return toast('Nothing to export');
+  plainXlsx(`RHI_punch_to_close_${dRu()}.xlsx`, 'RHI punch to close', [['RHI Punch No.', 'Title', 'Subsystem', 'Tag', 'RHI punch description', 'RHI status', 'Issued date', 'Client punch No.', 'Client punch description', 'Client status', 'Client close date', 'Action']]
+    .concat(L.map(x => [x.p[0], x.p[1], x.p[2], x.p[3], x.p[4], x.p[6], x.p[5], x.cl.map(c => c[0]).join(', '), x.cl[0][4] || x.cl[0][5], x.cl[0][7], x.cl[0][8], 'Close RHI punch'])), [10, 13, 20, 34, 55, 10, 11, 16, 55, 10, 12, 16]); }
+
+// ---- settings
+function pSet() { $('main').innerHTML = `<h2>Settings</h2><div class="card"><h3>Titles (our scope)</h3><p class="mut small">Only rows of these titles are kept. After a change, load the files again.</p>
+  <input class="f" id="tit" value="${esc(ST.titles)}" style="width:420px"> <button onclick="ST.titles=$('tit').value;LS.set('titles',ST.titles);IX=null;toast('Saved – load the files again');render()">Save</button>
+  <div class="small mut" style="margin-top:6px">CCR: G0-D1810BX0; G0-D1801FX0 · D48: G0-D4810BX0; G0-D4801FX0</div></div>
+  <div class="card"><h3>Stored data</h3><p class="mut small">Files read on this PC are kept in the app's local storage (not uploaded).</p><button class="danger" onclick="clearAll()">Forget loaded files</button></div>
+  <div class="card"><h3>About</h3><div class="small">GPP E&amp;I Owner v${VER} · works offline after the first open · install: browser menu → Apps → Install.</div><button class="sec" style="margin-top:8px" onclick="try{sessionStorage.removeItem('own')}catch(e){};location.reload()">Lock (log out)</button></div>`; }
+async function clearAll() { if (!confirm('Forget all loaded files on this PC?')) return; for (const K of KINDS) { await IDB.del(K.k); delete DATA[K.k]; } IX = null; render(); }
+
+// ---------------- start
+function login() { if ($('pw').value === PW) { try { sessionStorage.setItem('own', '1'); } catch (e) {} start(); } else $('pwmsg').textContent = 'Wrong password'; }
+async function start() { $('login').style.display = 'none'; $('app').style.display = 'flex'; $('rdate').value = new Date().toISOString().slice(0, 10); ST.date = $('rdate').value;
+  busy(true, 'Opening…'); await IDB.open(); const all = await IDB.all(); Object.assign(DATA, all); busy(false); render(); }
+try { if (sessionStorage.getItem('own') === '1') start(); } catch (e) {}
+if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});
 </script>
 </body>
 </html>
