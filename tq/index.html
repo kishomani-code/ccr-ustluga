@@ -1,0 +1,213 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#023362">
+<link rel="icon" href="../icon-192.png">
+<link rel="apple-touch-icon" href="../icon-192.png">
+<link rel="manifest" href="manifest.json">
+<title>TQ register · Ust-Luga GPP E&amp;I</title>
+<style>
+:root{--bg:#f2f4f7;--ink:#18202b;--mut:#687384;--line:#e1e5ea;--pri:#023362;--pri2:#012447;--acc:#f69176;--ok:#1e8a4c;--okbg:#e0f3e7;--warn:#8a5a00;--warnbg:#fff2d8;--bad:#b42318;--badbg:#fde6e3;--blue:#1d4e89;--bluebg:#e4eefb}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.4 -apple-system,Segoe UI,Roboto,Arial,sans-serif}
+header{position:sticky;top:0;z-index:5;background:linear-gradient(180deg,var(--pri2),var(--pri));color:#fff;padding:10px 14px}
+.hrow{display:flex;align-items:center;gap:10px}
+.hbtn{background:rgba(255,255,255,.14);border:0;color:#fff;border-radius:9px;min-width:38px;height:38px;font-size:16px;flex:none;padding:0 10px}
+.ht{flex:1;min-width:0}.ht b{display:block;font-size:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.ht span{font-size:12px;opacity:.8}
+.search{margin-top:10px}.search input{width:100%;padding:12px;border:0;border-radius:10px;font-size:16px}
+main{padding:12px 12px 60px;max-width:860px;margin:0 auto}
+.sect{font-size:13px;font-weight:700;color:var(--mut);margin:16px 2px 8px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:9px}
+.tile{background:#fff;border:1px solid var(--line);border-radius:14px;padding:12px;text-align:left;font:inherit;color:inherit;min-height:84px;display:flex;flex-direction:column;justify-content:space-between;cursor:pointer}
+.tile b{font-size:14px;line-height:1.25}.tile .n{font-size:22px;font-weight:700;color:var(--pri)}.tile small{color:var(--mut);font-size:12px}
+.tile.ok .n{color:var(--ok)}.tile.bad .n{color:var(--bad)}.tile.warn .n{color:var(--warn)}
+.chips{display:flex;gap:6px;overflow-x:auto;padding:2px 0 8px;scrollbar-width:none}
+.chip{flex:none;border:1px solid var(--line);background:#fff;border-radius:16px;padding:7px 12px;font-size:13px;color:var(--ink);cursor:pointer}
+.chip.on{background:var(--pri);color:#fff;border-color:var(--pri)}
+.card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:10px}
+.li{display:block;width:100%;text-align:left;background:#fff;border:1px solid var(--line);border-radius:12px;padding:11px 12px;margin-bottom:8px;font:inherit;color:inherit;cursor:pointer}
+.li .t{font-weight:700;font-size:14px;display:flex;gap:8px;align-items:center;justify-content:space-between}
+.li .d{font-size:13px;margin-top:4px;color:#2b3645;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.li .s{font-size:12px;color:var(--mut);margin-top:4px}
+.badge{display:inline-block;font-size:11px;font-weight:700;padding:3px 8px;border-radius:12px;white-space:nowrap}
+.b-ok{background:var(--okbg);color:#0f5a30}.b-wait{background:var(--warnbg);color:var(--warn)}.b-bad{background:var(--badbg);color:var(--bad)}.b-na{background:#eceff3;color:#555}.b-blue{background:var(--bluebg);color:var(--blue)}
+.h3{font-size:12px;font-weight:700;color:var(--pri);text-transform:uppercase;letter-spacing:.4px;margin:0 0 6px}
+.txt{white-space:pre-wrap;font-size:14.5px;line-height:1.45}
+.kv{display:grid;grid-template-columns:120px 1fr;gap:5px 10px;font-size:13.5px}.kv div:nth-child(odd){color:var(--mut)}
+.drw{display:flex;gap:8px;align-items:center;justify-content:space-between;border-top:1px solid var(--line);padding:8px 0}.drw:first-of-type{border-top:0}
+.drw .nm{font-size:13px;word-break:break-all}
+a.btn,button.btn{display:inline-block;background:var(--pri);color:#fff;border:0;border-radius:9px;padding:8px 12px;font:inherit;font-size:13px;text-decoration:none;white-space:nowrap;cursor:pointer}
+a.btn.sec,button.btn.sec{background:#e8eef5;color:var(--pri)}
+.lang{display:inline-flex;border:1px solid var(--line);border-radius:16px;overflow:hidden;margin-bottom:8px}.lang button{border:0;background:#fff;padding:6px 14px;font:inherit;font-size:13px}.lang button.on{background:var(--pri);color:#fff}
+textarea{width:100%;min-height:90px;border:1px solid var(--line);border-radius:10px;padding:10px;font:inherit;font-size:15px}
+.flags{display:flex;gap:6px;margin:8px 0}.flags .chip{flex:1;text-align:center}
+.empty{padding:24px;text-align:center;color:var(--mut)}
+.more{width:100%;padding:12px;border:1px dashed var(--line);border-radius:10px;background:#fff;color:var(--pri);font-size:14px}
+.note{background:var(--warnbg);border-radius:9px;padding:8px 10px;font-size:13px;margin-top:6px;white-space:pre-wrap}
+.toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:#18202b;color:#fff;padding:10px 14px;border-radius:9px;font-size:14px;display:none;z-index:9}
+mark{background:#ffe58a;border-radius:3px}
+</style>
+</head>
+<body>
+<header>
+  <div class="hrow"><button class="hbtn" id="bk" style="visibility:hidden" onclick="history.back()">←</button><img src="../icon-192.png" alt="" style="width:34px;height:34px;border-radius:8px;background:#fff;flex:none"><div class="ht"><b id="ttl">TQ register</b><span id="st"></span></div><button class="hbtn" onclick="location.hash='#/'">⌂</button></div>
+  <div class="search"><input id="q" type="search" placeholder="Search: TQ / CTQ number · drawing · words (EN / RU)" autocomplete="off"></div>
+</header>
+<main id="main"><div class="empty">Loading TQ data…</div></main>
+<div class="toast" id="toast"></div>
+<script>
+var DRIVE='https://drive.google.com/drive/folders/1GfmOmZEEHLM53FKvYrbQehp0-NIm5pj8';
+var D=null,T=[],CT=[],BY={},BYC={},main=document.getElementById('main'),qbox=document.getElementById('q');
+var lang=ls('tq-lang')||'en',notes={};try{notes=JSON.parse(ls('tq-notes')||'{}')}catch(e){}
+function ls(k,v){try{if(v===undefined)return localStorage.getItem(k);localStorage.setItem(k,v)}catch(e){return null}}
+function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+function enc(s){return encodeURIComponent(s)}
+function toast(m){var t=document.getElementById('toast');t.textContent=m;t.style.display='block';clearTimeout(toast.h);toast.h=setTimeout(function(){t.style.display='none'},1800)}
+var EI=['Electrical','Instrumentation','Fire Alarm','Telecommunication systems engineering','Electrical Heat Tracing System'];
+var DN={'Telecommunication systems engineering':'Telecom','Electrical Heat Tracing System':'Heat tracing'};
+function dn(d){return DN[d]||d}
+var AREAS={'G0-D1810BX0':'CCR building','G0-D1801FX0':'CCR area (1801)','G0-D4810BX0':'D48 substation building','G0-D4801FX0':'D48 area (4801)'};
+var STS=['Waiting answer','Approved','Approved with comments','Rejected','Closed','Cancelled'];
+function bcls(s){return /^Approved/.test(s)||s==='Closed'?'b-ok':s==='Rejected'?'b-bad':s==='Waiting answer'?'b-wait':'b-na'}
+function badge(s){return '<span class="badge '+bcls(s)+'">'+esc(s)+'</span>'}
+function inArea(t,a){return t.area.some(function(x){return x.indexOf(a)>-1})}
+function cnt(f){return T.filter(f).length}
+function setHead(t,s,back){document.getElementById('ttl').textContent=t;document.getElementById('st').textContent=s||'';document.getElementById('bk').style.visibility=back?'visible':'hidden';document.title=t+' · TQ'}
+function go(h){location.hash=h}
+function tile(h,b,n,cls,sub){return '<button class="tile '+(cls||'')+'" onclick="go(\''+h+'\')"><b>'+b+'</b><div><div class="n">'+n+'</div>'+(sub?'<small>'+sub+'</small>':'')+'</div></button>'}
+function home(){
+  setHead('TQ register','Ust-Luga GPP · CCR · 1801 · D48 · data '+D.built);qbox.value='';
+  var ei=function(t){return EI.indexOf(t.disc)>-1};
+  var h='<div class="sect">By status</div><div class="grid">'+
+   tile('#/l/st/Waiting answer','Waiting answer',cnt(function(t){return t.st==='Waiting answer'}),'warn','no reply yet')+
+   tile('#/l/st/Approved','Approved',cnt(function(t){return t.st==='Approved'}),'ok')+
+   tile('#/l/st/Approved with comments','Approved with comments',cnt(function(t){return t.st==='Approved with comments'}),'ok','read the comments')+
+   tile('#/l/st/Rejected','Rejected',cnt(function(t){return t.st==='Rejected'}),'bad','need new TQ / revision')+
+   tile('#/l/st/Closed','Closed / cancelled',cnt(function(t){return t.st==='Closed'||t.st==='Cancelled'}))+
+   tile('#/l/all/','All TQs',T.length)+'</div>';
+  h+='<div class="sect">By discipline – our E&amp;I</div><div class="grid">'+EI.map(function(d){var n=cnt(function(t){return t.disc===d});return n?tile('#/l/disc/'+enc(d),esc(dn(d)),n,'',cnt(function(t){return t.disc===d&&t.st==='Waiting answer'})+' waiting'):''}).join('')+tile('#/l/disc/other','Other disciplines',cnt(function(t){return !ei(t)}),'','civil, architecture, HVAC…')+'</div>';
+  var nch=cnt(function(t){return t.hist&&t.hist.some(function(x){return x.c})}),nnew=cnt(function(t){return t.hist&&t.hist.some(function(x){return x.w})}),cop=CT.filter(function(c){return c.st==='Open'}).length,cans=CT.filter(ctqAns).length;
+  h+='<div class="sect">Client answers – what changed</div><div class="grid">'+tile('#/l/mix/chg','Answers changed',nch,'warn','since previous register')+tile('#/l/mix/new','New TQs',nnew,'','since previous register')+tile('#/c','My CTQ',CT.length,'',cop+' open')+tile('#/c/ans','CTQ – client answered',cans,'ok','check what changed')+'</div>';
+  h+='<div class="sect">By area</div><div class="grid">'+Object.keys(AREAS).map(function(a){return tile('#/l/area/'+a,a,cnt(function(t){return inArea(t,a)}),'',AREAS[a])}).join('')+'</div>';
+  h+='<div class="sect">Tools</div><div class="grid">'+tile('#/dr','Drawings',DL().length,'','TQs per drawing · open PDF')+tile('#/n','My notes',Object.keys(notes).filter(function(k){return (BY[k]||BYC[k])&&(notes[k].note||notes[k].flag)}).length,'','follow-up list')+'</div>'+
+   '<div class="sect">Quick filters</div><div class="grid">'+tile('#/l/mix/ei-wait','E&amp;I waiting answer',cnt(function(t){return ei(t)&&t.st==='Waiting answer'}),'warn')+tile('#/l/mix/ei-rej','E&amp;I rejected',cnt(function(t){return ei(t)&&t.st==='Rejected'}),'bad')+tile('#/l/mix/recent','Last 30 days',cnt(recent),'','issued recently')+'</div>'+
+   '<div style="font-size:12px;color:var(--mut);text-align:center;margin-top:20px">Source: TQ register · built '+D.built+'<br><a href="'+DRIVE+'" target="_blank" rel="noopener">All drawing PDFs (Google Drive)</a></div>';
+  main.innerHTML=h;
+}
+function pd(s){var m=/(\d\d)\.(\d\d)\.(\d{4})/.exec(s||'');return m?new Date(+m[3],+m[2]-1,+m[1]):null}
+function recent(t){var d=pd(t.iss||t.sent);return d&&(Date.now()-d)<30*864e5}
+function filt(kind,val){
+  var ei=function(t){return EI.indexOf(t.disc)>-1};
+  if(kind==='st')return T.filter(function(t){return val==='Closed'?(t.st==='Closed'||t.st==='Cancelled'):t.st===val});
+  if(kind==='disc')return T.filter(function(t){return val==='other'?!ei(t):t.disc===val});
+  if(kind==='area')return T.filter(function(t){return inArea(t,val)});
+  if(kind==='mix'){return T.filter(val==='chg'?function(t){return t.hist&&t.hist.some(function(x){return x.c})}:val==='new'?function(t){return t.hist&&t.hist.some(function(x){return x.w})}:val==='ei-wait'?function(t){return ei(t)&&t.st==='Waiting answer'}:val==='ei-rej'?function(t){return ei(t)&&t.st==='Rejected'}:recent)}
+  if(kind==='drw')return T.filter(function(t){return t.drw.some(function(d){return d.d===val})});
+  return T;
+}
+var VS={};
+function list(kind,val){
+  var key=kind+'|'+val;VS[key]=VS[key]||{st:'',lim:40};var v=VS[key];
+  var all=filt(kind,val);var title=kind==='st'?val:kind==='disc'?(val==='other'?'Other disciplines':dn(val)):kind==='area'?val:kind==='drw'?val:kind==='mix'?{'ei-wait':'E&I waiting answer','ei-rej':'E&I rejected',recent:'Last 30 days',chg:'Answers changed',new:'New TQs'}[val]:'All TQs';
+  setHead(title,all.length+' TQs',true);
+  var f=v.st?all.filter(function(t){return t.st===v.st}):all;
+  var h='';
+  if(kind!=='st'){h+='<div class="chips"><button class="chip '+(v.st?'':'on')+'" onclick="VS[\''+esc(key)+'\'].st=\'\';VS[\''+esc(key)+'\'].lim=40;route()">All ('+all.length+')</button>'+STS.map(function(s){var n=all.filter(function(t){return t.st===s}).length;return n?'<button class="chip '+(v.st===s?'on':'')+'" onclick="VS[\''+esc(key)+'\'].st=\''+s+'\';VS[\''+esc(key)+'\'].lim=40;route()">'+s+' ('+n+')</button>':''}).join('')+'</div>'}
+  if(kind==='st'||kind==='disc'||kind==='area'||kind==='all'){}
+  h+=rows(f.slice(0,v.lim));
+  if(f.length>v.lim)h+='<button class="more" onclick="VS[\''+esc(key)+'\'].lim+=40;route()">Show more ('+(f.length-v.lim)+' left)</button>';
+  if(!f.length)h+='<div class="empty">No TQs here.</div>';
+  main.innerHTML=h;
+}
+function rows(a,hl){return a.map(function(t){var n=notes[t.no]||{};return '<button class="li" onclick="go(\'#/t/'+enc(t.no)+'\')"><div class="t"><span>'+hi(esc(t.no.replace('TQS-GPP-RHI-','')),hl)+(n.flag?' 📌':'')+'</span>'+badge(t.st)+'</div><div class="d">'+hi(esc(t.en||t.ru),hl)+'</div><div class="s">'+esc(dn(t.disc))+' · '+esc(t.area.slice(0,2).join(', '))+' · issued '+esc(t.iss)+'</div></button>'}).join('')}
+function hi(s,q){if(!q)return s;try{return s.replace(new RegExp('('+q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&').replace(/&/g,'&amp;')+')','ig'),'<mark>$1</mark>')}catch(e){return s}}
+function DL(){if(DL.c)return DL.c;var m={};T.forEach(function(t){t.drw.forEach(function(d){var x=m[d.d]=m[d.d]||{d:d.d,f:d.f,n:0};x.n++})});return DL.c=Object.keys(m).map(function(k){return m[k]}).sort(function(a,b){return a.d<b.d?-1:1})}
+function drawings(){
+  setHead('Drawings','TQs per drawing · tap PDF to open',true);
+  var q=(VS.dq||'').toUpperCase();var L=DL().filter(function(x){return !q||x.d.toUpperCase().indexOf(q)>-1});
+  var h='<input class="fin" style="width:100%;padding:11px;border:1px solid var(--line);border-radius:9px;font-size:15px;margin-bottom:8px" placeholder="Filter drawings, e.g. ASKU or D1810BX0" value="'+esc(VS.dq||'')+'" oninput="VS.dq=this.value;drawings();var i=document.querySelector(\'.fin\');i.focus();i.setSelectionRange(99,99)">';
+  h+='<div class="card">'+L.slice(0,150).map(function(x){return '<div class="drw"><div class="nm"><a href="#/l/drw/'+enc(x.d)+'" style="color:inherit"><b>'+esc(x.d)+'</b></a><div style="font-size:12px;color:var(--mut)">'+x.n+' TQ'+(x.n>1?'s':'')+'</div></div>'+pdfBtns(x.f)+'</div>'}).join('')+(L.length>150?'<div class="empty">Showing 150 of '+L.length+' – type to filter</div>':'')+'</div>';
+  main.innerHTML=h;
+}
+function pdfBtns(f){if(!f||!f.length)return '<a class="btn sec" href="'+DRIVE+'" target="_blank" rel="noopener">Open folder</a>';return '<span style="display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end">'+f.map(function(x){var r=/_(\d+H?)_/.exec(x.n);return '<a class="btn" href="https://drive.google.com/file/d/'+x.id+'/view" target="_blank" rel="noopener">PDF'+(r?' rev '+r[1]:'')+'</a>'}).join('')+'</span>'}
+function sec(t,b){return b?'<div class="card"><div class="h3">'+t+'</div>'+b+'</div>':''}
+function kv(a){return '<div class="kv">'+a.filter(function(x){return x[1]}).map(function(x){return '<div>'+x[0]+'</div><div>'+esc(x[1])+'</div>'}).join('')+'</div>'}
+function detail(no){
+  var t=BY[no];if(!t){main.innerHTML='<div class="empty">TQ not found.</div>';return}
+  setHead(t.no.replace('TQS-GPP-RHI-',''),t.disc+' · '+t.area.join(', '),true);
+  var L=function(en,ru){return lang==='ru'?(ru||en):(en||ru)};
+  var n=notes[t.no]||{};
+  var h='<div class="lang"><button class="'+(lang==='en'?'on':'')+'" onclick="setLang(\'en\')">English</button><button class="'+(lang==='ru'?'on':'')+'" onclick="setLang(\'ru\')">Русский</button></div>';
+  h+='<div class="card"><div style="display:flex;justify-content:space-between;gap:8px;align-items:center"><b style="word-break:break-all">'+esc(t.no)+'</b>'+badge(t.st)+'</div><div style="margin-top:8px">'+kv([['Rev',t.rev],['Discipline',t.disc],['Work area',t.area.join(', ')],['Work package',t.wp],['Type',t.cls],['Impact',t.imp],['Raised by',t.by],['Issued',t.iss],['Sent',t.sent],['EMA no.',t.ema]])+'</div></div>';
+  var hc=(t.hist||[]).filter(function(x){return x.c||x.w});
+  if(hc.length)h+='<div class="card" style="border-left:5px solid #e0a100"><div class="h3">What changed since previous register</div>'+hc.map(function(x){return x.w?'<div>New TQ</div>':x.c.map(function(c){var long=/answer/.test(c.f);return '<div style="margin:6px 0"><b>'+esc(c.f)+'</b>: '+(long?'<div class="txt" style="margin-top:3px">'+esc(c.b||'(removed)')+'</div>'+(c.a?'<div style="font-size:12px;color:var(--mut);margin-top:3px">was: '+esc(c.a.slice(0,200))+'</div>':'<div style="font-size:12px;color:var(--mut)">was empty</div>'):'<span style="color:var(--mut)">'+esc(c.a||'empty')+'</span> → <b>'+esc(c.b||'empty')+'</b>')+'</div>'}).join('')}).join('')+'</div>';
+  if(t.ep.st||t.ow.st||t.rd||t.ep.chg)h+='<div class="card" style="border-left:5px solid var(--blue)"><div class="h3">What the answer means for us</div>'+kv([['Designer decision',t.ep.st],['Change type',t.ep.chg],['Change to design (DD)',t.ep.dd],['Impact on BoQ',t.ep.boq],['Revised drawings',t.rd],['Owner decision',t.ow.st],['Owner remarks',L(t.ow.en,t.ow.ru).slice(0,160)]])+'</div>';
+  h+=sec('Question',  '<div class="txt">'+esc(L(t.en,t.ru))+'</div>');
+  h+=sec('Drawings ('+t.drw.length+')',t.drw.length?t.drw.map(function(d){return '<div class="drw"><div class="nm">'+esc(d.d)+'</div>'+pdfBtns(d.f)+'</div>'}).join(''):'');
+  h+=sec('Designer answer'+(t.ep.st?' · '+esc(t.ep.st):''),(t.ep.en||t.ep.ru||t.ep.st||t.ep.date)?'<div class="txt">'+esc(L(t.ep.en,t.ep.ru)||'–')+'</div><div style="margin-top:8px">'+kv([['Reply date',t.ep.date],['Change type',t.ep.chg],['Change to design',t.ep.dd],['Impact on BoQ',t.ep.boq],['EMA no.',t.ep.ema]])+'</div>':'<div class="empty" style="padding:6px">No answer yet</div>');
+  h+=sec('Owner answer'+(t.ow.st?' · '+esc(t.ow.st):''),(t.ow.en||t.ow.ru||t.ow.st||t.ow.date)?'<div class="txt">'+esc(L(t.ow.en,t.ow.ru)||'–')+'</div><div style="margin-top:8px">'+kv([['Submitted',t.ow.date],['Reply date',t.ow.rdate],['Submitted via',t.ow.to]])+'</div>':'<div class="empty" style="padding:6px">No owner reply yet</div>');
+  if(t.cm)h+=sec('Comments on answer','<div class="txt">'+esc(t.cm)+'</div>');
+  var rc=CT.filter(function(c){return c.tqs.indexOf(t.no)>-1});
+  if(rc.length)h+='<div class="card"><div class="h3">My CTQ linked to this TQ</div>'+rc.map(function(c){return '<button class="li" onclick="go(\'#/c/'+enc(c.no)+'\')"><div class="t"><span>'+esc(c.no)+'</span><span class="badge '+(c.pri==='High'?'b-bad':c.pri==='Medium'?'b-wait':'b-na')+'">'+esc(c.pri)+'</span></div><div class="d">'+esc(c.sub)+'</div></button>'}).join('')+'</div>';
+  h+='<div class="card"><div class="h3">My follow-up</div><div class="flags">'+[['to-do','To do'],['site','Told site'],['done','Done']].map(function(f){return '<button class="chip '+(n.flag===f[0]?'on':'')+'" onclick="setFlag(\''+enc(t.no)+'\',\''+f[0]+'\')">'+f[1]+'</button>'}).join('')+'</div><textarea id="nt" placeholder="Site comment, next action, who to call…" oninput="setNote(\''+enc(t.no)+'\',this.value)">'+esc(n.note||'')+'</textarea><div style="font-size:12px;color:var(--mut);margin-top:4px">Saved on this phone only.</div></div>';
+  main.innerHTML=h;
+}
+function setLang(l){lang=l;ls('tq-lang',l);route()}
+function sv(){ls('tq-notes',JSON.stringify(notes))}
+function setNote(no,v){no=decodeURIComponent(no);notes[no]=notes[no]||{};notes[no].note=v;notes[no].t=Date.now();sv()}
+function setFlag(no,f){no=decodeURIComponent(no);notes[no]=notes[no]||{};notes[no].flag=notes[no].flag===f?'':f;notes[no].t=Date.now();sv();route()}
+function mynotes(){
+  setHead('My notes','your follow-up list',true);
+  var ks=Object.keys(notes).filter(function(k){return (BY[k]||BYC[k])&&(notes[k].note||notes[k].flag)});
+  var h='<div class="chips">'+['','to-do','site','done'].map(function(f,i){return '<button class="chip '+((VS.nf||'')===f?'on':'')+'" onclick="VS.nf=\''+f+'\';route()">'+['All','To do','Told site','Done'][i]+'</button>'}).join('')+'</div>';
+  ks=ks.filter(function(k){return !(VS.nf)||notes[k].flag===VS.nf});
+  h+=ks.length?ks.sort(function(a,b){return (notes[b].t||0)-(notes[a].t||0)}).map(function(k){return (BY[k]?rows([BY[k]]):ctqRows([BYC[k]]))+(notes[k].note?'<div class="note" style="margin:-4px 0 8px">'+esc(notes[k].note)+'</div>':'')}).join('')+'<button class="more" onclick="copyNotes()">Copy my notes as text</button>':'<div class="empty">No notes yet. Open a TQ and write a comment or tap To do.</div>';
+  main.innerHTML=h;
+}
+function copyNotes(){var s=Object.keys(notes).filter(function(k){return notes[k].note||notes[k].flag}).map(function(k){return k+' ['+(notes[k].flag||'')+'] '+(notes[k].note||'')}).join('\n');(navigator.clipboard?navigator.clipboard.writeText(s).then(function(){toast('Copied')}):Promise.reject()).catch(function(){toast('Select and copy manually')})}
+function search(q){
+  setHead('Search',q,true);var w=q.toLowerCase().split(/\s+/).filter(Boolean);
+  var r=T.filter(function(t){var s=(t.no+' '+t.en+' '+t.ru+' '+t.drw.map(function(d){return d.d}).join(' ')+' '+t.ep.en+' '+t.ep.ru+' '+t.ow.en+' '+t.ow.ru+' '+t.disc+' '+t.area.join(' ')).toLowerCase();return w.every(function(x){return s.indexOf(x)>-1})});
+  var rc=CT.filter(function(c){var s=(c.no+' '+c.sub+' '+c.dwg+' '+c.tags+' '+c.act).toLowerCase();return w.every(function(x){return s.indexOf(x)>-1})});
+  main.innerHTML=(rc.length?'<div class="sect">My CTQ ('+rc.length+')</div>'+ctqRows(rc):'')+'<div class="sect">'+r.length+' TQ result'+(r.length===1?'':'s')+'</div>'+(rows(r.slice(0,60),q)||'<div class="empty">Nothing found.</div>')+(r.length>60?'<div class="empty">Showing 60 – type more words to narrow</div>':'');
+}
+function ctqAns(c){return c.tqs.some(function(q){var t=BY[q];return t&&t.st!=='Waiting answer'})}
+function ctqRows(a){return a.map(function(c){var n=notes[c.no]||{};var ts=c.tqs.map(function(q){return BY[q]}).filter(Boolean);var chg=ts.some(function(t){return t.hist&&t.hist.some(function(x){return x.c})});return '<button class="li" onclick="go(\'#/c/'+enc(c.no)+'\')"><div class="t"><span>'+esc(c.no)+(n.flag?' 📌':'')+(chg?' 🔔':'')+'</span><span class="badge '+(c.pri==='High'?'b-bad':c.pri==='Medium'?'b-wait':'b-na')+'">'+esc(c.pri)+'</span></div><div class="d">'+esc(c.sub)+'</div><div class="s">'+esc(c.cat)+' · '+esc(c.resp)+(ts.length?' · TQ: '+ts.map(function(t){return t.st}).join(', '):' · no TQ linked')+'</div></button>'}).join('')}
+function ctqList(mode){
+  setHead('My CTQ',CT.length+' internal queries',true);
+  var f=CT.filter(function(c){return mode==='ans'?ctqAns(c):mode==='wait'?(c.tqs.length&&!ctqAns(c)):mode==='none'?!c.tqs.length:mode==='high'?c.pri==='High':true});
+  var ch=[['','All'],['ans','Client answered'],['wait','Waiting client'],['none','No TQ sent'],['high','High priority']];
+  main.innerHTML='<div class="chips">'+ch.map(function(x){return '<button class="chip '+((mode||'')===x[0]?'on':'')+'" onclick="go(\'#/c'+(x[0]?'/'+x[0]:'')+'\')">'+x[1]+'</button>'}).join('')+'</div>'+(ctqRows(f)||'<div class="empty">Nothing here.</div>');
+}
+function ctqDetail(no){
+  var c=BYC[no];if(!c){main.innerHTML='<div class="empty">CTQ not found.</div>';return}
+  setHead(c.no,c.cat+' · '+c.pri,true);var n=notes[c.no]||{};
+  var h='<div class="card"><div style="display:flex;justify-content:space-between;gap:8px"><b>'+esc(c.no)+'</b><span class="badge '+(c.pri==='High'?'b-bad':c.pri==='Medium'?'b-wait':'b-na')+'">'+esc(c.pri)+'</span></div><div class="txt" style="margin-top:8px">'+esc(c.sub)+'</div></div>';
+  h+=sec('Action we need from client','<div class="txt">'+esc(c.act)+'</div>');
+  h+=sec('Drawings',c.drw.length?c.drw.map(function(d){return '<div class="drw"><div class="nm">'+esc(d.d)+'</div>'+pdfBtns(d.f)+'</div>'}).join('')+kv([['Revision',c.rev],['Sheet / page',c.sh]]):kv([['Drawing',c.dwg],['Revision',c.rev],['Sheet / page',c.sh]]));
+  var ts=c.tqs.map(function(q){return BY[q]}).filter(Boolean);
+  h+='<div class="card"><div class="h3">Client TQ sent for this CTQ</div>'+(ts.length?ts.map(function(t){var ch=t.hist&&t.hist.some(function(x){return x.c});return '<button class="li" onclick="go(\'#/t/'+enc(t.no)+'\')"><div class="t"><span>'+esc(t.no.replace('TQS-GPP-RHI-',''))+(ch?' 🔔':'')+'</span>'+badge(t.st)+'</div><div class="d">'+esc(t.ow.en||t.ep.en||t.en)+'</div><div class="s">'+(t.ep.chg?esc(t.ep.chg)+' · ':'')+(t.ep.dd?esc(t.ep.dd)+' · ':'')+(t.rd?'Revised: '+esc(t.rd):'')+'</div></button>'}).join(''):'<div class="empty" style="padding:6px">'+(c.rel?esc(c.rel):'No TQ linked yet')+'</div>')+(c.rels&&ts.length?'<div style="font-size:12px;color:var(--mut)">Register note: '+esc(c.rels)+'</div>':'')+'</div>';
+  h+=sec('Details',kv([['Tags',c.tags],['Responsible',c.resp],['Affects',c.aff],['Hold work',c.hold],['Status',c.st],['Date',c.dt],['Remark',c.rem]]));
+  h+='<div class="card"><div class="h3">My follow-up</div><div class="flags">'+[['to-do','To do'],['site','Told site'],['done','Done']].map(function(f){return '<button class="chip '+(n.flag===f[0]?'on':'')+'" onclick="setFlag(\''+enc(c.no)+'\',\''+f[0]+'\')">'+f[1]+'</button>'}).join('')+'</div><textarea oninput="setNote(\''+enc(c.no)+'\',this.value)" placeholder="Site comment, next action…">'+esc(n.note||'')+'</textarea><div style="font-size:12px;color:var(--mut);margin-top:4px">Saved on this phone only.</div></div>';
+  main.innerHTML=h;
+}
+function route(){
+  if(!D)return;var h=decodeURIComponent(location.hash||'#/'),m;window.scrollTo(0,0);
+  if(m=/^#\/l\/(\w+)\/(.*)$/.exec(h))return list(m[1],m[2]);
+  if(m=/^#\/t\/(.+)$/.exec(h))return detail(m[1]);
+  if(m=/^#\/c\/(ans|wait|none|high)$/.exec(h))return ctqList(m[1]);
+  if(m=/^#\/c\/(.+)$/.exec(h))return ctqDetail(m[1]);
+  if(h==='#/c')return ctqList('');
+  if(h==='#/dr')return drawings();if(h==='#/n')return mynotes();
+  if(m=/^#\/s\/(.+)$/.exec(h))return search(m[1]);
+  home();
+}
+window.addEventListener('hashchange',route);
+var qt;qbox.addEventListener('input',function(){clearTimeout(qt);qt=setTimeout(function(){var v=qbox.value.trim();if(v.length>1)history.replaceState(null,'','#/s/'+enc(v)),route();else if(!v&&/^#\/s\//.test(location.hash)){history.replaceState(null,'','#/');route()}},250)});
+fetch('data.json?v='+Date.now()).then(function(r){return r.json()}).then(function(d){D=d;T=d.items;CT=d.ctq||[];T.forEach(function(t){BY[t.no]=t});CT.forEach(function(c){BYC[c.no]=c});ls('tq-cache-date',d.built);route()}).catch(function(e){main.innerHTML='<div class="card"><b>Could not load data</b><div style="font-size:13px;margin-top:6px">Open once with internet, then it works offline.<br>'+esc(e)+'</div></div>'});
+if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(function(){});
+</script>
+</body>
+</html>
