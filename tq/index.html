@@ -59,7 +59,7 @@ mark{background:#ffe58a;border-radius:3px}
 <div class="toast" id="toast"></div>
 <script>
 var DRIVE='https://drive.google.com/drive/folders/1GfmOmZEEHLM53FKvYrbQehp0-NIm5pj8';
-var D=null,T=[],CT=[],BY={},BYC={},main=document.getElementById('main'),qbox=document.getElementById('q');
+var D=null,T=[],CT=[],RQ=[],MY=[],BY={},BYC={},main=document.getElementById('main'),qbox=document.getElementById('q');
 var lang=ls('tq-lang')||'en',notes={};try{notes=JSON.parse(ls('tq-notes')||'{}')}catch(e){}
 function ls(k,v){try{if(v===undefined)return localStorage.getItem(k);localStorage.setItem(k,v)}catch(e){return null}}
 function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
@@ -89,7 +89,7 @@ function home(){
    tile('#/l/all/','All TQs',T.length)+'</div>';
   h+='<div class="sect">By discipline – our E&amp;I</div><div class="grid">'+EI.map(function(d){var n=cnt(function(t){return t.disc===d});return n?tile('#/l/disc/'+enc(d),esc(dn(d)),n,'',cnt(function(t){return t.disc===d&&t.st==='Waiting answer'})+' waiting'):''}).join('')+tile('#/l/disc/other','Other disciplines',cnt(function(t){return !ei(t)}),'','civil, architecture, HVAC…')+'</div>';
   var nch=cnt(function(t){return t.hist&&t.hist.some(function(x){return x.c})}),nnew=cnt(function(t){return t.hist&&t.hist.some(function(x){return x.w})}),cop=CT.filter(function(c){return c.st==='Open'}).length,cans=CT.filter(ctqAns).length;
-  h+='<div class="sect">Client answers – what changed</div><div class="grid">'+tile('#/l/mix/chg','Answers changed',nch,'warn','since previous register')+tile('#/l/mix/new','New TQs',nnew,'','since previous register')+tile('#/c','My CTQ',CT.length,'',cop+' open')+tile('#/c/ans','CTQ – client answered',cans,'ok','check what changed')+'</div>';
+  h+='<div class="sect">Client answers – what changed</div><div class="grid">'+tile('#/l/mix/chg','Answers changed',nch,'warn','since previous register')+tile('#/l/mix/new','New TQs',nnew,'','since previous register')+tile('#/c','My CTQ',CT.length,'',cop+' open')+tile('#/c/ans','CTQ – client answered',cans,'ok','check what changed')+tile('#/r','New TQ requests to raise',RQ.length+CT.filter(function(c){return !c.tqs.length}).length+MY.length,'warn','found problems + my CTQ without TQ')+'</div>';
   h+='<div class="sect">By area</div><div class="grid">'+Object.keys(AREAS).map(function(a){return tile('#/l/area/'+a,a,cnt(function(t){return inArea(t,a)}),'',AREAS[a])}).join('')+'</div>';
   h+='<div class="sect">Tools</div><div class="grid">'+tile('#/dr','Drawings',DL().length,'','TQs per drawing · open PDF')+tile('#/n','My notes',Object.keys(notes).filter(function(k){return (BY[k]||BYC[k])&&(notes[k].note||notes[k].flag)}).length,'','follow-up list')+'</div>'+
    '<div class="sect">Quick filters</div><div class="grid">'+tile('#/l/mix/ei-wait','E&amp;I waiting answer',cnt(function(t){return ei(t)&&t.st==='Waiting answer'}),'warn')+tile('#/l/mix/ei-rej','E&amp;I rejected',cnt(function(t){return ei(t)&&t.st==='Rejected'}),'bad')+tile('#/l/mix/recent','Last 30 days',cnt(recent),'','issued recently')+'</div>'+
@@ -148,6 +148,7 @@ function detail(no){
   h+=sec('Drawings ('+t.drw.length+')',t.drw.length?t.drw.map(function(d){return '<div class="drw"><div class="nm">'+esc(d.d)+'</div>'+pdfBtns(d.f)+'</div>'}).join(''):'');
   h+=sec('Designer answer'+(t.ep.st?' · '+esc(t.ep.st):''),(t.ep.en||t.ep.ru||t.ep.st||t.ep.date)?'<div class="txt">'+esc(L(t.ep.en,t.ep.ru)||'–')+'</div><div style="margin-top:8px">'+kv([['Reply date',t.ep.date],['Change type',t.ep.chg],['Change to design',t.ep.dd],['Impact on BoQ',t.ep.boq],['EMA no.',t.ep.ema]])+'</div>':'<div class="empty" style="padding:6px">No answer yet</div>');
   h+=sec('Owner answer'+(t.ow.st?' · '+esc(t.ow.st):''),(t.ow.en||t.ow.ru||t.ow.st||t.ow.date)?'<div class="txt">'+esc(L(t.ow.en,t.ow.ru)||'–')+'</div><div style="margin-top:8px">'+kv([['Submitted',t.ow.date],['Reply date',t.ow.rdate],['Submitted via',t.ow.to]])+'</div>':'<div class="empty" style="padding:6px">No owner reply yet</div>');
+  if(t.revs&&t.revs.length)h+='<div class="card"><div class="h3">Earlier revisions of this TQ</div>'+t.revs.map(function(r){return '<div style="border-top:1px solid var(--line);padding:8px 0"><div style="display:flex;justify-content:space-between"><b>Rev '+esc(r.rev)+'</b>'+badge(r.st)+'</div><div style="font-size:12px;color:var(--mut)">issued '+esc(r.iss)+' · sent '+esc(r.sent)+'</div><div class="txt" style="font-size:13px;margin-top:4px">'+esc(L(r.ow.en,r.ow.ru)||L(r.ep.en,r.ep.ru)||'No answer recorded')+'</div></div>'}).join('')+'</div>';
   if(t.cm)h+=sec('Comments on answer','<div class="txt">'+esc(t.cm)+'</div>');
   var rc=CT.filter(function(c){return c.tqs.indexOf(t.no)>-1});
   if(rc.length)h+='<div class="card"><div class="h3">My CTQ linked to this TQ</div>'+rc.map(function(c){return '<button class="li" onclick="go(\'#/c/'+enc(c.no)+'\')"><div class="t"><span>'+esc(c.no)+'</span><span class="badge '+(c.pri==='High'?'b-bad':c.pri==='Medium'?'b-wait':'b-na')+'">'+esc(c.pri)+'</span></div><div class="d">'+esc(c.sub)+'</div></button>'}).join('')+'</div>';
@@ -189,8 +190,43 @@ function ctqDetail(no){
   h+=sec('Drawings',c.drw.length?c.drw.map(function(d){return '<div class="drw"><div class="nm">'+esc(d.d)+'</div>'+pdfBtns(d.f)+'</div>'}).join('')+kv([['Revision',c.rev],['Sheet / page',c.sh]]):kv([['Drawing',c.dwg],['Revision',c.rev],['Sheet / page',c.sh]]));
   var ts=c.tqs.map(function(q){return BY[q]}).filter(Boolean);
   h+='<div class="card"><div class="h3">Client TQ sent for this CTQ</div>'+(ts.length?ts.map(function(t){var ch=t.hist&&t.hist.some(function(x){return x.c});return '<button class="li" onclick="go(\'#/t/'+enc(t.no)+'\')"><div class="t"><span>'+esc(t.no.replace('TQS-GPP-RHI-',''))+(ch?' 🔔':'')+'</span>'+badge(t.st)+'</div><div class="d">'+esc(t.ow.en||t.ep.en||t.en)+'</div><div class="s">'+(t.ep.chg?esc(t.ep.chg)+' · ':'')+(t.ep.dd?esc(t.ep.dd)+' · ':'')+(t.rd?'Revised: '+esc(t.rd):'')+'</div></button>'}).join(''):'<div class="empty" style="padding:6px">'+(c.rel?esc(c.rel):'No TQ linked yet')+'</div>')+(c.rels&&ts.length?'<div style="font-size:12px;color:var(--mut)">Register note: '+esc(c.rels)+'</div>':'')+'</div>';
+  if(!ts.length)h+='<button class="btn" style="width:100%;padding:12px;margin-bottom:10px" onclick="copyReq(\''+esc(c.no)+'\')">No TQ sent yet – copy as TQ text</button>';
   h+=sec('Details',kv([['Tags',c.tags],['Responsible',c.resp],['Affects',c.aff],['Hold work',c.hold],['Status',c.st],['Date',c.dt],['Remark',c.rem]]));
   h+='<div class="card"><div class="h3">My follow-up</div><div class="flags">'+[['to-do','To do'],['site','Told site'],['done','Done']].map(function(f){return '<button class="chip '+(n.flag===f[0]?'on':'')+'" onclick="setFlag(\''+enc(c.no)+'\',\''+f[0]+'\')">'+f[1]+'</button>'}).join('')+'</div><textarea oninput="setNote(\''+enc(c.no)+'\',this.value)" placeholder="Site comment, next action…">'+esc(n.note||'')+'</textarea><div style="font-size:12px;color:var(--mut);margin-top:4px">Saved on this phone only.</div></div>';
+  main.innerHTML=h;
+}
+function reqText(r){var e=function(a){return Array.isArray(a)?a[0]:a};var o=function(a){return Array.isArray(a)?a[1]:''};
+  return 'TQ request (draft)\nTitle: '+e(r.title)+'\nArea: '+(r.area||'')+'\nDiscipline: '+(r.disc||'')+'\nDrawings: '+(r.drawings||[]).join('; ')+(r.rev?'\nRevision / sheet: '+r.rev:'')+(r.tags?'\nTags: '+r.tags:'')+'\n\nProblem:\n'+e(r.problem)+'\n\nRequested action:\n'+e(r.ask)+(o(r.title)?'\n\n--- RU ---\n'+o(r.title)+'\n\n'+o(r.problem)+'\n\n'+o(r.ask):'')}
+function copyReq(id){var r=RQ.filter(function(x){return x.id===id})[0]||MY.filter(function(x){return x.id===id})[0];var c=BYC[id];var t=r?reqText(r):c?reqText({title:c.sub,area:'',disc:c.cat,drawings:c.drw.map(function(d){return d.d}),rev:c.rev+(c.sh?' / '+c.sh:''),tags:c.tags,problem:c.sub,ask:c.act}):'';
+  (navigator.clipboard?navigator.clipboard.writeText(t).then(function(){toast('Copied – paste into the TQ form')}):Promise.reject()).catch(function(){toast('Could not copy')})}
+function reqs(){
+  setHead('New TQ requests','problems found · to raise',true);
+  var cand=CT.filter(function(c){return !c.tqs.length});
+  var h='<div class="sect">Problems found in drawings ('+RQ.length+')</div>'+(RQ.map(function(r){return '<button class="li" onclick="go(\'#/r/'+enc(r.id)+'\')"><div class="t"><span>'+esc(r.id)+' · '+esc(r.kind||'')+'</span><span class="badge b-wait">'+esc(r.status)+'</span></div><div class="d">'+esc(r.title[0])+'</div><div class="s">'+esc(r.area)+'</div></button>'}).join('')||'<div class="empty">None yet</div>');
+  h+='<div class="sect">My CTQ without a client TQ ('+cand.length+')</div>'+ctqRows(cand);
+  h+='<div class="sect">My own requests ('+MY.length+')</div>'+MY.map(function(r){return '<button class="li" onclick="go(\'#/r/'+enc(r.id)+'\')"><div class="t"><span>'+esc(r.id)+'</span><span class="badge b-na">'+esc(r.status)+'</span></div><div class="d">'+esc(r.title[0])+'</div><div class="s">'+esc(r.area)+'</div></button>'}).join('')+'<button class="more" onclick="go(\'#/r/new\')">+ Add my own request</button>';
+  main.innerHTML=h;
+}
+function reqNew(){
+  setHead('Add request','saved on this phone',true);
+  var f=function(id,l,ph,ml){return '<div style="margin-bottom:8px"><div class="h3">'+l+'</div>'+(ml?'<textarea id="'+id+'" placeholder="'+ph+'"></textarea>':'<input id="'+id+'" class="fin" style="width:100%;padding:11px;border:1px solid var(--line);border-radius:9px;font-size:15px" placeholder="'+ph+'">')+'</div>'};
+  main.innerHTML='<div class="card">'+f('rt','Topic','What is wrong, in one line')+f('ra','Area','e.g. G0-D1810BX0 / D4810BX0 / D1801FX0')+f('rd','Drawings and revision','Drawing number, rev, sheet')+f('rg','Tags / cables','Cable or equipment tags')+f('rp','Problem','Describe what you found',1)+f('rk','What do you ask the designer to do?','Requested action',1)+'<button class="btn" onclick="saveReq()">Save request</button></div>';
+}
+function saveReq(){var g=function(i){return document.getElementById(i).value.trim()};if(!g('rt')){toast('Write the topic first');return}
+  var id='MY-'+String(MY.length+1).padStart(2,'0');MY.push({id:id,title:[g('rt'),''],area:g('ra'),disc:'',drawings:g('rd')?[g('rd')]:[],rev:'',tags:g('rg'),problem:[g('rp'),''],ask:[g('rk'),''],status:'My draft',kind:'Mine',mine:1});ls('tq-my',JSON.stringify(MY));go('#/r/'+id)}
+function reqDetail(id){
+  var r=RQ.filter(function(x){return x.id===id})[0]||MY.filter(function(x){return x.id===id})[0];if(!r){main.innerHTML='<div class="empty">Not found.</div>';return}
+  var i=lang==='ru'?1:0,e=function(a){return Array.isArray(a)?(a[i]||a[0]):a};
+  setHead(r.id,r.status,true);
+  var h='<div class="lang"><button class="'+(lang==='en'?'on':'')+'" onclick="setLang(\'en\')">English</button><button class="'+(lang==='ru'?'on':'')+'" onclick="setLang(\'ru\')">Русский</button></div>';
+  h+='<div class="card"><div class="h3">'+esc(r.kind||'')+' · '+esc(r.status)+'</div><div class="txt"><b>'+esc(e(r.title))+'</b></div><div style="margin-top:8px">'+kv([['Area',r.area],['Discipline',r.disc],['Revision / sheet',r.rev],['Tags',r.tags],['Found by',r.src]])+'</div></div>';
+  h+=sec('Drawings',(r.drawings||[]).map(function(d){var m=DL().filter(function(x){return x.d===d})[0];return '<div class="drw"><div class="nm">'+esc(d)+'</div>'+pdfBtns(m?m.f:[])+'</div>'}).join(''));
+  h+=sec('Problem','<div class="txt">'+esc(e(r.problem))+'</div>');
+  h+=sec('What we ask the designer','<div class="txt">'+esc(e(r.ask))+'</div>');
+  if(r.hold&&e(r.hold))h+=sec('Effect on site work','<div class="txt">'+esc(e(r.hold))+'</div>');
+  if(r.att&&e(r.att))h+=sec('Attachments to add','<div class="txt">'+esc(e(r.att))+'</div>');
+  h+='<button class="btn" style="width:100%;padding:12px;margin-bottom:10px" onclick="copyReq(\''+esc(r.id)+'\')">Copy as TQ text (EN + RU)</button>';
+  if(r.mine)h+='<button class="btn sec" style="width:100%;padding:12px" onclick="if(confirm(\'Delete this request?\')){MY=MY.filter(function(x){return x.id!==\''+esc(r.id)+'\'});ls(\'tq-my\',JSON.stringify(MY));go(\'#/r\')}">Delete</button>';
   main.innerHTML=h;
 }
 function route(){
@@ -200,13 +236,14 @@ function route(){
   if(m=/^#\/c\/(ans|wait|none|high)$/.exec(h))return ctqList(m[1]);
   if(m=/^#\/c\/(.+)$/.exec(h))return ctqDetail(m[1]);
   if(h==='#/c')return ctqList('');
+  if(h==='#/r')return reqs();if(h==='#/r/new')return reqNew();if(m=/^#\/r\/(.+)$/.exec(h))return reqDetail(m[1]);
   if(h==='#/dr')return drawings();if(h==='#/n')return mynotes();
   if(m=/^#\/s\/(.+)$/.exec(h))return search(m[1]);
   home();
 }
 window.addEventListener('hashchange',route);
 var qt;qbox.addEventListener('input',function(){clearTimeout(qt);qt=setTimeout(function(){var v=qbox.value.trim();if(v.length>1)history.replaceState(null,'','#/s/'+enc(v)),route();else if(!v&&/^#\/s\//.test(location.hash)){history.replaceState(null,'','#/');route()}},250)});
-fetch('data.json?v='+Date.now()).then(function(r){return r.json()}).then(function(d){D=d;T=d.items;CT=d.ctq||[];T.forEach(function(t){BY[t.no]=t});CT.forEach(function(c){BYC[c.no]=c});ls('tq-cache-date',d.built);route()}).catch(function(e){main.innerHTML='<div class="card"><b>Could not load data</b><div style="font-size:13px;margin-top:6px">Open once with internet, then it works offline.<br>'+esc(e)+'</div></div>'});
+fetch('data.json?v='+Date.now()).then(function(r){return r.json()}).then(function(d){D=d;T=d.items;CT=d.ctq||[];RQ=d.req||[];try{MY=JSON.parse(ls('tq-my')||'[]')}catch(e){}T.forEach(function(t){BY[t.no]=t});CT.forEach(function(c){BYC[c.no]=c});ls('tq-cache-date',d.built);route()}).catch(function(e){main.innerHTML='<div class="card"><b>Could not load data</b><div style="font-size:13px;margin-top:6px">Open once with internet, then it works offline.<br>'+esc(e)+'</div></div>'});
 if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(function(){});
 </script>
 </body>

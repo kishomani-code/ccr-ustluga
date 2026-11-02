@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Build tq/data.json from the TQ register (sheet 'TQ Registry') for CCR, G0-D1801FX0 and D48.
 Usage: build_tq.py register.xlsx [drive_files.json] -> tq/data.json"""
-import sys, re, json, datetime
+import sys, os, re, json, datetime
 import openpyxl
 AREAS = re.compile(r'D1810BX0|D1801FX0|D4810BX0|D4801FX0', re.I)
 def s(x): return '' if x is None else str(x).strip()
@@ -59,10 +59,10 @@ WATCH = [('Designer status', lambda t: t['ep']['st']), ('Designer answer', lambd
          ('Owner status', lambda t: t['ow']['st']), ('Owner answer', lambda t: t['ow']['en'] or t['ow']['ru']), ('Owner reply date', lambda t: t['ow']['rdate']),
          ('Revised drawings', lambda t: t['rd']), ('Comments on answer', lambda t: t['cm'])]
 def diff(new, old, when):
-    O = {t['no']: t for t in old}
+    O = {t['no'] + '_R' + t['rev']: t for t in old}
     n = 0
     for t in new:
-        o = O.get(t['no'])
+        o = O.get(t['no'] + '_R' + t['rev'])
         t['hist'] = list(o.get('hist', [])) if o else []
         if not o:
             if old: t['hist'].append({'d': when, 'w': ['New TQ']}); n += 1
@@ -75,6 +75,24 @@ def diff(new, old, when):
         if ch:
             t['hist'].append({'d': when, 'c': ch}); n += 1
     return n
+def expand(items):
+    out = []
+    for t in items:
+        out.append(t)
+        for r in t.get('revs', []):
+            x = dict(t); x.update(r); out.append(x)
+    return out
+def group(res):
+    by = {}
+    for t in res: by.setdefault(t['no'], []).append(t)
+    out = []
+    for no, L in by.items():
+        L.sort(key=lambda t: t['rev'])
+        m = L[-1]
+        m['revs'] = [{'rev': t['rev'], 'st': t['st'], 'iss': t['iss'], 'sent': t['sent'], 'en': t['en'], 'ru': t['ru'], 'ep': t['ep'], 'ow': t['ow'], 'cm': t['cm'], 'rd': t['rd']} for t in L[:-1]]
+        out.append(m)
+    out.sort(key=lambda t: t['no'], reverse=True)
+    return out
 def ctq_list(files, data_json):
     try: T = json.load(open(data_json))['tq']['ctq']
     except Exception: return []
@@ -94,11 +112,14 @@ def main(reg, drive=None, prev=None, out='tq/data.json', data_json='data.json'):
     if prev:
         old = items(prev)[0]; when = 'previous register'
     else:
-        try: old = json.load(open(out))['items']; when = today
+        try: old = expand(json.load(open(out))['items']); when = today
         except Exception: old = None
     ndiff = diff(res, old, when) if old else 0
+    res = group(res)
     ctq = ctq_list(files, data_json)
-    json.dump({'built': today, 'n': len(res), 'items': res, 'ctq': ctq}, open(out, 'w'), ensure_ascii=False, separators=(',', ':'))
+    try: req = json.load(open(os.path.join(os.path.dirname(__file__), 'new_requests.json')))
+    except Exception: req = []
+    json.dump({'built': today, 'n': len(res), 'items': res, 'ctq': ctq, 'req': req}, open(out, 'w'), ensure_ascii=False, separators=(',', ':'))
     print(len(res), 'TQs;', sum(len(t['drw']) for t in res), 'drawing refs;', sum(1 for t in res for x in t['drw'] if x['f']), 'with PDF;', ndiff, 'changed vs previous;', len(ctq), 'CTQ')
 if __name__ == '__main__':
     a = sys.argv[1:]

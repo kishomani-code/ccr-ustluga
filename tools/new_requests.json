@@ -1,0 +1,69 @@
+[
+ {
+  "id": "NR-01",
+  "area": "G0-D4810BX0 / G0-D4801FX0",
+  "disc": "Instrumentation (AFA&FFS / PAGA interface)",
+  "status": "Draft – not sent",
+  "title": [
+   "JF-CA-1001 cables CJ-1003 / CJ-1004 / CJ-1005: numbers, routes and PAGA terminals differ between LR and LC",
+   "Кабели JF-CA-1001 CJ-1003 / CJ-1004 / CJ-1005: номера, трассы и клеммы СДС, ГГС и О различаются в LR и LC"
+  ],
+  "drawings": [
+   "GLE-(G0-D4810BX0)-IN-SPAP-LR-001",
+   "GLE-(G0-D4810BX0)-IN-SPAP-LC-001"
+  ],
+  "rev": "LR rev 04 (AS02), sheets 15–18 (PDF p.18–21), PDF p.7–16; LC rev 3",
+  "tags": "G0-D4810BX0-JF-CA-1001-CJ-1003 … CJ-1009; JF-CA-1002-CJ-1001 … JF-CA-1008-CJ-1001; UPA-TC-003; UPA-TC-004; JS-CM-1002",
+  "problem": [
+   "In GLE-(G0-D4810BX0)-IN-SPAP-LR-001 rev 04 cables G0-D4810BX0-JF-CA-1001-CJ-1003, CJ-1004 and CJ-1005 are the cables from the AFA&FFS cabinet G0-D4810BX0-JF-CA-1001 to the PAGA cabinets:\n- CJ-1003: JF-CA-1001 → UPA-TC-003, JB28-08P10J-NM (8x2x1.0), terminal block XT304;\n- CJ-1004: JF-CA-1001 → UPA-TC-004, JB28-12P10J-NM (12x2x1.0), terminal block XT305;\n- CJ-1005: JF-CA-1001 → UPA-TC-004, JB28-08P10J-NM (8x2x1.0), terminal block XT306.\nThe vendor terminal list 170323-(G0-D4810BX0)-IN-ZA-SPAP-001 shows the same (XT304 – 16 terminals, XT305 – 24 terminals, XT306 – 16 terminals). The PAGA cabinet documentation shows CJ-1004 landed on XT-03C: 1…66.\nIn the cable list GLE-(G0-D4810BX0)-IN-SPAP-LC-001 rev 3 the cable numbers JF-CA-1001-CJ-1003 … CJ-1009 are given to the short interconnection (loop) cables between the AFA&FFS cabinets JF-CA-1001 → JF-CA-1002 … JF-CA-1008 (MKESHng(A)-FRLS 1x2x1.0, 10–20 m). In SPAP-LR-001 rev 04 and in the vendor terminal list these loop cables are numbered G0-D4810BX0-JF-CA-1002-CJ-1001 … JF-CA-1008-CJ-1001 (terminals XT-ALM1 … XT-ALM7 in JF-CA-1001). Cable numbers JF-CA-1001-CJ-1006 … CJ-1009 are not used in SPAP-LR-001 rev 04.\nIn SPAP-LC-001 rev 3 cable number G0-D4810BX0-JF-CA-1002-CJ-1001 is also given to the cable JF-CA-1002 → ESD marshalling cabinet G0-D4810BX0-JS-CM-1002 (JB28-04P10J-NM).\nCables CJ-1003, CJ-1004 and CJ-1005 will be installed and terminated as per SPAP-LR-001 rev 04. The cable list must be corrected to match, for labelling, as-built documentation and material quantities.\nIn SPAP-LR-001 rev 04 cables CJ-1003 (rows 212–219) and CJ-1005 (rows 232–239) have all cores as reserve, but rows 212 and 232 still show signal type DO / 24 VDC. Cable CJ-1004 signals have prefix G2- (G2-JFOAF1048B, G2-JFOCH1016A, G2-JFOCH1017A) and row 220 refers to G2-C1810BX0.",
+   "В документе GLE-(G0-D4810BX0)-IN-SPAP-LR-001 изм. 04 кабели G0-D4810BX0-JF-CA-1001-CJ-1003, CJ-1004 и CJ-1005 – это кабели от шкафа АСПС и ПТ G0-D4810BX0-JF-CA-1001 до шкафов СДС, ГГС и О:\n- CJ-1003: JF-CA-1001 → UPA-TC-003, JB28-08P10J-NM (8x2x1,0), клеммник XT304;\n- CJ-1004: JF-CA-1001 → UPA-TC-004, JB28-12P10J-NM (12x2x1,0), клеммник XT305;\n- CJ-1005: JF-CA-1001 → UPA-TC-004, JB28-08P10J-NM (8x2x1,0), клеммник XT306.\nВ документации поставщика 170323-(G0-D4810BX0)-IN-ZA-SPAP-001 указано то же самое (XT304 – 16 клемм, XT305 – 24 клеммы, XT306 – 16 клемм). В документации на шкаф СДС, ГГС и О кабель CJ-1004 подключается на клеммник XT-03C: 1…66.\nВ кабельном журнале GLE-(G0-D4810BX0)-IN-SPAP-LC-001 изм. 3 номера JF-CA-1001-CJ-1003 … CJ-1009 присвоены коротким межшкафным (шлейфовым) кабелям между шкафами АСПС и ПТ JF-CA-1001 → JF-CA-1002 … JF-CA-1008 (МКЭШнг(А)-FRLS 1x2x1,0, 10–20 м). В SPAP-LR-001 изм. 04 и в документации поставщика эти межшкафные кабели имеют номера G0-D4810BX0-JF-CA-1002-CJ-1001 … JF-CA-1008-CJ-1001 (клеммы XT-ALM1 … XT-ALM7 в JF-CA-1001). Номера JF-CA-1001-CJ-1006 … CJ-1009 в SPAP-LR-001 изм. 04 не используются.\nКроме того, в SPAP-LC-001 изм. 3 номер G0-D4810BX0-JF-CA-1002-CJ-1001 присвоен также кабелю JF-CA-1002 → кроссовый шкаф ПАЗ G0-D4810BX0-JS-CM-1002 (JB28-04P10J-NM).\nКабели CJ-1003, CJ-1004 и CJ-1005 будут проложены и подключены согласно SPAP-LR-001 изм. 04. Кабельный журнал необходимо привести в соответствие для маркировки, исполнительной документации и количества материалов.\nВ SPAP-LR-001 изм. 04 у кабелей CJ-1003 (строки 212–219) и CJ-1005 (строки 232–239) все жилы резервные, однако в строках 212 и 232 указан тип сигнала DO / 24 VDC. Сигналы кабеля CJ-1004 имеют префикс G2- (G2-JFOAF1048B, G2-JFOCH1016A, G2-JFOCH1017A), в строке 220 указано G2-C1810BX0."
+  ],
+  "ask": [
+   "Please:\n1. Confirm the cable numbers, routes, cable types and terminals of JF-CA-1001-CJ-1003, CJ-1004 and CJ-1005 as per SPAP-LR-001 rev 04 (to UPA-TC-003 / UPA-TC-004).\n2. Give the terminals in the PAGA cabinets for CJ-1003 (UPA-TC-003) and CJ-1005 (UPA-TC-004).\n3. Correct the cable list SPAP-LC-001: give the interconnection cables between AFA&FFS cabinets the numbers JF-CA-1002-CJ-1001 … JF-CA-1008-CJ-1001 as in SPAP-LR-001 rev 04, delete cable numbers JF-CA-1001-CJ-1006 … CJ-1009, and add CJ-1003, CJ-1004, CJ-1005 to the PAGA cabinets with lengths.\n4. Give a unique number either to the interconnection cable JF-CA-1002 ↔ JF-CA-1001 or to the cable JF-CA-1002 → JS-CM-1002 (both are JF-CA-1002-CJ-1001).\n5. Update the specification (cable quantities) if needed.\n6. Confirm that cables CJ-1003 and CJ-1005 are required as fully reserve cables, and correct signal type in rows 212 and 232.\n7. Confirm the signal tags of cable CJ-1004 (prefix G2- and reference to G2-C1810BX0 in row 220).",
+   "Просим:\n1. Подтвердить номера, трассы, марки кабелей и места подключения кабелей JF-CA-1001-CJ-1003, CJ-1004 и CJ-1005 согласно SPAP-LR-001 изм. 04 (до UPA-TC-003 / UPA-TC-004).\n2. Указать клеммы подключения в шкафах СДС, ГГС и О для кабелей CJ-1003 (UPA-TC-003) и CJ-1005 (UPA-TC-004).\n3. Откорректировать кабельный журнал SPAP-LC-001: присвоить межшкафным кабелям шкафов АСПС и ПТ номера JF-CA-1002-CJ-1001 … JF-CA-1008-CJ-1001, как в SPAP-LR-001 изм. 04, исключить номера JF-CA-1001-CJ-1006 … CJ-1009, добавить кабели CJ-1003, CJ-1004, CJ-1005 до шкафов СДС, ГГС и О с длинами.\n4. Присвоить уникальный номер межшкафному кабелю JF-CA-1002 ↔ JF-CA-1001 или кабелю JF-CA-1002 → JS-CM-1002 (оба имеют номер JF-CA-1002-CJ-1001).\n5. При необходимости откорректировать спецификацию (количество кабеля).\n6. Подтвердить необходимость кабелей CJ-1003 и CJ-1005 с полностью резервными жилами и исправить тип сигнала в строках 212 и 232.\n7. Подтвердить обозначения сигналов кабеля CJ-1004 (префикс G2- и ссылка на G2-C1810BX0 в строке 220)."
+  ],
+  "hold": [
+   "No for installation (works continue as per SPAP-LR-001 rev 04). Required for cable labelling, as-built documentation and material quantities",
+   "Нет для монтажа (работы выполняются по SPAP-LR-001 изм. 04). Требуется для маркировки, исполнительной документации и количества материалов"
+  ],
+  "att": [
+   "1. Comparison table (sheet \"Table\").\n2. Extracts: SPAP-LR-001 rev 04, vendor terminal list, PAGA cabinet table, photo of XT-03C (sheet \"Attachments\").",
+   "1. Таблица сравнения (лист «Table»).\n2. Выписки: SPAP-LR-001 изм. 04, документация поставщика, таблица шкафа СДС, ГГС и О, фото XT-03C (лист «Attachments»)."
+  ],
+  "src": "Found by site check (cable status 02.11.2026)",
+  "kind": "Termination"
+ },
+ {
+  "id": "NR-02",
+  "area": "G0-D1801FX0",
+  "disc": "Fire alarm (FA-PSGN)",
+  "status": "Draft – needs plan drawing",
+  "title": [
+   "BIAL / BIAS sounder and junction-box locations: exact layout not shown on the drawing",
+   "BIAL / BIAS: точное расположение оповещателей и коробок на чертеже не показано"
+  ],
+  "drawings": [
+   "GLE-(G0-D1801FX0)-FA-PSGN-001"
+  ],
+  "rev": "AS02 – rev 03.2 (see CTQ-01)",
+  "tags": "BIAL-200…229; BIAS; JU-2000…JU-2029",
+  "problem": [
+   "The sounder (BIAL / BIAS) positions and the junction boxes they are fed from cannot be taken from the schematic; the plan with positions is needed before cable termination and labelling.",
+   "По схеме нельзя определить расположение оповещателей (BIAL / BIAS) и коробок, от которых они запитаны; для подключения и маркировки кабелей нужен план с их расположением."
+  ],
+  "ask": [
+   "Please issue the plan (or confirm the drawing number) with the positions of all BIAL / BIAS sounders and their feeding junction boxes, with rooms and cable numbers.",
+   "Просим выдать план (или указать номер чертежа) с расположением всех оповещателей BIAL / BIAS и питающих их коробок, с помещениями и номерами кабелей."
+  ],
+  "hold": [
+   "Not a hold for installation; needed for termination and labelling",
+   "Не сдерживает монтаж; нужно для подключения и маркировки"
+  ],
+  "att": [
+   "",
+   ""
+  ],
+  "src": "Open item – awaiting the fire alarm plan drawing",
+  "kind": "Termination"
+ }
+]
