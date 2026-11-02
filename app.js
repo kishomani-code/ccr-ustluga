@@ -203,6 +203,15 @@ function home() {
    <div class="sect">📊 Management</div><button class="tile main" style="width:100%;min-height:auto;margin-bottom:4px;background:linear-gradient(135deg,#4b1d7a,#7b3fb3);border-color:#4b1d7a;color:#fff" onclick="S2.mgr||S2.owner?go('#/mg'):mgrLogin()"><b>📊 Manager dashboard${S2.mgr || S2.owner ? '' : ' 🔒'}</b><span class="n" style="color:#fff">overall % · panel progress table · bottom-10 timeline</span></button>
    <div class="sect">🔑 Owner</div><button class="tile" style="width:100%;min-height:auto;background:#2b2f36;color:#fff;border-color:#2b2f36" onclick="S2.owner?go('#/ow'):ownerLogin()"><b>🔑 Owner menu${S2.owner ? ' – unlocked' : ''}</b><span class="n" style="color:#cfd6df">${S2.owner ? 'Import progress · total IWP report · technician performance' : 'Password required – owner only'}</span></button><button class="tile" style="width:100%;min-height:auto;margin-top:6px;background:#1f6f43;color:#fff;border-color:#1f6f43" onclick="S2.owner?go('#/ra'):ownerLogin()"><b>✅ Client RFI accepted – check${S2.owner ? '' : ' 🔒'}</b><span class="n" style="color:#d7f0e1">report to IWP · RHI punch to close · Excel</span></button>
    <div class="foot">${esc(D.meta.src)}<br>Updates automatically when the phone is online.<br>App version ${APPV}</div>`;
+  paintHome();
+}
+function paintHome() {
+  // give every home section its own colour (see theme.css .c0-.c7)
+  let i = 0;
+  main.querySelectorAll('.sect').forEach(h => {
+    const c = 'c' + (i++ % 8); h.classList.add(c);
+    let n = h.nextElementSibling; while (n && !n.classList.contains('sect')) { n.classList.add(c); n = n.nextElementSibling; }
+  });
 }
 function actView(g) {
   const list = I.filter(x => x.g === g); const s = gstat(list); VS[g] = VS[g] || {f: 'all', sy: '', q: '', lim: 200};

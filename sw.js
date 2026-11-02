@@ -1,6 +1,6 @@
 // Network first for app files. Data files (data*.json, eng*.json) are kept by index.html in cache 'appdata-v1'.
-const CACHE = 'rencons-ccr-v4-8-d202611011245b-d202611022015';
-const FILES = ['./', './index.html', './translations.js', './app.js', './areas.js', './loto.js', './xl.js', './mc.js', './ra.js', './manifest.json', './icon-192.png', './icon-512.png'];
+const CACHE = 'rencons-ccr-v4-9-theme-d202611030000';
+const FILES = ['./', './index.html', './theme.css', './translations.js', './app.js', './areas.js', './loto.js', './xl.js', './mc.js', './ra.js', './manifest.json', './icon-192.png', './icon-512.png'];
 self.addEventListener('install', e => { e.waitUntil(caches.open(CACHE).then(c => c.addAll(FILES)).then(() => self.skipWaiting())); });
 self.addEventListener('activate', e => { e.waitUntil(caches.keys().then(ks => Promise.all(ks.filter(k => k !== CACHE && !k.startsWith('appdata-')).map(k => caches.delete(k)))).then(() => self.clients.claim())); });
 self.addEventListener('fetch', e => {
