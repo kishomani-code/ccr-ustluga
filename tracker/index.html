@@ -55,6 +55,24 @@ const fm=v=>v===''||v==null?'':(Math.round(Number(v)*10)/10).toLocaleString('ru-
 const pct=(a,b)=>b?Math.round(100*a/b):0;
 let DB=null, C=[], DR={}, VS={c:{tit:'',co:'',ps:'',lim:200,sk:'t',sd:1},d:{flt:'',lim:200,sk:'need',sd:-1}};
 const enc=encodeURIComponent, dec=decodeURIComponent;
+// ---- title mode filter (shared by all pages)
+VS.T={m:'',pick:[],q:'',open:false}; try{const t=JSON.parse(localStorage.getItem('gpp-tm')||'null'); if(t&&typeof t.m==='string'){VS.T.m=t.m;VS.T.pick=t.pick||[];}}catch(e){}
+const TGRP={mine:['G0-D1810BX0','G0-D1801FX0','G0-D4810BX0','G0-D4801FX0'],ccr:['G0-D1810BX0','G0-D1801FX0'],d48:['G0-D4810BX0','G0-D4801FX0']};
+const TMODES=[['','All titles'],['mine','My scope – CCR + D48 (4 titles)'],['ccr','CCR – G0-D1810BX0 + G0-D1801FX0'],['d48','D48 – G0-D4810BX0 + G0-D4801FX0'],['G0','Train G0 – all titles'],['G1','Train G1 – all titles'],['G2','Train G2 – all titles'],['G3','Train G3 – all titles'],['G4','Train G4 – all titles'],['pick','Choose titles…']];
+function tSave(){ try{localStorage.setItem('gpp-tm',JSON.stringify({m:VS.T.m,pick:VS.T.pick}))}catch(e){} }
+function tOK(t){ const m=VS.T.m; if(!m) return true; if(TGRP[m]) return TGRP[m].includes(t); if(/^G\d$/.test(m)) return String(t||'').startsWith(m+'-'); if(m==='pick') return !VS.T.pick.length||VS.T.pick.includes(t); return true; }
+function tLabel(){ const m=VS.T.m; if(m==='pick') return VS.T.pick.length?VS.T.pick.length+' titles chosen':'Choose titles…'; return (TMODES.find(x=>x[0]===m)||TMODES[0])[1]; }
+function tSel(cb){ const v=VS.T, all=[...new Set(C.map(o=>o.tit))].filter(Boolean).sort();
+  let h=`<select title="Title filter" onchange="VS.T.m=this.value;VS.T.open=this.value==='pick';tSave();${cb}()">${TMODES.map(([a,b])=>`<option value="${a}" ${v.m===a?'selected':''}>${b}</option>`).join('')}</select>`;
+  if(v.m==='pick') h+=`<button class="sec" onclick="VS.T.open=!VS.T.open;${cb}()">${v.pick.length?v.pick.length+' titles ▾':'Pick titles ▾'}</button>`;
+  if(v.m==='pick'&&v.open){ const nq=N(v.q||''); const L=all.filter(t=>!nq||N(t).includes(nq));
+    h+=`<div class="tpick" style="flex-basis:100%;border:1px solid var(--line);border-radius:6px;padding:8px;background:#fff">
+     <div class="bar" style="margin:0 0 6px"><input id="tq" placeholder="Find title…" value="${esc(v.q||'')}" style="font:inherit;padding:5px 8px;border:1px solid var(--line);border-radius:6px;min-width:140px" oninput="VS.T.q=this.value;clearTimeout(VS.tt);VS.tt=setTimeout(()=>{${cb}();const e=document.getElementById('tq');if(e){e.focus();e.setSelectionRange(e.value.length,e.value.length)}},300)">
+     <button class="sec" onclick="VS.T.pick=[...new Set([...VS.T.pick,...${JSON.stringify(L).replace(/"/g,'&quot;')}])];tSave();${cb}()">Select shown (${L.length})</button>
+     <button class="sec" onclick="VS.T.pick=[];tSave();${cb}()">Clear</button><button class="sec" onclick="VS.T.open=false;${cb}()">Done</button></div>
+     <div style="max-height:220px;overflow:auto;columns:220px">${L.map(t=>`<label style="display:block;font-size:13px;padding:2px 0;break-inside:avoid"><input type="checkbox" ${v.pick.includes(t)?'checked':''} onchange="tTog('${esc(t)}',this.checked,'${cb}')"> ${esc(t)} <span class="mut small">(${C.filter(o=>o.tit===t).length})</span></label>`).join('')}</div></div>`; }
+  return h; }
+function tTog(t,on,cb){ const P=VS.T.pick; const i=P.indexOf(t); if(on&&i<0)P.push(t); if(!on&&i>=0)P.splice(i,1); tSave(); window[cb](); }
 function load(){ fetch('data.json',{cache:'no-cache'}).then(r=>r.json()).then(d=>{DB=d;build();route();}).catch(e=>{M().innerHTML='<div class="card">Could not load the data: '+esc(e)+'</div>';}); }
 function build(){ const c=DB.cols,dt=DB.dict,n=DB.n;
   const g=(k,i)=>dt[k]?dt[k][c[k][i]]:c[k][i];
@@ -72,8 +90,8 @@ function build(){ const c=DB.cols,dt=DB.dict,n=DB.n;
 window.addEventListener('hashchange',route);
 let qt; $('q').addEventListener('input',()=>{clearTimeout(qt);qt=setTimeout(()=>{const v=$('q').value.trim(); if(v.length>=2) location.hash='#/s/'+enc(v); else if(!v) location.hash='#/';},250);});
 function nav(k){['h','c','d','x','n'].forEach(x=>$('n-'+x).classList.toggle('on',x===k));}
-function route(){ if(!DB)return; const h=location.hash.replace(/^#\//,''); const [k,...r]=h.split('/'); const a=dec(r.join('/')); window.scrollTo(0,0);
-  if(k==='c'&&a) return cable(a); if(k==='c') return cables(); if(k==='d'&&a) return drum(a); if(k==='d') return drums(); if(k==='x') return shortage(); if(k==='n') return nodrum(); if(k==='s') return search(a); if(k==='t') {VS.c.tit=a;return cables();} return home(); }
+function route(){ if(VS.T) VS.T.open=false; if(!DB)return; const h=location.hash.replace(/^#\//,''); const [k,...r]=h.split('/'); const a=dec(r.join('/')); window.scrollTo(0,0);
+  if(k==='c'&&a) return cable(a); if(k==='c') return cables(); if(k==='d'&&a) return drum(a); if(k==='d') return drums(); if(k==='x') return shortage(); if(k==='n') return nodrum(); if(k==='s') return search(a); if(k==='t') {VS.T={m:'pick',pick:[a],q:'',open:false};tSave();return cables();} return home(); }
 const st=o=>o.del?'<span class="pill">other project / deleted</span>':o.hold?'<span class="pill bad">HOLD</span>':o.pulled?'<span class="pill ok">Pulled</span>':'<span class="pill warn">Remaining</span>';
 const tst=o=>o.term?'<span class="pill ok">Terminated</span>':(o.tf||o.tt)?'<span class="pill warn">1 end</span>':'<span class="pill">Not terminated</span>';
 function home(){ nav('h'); const L=C.filter(o=>!o.del); const T={};
@@ -87,13 +105,19 @@ function home(){ nav('h'); const L=C.filter(o=>!o.del); const T={};
   <div class="card"><h3>By title</h3><div class="tw"><table><thead><tr><th>Title</th><th class="n">Cables</th><th class="n">Pulled</th><th class="n">Remaining</th><th>Pulled %</th><th class="n hide-m">Terminated</th><th class="n hide-m">Design m</th><th class="n hide-m">Pulled m</th><th class="n hide-m">RHI</th></tr></thead><tbody>
   ${Object.values(T).sort((a,b)=>b.n-a.n).map(t=>`<tr class="click" onclick="location.hash='#/t/${enc(t.t)}'"><td><a class="lnk">${esc(t.t||'—')}</a></td><td class="n">${t.n}</td><td class="n">${t.p}</td><td class="n">${t.n-t.p}</td><td><div class="prog"><i style="width:${pct(t.p,t.n)}%"></i></div><span class="small">${pct(t.p,t.n)}%</span></td><td class="n hide-m">${t.tm}</td><td class="n hide-m">${fm(t.dl)}</td><td class="n hide-m">${fm(t.pm)}</td><td class="n hide-m">${t.rh}</td></tr>`).join('')}
   </tbody></table></div></div>`; }
-function cables(){ nav('c'); const v=VS.c; const tits=[...new Set(C.map(o=>o.tit))].filter(Boolean).sort(), cos=[...new Set(C.map(o=>o.co))].filter(Boolean).sort();
-  let L=C.filter(o=>(!v.tit||o.tit===v.tit)&&(!v.co||o.co===v.co)&&(!v.ps||(v.ps==='p'?o.pulled&&!o.del:v.ps==='r'?!o.pulled&&!o.del&&!o.hold:v.ps==='h'?o.hold:v.ps==='t'?o.term:v.ps==='nt'?o.pulled&&!o.term&&!o.del:v.ps==='x'?o.del:true)));
+function cables(){ nav('c'); const v=VS.c; v.disc=v.disc||''; v.doc=v.doc||''; v.ty=v.ty||''; v.pn=v.pn||'';
+  const T0=C.filter(o=>tOK(o.tit)), cos=[...new Set(T0.map(o=>o.co))].filter(Boolean).sort(), discs=[...new Set(T0.map(o=>o.disc))].filter(Boolean).sort(),
+   docs=[...new Set(T0.filter(o=>!v.disc||o.disc===v.disc).map(o=>o.doc))].filter(Boolean).sort(), tys=[...new Set(T0.filter(o=>(!v.disc||o.disc===v.disc)&&(!v.doc||o.doc===v.doc)).map(o=>(o.ty+' '+o.sz).trim()))].filter(Boolean).sort(), npn=N(v.pn);
+  let L=T0.filter(o=>(!v.co||o.co===v.co)&&(!v.disc||o.disc===v.disc)&&(!v.doc||o.doc===v.doc)&&(!v.ty||(o.ty+' '+o.sz).trim()===v.ty)&&(!npn||N(o.f+' '+o.o).includes(npn))&&(!v.ps||(v.ps==='p'?o.pulled&&!o.del:v.ps==='r'?!o.pulled&&!o.del&&!o.hold:v.ps==='h'?o.hold:v.ps==='t'?o.term:v.ps==='nt'?o.pulled&&!o.term&&!o.del:v.ps==='x'?o.del:true)));
   const k=v.sk,s=v.sd; L.sort((a,b)=>{const x=a[k],y=b[k]; return (typeof x==='number'||typeof y==='number')?((Number(x)||0)-(Number(y)||0))*s:String(x).localeCompare(String(y))*s;});
   const opt=(a,sel,lab)=>`<option value="">${lab}</option>`+a.map(x=>`<option ${x===sel?'selected':''}>${esc(x)}</option>`).join('');
-  M().innerHTML=`<h2>Cables</h2><div class="bar"><select onchange="VS.c.tit=this.value;VS.c.lim=200;cables()">${opt(tits,v.tit,'All titles')}</select><select onchange="VS.c.co=this.value;VS.c.lim=200;cables()">${opt(cos,v.co,'All companies')}</select>
+  M().innerHTML=`<h2>Cables</h2><div class="bar">${tSel('cables')}<select onchange="VS.c.co=this.value;VS.c.lim=200;cables()">${opt(cos,v.co,'All companies')}</select>
+  <select onchange="VS.c.disc=this.value;VS.c.doc='';VS.c.ty='';VS.c.lim=200;cables()">${opt(discs,v.disc,'All disciplines')}</select>
+  <select onchange="VS.c.doc=this.value;VS.c.ty='';VS.c.lim=200;cables()" style="max-width:260px">${opt(docs,v.doc,'All documents ('+docs.length+')')}</select>
+  <select onchange="VS.c.ty=this.value;VS.c.lim=200;cables()" style="max-width:220px">${opt(tys,v.ty,'All cable types')}</select>
+  <input id="cpn" placeholder="From / To panel, JB…" value="${esc(v.pn)}" style="font:inherit;font-size:13px;padding:6px 10px;border:1px solid var(--line);border-radius:6px;min-width:150px" oninput="VS.c.pn=this.value;VS.c.lim=200;clearTimeout(VS.t);VS.t=setTimeout(()=>{cables();const e=document.getElementById('cpn');e.focus();e.setSelectionRange(e.value.length,e.value.length)},350)">
   <select onchange="VS.c.ps=this.value;VS.c.lim=200;cables()">${[['','All statuses'],['p','Pulled'],['r','Remaining'],['h','HOLD'],['nt','Pulled, not terminated'],['t','Terminated'],['x','Other project / deleted']].map(([a,b])=>`<option value="${a}" ${v.ps===a?'selected':''}>${b}</option>`).join('')}</select>
-  <span class="sp"></span><span class="mut small">${L.length.toLocaleString('ru-RU')} cables · ${fm(L.reduce((s,o)=>s+(Number(o.ln)||0),0))} m design · ${fm(L.reduce((s,o)=>s+(Number(o.act)||0),0))} m pulled</span><button class="sec" onclick="csv(cables.L,'cables')">⬇ CSV</button></div>
+  <button class="sec" onclick="VS.c={co:'',ps:'',lim:200,sk:'t',sd:1};VS.T.m='';VS.T.pick=[];tSave();cables()">Clear</button><span class="sp"></span><span class="mut small">${L.length.toLocaleString('ru-RU')} cables · ${fm(L.reduce((s,o)=>s+(Number(o.ln)||0),0))} m design · ${fm(L.reduce((s,o)=>s+(Number(o.act)||0),0))} m pulled</span><button class="sec" onclick="csv(cables.L,'cables')">⬇ CSV</button></div>
   ${ctable(L.slice(0,v.lim),true)}${L.length>v.lim?`<div style="text-align:center;margin-top:10px"><button class="sec" onclick="VS.c.lim+=500;cables()">Show more (${(L.length-v.lim).toLocaleString('ru-RU')})</button></div>`:''}`; cables.L=L; }
 function ctable(L,sortable){ const H=[['t','Cable tag'],['tit','Title'],['ty','Type'],['ln','Design m'],['act','Pulled m'],['da','Drum'],['ps','Status'],['ts','Termination'],['co','Company']];
   const th=H.map(([k,l])=>`<th class="${['ln','act'].includes(k)?'n':''}${['ty','ts','co','tit'].includes(k)?' hide-m':''}" ${sortable?`onclick="VS.c.sd=VS.c.sk==='${k}'?-VS.c.sd:1;VS.c.sk='${k}';cables()"`:''}>${l}${sortable&&VS.c.sk===k?(VS.c.sd>0?' ▲':' ▼'):''}</th>`).join('');
@@ -117,7 +141,7 @@ function drums(){ nav('d'); const v=VS.d; v.q=v.q||''; v.id=v.id||''; v.tit=v.ti
   const all=Object.values(DR);
   const ids=[...new Set(all.map(d=>d.ty))].filter(Boolean).sort(), tks=[...new Set(all.map(d=>d.tk))].filter(Boolean).sort(), tits=[...new Set(C.map(o=>o.tit))].filter(Boolean).sort();
   const nq=N(v.q);
-  let L=all.filter(d=>(!nq||d._n.includes(nq)||N(d.id).includes(nq))&&(!v.id||d.ty===v.id)&&(!v.tk||d.tk===v.tk)&&(!v.tit||d.rem.some(o=>o.tit===v.tit)||d.used.some(o=>o.tit===v.tit))&&(!v.min||(spare(d)||0)>=Number(v.min)));
+  let L=all.filter(d=>(!nq||d._n.includes(nq)||N(d.id).includes(nq))&&(!v.id||d.ty===v.id)&&(!v.tk||d.tk===v.tk)&&(!VS.T.m||d.rem.some(o=>tOK(o.tit))||d.used.some(o=>tOK(o.tit)))&&(!v.min||(spare(d)||0)>=Number(v.min)));
   if(v.flt==='short') L=L.filter(d=>d.short&&d.rem.length); else if(v.flt==='ok') L=L.filter(d=>d.rem.length&&!d.short); else if(v.flt==='rem') L=L.filter(d=>d.rem.length);
   else if(v.flt==='free') L=L.filter(d=>(spare(d)||0)>0); else if(v.flt==='nolen') L=L.filter(d=>!d.len&&d.rem.length); else if(v.flt==='empty') L=L.filter(d=>d.len&&d.free!=null&&d.free<=0.5);
   const k=v.sk,s=v.sd; L.forEach(d=>d.sp=spare(d)); L.sort((a,b)=>{const x=a[k],y=b[k]; return (typeof x==='number'||typeof y==='number'||x==null)?((Number(x)||0)-(Number(y)||0))*s:String(x).localeCompare(String(y))*s;});
@@ -131,7 +155,7 @@ function drums(){ nav('d'); const v=VS.d; v.q=v.q||''; v.id=v.id||''; v.tit=v.ti
    <input id="dq" placeholder="Drum No / ident…" value="${esc(v.q)}" style="font:inherit;padding:6px 10px;border:1px solid var(--line);border-radius:6px;min-width:150px" oninput="VS.d.q=this.value;clearTimeout(VS.t);VS.t=setTimeout(()=>{drums();const e=document.getElementById('dq');e.focus();e.setSelectionRange(e.value.length,e.value.length)},350)">
    <select onchange="VS.d.flt=this.value;VS.d.lim=200;drums()">${[['','All drums'],['rem','With remaining cables'],['short','SHORT for remaining cables'],['ok','Enough for remaining cables'],['free','Spare length available'],['empty','Empty / fully used'],['nolen','Remaining cables, drum length unknown']].map(([a,b])=>`<option value="${a}" ${v.flt===a?'selected':''}>${b}</option>`).join('')}</select>
    <select onchange="VS.d.id=this.value;drums()">${opt(ids,v.id,'All cable types')}</select>
-   <select onchange="VS.d.tit=this.value;drums()">${opt(tits,v.tit,'All titles')}</select>
+   ${tSel('drums')}
    <select onchange="VS.d.tk=this.value;drums()">${opt(tks,v.tk,'Taken by – all')}</select>
    <select onchange="VS.d.min=this.value;drums()">${['','50','100','200','500','1000'].map(x=>`<option value="${x}" ${v.min===x?'selected':''}>${x?'Spare ≥ '+x+' m':'Any spare'}</option>`).join('')}</select>
    <button class="sec" onclick="VS.d={flt:'',lim:200,sk:'need',sd:-1};drums()">Clear</button><span class="sp"></span><span class="mut small">${L.length.toLocaleString('ru-RU')} drums</span><button class="sec" onclick="dcsv(drums.L)">⬇ CSV</button></div></div>
@@ -168,9 +192,9 @@ function drum(dn){ nav('d'); const d=DR[dn]; if(!d){M().innerHTML='<div class="c
 function shortage(){ nav('x'); const S=Object.values(DR).filter(d=>d.short&&d.rem.length);
   let rows=[]; S.forEach(d=>{ const P=fitPlan(d); P.out.forEach(o=>rows.push({o,d})); });
   const v=VS.x=VS.x||{tit:'',co:'RHI'}; const tits=[...new Set(rows.map(r=>r.o.tit))].filter(Boolean).sort();
-  const R=rows.filter(r=>(!v.tit||r.o.tit===v.tit)&&(!v.co||r.o.co===v.co));
+  const R=rows.filter(r=>tOK(r.o.tit)&&(!v.co||r.o.co===v.co));
   M().innerHTML=`<h2>Shortage cables – replacement drum options</h2><div class="mut small">Remaining cables that do not fit on their assigned drum (tracker free length, shortest cables kept on the drum). Option 1–3 = other drums of the same cable type with enough spare.</div>
-  <div class="bar" style="margin-top:8px"><select onchange="VS.x.tit=this.value;shortage()"><option value="">All titles</option>${tits.map(t=>`<option ${t===v.tit?'selected':''}>${esc(t)}</option>`).join('')}</select>
+  <div class="bar" style="margin-top:8px">${tSel('shortage')}
   <select onchange="VS.x.co=this.value;shortage()">${[['RHI','RHI cables'],['','All companies']].map(([a,b])=>`<option value="${a}" ${v.co===a?'selected':''}>${b}</option>`).join('')}</select><span class="sp"></span><span class="mut small">${R.length} cables · ${fm(R.reduce((s,r)=>s+(Number(r.o.ln)||0),0))} m</span></div>
   <div class="tw"><table><thead><tr><th>Cable</th><th class="hide-m">Title</th><th class="n">m</th><th>Assigned drum</th><th>Option 1</th><th>Option 2</th><th>Option 3</th></tr></thead><tbody>
   ${R.slice(0,600).map(r=>{const A=alts(r.d,Number(r.o.ln)||0); const c=i=>A[i]?`<a class="lnk" href="#/d/${enc(A[i].dn)}">${esc(A[i].dn)}</a><div class="small mut">spare ${fm(spare(A[i]))} m</div>`:(i?'':'<a href="#/n" class="pill bad">no drum – alert ▸</a>');
@@ -182,7 +206,7 @@ function noDrumRows(){ const R=[]; Object.values(DR).forEach(d=>{ if(!d.rem.leng
   if(!d.short) return; fitPlan(d).out.forEach(o=>{ if(!alts(d,Number(o.ln)||0,1).length) R.push({o,d,why:fm(d.need-d.free)+' m short'}); }); }); return R; }
 let FC={}; try{FC=JSON.parse(localStorage.getItem('gpp-fc')||'{}')}catch(e){}
 function fcSet(t,k,v){ FC[t]=FC[t]||{}; FC[t][k]=v; try{localStorage.setItem('gpp-fc',JSON.stringify(FC))}catch(e){} }
-function ndList(){ const v=VS.n; return noDrumRows().filter(r=>(!v.co||r.o.co===v.co)&&(!v.tit||r.o.tit===v.tit)); }
+function ndList(){ const v=VS.n; return noDrumRows().filter(r=>(!v.co||r.o.co===v.co)&&tOK(r.o.tit)); }
 function ndMail(who){ const R=ndList(); const by={}; R.forEach(r=>{(by[r.d.ty||r.d.id]=by[r.d.ty||r.d.id]||[]).push(r)});
   const tot=R.reduce((s,r)=>s+(Number(r.o.ln)||0),0); let b='';
   if(who==='paul') b=`Hi Paul,\n\nFor the cables below there is not enough length on the assigned drum, and no other drum of the same cable type with enough spare length is shown in the latest cable tracker.\nPlease check with the warehouse / client and arrange a new drum (or confirm another drum we can use). We will check these cables in the field in parallel.\n\n`;
@@ -202,7 +226,7 @@ function nodrum(){ nav('n'); const v=VS.n=VS.n||{co:'RHI',tit:''}; const all=noD
   const tot=R.reduce((s,r)=>s+(Number(r.o.ln)||0),0); const done=R.filter(r=>FC[r.o.t]&&FC[r.o.t].p).length;
   M().innerHTML=`<h2>⚠ No drum available – alert</h2><div class="mut small">Remaining cables that do not fit on their assigned drum and have <b>no replacement drum</b> of the same cable type with enough spare length (Option 1–3 empty). Send the alert to Paul / the client and check these cables in the field.</div>
   <div class="kpis"><div class="kpi bad"><b>${R.length}</b><span>cables without drum</span></div><div class="kpi bad"><b>${fm(tot)}</b><span>metres to request</span></div><div class="kpi"><b>${new Set(R.map(r=>r.d.dn)).size}</b><span>drums affected</span></div><div class="kpi ${done?'ok':''}"><b>${done} / ${R.length}</b><span>found pulled in field check</span></div></div>
-  <div class="card"><div class="bar" style="margin:0"><select onchange="VS.n.tit=this.value;nodrum()"><option value="">All titles</option>${tits.map(t=>`<option ${t===v.tit?'selected':''}>${esc(t)}</option>`).join('')}</select>
+  <div class="card"><div class="bar" style="margin:0">${tSel('nodrum')}
    <select onchange="VS.n.co=this.value;nodrum()">${[['RHI','RHI cables'],['','All companies']].map(([a,b])=>`<option value="${a}" ${v.co===a?'selected':''}>${b}</option>`).join('')}</select></div>
    <div class="bar" style="margin:10px 0 0"><button onclick="ndSend('paul')">✉ Alert mail to Paul</button><button class="sec" onclick="ndCopy('paul')">Copy text</button>
    <button onclick="ndSend('client')">✉ Mail to client</button><button class="sec" onclick="ndCopy('client')">Copy text</button>
