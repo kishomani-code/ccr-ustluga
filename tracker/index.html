@@ -13,7 +13,7 @@
 header{background:var(--acc);color:#fff;padding:10px 16px;position:sticky;top:0;z-index:5;box-shadow:0 2px 6px rgba(0,0,0,.15)}
 .hr{display:flex;align-items:center;gap:10px;max-width:1300px;margin:0 auto}
 .hr img{width:30px;height:30px;border-radius:6px;background:#fff}.hr .tt{flex:1}.hr b{font-size:16px}.hr span{display:block;font-size:11.5px;opacity:.75}
-.hr a{color:#fff;text-decoration:none;font-size:13px;padding:6px 10px;border-radius:6px}.hr a.on,.hr a:hover{background:rgba(255,255,255,.15)}
+.nv{display:flex;gap:4px}.hr a{color:#fff;text-decoration:none;font-size:13px;padding:6px 10px;border-radius:6px}.hr a.on,.hr a:hover{background:rgba(255,255,255,.15)}
 .sb{max-width:1300px;margin:8px auto 0;display:flex;gap:8px}
 .sb input{flex:1;font:inherit;font-size:15px;padding:10px 12px;border-radius:8px;border:0}
 main{max-width:1300px;margin:0 auto;padding:14px 16px 40px}
@@ -37,12 +37,12 @@ button{background:var(--acc2);color:#fff;border-color:var(--acc2);cursor:pointer
 .grp{font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:var(--mut);margin:14px 0 6px}
 #load{text-align:center;padding:60px 10px}.spin{width:30px;height:30px;border:3px solid #d7e1ee;border-top-color:var(--acc2);border-radius:50%;animation:s 1s linear infinite;margin:0 auto 12px}@keyframes s{to{transform:rotate(360deg)}}
 a.lnk{color:var(--acc2);text-decoration:none;cursor:pointer}a.lnk:hover{text-decoration:underline}
-@media(max-width:700px){.kv{grid-template-columns:120px 1fr}.hr a{padding:6px 6px;font-size:12px}.hide-m{display:none}}
+html,body{overflow-x:hidden}@media(max-width:700px){.kv{grid-template-columns:120px 1fr}.hr{flex-wrap:wrap}.hr .tt{min-width:0;flex:1 1 60%}.hr .tt span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.nv{width:100%;justify-content:space-between}.nv a{flex:1;text-align:center;background:rgba(255,255,255,.08);padding:7px 4px;font-size:13px}.hide-m{display:none}header{padding:8px 10px}main{padding:12px 10px 40px}}
 </style>
 </head>
 <body>
 <header><div class="hr"><img src="../icon-192.png" alt=""><div class="tt"><b>GPP Cable Tracker</b><span id="sub">Ust-Luga GPP · E&amp;I · loading…</span></div>
-<a href="#/" id="n-h">Overview</a><a href="#/c" id="n-c">Cables</a><a href="#/d" id="n-d">Drums</a></div>
+<nav class="nv"><a href="#/" id="n-h">Overview</a><a href="#/c" id="n-c">Cables</a><a href="#/d" id="n-d">Drums</a></nav></div>
 <div class="sb"><input id="q" placeholder="Search cable tag, drum (GMR…), panel / JB, title, ident, MRF…" autocomplete="off"></div></header>
 <main id="m"><div id="load"><div class="spin"></div>Loading cable tracker (about 1 MB)…</div></main>
 <script>
@@ -66,7 +66,7 @@ function build(){ const c=DB.cols,dt=DB.dict,n=DB.n;
   Object.values(D).forEach(d=>{ d.len=Number(d.info[0])||0; d.pm=d.used.reduce((s,o)=>s+(Number(o.act)||0),0); d.free=d.len?d.len-d.pm:null;
     d.rem=d.asg.filter(o=>!o.pulled&&!o.del); d.need=d.rem.reduce((s,o)=>s+(Number(o.ln)||0),0); d.short=d.free!=null&&d.need>d.free+0.5; d.rc=d.rem.length; d.tk=(d.info[1]||'');
     const mode=a=>{const c={};a.forEach(x=>{if(x)c[x]=(c[x]||0)+1});return Object.keys(c).sort((x,y)=>c[y]-c[x])[0]||'';}; d.id=mode([...d.used,...d.asg].map(o=>o.id)); d.ty=mode([...d.used,...d.asg].map(o=>(o.ty+' '+o.sz).trim())); d._n=N(d.dn); });
-  DR=D; $('sub').textContent=`Ust-Luga GPP · E&I · ${DB.n.toLocaleString('ru-RU')} cables · ${Object.keys(D).length.toLocaleString('ru-RU')} drums · ${DB.src} · drums: ${DB.dist}`;
+  DR=D; $('sub').textContent=`${DB.n.toLocaleString('ru-RU')} cables · ${Object.keys(D).length.toLocaleString('ru-RU')} drums · tracker ${(DB.src.match(/\d\d\.\d\d\.\d{4}/)||[DB.date])[0]}`; $('sub').title=DB.src+' · drums: '+DB.dist;
 }
 window.addEventListener('hashchange',route);
 let qt; $('q').addEventListener('input',()=>{clearTimeout(qt);qt=setTimeout(()=>{const v=$('q').value.trim(); if(v.length>=2) location.hash='#/s/'+enc(v); else if(!v) location.hash='#/';},250);});
