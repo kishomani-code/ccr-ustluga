@@ -43,7 +43,7 @@ select{max-width:100%}
 </head>
 <body>
 <header><div class="hr"><img src="../icon-192.png" alt=""><div class="tt"><b>GPP Cable Tracker</b><span id="sub">Ust-Luga GPP · E&amp;I · loading…</span></div>
-<nav class="nv"><a href="#/" id="n-h">Overview</a><a href="#/c" id="n-c">Cables</a><a href="#/d" id="n-d">Drums</a><a href="#/x" id="n-x">Shortage</a></nav></div>
+<nav class="nv"><a href="#/" id="n-h">Overview</a><a href="#/c" id="n-c">Cables</a><a href="#/d" id="n-d">Drums</a><a href="#/x" id="n-x">Shortage</a><a href="#/n" id="n-n">Alert ⚠</a></nav></div>
 <div class="sb"><input id="q" placeholder="Search cable tag, drum (GMR…), panel / JB, title, ident, MRF…" autocomplete="off"></div></header>
 <main id="m"><div id="load"><div class="spin"></div>Loading cable tracker (about 1 MB)…</div></main>
 <script>
@@ -71,9 +71,9 @@ function build(){ const c=DB.cols,dt=DB.dict,n=DB.n;
 }
 window.addEventListener('hashchange',route);
 let qt; $('q').addEventListener('input',()=>{clearTimeout(qt);qt=setTimeout(()=>{const v=$('q').value.trim(); if(v.length>=2) location.hash='#/s/'+enc(v); else if(!v) location.hash='#/';},250);});
-function nav(k){['h','c','d','x'].forEach(x=>$('n-'+x).classList.toggle('on',x===k));}
+function nav(k){['h','c','d','x','n'].forEach(x=>$('n-'+x).classList.toggle('on',x===k));}
 function route(){ if(!DB)return; const h=location.hash.replace(/^#\//,''); const [k,...r]=h.split('/'); const a=dec(r.join('/')); window.scrollTo(0,0);
-  if(k==='c'&&a) return cable(a); if(k==='c') return cables(); if(k==='d'&&a) return drum(a); if(k==='d') return drums(); if(k==='x') return shortage(); if(k==='s') return search(a); if(k==='t') {VS.c.tit=a;return cables();} return home(); }
+  if(k==='c'&&a) return cable(a); if(k==='c') return cables(); if(k==='d'&&a) return drum(a); if(k==='d') return drums(); if(k==='x') return shortage(); if(k==='n') return nodrum(); if(k==='s') return search(a); if(k==='t') {VS.c.tit=a;return cables();} return home(); }
 const st=o=>o.del?'<span class="pill">other project / deleted</span>':o.hold?'<span class="pill bad">HOLD</span>':o.pulled?'<span class="pill ok">Pulled</span>':'<span class="pill warn">Remaining</span>';
 const tst=o=>o.term?'<span class="pill ok">Terminated</span>':(o.tf||o.tt)?'<span class="pill warn">1 end</span>':'<span class="pill">Not terminated</span>';
 function home(){ nav('h'); const L=C.filter(o=>!o.del); const T={};
@@ -140,7 +140,7 @@ function drums(){ nav('d'); const v=VS.d; v.q=v.q||''; v.id=v.id||''; v.tit=v.ti
   ${L.length>v.lim?`<div style="text-align:center;margin-top:10px"><button class="sec" onclick="VS.d.lim+=500;drums()">Show more</button></div>`:''}`; drums.L=L; }
 function dcsv(L){ const s='﻿Drum;Cable type;Ident;Drum m;Pulled m;Free m;Needed m;Remaining cables;Spare after cables m;Taken by\n'+L.map(d=>[d.dn,d.ty,d.id,d.len,d.pm,d.free,d.need,d.rem.length,spare(d),d.tk].map(x=>'"'+String(x??'').replace(/"/g,'""')+'"').join(';')).join('\n');
   const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([s],{type:'text/csv'})); a.download='drums.csv'; a.click(); }
-function optTable(list,needM){ if(!list.length) return '<div class="card" style="border-color:#f3c1bb">No other drum of the same cable type has enough spare length – request a new drum / MRF from the warehouse.</div>';
+function optTable(list,needM){ if(!list.length) return '<div class="card" style="border-color:#f3c1bb">No other drum of the same cable type has enough spare length – request a new drum / MRF from the warehouse. <a class="lnk" href="#/n">Open No-drum alert ▸</a></div>';
   return `<div class="tw"><table><thead><tr><th>Option</th><th>Drum</th><th class="n">Free m</th><th class="n">Own remaining cables m</th><th class="n">Spare m</th><th class="n">Left after these cables m</th><th class="hide-m">Taken by</th></tr></thead><tbody>
   ${list.map((x,i)=>`<tr class="click" onclick="location.hash='#/d/${enc(x.dn)}'"><td><b>Option ${i+1}</b></td><td><a class="lnk">${esc(x.dn)}</a></td><td class="n">${fm(x.free)}</td><td class="n">${fm(x.need)}</td><td class="n">${fm(spare(x))}</td><td class="n">${fm(spare(x)-needM)}</td><td class="hide-m">${esc(x.tk)}</td></tr>`).join('')}</tbody></table></div>`; }
 function drum(dn){ nav('d'); const d=DR[dn]; if(!d){M().innerHTML='<div class="card">Drum not found in the cable tracker</div>';return;}
@@ -173,8 +173,49 @@ function shortage(){ nav('x'); const S=Object.values(DR).filter(d=>d.short&&d.re
   <div class="bar" style="margin-top:8px"><select onchange="VS.x.tit=this.value;shortage()"><option value="">All titles</option>${tits.map(t=>`<option ${t===v.tit?'selected':''}>${esc(t)}</option>`).join('')}</select>
   <select onchange="VS.x.co=this.value;shortage()">${[['RHI','RHI cables'],['','All companies']].map(([a,b])=>`<option value="${a}" ${v.co===a?'selected':''}>${b}</option>`).join('')}</select><span class="sp"></span><span class="mut small">${R.length} cables · ${fm(R.reduce((s,r)=>s+(Number(r.o.ln)||0),0))} m</span></div>
   <div class="tw"><table><thead><tr><th>Cable</th><th class="hide-m">Title</th><th class="n">m</th><th>Assigned drum</th><th>Option 1</th><th>Option 2</th><th>Option 3</th></tr></thead><tbody>
-  ${R.slice(0,600).map(r=>{const A=alts(r.d,Number(r.o.ln)||0); const c=i=>A[i]?`<a class="lnk" href="#/d/${enc(A[i].dn)}">${esc(A[i].dn)}</a><div class="small mut">spare ${fm(spare(A[i]))} m</div>`:(i?'':'<span class="pill bad">no drum – MRF</span>');
+  ${R.slice(0,600).map(r=>{const A=alts(r.d,Number(r.o.ln)||0); const c=i=>A[i]?`<a class="lnk" href="#/d/${enc(A[i].dn)}">${esc(A[i].dn)}</a><div class="small mut">spare ${fm(spare(A[i]))} m</div>`:(i?'':'<a href="#/n" class="pill bad">no drum – alert ▸</a>');
     return `<tr><td><a class="lnk" href="#/c/${enc(r.o.t)}">${esc(r.o.t)}</a></td><td class="hide-m">${esc(r.o.tit)}</td><td class="n">${fm(r.o.ln)}</td><td><a class="lnk" href="#/d/${enc(r.d.dn)}">${esc(r.d.dn)}</a><div class="small mut">${fm(r.d.need-r.d.free)} m short</div></td><td>${c(0)}</td><td>${c(1)}</td><td>${c(2)}</td></tr>`;}).join('')}</tbody></table></div>`; }
+
+// ---------- No-drum alert: shortage cables with no replacement drum → mail to Paul / client + field check
+function noDrumRows(){ const R=[]; Object.values(DR).forEach(d=>{ if(!d.rem.length) return;
+  if(d.free==null){ d.rem.forEach(o=>{ if(!alts(d,Number(o.ln)||0,1).length) R.push({o,d,why:'Drum length unknown'}); }); return; }
+  if(!d.short) return; fitPlan(d).out.forEach(o=>{ if(!alts(d,Number(o.ln)||0,1).length) R.push({o,d,why:fm(d.need-d.free)+' m short'}); }); }); return R; }
+let FC={}; try{FC=JSON.parse(localStorage.getItem('gpp-fc')||'{}')}catch(e){}
+function fcSet(t,k,v){ FC[t]=FC[t]||{}; FC[t][k]=v; try{localStorage.setItem('gpp-fc',JSON.stringify(FC))}catch(e){} }
+function ndList(){ const v=VS.n; return noDrumRows().filter(r=>(!v.co||r.o.co===v.co)&&(!v.tit||r.o.tit===v.tit)); }
+function ndMail(who){ const R=ndList(); const by={}; R.forEach(r=>{(by[r.d.ty||r.d.id]=by[r.d.ty||r.d.id]||[]).push(r)});
+  const tot=R.reduce((s,r)=>s+(Number(r.o.ln)||0),0); let b='';
+  if(who==='paul') b=`Hi Paul,\n\nFor the cables below there is not enough length on the assigned drum, and no other drum of the same cable type with enough spare length is shown in the latest cable tracker.\nPlease check with the warehouse / client and arrange a new drum (or confirm another drum we can use). We will check these cables in the field in parallel.\n\n`;
+  else b=`Dear Sir / Madam,\n\nDuring cable pulling we found that the drums assigned to the cables below do not have enough length, and there is no other drum of the same cable type available with sufficient length.\nKindly allocate a new drum / additional cable length for these cables, so that we can continue pulling.\n\n`;
+  Object.keys(by).sort().forEach(ty=>{ const L=by[ty]; b+=`${ty} – ${L.length} cable(s), ${fm(L.reduce((s,r)=>s+(Number(r.o.ln)||0),0))} m\n`;
+    L.forEach(r=>b+=`  • ${r.o.t}  (${r.o.tit})  ${fm(r.o.ln)} m – assigned drum ${r.d.dn}, ${r.why}\n`); b+='\n'; });
+  b+=`Total: ${R.length} cables, ${fm(tot)} m.\n\nBest regards,\nRHI (Rencons) E&I`;
+  const sub=who==='paul'?`Cable drums – no replacement drum available (${R.length} cables)`:`Request for cable drum allocation – ${R.length} cables, ${fm(tot)} m`;
+  return {sub,b}; }
+function ndSend(who){ const m=ndMail(who); try{navigator.clipboard.writeText('Subject: '+m.sub+'\n\n'+m.b)}catch(e){}
+  location.href='mailto:?subject='+encodeURIComponent(m.sub)+'&body='+encodeURIComponent(m.b.length>1800?m.b.slice(0,1800)+'\n… (full list copied – paste it here)':m.b); }
+function ndCopy(who){ const m=ndMail(who); const s='Subject: '+m.sub+'\n\n'+m.b; (navigator.clipboard?navigator.clipboard.writeText(s):Promise.reject()).then(()=>alertBox('Mail text copied – paste into Outlook / mail.')).catch(()=>{ $('ndtxt').value=s; $('ndtxt').style.display='block'; $('ndtxt').select(); }); }
+function alertBox(t){ const e=$('ndmsg'); if(e){e.textContent=t; setTimeout(()=>e.textContent='',4000);} }
+function ndCsv(){ const R=ndList(); const s='﻿Cable;Title;Type;Ident;Design m;Assigned drum;Issue;From;To;Pulled in field?;Measured m;Site comment\n'+R.map(r=>{const f=FC[r.o.t]||{}; return [r.o.t,r.o.tit,r.o.ty,r.o.id,r.o.ln,r.d.dn,r.why,r.o.f,r.o.o,f.p?'Yes':'',f.m||'',f.c||''].map(x=>'"'+String(x??'').replace(/"/g,'""')+'"').join(';')}).join('\n');
+  const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([s],{type:'text/csv'})); a.download='no_drum_field_check.csv'; a.click(); }
+function nodrum(){ nav('n'); const v=VS.n=VS.n||{co:'RHI',tit:''}; const all=noDrumRows(); const tits=[...new Set(all.map(r=>r.o.tit))].filter(Boolean).sort(); const R=ndList();
+  const tot=R.reduce((s,r)=>s+(Number(r.o.ln)||0),0); const done=R.filter(r=>FC[r.o.t]&&FC[r.o.t].p).length;
+  M().innerHTML=`<h2>⚠ No drum available – alert</h2><div class="mut small">Remaining cables that do not fit on their assigned drum and have <b>no replacement drum</b> of the same cable type with enough spare length (Option 1–3 empty). Send the alert to Paul / the client and check these cables in the field.</div>
+  <div class="kpis"><div class="kpi bad"><b>${R.length}</b><span>cables without drum</span></div><div class="kpi bad"><b>${fm(tot)}</b><span>metres to request</span></div><div class="kpi"><b>${new Set(R.map(r=>r.d.dn)).size}</b><span>drums affected</span></div><div class="kpi ${done?'ok':''}"><b>${done} / ${R.length}</b><span>found pulled in field check</span></div></div>
+  <div class="card"><div class="bar" style="margin:0"><select onchange="VS.n.tit=this.value;nodrum()"><option value="">All titles</option>${tits.map(t=>`<option ${t===v.tit?'selected':''}>${esc(t)}</option>`).join('')}</select>
+   <select onchange="VS.n.co=this.value;nodrum()">${[['RHI','RHI cables'],['','All companies']].map(([a,b])=>`<option value="${a}" ${v.co===a?'selected':''}>${b}</option>`).join('')}</select></div>
+   <div class="bar" style="margin:10px 0 0"><button onclick="ndSend('paul')">✉ Alert mail to Paul</button><button class="sec" onclick="ndCopy('paul')">Copy text</button>
+   <button onclick="ndSend('client')">✉ Mail to client</button><button class="sec" onclick="ndCopy('client')">Copy text</button>
+   <button class="sec" onclick="ndCsv()">⬇ Field check list (CSV)</button><span id="ndmsg" class="small" style="color:var(--ok)"></span></div>
+   <textarea id="ndtxt" style="display:none;width:100%;height:160px;margin-top:8px;font:12px monospace"></textarea></div>
+  <div class="grp">Field check – tick if the cable is already pulled on site, write measured metres / comment (saved on this phone)</div>
+  <div class="tw"><table><thead><tr><th>Cable</th><th class="hide-m">Title</th><th class="hide-m">Type</th><th class="n">m</th><th>Assigned drum</th><th class="hide-m">From → To</th><th>Pulled?</th><th>Measured m</th><th>Site comment</th></tr></thead><tbody>
+  ${R.map(r=>{const f=FC[r.o.t]||{}; const t=esc(r.o.t).replace(/'/g,"\\'"); return `<tr><td><a class="lnk" href="#/c/${enc(r.o.t)}">${esc(r.o.t)}</a></td><td class="hide-m">${esc(r.o.tit)}</td><td class="hide-m">${esc(r.o.ty)}</td><td class="n">${fm(r.o.ln)}</td>
+   <td><a class="lnk" href="#/d/${enc(r.d.dn)}">${esc(r.d.dn)}</a><div class="small mut">${esc(r.why)}</div></td><td class="hide-m small">${esc(r.o.f)} → ${esc(r.o.o)}</td>
+   <td style="text-align:center"><input type="checkbox" ${f.p?'checked':''} onchange="fcSet('${t}','p',this.checked)" style="width:20px;height:20px"></td>
+   <td><input value="${esc(f.m||'')}" inputmode="decimal" style="width:70px;font:inherit;padding:4px;border:1px solid var(--line);border-radius:4px" onchange="fcSet('${t}','m',this.value)"></td>
+   <td><input value="${esc(f.c||'')}" style="min-width:140px;font:inherit;padding:4px;border:1px solid var(--line);border-radius:4px" onchange="fcSet('${t}','c',this.value)"></td></tr>`;}).join('')}</tbody></table></div>
+  <div class="small mut" style="margin-top:8px">Check on site before requesting: is the cable already pulled (tracker not yet updated)? Is a drum of this type lying on site but not booked in the tracker? Measure the actual route length.</div>`; }
 
 function search(q){ nav(''); const n=N(q); if(!n){home();return;}
   const ds=Object.values(DR).filter(d=>d._n.includes(n)).slice(0,30);
