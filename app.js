@@ -210,7 +210,7 @@ function paintHome() {
   let i = 0;
   main.querySelectorAll('.sect').forEach(h => {
     const c = 'c' + (i++ % 8); h.classList.add(c);
-    let n = h.nextElementSibling; while (n && !n.classList.contains('sect')) { n.classList.add(c); n = n.nextElementSibling; }
+    let n = h.nextElementSibling; while (n && !n.classList.contains('sect')) { n.classList.add(c); if (n.classList.contains('grid')) n.classList.add('hs'); n = n.nextElementSibling; }
   });
 }
 function actView(g) {

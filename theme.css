@@ -39,3 +39,9 @@ select,.fin{border-radius:12px;border:1px solid var(--line);padding:12px;box-sha
 .c3{--ac:#7c3aed;--ac2:#6d28d9}.c4{--ac:#e11d48;--ac2:#be123c}.c5{--ac:#16a34a;--ac2:#15803d}
 .c6{--ac:#0891b2;--ac2:#0e7490}.c7{--ac:#475569;--ac2:#334155}
 @media (prefers-reduced-motion:reduce){.tile{transition:none}}
+
+/* home: each section is one swipeable line (left-right / right-left) */
+.grid.hs{display:flex;gap:11px;overflow-x:auto;scroll-snap-type:x proximity;scroll-padding:0 12px;-webkit-overflow-scrolling:touch;padding:2px 2px 12px;margin:0 -12px;padding-left:12px;padding-right:12px;scrollbar-width:none}
+.grid.hs::-webkit-scrollbar{display:none}
+.grid.hs>.tile{flex:0 0 66%;max-width:250px;min-width:150px;scroll-snap-align:start}
+@media(min-width:700px){.grid.hs{flex-wrap:wrap;overflow:visible;margin:0;padding:0}.grid.hs>.tile{flex:1 1 200px;max-width:none}}
