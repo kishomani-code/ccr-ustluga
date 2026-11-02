@@ -187,7 +187,7 @@ def build_master(rows):
             continue
         names.setdefault(a, S(col(r, 2)))
         resp = S(col(r, 22))
-        if not re.search(r'РХИ|RHI|Rencons', resp, re.I):
+        if not re.search(r'РХИ|RHI|Rencons', resp, re.I) or re.search(r'ВЕНТИЛЯЦ|Технолог|Трубопров|Динамич|Статич|^ТХ$', S(col(r, 8)), re.I):
             continue
         o = {'no': no.replace('.0', ''), 'tag': S(col(r, 9)), 'tagd': S(col(r, 10))[:80], 'disc': S(col(r, 8))[:60],
              'sub': S(col(r, 5)), 'den': (S(col(r, 12)) + (' ' + S(col(r, 13)) if S(col(r, 13)) not in ('', '-') else ''))[:300],
@@ -203,7 +203,7 @@ def build_rhi(rows):
     by_area = {}
     for r in rows[1:]:
         no, a = S(col(r, 0)), area_key(col(r, 1))
-        if not no or not a:
+        if not no or not a or S(col(r, 3)) not in ('EL', 'IN', 'TE', 'FA'):
             continue
         o = {'no': 'RHI-' + no.replace('.0', ''), 'tag': S(col(r, 6)), 'tagd': S(col(r, 7))[:80], 'disc': S(col(r, 3)),
              'sub': S(col(r, 2)), 'den': S(col(r, 9))[:300], 'cat': S(col(r, 10)), 'st': st_map(col(r, 13)),

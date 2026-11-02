@@ -18,6 +18,7 @@ SITES = {'ccr': (('G0-D1810BX0', 'G0-D1801FX0'), 'D1810|D1801'),
          'd48': (('G0-D4810BX0', 'G0-D4801FX0'), 'D4810|D4801'),
          # cold cables = heat tracing (EH: EOES power supply + AEOG automation) in the areas whose AEOG drawings the user holds
          'cold': (('G0-A10200X0', 'G0-D10250X0', 'G1-A30210X0'), 'A10200|D10250|A30210')}
+NON_EI = re.compile(r'ВЕНТИЛЯЦ|Технолог|Трубопров|Динамич|Статич|^ТХ$', re.I)   # non E&I punch disciplines
 DISC_RX = {'cold': r'-EH-'}          # extra filter on the document number (discipline) for a site
 EH_TXT = re.compile(r'обогрев|heat trac|EOES|AEOG|EGNUC|-EHC|-Th-|-PJB-', re.I)
 
@@ -554,6 +555,9 @@ def build_punch(mrows, rrows, prev):
             continue
         if DISC_RX.get(SITE) and not EH_TXT.search(' '.join(S(col(r, c)) for c in (5, 6, 8, 9, 10, 12, 13, 32))):
             continue
+        # client punch: only RHI responsible and only E&I disciplines (no HVAC / process / piping / mechanical)
+        if not re.search(r'РХИ|RHI|Rencons', S(col(r, 22)), re.I) or NON_EI.search(S(col(r, 8))):
+            continue
         no = acc_s(col(r, 0))
         o = {'no': no, 'tit': tx('tit', (tit + ' ' + S(col(r, 2))).strip() if S(col(r, 2)) else tit + ' '),
              'sys': tx('sys', (S(col(r, 3)) + ' ' + S(col(r, 4))).strip()), 'sub': tx('sub', S(col(r, 5))),
@@ -582,6 +586,8 @@ def build_punch(mrows, rrows, prev):
         if t not in CCR or not S(col(r, 0)):
             continue
         if DISC_RX.get(SITE) and not EH_TXT.search(' '.join(S(col(r, c)) for c in (2, 3, 5, 6, 7, 9))):
+            continue
+        if S(col(r, 3)) not in ('EL', 'IN', 'TE', 'FA'):   # RHI register: E&I disciplines only
             continue
         sub = S(col(r, 2))
         sy, sn = sub_info.get(sub, (tx('sys', ''), tx('subn', '')))
