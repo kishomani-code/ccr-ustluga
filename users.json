@@ -1,0 +1,29 @@
+{
+ "salt": "4160e31c96b22657",
+ "users": [
+  {
+   "n": "Supervisor 1",
+   "h": "3cbb1ba8368140797e21d84f5b03aeb21ecd366845aa9edbfcab7d8637bae238"
+  },
+  {
+   "n": "Supervisor 2",
+   "h": "742fe11ae609b8a850b056c23cfe6a5351a84266a8af2a4752c8321958299fc1"
+  },
+  {
+   "n": "Supervisor 3",
+   "h": "72a6892f79e328ba1440ef9b1d8c74bc254715011f7ee5169e142e06a94434f7"
+  },
+  {
+   "n": "Supervisor 4",
+   "h": "9f6ca9fd4475e991557ea9bacd531344c00446fd72c8308161c8c9d5f3a7dbf3"
+  },
+  {
+   "n": "Supervisor 5",
+   "h": "70af52d17a0354cf5eec7f27eff194e1b4367ca25ef5424113b37dd9879d3451"
+  },
+  {
+   "n": "Owner",
+   "h": "459dd89837453a88d4d285836c7e0e99bac053571a7a5ad7be25fc4219856ff3"
+  }
+ ]
+}

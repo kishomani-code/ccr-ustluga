@@ -151,6 +151,7 @@ function route() {
   if (k === 'dg') return regHome();
   if (k === 'dp') return progHome();
   if (k === 'tp') return S2.owner ? perfView() : home();
+  if (k === 'rb') return rbView();
   if (k === 'ow') return ownerView();
   if (k === 'rv') return a !== '' ? rvView(Number(a)) : rvHome();
   if (k === 'tq') return a ? tqView(a) : tqHome();
@@ -201,7 +202,7 @@ function home() {
    <div class="sect">📑 Documents</div><div class="grid">${T2('#/ctq', '❓ CTQ register<br><span style="font-weight:400;font-size:12px">internal TQs · what is on hold</span>', `${CTQ.filter(ctqOpen).length} open · ${Object.keys(HOLD).length} items on hold`, null, 'main')}${T2('#/dg', '📐 Drawings register', `${RG.length} ${PRJ} docs · 🔎 search by keyword`)}${T2('#/sf', '📋 SF drawings (MTO)', `${SF.length} files · rev & dates`)}${T2('#/rv', '📄 Drawing revisions', `${RV.length} revised · ${RV.reduce((x, r) => x + r.ch.filter(rvDone).length, 0)} after installation`)}</div>
    ${engTiles()}
    <div class="sect">🛠️ Tools</div><div class="grid">${T2('#/nt', '📝 Site notes', `${(S2.notes || []).length} notes`)}</div>
-   <div class="sect">📈 Progress</div><div class="grid">${T2('#/dp', '✍️ Daily progress entry', `${pend} lines not sent`)}${S2.owner ? T2('#/ow', '🔑 Import progress (owner)', `${(S2.rx || []).length} imported lines · total IWP report`, null, 'main') + T2('#/tp', '👷 Technician performance', `${new Set(perfRows().map(r => r.by)).size} technicians`, null, 'main') : ''}${T2('#/pp', '📊 Punch daily progress', 'site updates')}</div>
+   <div class="sect">📈 Progress</div><div class="grid">${T2('#/dp', '✍️ Daily progress entry', `${pend} lines not sent`)}${T2('#/rb', '👤 Reported by', `${new Set(perfRows().filter(r => S2.owner || r.by === (cuName() || PS_.name)).map(r => r.by)).size} people · name & date details`, null, 'main')}${S2.owner ? T2('#/ow', '🔑 Import progress (owner)', `${(S2.rx || []).length} imported lines · total IWP report`, null, 'main') + T2('#/tp', '👷 Technician performance', `${new Set(perfRows().map(r => r.by)).size} technicians`, null, 'main') : ''}${T2('#/pp', '📊 Punch daily progress', 'site updates')}</div>
    <div class="sect">📊 Management</div><button class="tile main" style="width:100%;min-height:auto;margin-bottom:4px;background:linear-gradient(135deg,#4b1d7a,#7b3fb3);border-color:#4b1d7a;color:#fff" onclick="S2.mgr||S2.owner?go('#/mg'):mgrLogin()"><b>📊 Manager dashboard${S2.mgr || S2.owner ? '' : ' 🔒'}</b><span class="n" style="color:#fff">overall % · panel progress table · bottom-10 timeline</span></button>
    <div class="sect">🔑 Owner</div><button class="tile" style="width:100%;min-height:auto;background:#2b2f36;color:#fff;border-color:#2b2f36" onclick="S2.owner?go('#/ow'):ownerLogin()"><b>🔑 Owner menu${S2.owner ? ' – unlocked' : ''}</b><span class="n" style="color:#cfd6df">${S2.owner ? 'Import progress · total IWP report · technician performance' : 'Password required – owner only'}</span></button><button class="tile" style="width:100%;min-height:auto;margin-top:6px;background:#1f6f43;color:#fff;border-color:#1f6f43" onclick="S2.owner?go('#/ra'):ownerLogin()"><b>✅ Client RFI accepted – check${S2.owner ? '' : ' 🔒'}</b><span class="n" style="color:#d7f0e1">report to IWP · RHI punch to close · Excel</span></button>
    <div class="foot">${esc(D.meta.src)}<br>Updates automatically when the phone is online.<br>App version ${APPV}</div>`;
@@ -723,7 +724,7 @@ function ownPunch() { const d = VS.OW.d; const one = {}; (S2.rx || []).filter(r 
   copyText(Object.values(one).map(r => [r.no, r.v === 'F' ? 'Fixed' : 'Not fixed', d.split('-').reverse().join('.'), r.tag, r.by].join('\t')).join('\n')).then(() => toast('Punch list copied')); }
 
 // ======== v3.2 modules ========
-const APPV = '4.10';
+const APPV = '4.11';
 const shortT = t => String(t || '').replace(/^G0-D(18|48)10BX0-/, '').replace(/^G0-D(18|48)01FX0-/, 'FX0-');
 const SYSN = {'EL-ESPS': ['Substation 10/0.4 kV & power supply', 'Подстанция 10/0,4 кВ'], 'EL-EMSV': ['Power installation (boards, UPS, motors)', 'Силовое электрооборудование'], 'EL-ESBZ': ['Power supply from utility substation', 'Электроснабжение от ПС'], 'EL-ELOV': ['Indoor lighting', 'Внутреннее освещение'], 'EL-EG02': ['Earthing & lightning protection', 'Заземление и молниезащита'], 'EL-EG01': ['Area earthing', 'Заземление площадки'], 'EH-EOES': ['Electric heating', 'Электрообогрев'], 'EH-AEOG': ['Heat tracing', 'Электрообогрев (кабель)'], 'EH-EOBK': ['Electric heating (other)', 'Электрообогрев'],
   'IN-DCS': ['Distributed Control System (DCS)', 'РСУ'], 'IN-ESD': ['Emergency Shutdown (ESD)', 'ПАЗ'], 'IN-SPAP': ['Fire alarm & fire fighting control (AFA&FFS)', 'АСПС и ПТ'], 'IN-GDSS': ['Gas detection', 'Контроль загазованности'], 'IN-ASUE': ['Utilities control system', 'АСУ ЭО (утилиты)'], 'IN-ASUS': ['Power supply control system', 'АСУ ЭС'], 'IN-ASKU': ['Utility metering (AUMS)', 'АСКУ ЭР'], 'IN-MAEC': ['Rotating equipment monitoring (CMS)', 'МСО и ВО'], 'IN-MFMS': ['Material flow metering (MFMS)', 'СУМП'], 'IN-AKVS': ['Emission monitoring (CEMS)', 'АКВС'], 'IN-INTS': ['Operator training simulator', 'Тренажёр оператора'], 'IN-INSS': ['Information security', 'СОИБ'], 'IN-AOVK': ['HVAC automation', 'Автоматизация ОВиК'], 'IN-AKMP': ['Analyzer system', 'Анализаторы'],
@@ -1487,3 +1488,54 @@ route = function () {
   if (same && y) { window.scrollTo(0, y); requestAnimationFrame(function () { window.scrollTo(0, y); }); }
   return r;
 };
+
+// ===== v4.11: personal 4-digit login code (asked once per session) + "Reported by" menu
+const CU_KEY = 'ccr_user_session';
+function cuName() { try { return sessionStorage.getItem(CU_KEY) || ''; } catch (e) { return ''; } }
+async function cuHash(salt, code) { const b = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(salt + code)); return [...new Uint8Array(b)].map(x => x.toString(16).padStart(2, '0')).join(''); }
+async function cuUsers() { try { const r = await fetch('users.json?t=' + Date.now(), {cache: 'no-store'}); if (r.ok) return await r.json(); } catch (e) {} try { const r = await caches.match('users.json', {ignoreSearch: true}); if (r) return await r.json(); } catch (e) {} return null; }
+function cuLogout() { try { sessionStorage.removeItem(CU_KEY); } catch (e) {} location.reload(); }
+function cuShow(msg) {
+  let o = document.getElementById('cuo'); if (!o) { o = document.createElement('div'); o.id = 'cuo'; document.body.appendChild(o); }
+  o.innerHTML = `<div style="position:fixed;inset:0;background:#023362;z-index:99999;display:flex;align-items:center;justify-content:center;padding:20px"><div style="background:#fff;border-radius:16px;padding:22px;width:100%;max-width:340px;text-align:center">
+   <div style="font-size:34px">🔐</div><div style="font-size:18px;font-weight:700;margin:6px 0">Enter your personal code</div><div style="font-size:13px;color:#667;margin-bottom:12px">Введите ваш личный код (4 цифры)</div>
+   <input id="cuin" type="password" inputmode="numeric" maxlength="4" autocomplete="off" style="font-size:30px;letter-spacing:12px;text-align:center;width:100%;padding:10px;border:2px solid #023362;border-radius:12px" oninput="if(this.value.length===4)cuTry(this.value)">
+   <div id="cum" style="color:#b42318;font-size:14px;min-height:20px;margin-top:8px">${msg || ''}</div></div></div>`;
+  setTimeout(() => { const i = document.getElementById('cuin'); if (i) i.focus(); }, 100);
+}
+async function cuTry(code) {
+  const U = await cuUsers(); if (!U) return cuShow('Cannot load the user list – open once with internet / Нет списка – откройте с интернетом');
+  const h = await cuHash(U.salt, code); const u = (U.users || []).find(x => x.h === h);
+  if (!u) return cuShow('Wrong code / Неверный код');
+  try { sessionStorage.setItem(CU_KEY, u.n); } catch (e) {}
+  PS_.name = u.n; psave(); const o = document.getElementById('cuo'); if (o) o.remove(); route();
+}
+function cuInit() { const n = cuName(); if (n) { PS_.name = n; return; } cuShow(''); }
+// the name is fixed by the login – no typing a name
+askPName = function (after) { const n = cuName(); modalP(`<div class="h3">👷 ${esc(n || PS_.name || 'Not logged in')}</div><div style="font-size:13px;color:var(--mut);margin-bottom:10px">Your name comes from your personal code. Reports are signed with it.</div><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><button class="tile" style="min-height:auto" onclick="closeP();${after || ''}">OK</button><button class="tile" style="min-height:auto" onclick="cuLogout()"><b>Log out</b></button></div>`); };
+
+// ----- Reported by: who reported what, by name and date
+function rbView() {
+  VS.RB = VS.RB || {who: '', p: 'a', d: ''}; const v = VS.RB; const today = dkey(Date.now()); const me = cuName() || PS_.name;
+  let R = perfRows().filter(r => r.d); if (!S2.owner) R = R.filter(r => r.by === me);
+  const from = v.p === '1' ? today : v.p === '7' ? dkey(Date.now() - 6 * 864e5) : v.p === '30' ? dkey(Date.now() - 29 * 864e5) : '';
+  const inP = r => v.d ? r.d === v.d : (!from || r.d >= from);
+  const RP = R.filter(inP); const W = {};
+  RP.forEach(r => { const w = W[r.by || '–'] = W[r.by || '–'] || {n: r.by || '–', prog: 0, punch: 0, days: new Set(), last: ''}; r.k === 'punch' ? w.punch++ : w.prog++; w.days.add(r.d); if (r.d > w.last) w.last = r.d; });
+  const names = Object.values(W).sort((a, b) => (b.prog + b.punch) - (a.prog + a.punch));
+  const sel = v.who && W[v.who] ? v.who : ''; const L = RP.filter(r => !sel || (r.by || '–') === sel).sort((a, b) => b.d.localeCompare(a.d) || (a.by || '').localeCompare(b.by || ''));
+  setHead('Reported by', `${names.length} people · ${RP.length} lines`);
+  const dd = d => d.split('-').reverse().join('.'); const q = s => String(s).replace(/'/g, "\\'");
+  const lineHtml = r => { const lk = r.k === 'punch' ? '' : lineLink({tag: r.tag, acc: r.acc}); const body = r.k === 'punch' ? `<div class="t">Punch ${esc(r.no || '')} · ${esc(r.tag || '')}</div><div class="s">${r.v === 'F' ? '✅ Fixed' : '❌ Not fixed'}</div>` : `<div class="t">${esc(r.acc || '–')} · ${esc(r.tag || '')}</div><div class="s">${esc(r.a || '')}</div>`;
+    const qty = r.k === 'punch' ? '' : (r.q ? fmtn(r.q) : ''); const inner = `<div class="m">${body}</div><div class="r"><b>${qty}</b></div>${lk ? '<span class="chev">›</span>' : ''}`; return lk ? `<button class="li" onclick="go('${lk}')">${inner}</button>` : `<div class="li">${inner}</div>`; };
+  let det = ''; if (!L.length) det = '<div class="empty">No reports for this filter</div>'; else {
+    const grp = {}; L.slice(0, 400).forEach(r => { const k = sel ? r.d : (r.by || '–'); (grp[k] = grp[k] || []).push(r); });
+    det = Object.entries(grp).map(([k, rs]) => { const head = sel ? dd(k) : esc(k); let sub = '';
+      if (!sel) { const byd = {}; rs.forEach(r => (byd[r.d] = byd[r.d] || []).push(r)); sub = Object.entries(byd).sort((a, b) => b[0].localeCompare(a[0])).map(([d, x]) => `<div class="gh" style="font-size:12px">${dd(d)} · ${x.length}</div>` + x.map(lineHtml).join('')).join(''); } else sub = rs.map(lineHtml).join('');
+      return `<div class="gh">${head} · ${rs.length}</div><div class="list">${sub}</div>`; }).join(''); }
+  main.innerHTML = `<div class="chips">${[['1', 'Today'], ['7', '7 days'], ['30', '30 days'], ['a', 'All']].map(([k, l]) => `<button class="chip ${!v.d && v.p === k ? 'on' : ''}" onclick="VS.RB.p='${k}';VS.RB.d='';rbView()">${l}</button>`).join('')}<input type="date" class="chip" value="${v.d}" onchange="VS.RB.d=this.value;rbView()" style="padding:6px"><button class="chip" onclick="exportPerf()">⬇ CSV</button></div>
+   <div class="sect">Reported by (tap a name)</div><div class="chips"><button class="chip ${sel ? '' : 'on'}" onclick="VS.RB.who='';rbView()">All (${RP.length})</button>${names.map(w => `<button class="chip ${sel === w.n ? 'on' : ''}" onclick="VS.RB.who=VS.RB.who==='${q(esc(w.n))}'?'':'${q(esc(w.n))}';rbView()">${esc(w.n)} · ${w.prog + w.punch}</button>`).join('')}</div>
+   ${names.length ? `<div class="list">${names.map(w => `<div class="li"><div class="m"><div class="t">${esc(w.n)}</div><div class="s">${w.days.size} day(s) · last ${dd(w.last)}</div></div><div class="r"><b>${w.prog + w.punch}</b><div>${w.prog} progress · ${w.punch} punch</div></div></div>`).join('')}</div>` : ''}
+   <div class="sect">${sel ? esc(sel) + ' – by date' : 'Details by person and date'}</div>${det}`; }
+
+cuInit();
