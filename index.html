@@ -114,10 +114,16 @@ window.onerror=function(m,u,l){var e=document.getElementById('main');if(e)e.inne
    return get(BF).then(function(b){if(!ok(b))throw BF+' has wrong format';b.__fb={date:(d&&d.meta&&d.meta.date)||'?',ver:(d&&d.meta&&d.meta.ver)||''};return b;});})
  .catch(function(e){if(t)t.textContent=LTX('Loading last good data...','Загрузка последних рабочих данных...');return get(BF).then(function(b){if(!ok(b))throw e;b.__fb={date:'?',ver:'',err:String(e)};return b;});})
  .then(eng).then(function(d){if(t)t.textContent=LTX('Preparing your app...','Подготовка приложения...');start(d);}).catch(function(e){fail(e);});}
+ // v4.9: on every open, try the newest data first (3 s wait). No internet / slow = saved copy at once.
+ function newest(){return Promise.race([net(DF).then(function(d){return ok(d)?d:null;}),new Promise(function(r){setTimeout(function(){r(null);},3000);})]).catch(function(){return null;});}
  cget(DF).then(function(cd){
    if(!ok(cd))return online();
-   if(t)t.textContent=LTX('Opening saved data...','Открываю сохранённые данные...');
-   return cget(EF).then(function(ce){window.__E=ce||{};start(cd);bg(cd);});
+   if(t)t.textContent=LTX('Checking for new data...','Проверка новых данных...');
+   return newest().then(function(nd){
+     if(nd){return net(EF).catch(function(){return cget(EF);}).then(function(e){window.__E=e||{};start(nd);});}
+     if(t)t.textContent=LTX('Opening saved data...','Открываю сохранённые данные...');
+     return cget(EF).then(function(ce){window.__E=ce||{};start(cd);bg(cd);});
+   });
  }).catch(function(){online();});})();
 </script>
 </body>
