@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Vatti Tracker</title>
+<style>
+:root{--bg:#f6f7f9;--card:#fff;--tx:#1b1f24;--mu:#667;--bd:#dde1e6;--ac:#0b6e6e;--red:#c0392b;--amb:#b7791f;--grn:#2f855a}
+@media(prefers-color-scheme:dark){:root{--bg:#14171a;--card:#1d2226;--tx:#e8eaed;--mu:#9aa3ad;--bd:#2c343b;--ac:#3cb4b4;--red:#ff7b6b;--amb:#e8b44f;--grn:#5fcf94}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--tx);font:15px system-ui,sans-serif}
+.w{max-width:900px;margin:0 auto;padding:16px}
+h1{font-size:20px;margin:0 0 12px}
+.tot{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px}
+.tot div{background:var(--card);border:1px solid var(--bd);border-radius:8px;padding:8px 14px}
+.tot b{display:block;font-size:19px}
+.bar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+button,input,select{font:inherit;padding:7px 10px;border:1px solid var(--bd);border-radius:6px;background:var(--card);color:var(--tx)}
+button{cursor:pointer}button.p{background:var(--ac);color:#fff;border-color:var(--ac)}
+table{width:100%;border-collapse:collapse;background:var(--card);border:1px solid var(--bd)}
+th,td{padding:8px;border-bottom:1px solid var(--bd);text-align:left}th{font-size:12px;color:var(--mu);text-transform:uppercase}
+td.n,th.n{text-align:right;font-variant-numeric:tabular-nums}
+.due{font-weight:600}.d0{color:var(--red)}.d1{color:var(--amb)}.ok{color:var(--grn)}
+.sm{padding:3px 8px;font-size:13px}
+.msg{background:var(--card);border-left:4px solid var(--red);padding:10px 12px;margin-bottom:12px;border-radius:4px;display:none}
+dialog{border:1px solid var(--bd);border-radius:10px;background:var(--card);color:var(--tx);max-width:340px;width:92%}
+dialog label{display:block;margin:8px 0 2px;font-size:13px;color:var(--mu)}dialog input{width:100%}
+.hint{color:var(--mu);font-size:13px;margin-top:12px}
+</style></head><body><div class="w">
+<h1>Vatti Tracker</h1>
+<div class="msg" id="msg"></div>
+<div class="tot"><div>Total debt<b id="td">0</b></div><div>Monthly vatti<b id="tv">0</b></div><div>Paid this month<b id="tp">0</b></div><div>Still to collect<b id="tr">0</b></div></div>
+<div class="bar">
+<button class="p" onclick="edit(-1)">+ Add</button>
+<button onclick="notif()">🔔 Enable alerts</button>
+<button onclick="ics()">📅 Calendar reminders (.ics)</button>
+<button onclick="exp()">Export</button>
+<button onclick="document.getElementById('imp').click()">Import</button>
+<input type="file" id="imp" accept=".json" hidden>
+</div>
+<table><thead><tr><th>Name</th><th class="n">Debt</th><th class="n">Vatti</th><th>Day</th><th>Next due</th><th></th></tr></thead><tbody id="tb"></tbody></table>
+<p class="hint">Data is kept only in this browser (nothing is uploaded). Alerts show when the page is open; for alerts while closed, add the calendar reminders to your phone calendar.</p>
+</div>
+<dialog id="dlg"><form method="dialog" id="f">
+<label>Name</label><input id="fn" required>
+<label>Start date</label><input id="fd" type="date">
+<label>Debt</label><input id="fb" type="number" required>
+<label>Monthly vatti</label><input id="fv" type="number" required>
+<label>Vatti day of month (1-31)</label><input id="fy" type="number" min="1" max="31" required>
+<label>Remind days before</label><input id="fr" type="number" min="0" max="10" value="1">
+<p><button class="p" value="ok">Save</button> <button value="x" formnovalidate>Cancel</button></p>
+</form></dialog>
+<script>
+const K='vatti-data-v1';let D=[],cur=-1;
+const $=i=>document.getElementById(i);
+const fm=n=>'Rs. '+Number(n).toLocaleString('en-IN');
+function load(){try{D=JSON.parse(localStorage.getItem(K))||[]}catch(e){D=[]}}
+function save(){try{localStorage.setItem(K,JSON.stringify(D))}catch(e){}}
+function ym(d){return d.getFullYear()*12+d.getMonth()}
+function dueIn(y,m,day){const last=new Date(y,m+1,0).getDate();return new Date(y,m,Math.min(day,last))}
+function nextDue(r){const t=new Date();t.setHours(0,0,0,0);
+ let d=dueIn(t.getFullYear(),t.getMonth(),r.day);
+ const paid=r.paid===ym(t);
+ if(d<t||(paid&&d.getTime()===t.getTime()))d=dueIn(t.getFullYear(),t.getMonth()+1,r.day);
+ if(paid&&d.getMonth()===t.getMonth())d=dueIn(t.getFullYear(),t.getMonth()+1,r.day);
+ return d}
+function diff(d){const t=new Date();t.setHours(0,0,0,0);return Math.round((d-t)/864e5)}
+function render(){
+ const t=new Date(),cm=ym(t);let td=0,tv=0,tp=0;
+ const rows=D.map((r,i)=>{const n=nextDue(r),df=diff(n);return{r,i,n,df}}).sort((a,b)=>a.df-b.df);
+ const alerts=[];
+ $('tb').innerHTML=rows.map(({r,i,n,df})=>{
+  td+=+r.debt;tv+=+r.vatti;const paid=r.paid===cm;if(paid)tp+=+r.vatti;
+  // overdue: this month's due day passed and not paid
+  const thisDue=dueIn(t.getFullYear(),t.getMonth(),r.day),t0=new Date();t0.setHours(0,0,0,0);
+  const over=!paid&&thisDue<t0;
+  if(over)alerts.push(r.name+' OVERDUE (day '+r.day+') '+fm(r.vatti));
+  else if(!paid&&df<=(r.rem??1))alerts.push(r.name+(df===0?' due TODAY ':' due in '+df+' day(s) ')+fm(r.vatti));
+  const cls=over||df===0?'d0':df<=3?'d1':'';
+  const txt=over?'Overdue ('+thisDue.getDate()+' '+thisDue.toLocaleString('en',{month:'short'})+')':(paid?'Paid ✓ → ':'')+n.toLocaleDateString('en-GB',{day:'2-digit',month:'short'})+(df===0?' (today)':df>0?' (in '+df+'d)':'');
+  return `<tr><td>${esc(r.name)}</td><td class="n">${fm(r.debt)}</td><td class="n">${fm(r.vatti)}</td><td>${r.day}</td><td class="due ${over?'d0':paid?'ok':cls}">${txt}</td>
+  <td style="white-space:nowrap"><button class="sm" onclick="pay(${i})">${paid?'Undo':'Received'}</button> <button class="sm" onclick="edit(${i})">Edit</button> <button class="sm" onclick="del(${i})">✕</button></td></tr>`}).join('');
+ $('td').textContent=fm(td);$('tv').textContent=fm(tv);$('tp').textContent=fm(tp);$('tr').textContent=fm(tv-tp);
+ const m=$('msg');if(alerts.length){m.style.display='block';m.innerHTML='<b>Vatti alerts</b><br>'+alerts.map(esc).join('<br>')}else m.style.display='none';
+ return alerts}
+function esc(s){return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
+function pay(i){const cm=ym(new Date());D[i].paid=D[i].paid===cm?null:cm;save();render()}
+function del(i){if(confirm('Delete '+D[i].name+'?')){D.splice(i,1);save();render()}}
+function edit(i){cur=i;const r=i>=0?D[i]:{name:'',start:'',debt:'',vatti:'',day:'',rem:1};
+ $('fn').value=r.name;$('fd').value=r.start||'';$('fb').value=r.debt;$('fv').value=r.vatti;$('fy').value=r.day;$('fr').value=r.rem??1;$('dlg').showModal()}
+$('f').addEventListener('submit',e=>{if(e.submitter&&e.submitter.value!=='ok')return;
+ const r={name:$('fn').value.trim(),start:$('fd').value,debt:+$('fb').value,vatti:+$('fv').value,day:+$('fy').value,rem:+$('fr').value};
+ if(cur>=0){r.paid=D[cur].paid;D[cur]=r}else D.push(r);save();render()});
+function notif(){if(!('Notification' in window)){alert('Not supported on this browser');return}
+ Notification.requestPermission().then(p=>{if(p==='granted'){new Notification('Vatti Tracker',{body:'Alerts enabled'});check()}else alert('Permission not granted')})}
+function check(){const a=render();if(a.length&&'Notification' in window&&Notification.permission==='granted'){
+ const k='vatti-last-notif',today=new Date().toDateString();let last='';try{last=localStorage.getItem(k)}catch(e){}
+ if(last!==today){new Notification('Vatti due',{body:a.join('\n')});try{localStorage.setItem(k,today)}catch(e){}}}}
+function exp(){const b=new Blob([JSON.stringify(D,null,1)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='vatti-data.json';a.click()}
+$('imp').onchange=e=>{const f=e.target.files[0];if(!f)return;const rd=new FileReader();rd.onload=()=>{try{const j=JSON.parse(rd.result);if(Array.isArray(j)){D=j;save();render()}else alert('Bad file')}catch(x){alert('Bad file')}};rd.readAsText(f)};
+function ics(){const L=['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//VattiTracker//EN'];
+ const p=n=>String(n).padStart(2,'0'),t=new Date();
+ D.forEach((r,i)=>{const d=r.day>28?28:r.day; // monthly repeat; day 29-31 uses last-day rule below
+  const ds=t.getFullYear()+p(t.getMonth()+1)+p(d>28?1:r.day);
+  const rule=r.day>28?'FREQ=MONTHLY;BYMONTHDAY=-1':'FREQ=MONTHLY';
+  L.push('BEGIN:VEVENT','UID:vatti'+i+'-'+Date.now()+'@tracker','DTSTAMP:'+ds+'T000000Z','DTSTART;VALUE=DATE:'+(r.day>28?t.getFullYear()+p(t.getMonth()+1)+p(new Date(t.getFullYear(),t.getMonth()+1,0).getDate()):ds),
+   'RRULE:'+rule,'SUMMARY:Vatti due - '+r.name+' '+fm(r.vatti),'BEGIN:VALARM','TRIGGER:-P'+(r.rem??1)+'D','ACTION:DISPLAY','DESCRIPTION:Vatti '+r.name,'END:VALARM','BEGIN:VALARM','TRIGGER:PT9H','ACTION:DISPLAY','DESCRIPTION:Vatti today '+r.name,'END:VALARM','END:VEVENT')});
+ L.push('END:VCALENDAR');const b=new Blob([L.join('\r\n')],{type:'text/calendar'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='vatti-reminders.ics';a.click()}
+load();check();setInterval(check,3600000);
+</script></body></html>
