@@ -34,6 +34,14 @@ dialog label{display:block;margin:8px 0 2px;font-size:13px;color:var(--mu)}dialo
 <button onclick="document.getElementById('imp').click()">Import</button>
 <input type="file" id="imp" accept=".json" hidden>
 </div>
+<div class="bar">
+<input id="q" placeholder="Search name…" oninput="render()" style="flex:1;min-width:130px">
+<select id="fs" onchange="render()"><option value="">All status</option><option value="over">Overdue</option><option value="soon">Due in 7 days</option><option value="pend">Not yet received this month</option><option value="paid">Received this month</option></select>
+<select id="fp" onchange="render()"><option value="">All people</option></select>
+<select id="so" onchange="render()"><option value="due">Sort: next due</option><option value="debt">Sort: debt (high)</option><option value="vatti">Sort: vatti (high)</option><option value="name">Sort: name</option></select>
+<button onclick="clr()">Clear</button>
+</div>
+<div class="hint" id="cnt" style="margin:0 0 8px"></div>
 <table><thead><tr><th>Name</th><th class="n">Debt</th><th class="n">Vatti</th><th>Day</th><th>Next due</th><th></th></tr></thead><tbody id="tb"></tbody></table>
 <p class="hint">Data is kept only in this browser (nothing is uploaded). Alerts show when the page is open; for alerts while closed, add the calendar reminders to your phone calendar.</p>
 </div>
@@ -63,22 +71,42 @@ function nextDue(r){const t=new Date();t.setHours(0,0,0,0);
 function diff(d){const t=new Date();t.setHours(0,0,0,0);return Math.round((d-t)/864e5)}
 function render(){
  const t=new Date(),cm=ym(t);let td=0,tv=0,tp=0;
- const rows=D.map((r,i)=>{const n=nextDue(r),df=diff(n);return{r,i,n,df}}).sort((a,b)=>a.df-b.df);
+ const all=D.map((r,i)=>{const n=nextDue(r),df=diff(n);return{r,i,n,df}});
  const alerts=[];
+ // alerts always from all rows
+ const t0=new Date();t0.setHours(0,0,0,0);
+ all.forEach(({r,df})=>{const paid=r.paid===cm,td_=dueIn(t.getFullYear(),t.getMonth(),r.day);
+  if(!paid&&td_<t0)alerts.push(r.name+' OVERDUE (day '+r.day+') '+fm(r.vatti));
+  else if(!paid&&df<=(r.rem??1))alerts.push(r.name+(df===0?' due TODAY ':' due in '+df+' day(s) ')+fm(r.vatti))});
+ fillPeople();
+ const q=$('q').value.trim().toLowerCase(),fs=$('fs').value,fp=$('fp').value,so=$('so').value;
+ const st=x=>{const paid=x.r.paid===cm,over=!paid&&dueIn(t.getFullYear(),t.getMonth(),x.r.day)<t0;return{paid,over}};
+ let rows=all.filter(x=>{const s_=st(x);
+  if(q&&!x.r.name.toLowerCase().includes(q))return false;
+  if(fp&&base(x.r.name)!==fp)return false;
+  if(fs==='over'&&!s_.over)return false;
+  if(fs==='soon'&&!(!s_.paid&&x.df<=7))return false;
+  if(fs==='pend'&&s_.paid)return false;
+  if(fs==='paid'&&!s_.paid)return false;return true});
+ rows.sort(so==='debt'?(a,b)=>b.r.debt-a.r.debt:so==='vatti'?(a,b)=>b.r.vatti-a.r.vatti:so==='name'?(a,b)=>a.r.name.localeCompare(b.r.name):(a,b)=>a.df-b.df);
+ $('cnt').textContent=rows.length+' of '+D.length+' shown — debt '+fm(rows.reduce((a,x)=>a+ +x.r.debt,0))+', vatti '+fm(rows.reduce((a,x)=>a+ +x.r.vatti,0));
  $('tb').innerHTML=rows.map(({r,i,n,df})=>{
-  td+=+r.debt;tv+=+r.vatti;const paid=r.paid===cm;if(paid)tp+=+r.vatti;
+  const paid=r.paid===cm;
   // overdue: this month's due day passed and not paid
-  const thisDue=dueIn(t.getFullYear(),t.getMonth(),r.day),t0=new Date();t0.setHours(0,0,0,0);
+  const thisDue=dueIn(t.getFullYear(),t.getMonth(),r.day);
   const over=!paid&&thisDue<t0;
-  if(over)alerts.push(r.name+' OVERDUE (day '+r.day+') '+fm(r.vatti));
-  else if(!paid&&df<=(r.rem??1))alerts.push(r.name+(df===0?' due TODAY ':' due in '+df+' day(s) ')+fm(r.vatti));
   const cls=over||df===0?'d0':df<=3?'d1':'';
   const txt=over?'Overdue ('+thisDue.getDate()+' '+thisDue.toLocaleString('en',{month:'short'})+')':(paid?'Paid ✓ → ':'')+n.toLocaleDateString('en-GB',{day:'2-digit',month:'short'})+(df===0?' (today)':df>0?' (in '+df+'d)':'');
   return `<tr><td>${esc(r.name)}</td><td class="n">${fm(r.debt)}</td><td class="n">${fm(r.vatti)}</td><td>${r.day}</td><td class="due ${over?'d0':paid?'ok':cls}">${txt}</td>
   <td style="white-space:nowrap"><button class="sm" onclick="pay(${i})">${paid?'Undo':'Received'}</button> <button class="sm" onclick="edit(${i})">Edit</button> <button class="sm" onclick="del(${i})">✕</button></td></tr>`}).join('');
+ D.forEach(r=>{td+=+r.debt;tv+=+r.vatti;if(r.paid===cm)tp+=+r.vatti});
  $('td').textContent=fm(td);$('tv').textContent=fm(tv);$('tp').textContent=fm(tp);$('tr').textContent=fm(tv-tp);
  const m=$('msg');if(alerts.length){m.style.display='block';m.innerHTML='<b>Vatti alerts</b><br>'+alerts.map(esc).join('<br>')}else m.style.display='none';
  return alerts}
+function base(n){return n.replace(/\d+$/,'').trim().toLowerCase()}
+function fillPeople(){const sel=$('fp'),cv=sel.value,names=[...new Set(D.map(r=>base(r.name)))].sort();
+ if(sel.options.length-1!==names.length||![...sel.options].slice(1).every((o,i)=>o.value===names[i])){sel.innerHTML='<option value="">All people</option>'+names.map(n=>`<option value="${esc(n)}">${esc(n)}</option>`).join('');sel.value=names.includes(cv)?cv:''}}
+function clr(){$('q').value='';$('fs').value='';$('fp').value='';$('so').value='due';render()}
 function esc(s){return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
 function pay(i){const cm=ym(new Date());D[i].paid=D[i].paid===cm?null:cm;save();render()}
 function del(i){if(confirm('Delete '+D[i].name+'?')){D.splice(i,1);save();render()}}
