@@ -16,6 +16,7 @@ import argparse, datetime, glob, json, os, re, sys, time
 
 SITES = {'ccr': (('G0-D1810BX0', 'G0-D1801FX0'), 'D1810|D1801'),
          'd48': (('G0-D4810BX0', 'G0-D4801FX0'), 'D4810|D4801'),
+         '1801': (('G0-D1801FX0',), 'D1801'),   # v4.21: CCR outdoor area as its own project
          # cold cables = heat tracing (EH: EOES power supply + AEOG automation) in the areas whose AEOG drawings the user holds
          'cold': (('G0-A10200X0', 'G0-D10250X0', 'G1-A30210X0'), 'A10200|D10250|A30210')}
 NON_EI = re.compile(r'ВЕНТИЛЯЦ|Технолог|Трубопров|Динамич|Статич|^ТХ$', re.I)   # non E&I punch disciplines
@@ -753,7 +754,7 @@ def main():
     ap.add_argument('--base', default='data_base.json', help='last good data in the app schema (schema reference)')
     ap.add_argument('--current', default='data.json', help='current data.json; used for carry-forward if valid')
     ap.add_argument('--out', default='data.json')
-    ap.add_argument('--site', default='ccr', choices=sorted(SITES), help='ccr = G0-D1810/D1801, d48 = G0-D4810/D4801, cold = heat tracing (EH) in A10200/D10250/A30210')
+    ap.add_argument('--site', default='ccr', choices=sorted(SITES), help='ccr = G0-D1810/D1801, 1801 = G0-D1801FX0, d48 = G0-D4810/D4801, cold = heat tracing (EH) in A10200/D10250/A30210')
     a = ap.parse_args()
     global SITE, CCR, SITE_RX
     SITE = a.site

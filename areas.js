@@ -19,7 +19,7 @@
   // ---------------- top bar: CCR / D48 / OTHER AREA
   OA.topBar = function (on) { const p = OA.proj();
     const chip = (k, l, h) => `<button class="chip ${(on || p) === k ? 'on' : ''}" data-nt="1" style="flex:1;padding:10px 4px;font-size:14px;font-weight:700" onclick="${h}">${l}</button>`;
-    return `<div><div style="display:flex;gap:6px;margin-bottom:6px">${chip('CCR', '🏢 CCR', p === 'CCR' ? "go('#/')" : "projSwitch('CCR')")}${chip('D48', '⚡ D48', p === 'D48' ? "go('#/')" : "projSwitch('D48')")}</div><div style="display:flex;gap:6px;margin-bottom:9px">${chip('OA', '🌍 OTHER AREA', "go('#/oa')")}${chip('COLD', '❄️ COLD CABLES', p === 'COLD' ? "go('#/')" : "projSwitch('COLD')")}</div></div>`; };
+    return `<div><div style="display:flex;gap:6px;margin-bottom:6px">${chip('CCR', '🏢 CCR', p === 'CCR' ? "go('#/')" : "projSwitch('CCR')")}${chip('1801', '🌳 1801', p === '1801' ? "go('#/')" : "projSwitch('1801')")}${chip('D48', '⚡ D48', p === 'D48' ? "go('#/')" : "projSwitch('D48')")}</div><div style="display:flex;gap:6px;margin-bottom:9px">${chip('OA', '🌍 OTHER AREA', "go('#/oa')")}${chip('COLD', '❄️ COLD CABLES', p === 'COLD' ? "go('#/')" : "projSwitch('COLD')")}</div></div>`; };
   if (typeof window.projBar === 'function') window.projBar = () => OA.topBar();
 
   // ---------------- "Primavera" bars: done vs remaining per row

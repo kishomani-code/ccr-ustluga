@@ -15,7 +15,7 @@ import argparse, glob, json, os, re, sys, datetime
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import build_data as B   # reuse readers and helpers
 
-SITE_FILES = {'ccr': 'data.json', 'd48': 'data_d48.json', 'cold': 'data_cold.json'}
+SITE_FILES = {'ccr': 'data.json', 'd48': 'data_d48.json', 'cold': 'data_cold.json', '1801': 'data_1801.json'}
 
 
 def read(path, sheet):
@@ -33,7 +33,7 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--input', required=True)
     ap.add_argument('--root', default='.')
-    ap.add_argument('--sites', default='ccr,d48,cold')
+    ap.add_argument('--sites', default='ccr,d48,cold,1801')
     a = ap.parse_args()
     F = B.find_files(a.input)
     f_iwp, f_raw, f_eq, f_trk = F.get('iwp'), F.get('rawp'), F.get('equip'), F.get('cables')
