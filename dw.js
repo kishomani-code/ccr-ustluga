@@ -31,8 +31,13 @@
     return `<div class="li" style="display:block;cursor:default"><div class="t" data-nt>${esc('GLE-(' + k.split('|')[0] + ')-' + k.split('|')[1])}</div>
       <div class="chips" style="margin:4px 0 0">${DW.btn(k)}</div>
       ${L2.length > 1 ? `<details><summary class="s" style="cursor:pointer;color:var(--pri)">${L('Other versions in Drive', 'Другие версии в Drive')} (${L2.length - 1}) ›</summary>${L2.slice(1).map(f => `<div class="s"><a data-nt href="${url(f[1])}" target="_blank" rel="noopener">📄 ${esc(f[2])}</a></div>`).join('')}</details>` : ''}</div>`; };
+  DW.id = function (no) { if (!DW.d) return ''; const k = DW.keys(no)[0]; return k ? DW.d.files[k][0][1] : ''; };
+  DW.open = function (no) { const id = DW.id(no); if (id) window.open(url(id), '_blank', 'noopener'); };
+  // whole register row opens the PDF from Drive
+  DW.rowAttr = function (no) { const id = DW.id(no); return id ? `style="cursor:pointer" onclick="if(!event.target.closest('a'))window.open('${url(id)}','_blank','noopener')"` : ''; };
+  DW.title = function (no) { const id = DW.id(no); return id ? `<a data-nt href="${url(id)}" target="_blank" rel="noopener" style="color:#1a73e8;text-decoration:underline">📄 ${esc(no)}</a>` : `${esc(no)} <span style="font-size:11px;color:var(--mut)" data-nt>(${L('no PDF in Drive yet', 'PDF нет в Drive')})</span>`; };
   // small button for one document number (register lists)
-  DW.small = function (no) { if (!DW.d) return ''; const k = DW.keys(no)[0]; return k ? `<div style="margin-top:4px">${DW.btn(k, true)}</div>` : ''; };
+  DW.small = function (no) { if (!DW.d) return ''; const k = DW.keys(no)[0]; const f = k && DW.d.files[k][0]; return f ? `<div class="s" data-nt style="color:#1a73e8">${L('Tap to open PDF', 'Нажмите – откроется PDF')} · rev ${esc(f[0])}</div>` : ''; };
   // card with all PDFs found in the given texts
   DW.card = function (texts, title) { if (!DW.d) return ''; const K = []; (texts || []).forEach(t => DW.keys(t).forEach(k => { if (!K.includes(k)) K.push(k); }));
     if (!K.length) return '';
