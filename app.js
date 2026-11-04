@@ -38,6 +38,24 @@ const PAN = D.panels.map(p => ({tag: p[0], desc: p[1], room: p[2], cs: p[3], _n:
 const PJ = D.punch, PT = PJ.tabs;
 const PU = PJ.rows.map((a, i) => { const o = {i}; PJ.K.forEach((k, j) => o[k] = a[j]); o.d = PT.disc[o.disc]; o._t = N(o.tag); o._n = o._t + ' ' + N(o.no); o.rhi = /РХИ|Rencons/i.test(PT.resp[o.resp]); o.int = /^RHI-/.test(String(o.no)); return o; });
 const PUBY = {}; PU.forEach(p => { if (p.tag) (PUBY[p.tag] = PUBY[p.tag] || []).push(p); });
+// v4.16 punch type sub-menu for the site team (keyword groups on the punch text; one punch can be in several groups)
+const NB = '(?:^|[^А-Яа-яЁё])', NA = '(?:[^А-Яа-яЁё]|$)';
+const PTY = [
+ ['tag', '🏷', 'Cable / equipment tag & label', 'Бирки, таблички, маркировка кабеля', /бирк|табличк|т[эе]г|позиционн\S* \(?т[эе]г|некорректное позиционное|tag|label|nameplate|знак|маркировк\S*\s+(?:на\s+)?(?:кабел|кл)|временная маркировк|нумераци/i],
+ ['fer', '🔢', 'Core ferrule / core marking', 'Маркировка жил', /маркировк\S* жил|жильн\S* маркировк|ferrule|core marking|наконечник/i],
+ ['earth', '⏚', 'Earthing / grounding', 'Заземление', /заземл|зануле|уравнив|earth|ground|\bPE\b|(?:^|[^А-Яа-я])РЕ(?:[^А-Яа-я]|$)|растекани/i],
+ ['mat', '📦', 'Material / equipment missing', 'Нет материала / оборудования', /не смонтир|не установлен|не поставлен|не выполнен монтаж|not edited|installation not completed|not installed|not mounted|missing|отсут\S*|заглушк|аккумулятор|диод|резистор|патч-корд|изолятор шлейфа|установить в корпус|установить в коробку|защитн\S* панел|крышк/i],
+ ['key', '🔑', 'Keys / handover items', 'Ключи / комплектность', /ключ(?:ей|а|и)?(?:[^а-яё]|$)|магнитн\S* ключ|keys/i],
+ ['term', '🔌', 'Cable not pulled / not terminated', 'Кабель не проложен / не расключён', /не проложен|не подключ|не расключ|не заведен|кабельная линия не смонтирована|подключени\S* жил|расключени\S* жил|схема подключ|not connected|not terminated|экраниров|shield|ввод\S* электропитани|отсутству\S* кабельн\S* лини|подключени|расключени|экран|обжат|пропаян|отходящ\S* КЛ|отсутству\S* КЛ/i],
+ ['fix', '🔗', 'Cable fixing / ties / glands / protection', 'Крепление, стяжки, вводы, защита кабеля', /закреп|стяжк|хомут|сальник|кабельн\S* ввод|gland|clamp|fix|не уложен|DIN|металлорукав|менеджмент кабел|кронштейн/i],
+ ['seal', '🧱', 'Sealing / penetrations / MCT', 'Герметизация / проходки', /проходк|гермет|seal|\bMCT\b|огнезащ|penetrat/i],
+ ['rd', '📐', 'Not as per drawing / location', 'Не по РД / расположение', /не соответств\S*\s+(?:с\s+)?РД|не в соответствии с РД|соответствует РД|расположени|прилегани|доступа/i],
+ ['doc', '📄', 'Documents / tests / inspection', 'Документы, протоколы, инспекции', new RegExp(NB + '(?:ИД|СК|АОСР)' + NA + '|протокол|документ|измерени|рефлектограм|инспекци|FRI|insulation resistance|executive doc|protocol|предъявля', 'i')],
+ ['clean', '🧹', 'Cleaning / paint / damage', 'Уборка, ЛКП, повреждения', /пыл|мусор|загрязн|ЛКП|окраш|краск|поврежд|деформир|dust|dirt|clean|paint|damag|скотч|демонтир/i]];
+const PTX = /бирк|маркир|табличк|т[эе]г|tag|label|plate|знак|протокол|документ|ИД|ключ|нумерац|key|кабельн\S* лини|(?:^|[^А-Яа-я])КЛ|экран|заземл|earth|ground|\bPE\b/i;
+function ptypes(p) { if (p._ty) return p._ty; const s = (p.dru || '') + ' ' + (p.den || ''); const cl = s.split(/[;\n]|\.\s|\s\/\s|,\s/).filter(c => !PTX.test(c)).join(' . ');
+  const r = PTY.filter(x => x[0] === 'mat' ? x[4].test(cl) : x[4].test(s)).map(x => x[0]); return p._ty = r.length ? r : ['oth']; }
+const PTYX = PTY.concat([['oth', '❔', 'Other', 'Прочее', /$^/]]);
 const pb = p => p.st === 'Open' ? `<span class="badge b-no">Open</span>` : `<span class="badge b-ok">Closed</span>`;
 const pcat = p => `<span class="badge ${p.cat === 'A' ? 'b-no' : p.cat === 'B' ? 'b-part' : 'b-na'}">Cat ${esc(p.cat || '-')}</span>`;
 function punchBox(tag) { const ps = PUBY[tag] || []; if (!ps.length) return ''; const op = ps.filter(p => p.st === 'Open').length;
@@ -133,7 +151,7 @@ function route() {
   if (k === 'bm' && window.OA) return OA.bulk(a);   // v4.3 bulk materials (tray, conduits, earthing, supports…)
   if (k === 'lt' && window.LT) return LT.route(rest);   // v4.4 LOTO
   if (k === 'ra') { if (window.RA) return RA.home(); main.innerHTML = '<div class="empty">Loading…</div>'; return; }   // v4.8 client RFI accepted – check (owner)
-  if (k === 'ug') { if (window.UG) return a ? UG.view(a) : UG.home(); main.innerHTML = '<div class="empty">Loading…</div>'; return; }   // v4.14 comments from Ugur (ug.js + ug.json)
+  if (k === 'ug') { if (window.UG) return a ? UG.view(a) : UG.home(); main.innerHTML = '<div class="empty">Loading…</div>'; return; }   // v4.14/4.16 comments for site team (ug.js + ug.json)
   if (k === 'cr' && window.OA) return OA.canReport();   // v4.4 can report (bulk by cable progress)
   if (k === 'a') return actView(a);
   if (k === 'i') return itemView(Number(a));
@@ -202,7 +220,7 @@ function home() {
    <div class="sect">🧭 Systems</div><div class="grid">${(() => { const st = Object.keys(SG).map(sysStat).filter(Boolean); const rd = st.filter(x => x.ok).length; return T2('#/bd', '🧭 System block diagrams<br><span style="font-weight:400;font-size:12px">how systems work · ready to start?</span>', `${rd} ready · ${st.length - rd} with issues`, st.length ? Math.round(100 * rd / st.length) : 0, 'main'); })()}${T2('#/gl', '🔩 Cable glands', 'size · type RU/EN · sleeve · earthing')}</div>
    <div class="sect">📑 Documents</div><div class="grid">${T2('#/ctq', '❓ CTQ register<br><span style="font-weight:400;font-size:12px">internal TQs · what is on hold</span>', `${CTQ.filter(ctqOpen).length} open · ${Object.keys(HOLD).length} items on hold`, null, 'main')}${T2('#/dg', '📐 Drawings register', `${RG.length} ${PRJ} docs · 🔎 search by keyword`)}${T2('#/sf', '📋 SF drawings (MTO)', `${SF.length} files · rev & dates`)}${T2('#/rv', '📄 Drawing revisions', `${RV.length} revised · ${RV.reduce((x, r) => x + r.ch.filter(rvDone).length, 0)} after installation`)}</div>
    ${engTiles()}
-   ${window.UG ? UG.tile() : `<div class="sect">💬 Engineering comments</div><div class="grid"><button class="tile main" style="background:#5b3a8a;border-color:#5b3a8a" onclick="go('#/ug')"><b>💬 Comments from Ugur<br><span style="font-weight:400;font-size:12px">cable route · HOLD · TQ notes per cable</span></b><div><span class="n" id="ugn">loading…</span></div></button></div>`}
+   ${window.UG ? UG.tile() : `<div class="sect">💬 Engineering comments</div><div class="grid"><button class="tile main" style="background:#5b3a8a;border-color:#5b3a8a" onclick="go('#/ug')"><b>💬 Comments for site team<br><span style="font-weight:400;font-size:12px">cable route · HOLD · TQ notes per cable</span></b><div><span class="n" id="ugn">loading…</span></div></button></div>`}
    <div class="sect">🛠️ Tools</div><div class="grid">${T2('#/nt', '📝 Site notes', `${(S2.notes || []).length} notes`)}</div>
    <div class="sect">📈 Progress</div><div class="grid">${T2('#/dp', '✍️ Daily progress entry', `${pend} lines not sent`)}${T2('#/rb', '👤 Reported by', `${new Set(perfRows().filter(r => S2.owner || r.by === (cuName() || PS_.name)).map(r => r.by)).size} people · name & date details`, null, 'main')}${S2.owner ? T2('#/ow', '🔑 Import progress (owner)', `${(S2.rx || []).length} imported lines · total IWP report`, null, 'main') + T2('#/tp', '👷 Technician performance', `${new Set(perfRows().map(r => r.by)).size} technicians`, null, 'main') : ''}${T2('#/pp', '📊 Punch daily progress', 'site updates')}</div>
    <div class="sect">📊 Management</div><button class="tile main" style="width:100%;min-height:auto;margin-bottom:4px;background:linear-gradient(135deg,#4b1d7a,#7b3fb3);border-color:#4b1d7a;color:#fff" onclick="S2.mgr||S2.owner?go('#/mg'):mgrLogin()"><b>📊 Manager dashboard${S2.mgr || S2.owner ? '' : ' 🔒'}</b><span class="n" style="color:#fff">overall % · panel progress table · bottom-10 timeline</span></button>
@@ -366,13 +384,15 @@ function punchHome() {
    <div class="chips"><button class="chip on" onclick="go('#/pp')">📊 Daily progress</button><button class="chip" onclick="openReport('punch')">Send report to Paul</button><button class="chip" onclick="openXPunch()">🔗 Cross-punch report</button><button class="chip" onclick="document.getElementById('pimp2').click()">⬆ Import</button><button class="chip" onclick="askPName('route()')">👷 ${esc(PS_.name || 'Set name')}</button></div>
    <input type="file" id="pimp2" accept=".json,application/json" multiple style="display:none" onchange="importPunch(this.files);this.value=''">
    <button class="tile main" style="width:100%;min-height:auto;margin-bottom:4px" onclick="go('#/pk/all:')"><b>All open punch items (${op.length}) ›</b></button>
+   <div class="sect">🛠 By punch type – for site team</div><div class="grid">${PTYX.map(y => { const x = L.filter(p => ptypes(p).includes(y[0])); if (!x.length) return ''; const o = x.filter(p => p.st === 'Open'), oa = o.filter(p => p.cat === 'A').length, pc = Math.round(100 * (x.length - o.length) / x.length);
+     return `<button class="tile" onclick="go('#/pk/y:${y[0]}')"><b>${y[1]} ${esc(y[2])}</b><span style="font-size:11px;color:var(--mut)">${esc(y[3])}</span><div><span class="n">${o.length} open / ${x.length}${oa ? ' · A open ' + oa : ''}</span><div class="pc">${pc}% closed</div><div class="pbar"><i style="width:${pc}%"></i></div></div></button>`; }).join('')}</div>
    <div class="sect">By discipline</div><div class="grid">${discs.map(tile).join('')}</div>
    <div class="sect">By subsystem</div><div class="list">${Object.entries(subs).sort((a, b) => b[1].o - a[1].o).map(([k, v]) => `<button class="li" onclick="go('#/pk/s:${enc(k)}')"><div class="m"><div class="t">${esc(k)}</div><div class="s">${esc(v.en || v.name)}</div></div><div class="r"><b style="color:${v.o ? 'var(--bad)' : 'var(--ok)'}">${v.o}</b> open<div>${v.n} total</div></div><span class="chev">›</span></button>`).join('')}</div>`;
 }
 function punchList(key) {
   const [t, ...r] = key.split(':'); const v = r.join(':'); VS.PL = VS.PL || {}; const st = VS.PL[key] = VS.PL[key] || {f: 'open', c: '', q: '', lim: 150};
-  const base = pscope().filter(p => t === 'd' ? p.d === v : t === 's' ? PT.sub[p.sub] === v : true);
-  setHead(t === 'all' ? 'Punch – all' : v, `${base.filter(p => p.st === 'Open').length} open / ${base.length}`);
+  const base = pscope().filter(p => t === 'd' ? p.d === v : t === 's' ? PT.sub[p.sub] === v : t === 'y' ? ptypes(p).includes(v) : true);
+  setHead(t === 'all' ? 'Punch – all' : t === 'y' ? ((PTYX.find(y => y[0] === v) || [, '', v])[1] + ' ' + (PTYX.find(y => y[0] === v) || [, , v])[2]) : v, `${base.filter(p => p.st === 'Open').length} open / ${base.length}`);
   main.innerHTML = `<div class="chips">${[['open', 'Open'], ['closed', 'Closed'], ['all', 'All']].map(([k, l]) => `<button class="chip ${st.f === k ? 'on' : ''}" onclick="VS.PL['${esc(key)}'].f='${k}';punchList(decodeURIComponent('${enc(key)}'))">${l}</button>`).join('')}
    ${['', 'A', 'B', 'C'].map(c => `<button class="chip ${st.c === c ? 'on' : ''}" onclick="VS.PL['${esc(key)}'].c='${c}';punchList(decodeURIComponent('${enc(key)}'))">${c ? 'Cat ' + c : 'All cat.'}</button>`).join('')}</div>
    <input class="fin" placeholder="Filter: tag, punch No., text…" value="${esc(st.q)}" oninput="VS.PL[decodeURIComponent('${enc(key)}')].q=this.value;pkList(decodeURIComponent('${enc(key)}'))"><div id="pkl"></div>`;
@@ -380,7 +400,7 @@ function punchList(key) {
 }
 function pkList(key, base) {
   const [t, ...r] = key.split(':'); const v = r.join(':'); const st = VS.PL[key];
-  base = base || pscope().filter(p => t === 'd' ? p.d === v : t === 's' ? PT.sub[p.sub] === v : true);
+  base = base || pscope().filter(p => t === 'd' ? p.d === v : t === 's' ? PT.sub[p.sub] === v : t === 'y' ? ptypes(p).includes(v) : true);
   const nq = N(st.q); const ql = st.q.trim().toLowerCase();
   const L = base.filter(p => (st.f === 'all' || (st.f === 'open' ? p.st === 'Open' : p.st !== 'Open')) && (!st.c || p.cat === st.c) && (!ql || p._n.includes(nq) || (p.dru + ' ' + p.den + ' ' + (p.tage || '')).toLowerCase().includes(ql)));
   const by = {}; L.slice(0, st.lim).forEach(p => { const k = PT.sub[p.sub] + ' · ' + ((PT.subnE || [])[p.subn] || PT.subn[p.subn]); (by[k] = by[k] || []).push(p); });
@@ -726,7 +746,7 @@ function ownPunch() { const d = VS.OW.d; const one = {}; (S2.rx || []).filter(r 
   copyText(Object.values(one).map(r => [r.no, r.v === 'F' ? 'Fixed' : 'Not fixed', d.split('-').reverse().join('.'), r.tag, r.by].join('\t')).join('\n')).then(() => toast('Punch list copied')); }
 
 // ======== v3.2 modules ========
-const APPV = '4.15';
+const APPV = '4.16';
 const shortT = t => String(t || '').replace(/^G0-D(18|48)10BX0-/, '').replace(/^G0-D(18|48)01FX0-/, 'FX0-');
 const SYSN = {'EL-ESPS': ['Substation 10/0.4 kV & power supply', 'Подстанция 10/0,4 кВ'], 'EL-EMSV': ['Power installation (boards, UPS, motors)', 'Силовое электрооборудование'], 'EL-ESBZ': ['Power supply from utility substation', 'Электроснабжение от ПС'], 'EL-ELOV': ['Indoor lighting', 'Внутреннее освещение'], 'EL-EG02': ['Earthing & lightning protection', 'Заземление и молниезащита'], 'EL-EG01': ['Area earthing', 'Заземление площадки'], 'EH-EOES': ['Electric heating', 'Электрообогрев'], 'EH-AEOG': ['Heat tracing', 'Электрообогрев (кабель)'], 'EH-EOBK': ['Electric heating (other)', 'Электрообогрев'],
   'IN-DCS': ['Distributed Control System (DCS)', 'РСУ'], 'IN-ESD': ['Emergency Shutdown (ESD)', 'ПАЗ'], 'IN-SPAP': ['Fire alarm & fire fighting control (AFA&FFS)', 'АСПС и ПТ'], 'IN-GDSS': ['Gas detection', 'Контроль загазованности'], 'IN-ASUE': ['Utilities control system', 'АСУ ЭО (утилиты)'], 'IN-ASUS': ['Power supply control system', 'АСУ ЭС'], 'IN-ASKU': ['Utility metering (AUMS)', 'АСКУ ЭР'], 'IN-MAEC': ['Rotating equipment monitoring (CMS)', 'МСО и ВО'], 'IN-MFMS': ['Material flow metering (MFMS)', 'СУМП'], 'IN-AKVS': ['Emission monitoring (CEMS)', 'АКВС'], 'IN-INTS': ['Operator training simulator', 'Тренажёр оператора'], 'IN-INSS': ['Information security', 'СОИБ'], 'IN-AOVK': ['HVAC automation', 'Автоматизация ОВиК'], 'IN-AKMP': ['Analyzer system', 'Анализаторы'],
