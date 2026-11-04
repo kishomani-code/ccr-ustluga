@@ -51,23 +51,39 @@
     if (!body) { const a = GA.d.area[PRJ]; if (a != null && a >= 0) body = person(a, [], L('area contact', 'контакт по зоне')); }
     if (!body) body = `<div class="s">${L('No subsystem found for this tag – see the contact list.', 'Подсистема не найдена – см. список контактов.')}</div>`;
     return `<div class="card" style="border-left:5px solid #0b6e6e"><div class="h3">📞 ${L('Commissioning contact (client)', 'Контакт ПНР (заказчик)')}</div><div class="list">${body}</div>
-      <div style="margin-top:6px"><span class="link" onclick="go('#/ga')">${L('All commissioning contacts by area ›', 'Все контакты ПНР по зонам ›')}</span></div></div>`;
+      <div style="margin-top:6px"><span class="link" onclick="go('#/ga')">${L('Commissioning responsibilities from Gazprom ›', 'Ответственные за ПНР (Газпром) ›')}</span></div></div>`;
   };
-  GA.tile = function () { return `<button class="tile" style="width:100%;min-height:auto;margin-top:6px;background:#0b6e6e;color:#fff;border-color:#0b6e6e" onclick="go('#/ga')"><b>📞 ${L('Commissioning contacts – client (by area)', 'Контакты ПНР – заказчик (по зонам)')}</b><span class="n" style="color:#d7f0ee">${GA.d ? GA.d.people.length + ' ' + L('people', 'чел.') + ' · ' + GA.d.date : L('loading…', 'загрузка…')}</span></button>`; };
+  const TITLE = L('Commissioning responsibilities from Gazprom', 'Ответственные за ПНР (Газпром автоматизация)');
+  GA.tile = function () { return `<button class="tile" style="width:100%;min-height:auto;margin-top:6px;background:#0b6e6e;color:#fff;border-color:#0b6e6e" onclick="go('#/ga')"><b>📞 ${TITLE}</b><span class="n" style="color:#d7f0ee">${GA.d ? L('system-wise · area-wise · ', 'по системам · по зонам · ') + GA.d.people.length + ' ' + L('people', 'чел.') + ' · ' + GA.d.date : L('loading…', 'загрузка…')}</span></button>`; };
+  const phs = x => x[2].map(ph => `<a href="${telH(ph)}">📞 ${esc(ph)}</a>`).join(' · ');
+  function mySystems() { const S = new Set();
+    try { PU.forEach(p => { if (PRJN && PRJN.rx && !PRJN.rx.test(String(PT.tit[p.tit] || ''))) return; const s = PT.sub[p.sub]; if (s && /^G\d-\d/.test(s)) S.add(sys3(s)); }); } catch (e) {}
+    if (GA.rfc) Object.values(GA.rfc).forEach(s => /^G\d-\d/.test(s) && S.add(sys3(s)));
+    return [...S].filter(s => GA.d.sysa[s]).sort(); }
+  function sysRow(k) { const d = GA.d, v = d.sysa[k]; const subs = Object.entries(d.sub).filter(([s]) => sys3(s) === k);
+    return `<details class="li" style="display:block"><summary style="cursor:pointer;list-style:none"><div class="t">${esc(k)} <span style="font-weight:400">· ${esc(v[0])}</span></div>
+      ${v[1].map(([i, n]) => { const x = d.people[i]; return `<div class="s">👤 <b>${NM(x[0])}</b>${v[1].length > 1 ? ` <span style="color:var(--mut)">(${n} ${L('subsystems', 'подсист.')})</span>` : ''} · ${phs(x)}</div>`; }).join('')}
+      <div class="s" style="color:var(--pri)">${subs.length} ${L('subsystems – tap to show', 'подсистем – нажмите, чтобы показать')} ›</div></summary>
+      <div style="margin-top:6px;border-top:1px solid #e5e8ec;padding-top:4px">${subs.map(([s, w]) => `<div class="s" style="white-space:normal;padding:3px 0"><b>${esc(s)}</b> ${esc(w[1])}<br>👤 <span data-nt>${NM(d.people[w[0]][0])}</span> · ${phs(d.people[w[0]])}</div>`).join('')}</div></details>`; }
   GA.home = function () {
-    setHead(L('Commissioning contacts', 'Контакты ПНР'), GA.d ? 'Gazprom Automation · ' + GA.d.date : '');
+    setHead(TITLE, GA.d ? 'Gazprom Automation · ' + GA.d.date : '');
     if (!GA.d) { main.innerHTML = '<div class="empty">Loading…</div>'; return; }
-    const d = GA.d; const q = (GA.q || '').trim().toUpperCase();
+    const d = GA.d; const q = (GA.q || '').trim().toUpperCase(); const tab = GA.tab || 'sys';
     const my = d.area[PRJ];
     let hit = '';
     if (q.length >= 4) { const L2 = Object.entries(d.sub).filter(([s, v]) => s.toUpperCase().includes(q) || String(v[1]).toUpperCase().includes(q)).slice(0, 40);
-      hit = `<div class="sect">${L('Subsystems found', 'Найдено подсистем')} (${L2.length})</div><div class="list">${L2.map(([s, v]) => `<div class="li" style="display:block;cursor:default"><div class="t">${esc(s)}</div><div class="s" style="white-space:normal">${esc(v[1])}</div><div class="s">👤 <b>${NM(d.people[v[0]][0])}</b> · ${d.people[v[0]][2].map(ph => `<a href="${telH(ph)}">${esc(ph)}</a>`).join(' · ')}</div></div>`).join('') || '<div class="empty">-</div>'}</div>`; }
-    main.innerHTML = `<div class="card" style="font-size:13px;border-left:5px solid #0b6e6e">${L('Client commissioning managers (Gazprom Automation, РП ГА). Every cable, panel, IWP line and punch page shows the person responsible for its subsystem – tap the number to call.', 'Руководители ПНР заказчика (Газпром автоматизация, РП ГА). На странице каждого кабеля, щита, строки IWP и замечания показан ответственный по подсистеме – нажмите номер, чтобы позвонить.')}</div>
+      hit = `<div class="sect">${L('Subsystems found', 'Найдено подсистем')} (${L2.length})</div><div class="list">${L2.map(([s, v]) => `<div class="li" style="display:block;cursor:default"><div class="t">${esc(s)}</div><div class="s" style="white-space:normal">${esc(v[1])}</div><div class="s">👤 <b>${NM(d.people[v[0]][0])}</b> · ${phs(d.people[v[0]])}</div></div>`).join('') || '<div class="empty">-</div>'}</div>`; }
+    let body = '';
+    if (tab === 'sys') { const mine = mySystems(); const grp = {}; Object.keys(d.sysa).forEach(k => { const g = k.slice(0, 2); (grp[g] = grp[g] || []).push(k); });
+      body = (mine.length ? `<div class="sect">${L('Systems in this area', 'Системы этой зоны')} – ${esc(PRJ)} (${mine.length})</div><div class="list">${mine.map(sysRow).join('')}</div>` : '') +
+        Object.entries(grp).map(([g, ks]) => `<div class="sect">${L('All systems', 'Все системы')} ${esc(g)} (${ks.length})</div><div class="list">${ks.map(sysRow).join('')}</div>`).join(''); }
+    else if (tab === 'area') body = `<div class="list">${d.pts.map(([p, i, st]) => { const x = d.people[i] || ['-', [], []];
+        return `<div class="li" style="display:block;cursor:default"><div class="t">${PTN(p)} ${st ? `<span class="badge ${/основ/i.test(st) ? 'b-ok' : 'b-na'}">${STN(st)}</span>` : ''}</div><div class="s">👤 <b>${NM(x[0])}</b> · ${phs(x)}</div></div>`; }).join('')}</div>`;
+    else body = `<div class="list">${d.people.map((p, i) => person(i, [], Object.values(d.sub).filter(v => v[0] === i).length + ' ' + L('subsystems', 'подсистем'))).join('')}</div>`;
+    main.innerHTML = `<div class="card" style="font-size:13px;border-left:5px solid #0b6e6e">${L('Client commissioning managers (Gazprom Automation, RP GA) responsible for each system. Every cable, panel, IWP line and punch page also shows the person for its subsystem – tap the number to call.', 'Руководители ПНР заказчика (Газпром автоматизация, РП ГА) по каждой системе. На странице каждого кабеля, щита, строки IWP и замечания также показан ответственный по подсистеме – нажмите номер, чтобы позвонить.')}</div>
       ${my != null && my >= 0 ? `<div class="sect">${L('This area', 'Эта зона')} – ${esc(PRJ)}</div><div class="list">${person(my, [], '')}</div>` : ''}
       <input class="fin" placeholder="${L('Find by subsystem or name, e.g. G0-85-200 or освещение', 'Поиск по подсистеме, напр. G0-85-200 или освещение')}" value="${esc(GA.q || '')}" oninput="GA.q=this.value;clearTimeout(GA.tm);GA.tm=setTimeout(()=>{GA.home();const i=document.querySelector('.fin');if(i){i.focus();i.setSelectionRange(i.value.length,i.value.length);}},400)">${hit}
-      <div class="sect">${L('By area (report point)', 'По зонам (точки доклада)')}</div><div class="list">${d.pts.map(([p, i, st]) => { const x = d.people[i] || ['-', [], []];
-        return `<div class="li" style="display:block;cursor:default"><div class="t">${PTN(p)} ${st ? `<span class="badge ${/основ/i.test(st) ? 'b-ok' : 'b-na'}">${STN(st)}</span>` : ''}</div><div class="s">👤 <b>${NM(x[0])}</b> · ${x[2].map(ph => `<a href="${telH(ph)}">📞 ${esc(ph)}</a>`).join(' · ')}</div></div>`; }).join('')}</div>
-      <div class="sect">${L('All contacts', 'Все контакты')} (${d.people.length})</div><div class="list">${d.people.map((p, i) => person(i, [], Object.values(d.sub).filter(v => v[0] === i).length + ' ' + L('subsystems', 'подсистем'))).join('')}</div>`;
+      <div class="chips">${[['sys', L('System-wise', 'По системам')], ['area', L('Area-wise', 'По зонам')], ['all', L('All contacts', 'Все контакты')]].map(([k, l]) => `<button class="chip ${tab === k ? 'on' : ''}" onclick="GA.tab='${k}';GA.home()">${l}</button>`).join('')}</div>${body}`;
   };
   GA.load();
 })();
