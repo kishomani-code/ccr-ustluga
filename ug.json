@@ -1,0 +1,28 @@
+{
+  "ver": "2026-11-04a",
+  "date": "04.11.2026",
+  "comments": [
+    {
+      "id": "UG-001",
+      "date": "04.11.2026",
+      "from": "Ugur",
+      "project": "D48",
+      "unit": "G0-D4810BX0",
+      "title": "Roof A/C cables on HOLD – route after room 27 unclear, TQ to be raised",
+      "en": "These cables belong to the roof equipment (shown as HOLD on GLE-(G0-D4810BX0)-EL-EMSV-ZA-002_02 sheet 2, HOLD cloud near axes 24–25: 'Прокладка кабелей электроснабжения наружных блоков систем кондиционирования предусмотрена совместно с фреоновыми трубопроводами в одной гильзе' – power cables to outdoor A/C units are routed together with the refrigerant pipes in one sleeve). No clear information on the cable route after room 27 (Battery room 2) and which MCTs to use. TQ to be initiated.",
+      "ru": "Кабели относятся к оборудованию на кровле (участок HOLD на GLE-(G0-D4810BX0)-EL-EMSV-ZA-002, лист 2). Нет чёткой информации по трассировке кабелей после помещения №27 (Аккумуляторная 2) и какие кабельные проходки (MCT) использовать. Требуется инициировать TQ.",
+      "status": "HOLD – do not pull until TQ answered",
+      "cables": [
+        {"t": "G0-D4810BX0-CO-6004-WP01", "f": "HVAC room 14, panel CAB-7103", "o": "Roof, outdoor A/C unit CO-6004", "ty": "ВВГнг(A)-LS 5x4", "ln": 170, "dwg": "GLE-(G0-D4810BX0)-EL-EMSV-LC-003"},
+        {"t": "G0-D4810BX0-CI-EX-6004-WP01", "f": "Roof, CO-6004", "o": "Room 27 Battery room 2, indoor unit CI-EX-6004", "ty": "ВВГнг(A)-LS 3x2,5", "ln": 40, "dwg": "GLE-(G0-D4810BX0)-EL-EMSV-LC-003"},
+        {"t": "G0-D4810BX0-CO-6005-WP01", "f": "HVAC room 14, panel CAB-7103", "o": "Roof, outdoor A/C unit CO-6005", "ty": "ВВГнг(A)-LS 5x4", "ln": 170, "dwg": "GLE-(G0-D4810BX0)-EL-EMSV-LC-003"},
+        {"t": "G0-D4810BX0-CI-EX-6005-WP01", "f": "Roof, CO-6005", "o": "Room 27 Battery room 2, indoor unit CI-EX-6005", "ty": "ВВГнг(A)-LS 3x2,5", "ln": 40, "dwg": "GLE-(G0-D4810BX0)-EL-EMSV-LC-003"},
+        {"t": "G0-D4810BX0-CO-6004-CJ01", "f": "CO-6004", "o": "CI-EX-6004", "ty": "JB22-02P10J-NK 2x2x1,0", "ln": 23, "dwg": "GLE-(G0-D4810BX0)-IN-AOVK-001"},
+        {"t": "G0-D4810BX0-CO-6005-CJ01", "f": "CO-6005", "o": "CI-EX-6005", "ty": "JB22-02P10J-NK 2x2x1,0", "ln": 23, "dwg": "GLE-(G0-D4810BX0)-IN-AOVK-001"}
+      ],
+      "imgs": [
+        {"src": "ug_d48_roof_ac_1.jpg", "cap": "GLE-(G0-D4810BX0)-EL-EMSV-ZA-002_02 sheet 2 – HOLD cloud near axes 24–25"}
+      ]
+    }
+  ]
+}
