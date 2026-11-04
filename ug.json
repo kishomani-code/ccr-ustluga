@@ -1,28 +1,185 @@
 {
-  "ver": "2026-11-04a",
-  "date": "04.11.2026",
-  "comments": [
+ "ver": "2026-11-04b",
+ "date": "04.11.2026",
+ "comments": [
+  {
+   "id": "UG-001",
+   "date": "04.11.2026",
+   "from": "Ugur",
+   "project": "D48",
+   "unit": "G0-D4810BX0",
+   "title": "Roof A/C cables on HOLD – route after room 27 unclear, TQ to be raised",
+   "en": "These cables belong to the roof equipment (shown as HOLD on GLE-(G0-D4810BX0)-EL-EMSV-ZA-002_02 sheet 2, HOLD cloud near axes 24–25: 'Прокладка кабелей электроснабжения наружных блоков систем кондиционирования предусмотрена совместно с фреоновыми трубопроводами в одной гильзе' – power cables to outdoor A/C units are routed together with the refrigerant pipes in one sleeve). No clear information on the cable route after room 27 (Battery room 2) and which MCTs to use. TQ to be initiated.",
+   "ru": "Кабели относятся к оборудованию на кровле (участок HOLD на GLE-(G0-D4810BX0)-EL-EMSV-ZA-002, лист 2). Нет чёткой информации по трассировке кабелей после помещения №27 (Аккумуляторная 2) и какие кабельные проходки (MCT) использовать. Требуется инициировать TQ.",
+   "status": "HOLD – do not pull until TQ answered",
+   "cables": [
     {
-      "id": "UG-001",
-      "date": "04.11.2026",
-      "from": "Ugur",
-      "project": "D48",
-      "unit": "G0-D4810BX0",
-      "title": "Roof A/C cables on HOLD – route after room 27 unclear, TQ to be raised",
-      "en": "These cables belong to the roof equipment (shown as HOLD on GLE-(G0-D4810BX0)-EL-EMSV-ZA-002_02 sheet 2, HOLD cloud near axes 24–25: 'Прокладка кабелей электроснабжения наружных блоков систем кондиционирования предусмотрена совместно с фреоновыми трубопроводами в одной гильзе' – power cables to outdoor A/C units are routed together with the refrigerant pipes in one sleeve). No clear information on the cable route after room 27 (Battery room 2) and which MCTs to use. TQ to be initiated.",
-      "ru": "Кабели относятся к оборудованию на кровле (участок HOLD на GLE-(G0-D4810BX0)-EL-EMSV-ZA-002, лист 2). Нет чёткой информации по трассировке кабелей после помещения №27 (Аккумуляторная 2) и какие кабельные проходки (MCT) использовать. Требуется инициировать TQ.",
-      "status": "HOLD – do not pull until TQ answered",
-      "cables": [
-        {"t": "G0-D4810BX0-CO-6004-WP01", "f": "HVAC room 14, panel CAB-7103", "o": "Roof, outdoor A/C unit CO-6004", "ty": "ВВГнг(A)-LS 5x4", "ln": 170, "dwg": "GLE-(G0-D4810BX0)-EL-EMSV-LC-003"},
-        {"t": "G0-D4810BX0-CI-EX-6004-WP01", "f": "Roof, CO-6004", "o": "Room 27 Battery room 2, indoor unit CI-EX-6004", "ty": "ВВГнг(A)-LS 3x2,5", "ln": 40, "dwg": "GLE-(G0-D4810BX0)-EL-EMSV-LC-003"},
-        {"t": "G0-D4810BX0-CO-6005-WP01", "f": "HVAC room 14, panel CAB-7103", "o": "Roof, outdoor A/C unit CO-6005", "ty": "ВВГнг(A)-LS 5x4", "ln": 170, "dwg": "GLE-(G0-D4810BX0)-EL-EMSV-LC-003"},
-        {"t": "G0-D4810BX0-CI-EX-6005-WP01", "f": "Roof, CO-6005", "o": "Room 27 Battery room 2, indoor unit CI-EX-6005", "ty": "ВВГнг(A)-LS 3x2,5", "ln": 40, "dwg": "GLE-(G0-D4810BX0)-EL-EMSV-LC-003"},
-        {"t": "G0-D4810BX0-CO-6004-CJ01", "f": "CO-6004", "o": "CI-EX-6004", "ty": "JB22-02P10J-NK 2x2x1,0", "ln": 23, "dwg": "GLE-(G0-D4810BX0)-IN-AOVK-001"},
-        {"t": "G0-D4810BX0-CO-6005-CJ01", "f": "CO-6005", "o": "CI-EX-6005", "ty": "JB22-02P10J-NK 2x2x1,0", "ln": 23, "dwg": "GLE-(G0-D4810BX0)-IN-AOVK-001"}
-      ],
-      "imgs": [
-        {"src": "ug_d48_roof_ac_1.jpg", "cap": "GLE-(G0-D4810BX0)-EL-EMSV-ZA-002_02 sheet 2 – HOLD cloud near axes 24–25"}
-      ]
+     "t": "G0-D4810BX0-CO-6004-WP01",
+     "f": "HVAC room 14, panel CAB-7103",
+     "o": "Roof, outdoor A/C unit CO-6004",
+     "ty": "ВВГнг(A)-LS 5x4",
+     "ln": 170,
+     "dwg": "GLE-(G0-D4810BX0)-EL-EMSV-LC-003"
+    },
+    {
+     "t": "G0-D4810BX0-CI-EX-6004-WP01",
+     "f": "Roof, CO-6004",
+     "o": "Room 27 Battery room 2, indoor unit CI-EX-6004",
+     "ty": "ВВГнг(A)-LS 3x2,5",
+     "ln": 40,
+     "dwg": "GLE-(G0-D4810BX0)-EL-EMSV-LC-003"
+    },
+    {
+     "t": "G0-D4810BX0-CO-6005-WP01",
+     "f": "HVAC room 14, panel CAB-7103",
+     "o": "Roof, outdoor A/C unit CO-6005",
+     "ty": "ВВГнг(A)-LS 5x4",
+     "ln": 170,
+     "dwg": "GLE-(G0-D4810BX0)-EL-EMSV-LC-003"
+    },
+    {
+     "t": "G0-D4810BX0-CI-EX-6005-WP01",
+     "f": "Roof, CO-6005",
+     "o": "Room 27 Battery room 2, indoor unit CI-EX-6005",
+     "ty": "ВВГнг(A)-LS 3x2,5",
+     "ln": 40,
+     "dwg": "GLE-(G0-D4810BX0)-EL-EMSV-LC-003"
+    },
+    {
+     "t": "G0-D4810BX0-CO-6004-CJ01",
+     "f": "CO-6004",
+     "o": "CI-EX-6004",
+     "ty": "JB22-02P10J-NK 2x2x1,0",
+     "ln": 23,
+     "dwg": "GLE-(G0-D4810BX0)-IN-AOVK-001"
+    },
+    {
+     "t": "G0-D4810BX0-CO-6005-CJ01",
+     "f": "CO-6005",
+     "o": "CI-EX-6005",
+     "ty": "JB22-02P10J-NK 2x2x1,0",
+     "ln": 23,
+     "dwg": "GLE-(G0-D4810BX0)-IN-AOVK-001"
     }
-  ]
+   ],
+   "imgs": [
+    {
+     "src": "ug_d48_roof_ac_1.jpg",
+     "cap": "GLE-(G0-D4810BX0)-EL-EMSV-ZA-002_02 sheet 2 – HOLD cloud near axes 24–25"
+    }
+   ]
+  },
+  {
+   "id": "UG-002",
+   "date": "04.11.2026",
+   "from": "RHI E&I (site check)",
+   "project": "D48",
+   "unit": "G0-D4810BX0",
+   "status": "DELETED",
+   "title": "FD-1104 and FD-3203 cables deleted by TQ EL-05864 – do not pull / remove",
+   "en": "Fire dampers FD-1104 and FD-3203 do not exist in Room 1 (not in D48 HVAC IWP). TQS-GPP-RHI-GSP-EL-05864 (closed 07.10.2026) deleted cables G0-D4810BX0-FD-3203-WP01 and G0-D4810BX0-FD-1104-WP01 from GLE-(G0-D4810BX0)-EL-EMSV-LC-003 and SF-003. The cable tracker still shows them active. FD-1104-WP01: not pulled – cancel, release drum GMR10284/11. FD-3203-WP01: already pulled 65 m (15.08.2026) and From end terminated at FAR-7001 (30.08.2026) – disconnect at FAR-7001, remove or keep for re-use. IWP lines 207828 / 208067 to be cancelled by the IWP team (do not report in daily IWP report).",
+   "ru": "Противопожарные клапаны FD-1104 и FD-3203 отсутствуют в пом. 1 (нет в IWP ОВКВ D48). TQS-GPP-RHI-GSP-EL-05864 (закрыт 07.10.2026): кабели G0-D4810BX0-FD-3203-WP01 и G0-D4810BX0-FD-1104-WP01 исключены из GLE-(G0-D4810BX0)-EL-EMSV-LC-003 и SF-003. В кабельном трекере они ещё активны. FD-1104-WP01: не проложен – отменить, освободить барабан GMR10284/11. FD-3203-WP01: уже проложен 65 м (15.08.2026), начало расключено в FAR-7001 (30.08.2026) – отключить в FAR-7001, демонтировать или сохранить для повторного использования. Строки IWP 207828 / 208067 должна аннулировать группа IWP (в ежедневный отчёт IWP не вносить).",
+   "cables": [
+    {
+     "t": "G0-D4810BX0-FD-1104-WP01",
+     "f": "Room 13 – fire valves cabinet FAR-7001",
+     "o": "Room 1 – fire damper FD-1104 (not existing)",
+     "ty": "ВВГнг(A)-FRLS 3x2,5",
+     "ln": "65",
+     "dwg": "GLE-(G0-D4810BX0)-EL-EMSV-LC-003"
+    },
+    {
+     "t": "G0-D4810BX0-FD-3203-WP01",
+     "f": "Room 13 – fire valves cabinet FAR-7001",
+     "o": "Room 1 – fire damper FD-3203 (not existing)",
+     "ty": "ВВГнг(A)-FRLS 3x2,5",
+     "ln": "65",
+     "dwg": "GLE-(G0-D4810BX0)-EL-EMSV-LC-003"
+    }
+   ],
+   "imgs": []
+  },
+  {
+   "id": "UG-003",
+   "date": "04.11.2026",
+   "from": "RHI E&I (site check)",
+   "project": "D48",
+   "unit": "G0-D4810BX0",
+   "status": "HOLD",
+   "title": "NE-EX-0013 convector not in Room 1 – cable on HOLD, add to TQ EL-06259",
+   "en": "Electric convector NE-EX-0013 is not installed in Room 1 and not shown on plan GLE-(G0-D4810BX0)-EL-EMSV-ZA-003 sheet 10 (plan shows NE-EX-0001…0012 only). No IWP line for this cable. TQ EL-05864 did not cover it. Do not pull; ask in open TQS-GPP-RHI-GSP-EL-06259 (or a new TQ) to delete the cable or show NE-EX-0013 on the plan. Drum GMR08372/24-4 stays reserved until the answer.",
+   "ru": "Электроконвектор NE-EX-0013 в пом. 1 отсутствует и не показан на плане GLE-(G0-D4810BX0)-EL-EMSV-ZA-003 лист 10 (на плане только NE-EX-0001…0012). Строки IWP для кабеля нет. TQ EL-05864 его не затронул. Не прокладывать; запросить в открытом TQS-GPP-RHI-GSP-EL-06259 (или новом TQ) исключение кабеля или показ NE-EX-0013 на плане. Барабан GMR08372/24-4 держать до ответа.",
+   "cables": [
+    {
+     "t": "G0-D4810BX0-NE-EX-0013-WP01",
+     "f": "Room 13 – OVKV equipment panel CAB-7101",
+     "o": "Room 1 – electric convector NE-EX-0013 (not found)",
+     "ty": "ВВГнг(A)-LS 3x6",
+     "ln": "65",
+     "dwg": "GLE-(G0-D4810BX0)-EL-EMSV-LC-003"
+    }
+   ],
+   "imgs": []
+  },
+  {
+   "id": "UG-004",
+   "date": "04.11.2026",
+   "from": "RHI E&I (site check)",
+   "project": "D48",
+   "unit": "G0-D4810BX0",
+   "status": "HOLD",
+   "title": "EGNUC-D48-01B-WP01.01/.02/.03 – board not found, likely duplicate feeder – HOLD, new TQ",
+   "en": "Cables G0-EGNUC-D48-01B-WP01.01/.02/.03 (3x(5x185), 70 m each, ESPS-LC-001 rev 5.1) go from LV switchgear G0-EENUC-D48-01C to \"backup electric heating switchboard input 2 G0-EGNUC-D48-01B\" – no room number and no such board on site. The same switchgear already feeds the backup heating main board G0-EGNUC-D48-101-01B by 2 cables 5x150 (EH-EOES-LC-100, pulled and terminated 09–10.2026). TQS-GPP-RHI-GSP-EL-05933 only answered that the cables are in ZM-001_05 AS02 sh.7 (3QF8.1), LC-001_06 sh.12-13, SF-001_05 sh.18 pos.95. Do not pull – raise a new TQ to confirm if these are duplicates / which board and location. IWP 253118/254581/254582 and 256891/258341/258342 on HOLD.",
+   "ru": "Кабели G0-EGNUC-D48-01B-WP01.01/.02/.03 (3x(5x185), по 70 м, ESPS-LC-001 ред. 5.1) идут от РУНН G0-EENUC-D48-01C к «щиту резервного электрообогрева, ввод 2 G0-EGNUC-D48-01B» – номер помещения не указан, такого щита на площадке нет. От того же РУНН уже запитан магистральный щит резервного электрообогрева G0-EGNUC-D48-101-01B двумя кабелями 5x150 (EH-EOES-LC-100, проложены и расключены 09–10.2026). Ответ на TQS-GPP-RHI-GSP-EL-05933 – только ссылки на ZM-001_05 AS02 л.7 (3QF8.1), LC-001_06 л.12-13, SF-001_05 л.18 поз.95. Не прокладывать – новый TQ: дублирование или какой щит и где. IWP 253118/254581/254582 и 256891/258341/258342 – HOLD.",
+   "cables": [
+    {
+     "t": "G0-EGNUC-D48-01B-WP01.01",
+     "f": "LV switchgear G0-EENUC-D48-01C",
+     "o": "Backup heating board input 2 G0-EGNUC-D48-01B (not found)",
+     "ty": "ВВГнг(A)-LS 3x(5x185)",
+     "ln": "70",
+     "dwg": "GLE-(G0-D4810BX0)-EL-ESPS-LC-001"
+    },
+    {
+     "t": "G0-EGNUC-D48-01B-WP01.02",
+     "f": "LV switchgear G0-EENUC-D48-01C",
+     "o": "Backup heating board input 2 G0-EGNUC-D48-01B (not found)",
+     "ty": "ВВГнг(A)-LS 3x(5x185)",
+     "ln": "70",
+     "dwg": "GLE-(G0-D4810BX0)-EL-ESPS-LC-001"
+    },
+    {
+     "t": "G0-EGNUC-D48-01B-WP01.03",
+     "f": "LV switchgear G0-EENUC-D48-01C",
+     "o": "Backup heating board input 2 G0-EGNUC-D48-01B (not found)",
+     "ty": "ВВГнг(A)-LS 3x(5x185)",
+     "ln": "70",
+     "dwg": "GLE-(G0-D4810BX0)-EL-ESPS-LC-001"
+    }
+   ],
+   "imgs": []
+  },
+  {
+   "id": "UG-005",
+   "date": "04.11.2026",
+   "from": "RHI E&I (site check)",
+   "project": "D48",
+   "unit": "G0-D4810BX0",
+   "status": "HOLD",
+   "title": "EPNUC-D48-04 outdoor lighting panel not found – cable on HOLD, new TQ",
+   "en": "Cable G0-EPNUC-D48-04-WP01 (5x16, 68 m, ESPS-LC-001 rev 04H – old revision) goes from main work lighting board G0-EPNUC-D48-01 to substation outdoor lighting panel G0-EPNUC-D48-04 – no room / location given and the panel is not on site. The tracker has no outgoing cables from EPNUC-D48-04 (TQ EL-05519 mentions G0-EPNUC-D48-04-01-XDI04-WP01.3PH to the piperack on tray G0-CWLV-04850, not in tracker). Do not pull – new TQ for panel location, supply and latest LC-001 revision. IWP 114490 / 190096 on HOLD.",
+   "ru": "Кабель G0-EPNUC-D48-04-WP01 (5x16, 68 м, ESPS-LC-001 ред. 04H – старая ревизия) идёт от магистрального щита рабочего освещения G0-EPNUC-D48-01 к панели наружного освещения подстанции G0-EPNUC-D48-04 – место не указано, панели на площадке нет. В трекере нет отходящих кабелей от EPNUC-D48-04 (в TQ EL-05519 упомянут G0-EPNUC-D48-04-01-XDI04-WP01.3PH на эстакаду по лотку G0-CWLV-04850 – в трекере отсутствует). Не прокладывать – новый TQ по месту, поставке панели и актуальной ревизии LC-001. IWP 114490 / 190096 – HOLD.",
+   "cables": [
+    {
+     "t": "G0-EPNUC-D48-04-WP01",
+     "f": "Main work lighting board G0-EPNUC-D48-01",
+     "o": "Outdoor lighting panel G0-EPNUC-D48-04 (not found)",
+     "ty": "ВВГнг(A)-LS 5x16",
+     "ln": "68",
+     "dwg": "GLE-(G0-D4810BX0)-EL-ESPS-LC-001"
+    }
+   ],
+   "imgs": []
+  }
+ ]
 }
