@@ -69,6 +69,16 @@ jobs:
             --base tools/1801_skeleton.json --current data_1801.json \
             --out data_1801.json 2>&1 | tee -a build_log.txt
 
+      - name: Build data_8810.json (8810)
+        if: steps.chk.outputs.count != '0'
+        continue-on-error: true
+        run: |
+          set -o pipefail
+          echo "===== 8810 =====" | tee -a build_log.txt
+          python3 tools/build_data.py --site 8810 --input input \
+            --base tools/8810_skeleton.json --current data_8810.json \
+            --out data_8810.json 2>&1 | tee -a build_log.txt
+
       - name: Build data_cold.json (cold cables – heat tracing)
         if: steps.chk.outputs.count != '0'
         continue-on-error: true
@@ -127,6 +137,6 @@ jobs:
           find input -type f -iname '*.xls*' -delete
           git config user.name ccr-auto-update
           git config user.email ccr-auto-update@users.noreply.github.com
-          git add -A input data.json data_1801.json data_d48.json data_cold.json rfi_ccr.json rfi_d48.json rfi_cold.json rfi_1801.json areas sw.js tracker/data.json tq/data.json
+          git add -A input data.json data_1801.json data_8810.json data_d48.json data_cold.json rfi_ccr.json rfi_d48.json rfi_cold.json rfi_1801.json rfi_8810.json areas sw.js tracker/data.json tq/data.json
           git commit -m "Automatic data update" || echo "nothing to commit"
           git push

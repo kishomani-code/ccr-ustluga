@@ -30,6 +30,6 @@ out = {'ver': datetime.datetime.now().strftime('%Y%m%d%H%M'), 'date': date,
        'sysa': {k: [sname.get(k, ''), [[ix[n], m] for n, m in c.most_common()]] for k, c in sorted(sysc.items())},
        'pos': {k: ix[c.most_common(1)[0][0]] for k, c in sorted(posc.items())},
        'pts': [[p, ix.get(n, -1), st] for p, n, st in pts],
-       'area': {'CCR': ix.get('Кахаров И.С.', -1), 'D48': ix.get('Кузьмийчук К.В.', -1)}}
+       'area': {'CCR': ix.get('Кахаров И.С.', -1), '1801': ix.get('Кахаров И.С.', -1), 'D48': ix.get('Кузьмийчук К.В.', -1), '8810': ix.get('Зверюков А.С.', -1)}}
 json.dump(out, open('ga.json', 'w'), ensure_ascii=False, separators=(',', ':'))
 print(len(names), 'people ·', len(sub), 'subsystems ·', len(pts), 'report points')

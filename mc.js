@@ -3,7 +3,7 @@
 // Data: rfi_<site>.json (subsystem per IWP line, cable RFI from Cable RAWP, equipment RFI from E&I equipment control).
 (function () {
   const MC = window.MC = {d: null, busy: false};
-  const SITE = PRJ === '1801' ? '1801' : PRJ === 'D48' ? 'd48' : PRJ === 'COLD' ? 'cold' : 'ccr';
+  const SITE = PRJ === '8810' ? '8810' : PRJ === '1801' ? '1801' : PRJ === 'D48' ? 'd48' : PRJ === 'COLD' ? 'cold' : 'ccr';
   const F = 'rfi_' + SITE + '.json', DC = 'appdata-v1';
   const P = (d, n) => n ? Math.round(100 * d / n) : 0;
   const fm = v => fmtn(Math.round(v));
@@ -153,7 +153,7 @@
     m = document.createElement('div'); m.id = 'sidem';
     m.innerHTML = `<div class="smb" onclick="document.getElementById('sidem').remove()"></div><nav class="smp"><div class="smh">Ust-Luga GPP · E&I</div>
       ${it('📊', 'Overall dashboard (total project)', "go('#/td')")}
-      <div class="sms">Projects</div>${it('🏢', 'CCR', "projSwitch('CCR')", PRJ === 'CCR', 1)}${it('🌳', '1801', "projSwitch('1801')", PRJ === '1801', 1)}${it('⚡', 'D48', "projSwitch('D48')", PRJ === 'D48', 1)}${it('❄️', LANG === 'ru' ? 'Холодные кабели' : 'Cold cables', "projSwitch('COLD')", PRJ === 'COLD', 1)}${it('🌍', 'Other area', "go('#/oa')")}
+      <div class="sms">Projects</div>${it('🏢', 'CCR', "projSwitch('CCR')", PRJ === 'CCR', 1)}${it('🌳', '1801', "projSwitch('1801')", PRJ === '1801', 1)}${it('⚡', 'D48', "projSwitch('D48')", PRJ === 'D48', 1)}${it('🚒', '8810', "projSwitch('8810')", PRJ === '8810', 1)}${it('❄️', LANG === 'ru' ? 'Холодные кабели' : 'Cold cables', "projSwitch('COLD')", PRJ === 'COLD', 1)}${it('🌍', 'Other area', "go('#/oa')")}
       <div class="sms">${PRJ === 'COLD' ? 'Cold cables' : PRJ}</div>${it('🏠', 'Home', "go('#/')")}${it('🔍', 'RFI', "go('#/rf')")}${it('🏁', 'Mechanical completion', "go('#/mc')")}${it('🧭', 'System block diagrams', "go('#/bd')")}${it('📝', 'Punch list', "go('#/pl')")}${it('🔗', 'Cross-punch report', "openXPunch()")}${window.LT ? it('🔒', 'LOTO', "go('#/lt')") : ''}${it('💡', 'Can report', "go('#/cr')")}
       <div class="sms">Language</div><div style="display:flex;gap:6px;flex-wrap:wrap;padding:0 12px 8px">${L.map(([k, l]) => `<button class="chip ${LANG === k ? 'on' : ''}" data-nt="1" onclick="document.getElementById('sidem').remove();setLang('${k}')">${l}</button>`).join('')}</div>
       <label class="smi" style="display:flex;gap:8px;align-items:center"><input type="checkbox" ${showTot() ? 'checked' : ''} onchange="try{localStorage.setItem('gpp_showtot',this.checked?'1':'0')}catch(e){};document.getElementById('sidem').remove();route()"> Show total project on CCR / D48 home</label>

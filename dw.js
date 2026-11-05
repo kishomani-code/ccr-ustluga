@@ -10,8 +10,8 @@
   function cget(f) { if (!('caches' in window)) return Promise.resolve(null); return caches.open(DC).then(c => c.match(f)).then(r => r ? r.json() : null).catch(() => null); }
   function set(d) { if (!d || !d.files) return; const first = !DW.d; DW.d = d; if (first && /^#\/(dg|c|p|i|s|q)(\/|$)/.test(location.hash)) { try { route(); } catch (e) {} } }
   DW.load = function () { cget('dw.json').then(d => { if (d) set(d); return net('dw.json'); }).then(d => set(d)).catch(() => {}); };
-  const TIT = {CCR: ['G0-D1810BX0', 'G0-D1801FX0'], D48: ['G0-D4810BX0', 'G0-D4801FX0'], COLD: ['G0-A10200X0', 'G0-D10250X0', 'G1-A30210X0']};
-  const CODE = '([A-Z]{2}-[A-Z0-9]{2,5}(?:-[A-Z]{2})?-\\d{3}(?:\\.\\d+)?)';
+  const TIT = {'8810': ['G0-D8810BX0', 'G0-D8801FX0'], '1801': ['G0-D1801FX0'], CCR: ['G0-D1810BX0', 'G0-D1801FX0'], D48: ['G0-D4810BX0', 'G0-D4801FX0'], COLD: ['G0-A10200X0', 'G0-D10250X0', 'G1-A30210X0']};
+  const CODE = '([A-Z]{2}-[A-Z0-9]{2,5}(?:-[A-Z]{2,5})?-\\d{3}(?:\\.\\d+)?)';
   DW.FOLDER = () => 'https://drive.google.com/drive/folders/' + ((DW.d && DW.d.folder) || '1GfmOmZEEHLM53FKvYrbQehp0-NIm5pj8');
   // all document keys found in a text (full number, "title code", or short code like "IN-SPAP-LR p.119")
   DW.keys = function (txt) {
@@ -24,7 +24,7 @@
       while ((m = rc.exec(s))) { const code = m[1] + '-' + (m[2] || '001'); (TIT[PRJ] || []).forEach(t => add(t + '|' + code)); } }
     return out;
   };
-  const url = id => 'https://drive.google.com/file/d/' + id + '/view';
+  const url = id => String(id).startsWith('local:') ? encodeURI(String(id).slice(6)) : 'https://drive.google.com/file/d/' + id + '/view';   // v4.23: local = PDF stored in the app (dwg/)
   DW.btn = function (k, small) { const L2 = DW.d && DW.d.files[k]; if (!L2) return ''; const f = L2[0]; const code = k.split('|')[1];
     return `<a class="chip on" data-nt style="text-decoration:none;${small ? 'font-size:12px;padding:3px 9px;' : ''}" href="${url(f[1])}" target="_blank" rel="noopener" onclick="event.stopPropagation()">📄 ${esc(small ? 'PDF rev ' + f[0] : code + ' rev ' + f[0])}</a>`; };
   DW.row = function (k) { const L2 = DW.d.files[k]; if (!L2) return '';
