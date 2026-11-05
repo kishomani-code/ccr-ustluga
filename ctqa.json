@@ -1,0 +1,327 @@
+{
+"date": "05.11.2026",
+"by": "ПОЖНЕФТЕГАЗ (LLC PNG)",
+"src": "TQ_Register AFA&FFS CCR 21.10.2026 – client response",
+"a": {
+"CTQ-01": {
+"r": "CLOSE",
+"rr": "ЗАКРЫТЬ",
+"cru": "Откорректировано и учтено в rev. 04",
+"cen": "Corrected and included in rev. 04.",
+"ke": "Rev 04 cable schedule (AL p.59): JU-2014-C01 → JU-2014, JU-2015-C01 → JU-2015. Wrong boxes JU-214 / JU-215 removed. Small leftover: label \"JU-215-C01\" still on wiring diagram (AL p.53).",
+"kr": "Rev 04 кабельный журнал (AL с.59): JU-2014-C01 → JU-2014, JU-2015-C01 → JU-2015. Ошибочные JU-214 / JU-215 удалены. Остаток: надпись «JU-215-C01» на схеме (AL с.53).",
+"ne": "Close. Use rev 04 for termination. Ask to fix label JU-215-C01 at next revision (no TQ needed).",
+"nr": "Закрыть. Подключение по rev 04. Надпись JU-215-C01 исправить в следующей ревизии (TQ не нужен)."
+},
+"CTQ-02": {
+"r": "CLOSE",
+"rr": "ЗАКРЫТЬ",
+"cru": "Согласно записи в ЖАН, количество и тип резисторов/диодов определять по месту согласно РЭ на оборудование. Данный материал в спецификацию вносится не будет. Материал заказан в рамках МТО КИПиА и в наличии на складе.",
+"cen": "As per the author supervision log (ZhAN), quantity and type of resistors / diodes are decided on site as per the equipment manual. Not added to the MTO. Material is ordered under I&C MTO and is in the warehouse.",
+"ke": "Rev 04 SF still has no diodes / resistors – same as client answer.",
+"kr": "В SF rev 04 диодов / резисторов нет – совпадает с ответом.",
+"ne": "Close. Take 32 diodes 1N4001 + 2 resistors 2 kΩ from I&C (KIPiA) warehouse. Ask client for material code / issue note. Record in ZhAN.",
+"nr": "Закрыть. Получить 32 диода 1N4001 + 2 резистора 2 кОм со склада КИПиА. Запросить код материала / накладную. Запись в ЖАН."
+},
+"CTQ-03": {
+"r": "CLOSE",
+"rr": "ЗАКРЫТЬ",
+"cru": "Откорректировано и учтено в rev. 04",
+"cen": "Corrected and included in rev. 04.",
+"ke": "Rev 04 cable schedule (AL p.74): JB-002-C01/P01 and JB-008-C01/P01 are added.",
+"kr": "Rev 04 кабельный журнал (AL с.74): JB-002-C01/P01 и JB-008-C01/P01 добавлены.",
+"ne": "Close. Add 4 cables to tracker / IWP from rev 04.",
+"nr": "Закрыть. Внести 4 кабеля в трекер / IWP по rev 04."
+},
+"CTQ-04": {
+"r": "CLARIFY",
+"rr": "УТОЧНИТЬ",
+"cru": "Согласно техническому требованию IN-SD-051, подключение противопожарный клапанов осуществлено через 1 клеммную коробку. Если требуется изменение в РД - необходимо править документ с тех. Требованиями",
+"cen": "As per technical requirement IN-SD-051, fire dampers are connected through 1 junction box. For a design change, the technical requirement document must be revised first.",
+"ke": "Answer covers only \"1 box per damper\". Our point (230 V and 24 V in the same JB Type 10) is not answered. Rev 04 still shows both circuits in one box. JB-039-P01 type looks aligned in rev 04 – confirm.",
+"kr": "Ответ только про «1 коробку на клапан». Вопрос про 230 В и 24 В в одной коробке Type 10 не закрыт. В rev 04 цепи в одной коробке. Тип JB-039-P01 в rev 04 выглядит исправленным – подтвердить.",
+"ne": "Accept 1 box. Ask written OK (email / ZhAN) that 230 V + 24 V in one JB is allowed: separate terminal group + W08 sign. TQS only if client QC does not accept.",
+"nr": "Принять 1 коробку. Запросить письменное подтверждение (письмо / ЖАН): 230 В + 24 В в одной коробке допустимо, отдельная группа клемм + знак W08. TQS – только если ОТК заказчика не согласен."
+},
+"CTQ-05": {
+"r": "CLOSE",
+"rr": "ЗАКРЫТЬ",
+"cru": "Согласно записи в ЖАН, количество и тип резисторов/диодов определять по месту согласно РЭ на оборудование. Данный материал в спецификацию вносится не будет. Материал заказан в рамках МТО КИПиА и в наличии на складе.",
+"cen": "Same as CTQ-02: decided on site as per manual, not in MTO, material in I&C warehouse.",
+"ke": "Rev 04 note 3 still says 680 Ω \"complete with MDU-1-R3 module\". Duplicate label at JB-007 not answered.",
+"kr": "Rev 04 примечание 3: 680 Ом «комплектно с модулем МДУ-1-R3». Дубль надписи JB-007 без ответа.",
+"ne": "Close. Take 680 Ω from MDU kit / I&C warehouse. Check JB-007 label on site (4 resistors).",
+"nr": "Закрыть. 680 Ом – из комплекта МДУ / склад КИПиА. JB-007 проверить по месту (4 резистора)."
+},
+"CTQ-06": {
+"r": "CLOSE",
+"rr": "ЗАКРЫТЬ",
+"cru": "Действительно, для УДП в составе ОЛ комплектно идёт плата ТРБ-110, в рамках приводов ДУ, комплектно со шкафом ДУ \"ШКВАЛ\" \"ВЕЗА\" все остальные (21 шт. ТРБ-110) предусмотрены в комплекте со шкафом.",
+"cen": "Correct: for the manual call points the TRB-110 board comes complete. For the remote-control actuators, all other TRB-110 (21 pcs) come complete with the VEZA \"SHKVAL\" control cabinet.",
+"ke": "Client: 21 pcs TRB-110 come with VEZA cabinet. Our count from drawing was 24 for SD boxes – 3 pcs difference.",
+"kr": "Заказчик: 21 шт. ТРБ-110 в комплекте шкафа ВЕЗА. По чертежу у нас 24 шт. для коробок SD – разница 3 шт.",
+"ne": "Close. At VEZA delivery count TRB-110 boards. If less than needed, report shortage to client.",
+"nr": "Закрыть. При поставке ВЕЗА пересчитать платы ТРБ-110. Если не хватает – сообщить заказчику."
+},
+"CTQ-07": {
+"r": "RAISE TQS",
+"rr": "ВЫПУСТИТЬ TQS",
+"cru": "Откорректировано, требуется корректировка SF в рамках технического запроса (TQS)",
+"cen": "Corrected. SF correction is needed by a technical query (TQS).",
+"ke": "Rev 04 cable schedule (AL p.73) still: SIB-401-C01 conduit 75 m, cable 70 m. Not fixed.",
+"kr": "Rev 04 (AL с.73): SIB-401-C01 труба 75 м, кабель 70 м. Не исправлено.",
+"ne": "Raise TQS (client agrees). Ask cable ≥ 80 m in AL + SF. Site: cut by actual length.",
+"nr": "Выпустить TQS (заказчик согласен). Кабель ≥ 80 м в AL и SF. На площадке – резать по факту."
+},
+"CTQ-08": {
+"r": "SEND TO IN-SPAP",
+"rr": "НАПРАВИТЬ В IN-SPAP",
+"cru": "IN-SPAP",
+"cen": "IN-SPAP (question for the IN-SPAP designer).",
+"ke": "Rev 04: BR-304-N01 and BR-022-N01 in cable schedule, BR-021 / BR-022 on loop diagram. LR still has other names (BR-304 missing, SIB-638 vs SIB-629).",
+"kr": "Rev 04: BR-304-N01 и BR-022-N01 в КЖ, BR-021 / BR-022 на схеме. В LR другие названия (нет BR-304, SIB-638 вместо SIB-629).",
+"ne": "Send same TQ to Gazprom Automation (IN-SPAP-LR). LR must follow FA-PSGN rev 04 loop list.",
+"nr": "Направить в Газпром Автоматизация (IN-SPAP-LR). LR привести к перечню линий FA-PSGN rev 04."
+},
+"CTQ-09": {
+"r": "CLOSE",
+"rr": "ЗАКРЫТЬ",
+"cru": "Откорректировано, приведенно соотвествие с SF",
+"cen": "Corrected, aligned with SF.",
+"ke": "SF rev 04: PVC conduit 775 + 7484 = 8259 m (rev 03: 8589 m). AL rev 04 cable total 8944 m.",
+"kr": "SF rev 04: труба ПВХ 775 + 7484 = 8259 м (rev 03: 8589 м). Кабель всего по AL rev 04 – 8944 м.",
+"ne": "Close. If conduit runs short on site, request extra by MTO.",
+"nr": "Закрыть. При нехватке трубы – дозаказ по МТО."
+},
+"CTQ-10": {
+"r": "CLOSE",
+"rr": "ЗАКРЫТЬ",
+"cru": "Проектная организация в праве называть тег кабельной линии согласно своим шаблонам, в данной случае было принят тег кабельной линии по зоне, а не по зданию (BX0 - FX0)",
+"cen": "The designer may name cable tags by its own template. Here the tag is by zone, not by building (BX0 – FX0).",
+"ke": "Rev 04 still has both: G0-D1801FX0-SD on loop diagram, G0-D1810BX0-SD in cable schedule.",
+"kr": "В rev 04 оба варианта: G0-D1801FX0-SD на схеме, G0-D1810BX0-SD в КЖ.",
+"ne": "Close (designer choice). Site: use cable schedule tags G0-D1810BX0-SD-xxxx for labels and tracker.",
+"nr": "Закрыть (выбор проектировщика). На площадке маркировка и трекер – по КЖ: G0-D1810BX0-SD-xxxx."
+},
+"CTQ-12": {
+"r": "RAISE TQS",
+"rr": "ВЫПУСТИТЬ TQS",
+"cru": "Требуется запуск технического запроса на корректировку (TQS)",
+"cen": "A technical query (TQS) for correction must be raised.",
+"ke": "SF rev 04 still has \"G0-D1801FX-\" (70 places) and no product codes for JB / JU.",
+"kr": "В SF rev 04 «G0-D1801FX-» (70 мест), нет кодов продукции JB / JU.",
+"ne": "Raise TQS (client agrees). Add CTQ-14 text point in same TQS.",
+"nr": "Выпустить TQS (заказчик согласен). Добавить пункт CTQ-14 в этот же TQS."
+},
+"CTQ-13": {
+"r": "CLOSE",
+"rr": "ЗАКРЫТЬ",
+"cru": "Откорректировано и учтено в rev. 04",
+"cen": "Corrected and included in rev. 04.",
+"ke": "BTM-021 not found in rev 04.",
+"kr": "BTM-021 в rev 04 нет.",
+"ne": "Close.",
+"nr": "Закрыть."
+},
+"CTQ-14": {
+"r": "NOT FIXED",
+"rr": "НЕ ИСПРАВЛЕНО",
+"cru": "Откорректировано и учтено в rev. 04",
+"cen": "Corrected and included in rev. 04.",
+"ke": "SF rev 04 still: RU \"медная отожженная\" (annealed) vs EN \"tinned copper core\" for the same code (ECBCU00371 etc.).",
+"kr": "В SF rev 04 осталось: RU «медная отожженная», EN «tinned» для одного кода (ECBCU00371 и др.).",
+"ne": "Reply: not fixed in SF rev 04. Low impact – add to CTQ-12 TQS. Check delivered cable passport.",
+"nr": "Ответить: в SF rev 04 не исправлено. Влияние малое – включить в TQS по CTQ-12. Проверить паспорт кабеля."
+},
+"CTQ-15": {
+"r": "CLOSE",
+"rr": "ЗАКРЫТЬ",
+"cru": "В РД ECAEN00097, общепром исполнения, М20х1,15",
+"cen": "Design uses ECAEN00097, industrial (non-Ex) version, M20x1.5.",
+"ke": "SF rev 04 has ECAEN00097 (industrial gland, M20x1.5), 495 pcs.",
+"kr": "В SF rev 04 ECAEN00097 (общепром., M20x1,5), 495 шт.",
+"ne": "Close. At material receipt check gland range for JB28-02P10J-NM (OD 12–18 mm).",
+"nr": "Закрыть. При приёмке проверить диапазон ввода для JB28-02P10J-NM (Ø 12–18 мм)."
+},
+"CTQ-16": {
+"r": "SEND TO IN-SPAP",
+"rr": "НАПРАВИТЬ В IN-SPAP",
+"cru": "IN-SPAP",
+"cen": "IN-SPAP (question for the IN-SPAP designer).",
+"ke": "Rev 04 FA-PSGN unchanged: JB24-01P10S-NM, cabinet JF-CA-1001.",
+"kr": "FA-PSGN rev 04 без изменений: JB24-01P10S-NM, шкаф JF-CA-1001.",
+"ne": "Send to Gazprom Automation: SPAP-LR to follow FA-PSGN (JB24, JF-CA-1001). Hold termination of these loops.",
+"nr": "Направить в Газпром Автоматизация: SPAP-LR по FA-PSGN (JB24, JF-CA-1001). Подключение этих линий – на удержании."
+},
+"CTQ-17": {
+"r": "SEND TO IN-SPAP",
+"rr": "НАПРАВИТЬ В IN-SPAP",
+"cru": "IN-SPAP",
+"cen": "IN-SPAP (question for the IN-SPAP designer).",
+"ke": "Rev 04 still 2 cables: JU-2014-C01 (325 m), JU-2015-C01 (390 m).",
+"kr": "В rev 04 2 кабеля: JU-2014-C01 (325 м), JU-2015-C01 (390 м).",
+"ne": "Send to Gazprom Automation: SPAP-LR to show 2 BIAL cables and terminals.",
+"nr": "Направить в Газпром Автоматизация: в SPAP-LR 2 кабеля BIAL и клеммы."
+},
+"CTQ-18": {
+"r": "NO ANSWER",
+"rr": "НЕТ ОТВЕТА",
+"cru": "",
+"cen": "",
+"ke": "Not answered by ПОЖНЕФТЕГАЗ (outside their scope).",
+"kr": "ПОЖНЕФТЕГАЗ не ответил (не их объём).",
+"ne": "Chase / send to: Gazprom Automation (SPAP-LR) + GLE (AOVK).",
+"nr": "Напомнить / направить: Газпром Автоматизация (SPAP-LR) + ГЛИ (AOVK)."
+},
+"CTQ-19": {
+"r": "NO ANSWER",
+"rr": "НЕТ ОТВЕТА",
+"cru": "",
+"cen": "",
+"ke": "Not answered by ПОЖНЕФТЕГАЗ (outside their scope).",
+"kr": "ПОЖНЕФТЕГАЗ не ответил (не их объём).",
+"ne": "Chase / send to: Gazprom Automation (SPAP-LR) – LR vs FA-SPBA 04.1.",
+"nr": "Напомнить / направить: Газпром Автоматизация (SPAP-LR) – LR / FA-SPBA 04.1."
+},
+"CTQ-20": {
+"r": "NO ANSWER",
+"rr": "НЕТ ОТВЕТА",
+"cru": "",
+"cen": "",
+"ke": "Not answered by ПОЖНЕФТЕГАЗ (outside their scope).",
+"kr": "ПОЖНЕФТЕГАЗ не ответил (не их объём).",
+"ne": "Chase / send to: GLE (EL, EMSV-LC) + Gazprom Automation.",
+"nr": "Напомнить / направить: ГЛИ (EL, EMSV-LC) + Газпром Автоматизация."
+},
+"CTQ-21": {
+"r": "NO ANSWER",
+"rr": "НЕТ ОТВЕТА",
+"cru": "",
+"cen": "",
+"ke": "Not answered by ПОЖНЕФТЕГАЗ (outside their scope).",
+"kr": "ПОЖНЕФТЕГАЗ не ответил (не их объём).",
+"ne": "Chase / send to: Gazprom Automation + GLE (CS telecom).",
+"nr": "Напомнить / направить: Газпром Автоматизация + ГЛИ (CS связь)."
+},
+"CTQ-22": {
+"r": "NO ANSWER",
+"rr": "НЕТ ОТВЕТА",
+"cru": "",
+"cen": "",
+"ke": "Not answered by ПОЖНЕФТЕГАЗ (outside their scope).",
+"kr": "ПОЖНЕФТЕГАЗ не ответил (не их объём).",
+"ne": "Chase / send to: Gazprom Automation (SPAP-LR).",
+"nr": "Напомнить / направить: Газпром Автоматизация (SPAP-LR)."
+},
+"CTQ-23": {
+"r": "SEND TO IN-SPAP",
+"rr": "НАПРАВИТЬ В IN-SPAP",
+"cru": "IN-SPAP",
+"cen": "IN-SPAP (question for the IN-SPAP designer).",
+"ke": "Not FA-PSGN issue only – SPAP-SF uses other code.",
+"kr": "Не только FA-PSGN – в SPAP-SF другой код.",
+"ne": "Send to Gazprom Automation (SPAP-SF code ECBCU00249 vs ECBJB00014).",
+"nr": "Направить в Газпром Автоматизация (код ECBCU00249 / ECBJB00014)."
+},
+"CTQ-24": {
+"r": "SEND TO IN-SPAP",
+"rr": "НАПРАВИТЬ В IN-SPAP",
+"cru": "IN-SPAP",
+"cen": "IN-SPAP (question for the IN-SPAP designer).",
+"ke": "FA-PSGN side OK. Missing in SPAP-LR.",
+"kr": "Со стороны FA-PSGN ОК. Нет в SPAP-LR.",
+"ne": "Send to Gazprom Automation: add 9 cables JP-CC-4010/4020 to LR. Hold termination.",
+"nr": "Направить в Газпром Автоматизация: добавить 9 кабелей JP-CC-4010/4020 в LR. Подключение – на удержании."
+},
+"CTQ-25": {
+"r": "NO ANSWER",
+"rr": "НЕТ ОТВЕТА",
+"cru": "",
+"cen": "",
+"ke": "Not answered by ПОЖНЕФТЕГАЗ (outside their scope).",
+"kr": "ПОЖНЕФТЕГАЗ не ответил (не их объём).",
+"ne": "Chase / send to: Gazprom Automation / cabinet vendor.",
+"nr": "Напомнить / направить: Газпром Автоматизация / поставщик шкафов."
+},
+"CTQ-26": {
+"r": "RAISE TQS",
+"rr": "ВЫПУСТИТЬ TQS",
+"cru": "Требуется запуск технического запроса на корректировку (TQS)",
+"cen": "A technical query (TQS) for correction must be raised.",
+"ke": "SF rev 04 still: F10 = 21 pcs, no W08 signs.",
+"kr": "SF rev 04: F10 = 21 шт., знаков W08 нет.",
+"ne": "Raise TQS (client agrees): +5 F10 for SIB-401…405, W08 for 230 V boxes.",
+"nr": "Выпустить TQS (заказчик согласен): +5 F10 для SIB-401…405, W08 для коробок 230 В."
+},
+"CTQ-27": {
+"r": "CLOSE",
+"rr": "ЗАКРЫТЬ",
+"cru": "Откорректировано и учтено в rev. 04",
+"cen": "Corrected and included in rev. 04.",
+"ke": "Rev 04 note 2 now: dampers in HV package GLE-(G0-D1810BX0)-HV-OVKV-001 (not AOVK). Fixed.",
+"kr": "Rev 04 примечание 2: клапаны в комплекте ОВ GLE-(G0-D1810BX0)-HV-OVKV-001 (не AOVK). Исправлено.",
+"ne": "Close. Get HV-OVKV-001 (not in our drawings folder) to check 46 dampers + actuator cables.",
+"nr": "Закрыть. Получить HV-OVKV-001 (нет в нашей папке) – проверить 46 клапанов и кабели приводов."
+},
+"CTQ-28": {
+"r": "NO ANSWER",
+"rr": "НЕТ ОТВЕТА",
+"cru": "",
+"cen": "",
+"ke": "Not answered by ПОЖНЕФТЕГАЗ (outside their scope).",
+"kr": "ПОЖНЕФТЕГАЗ не ответил (не их объём).",
+"ne": "Chase / send to: HVAC automation designer (AOVK).",
+"nr": "Напомнить / направить: Проектировщик автоматики ОВ (AOVK)."
+},
+"CTQ-29": {
+"r": "NO ANSWER",
+"rr": "НЕТ ОТВЕТА",
+"cru": "",
+"cen": "",
+"ke": "Not answered by ПОЖНЕФТЕГАЗ (outside their scope).",
+"kr": "ПОЖНЕФТЕГАЗ не ответил (не их объём).",
+"ne": "Chase / send to: Gazprom Automation (AOVK).",
+"nr": "Напомнить / направить: Газпром Автоматизация (AOVK)."
+},
+"CTQ-30": {
+"r": "NO ANSWER",
+"rr": "НЕТ ОТВЕТА",
+"cru": "",
+"cen": "",
+"ke": "Not answered by ПОЖНЕФТЕГАЗ (outside their scope).",
+"kr": "ПОЖНЕФТЕГАЗ не ответил (не их объём).",
+"ne": "Chase / send to: GLE (Telecom GGSO) + Gazprom Automation.",
+"nr": "Напомнить / направить: ГЛИ (связь GGSO) + Газпром Автоматизация."
+},
+"CTQ-31": {
+"r": "CHECK EMSV",
+"rr": "ПРОВЕРИТЬ EMSV",
+"cru": "Откорректировано и учтено в rev. 04",
+"cen": "Corrected and included in rev. 04.",
+"ke": "Client answer is for FA-PSGN rev 04 (note 1.1: GLE does 220 V to MDU). Our issue is in EMSV-LC (we have rev 04.4 only).",
+"kr": "Ответ по FA-PSGN rev 04 (прим. 1.1: ГЛИ подводит 220 В к МДУ). Наш вопрос – в EMSV-LC (у нас только rev 04.4).",
+"ne": "Get latest EMSV-LC. Check FD-1111, FD-2104, FD-2105 cables and FD-1126 / FD-2109 MDU. If still wrong – TQ to GLE (EL).",
+"nr": "Получить последнюю EMSV-LC. Проверить кабели FD-1111, FD-2104, FD-2105 и МДУ для FD-1126 / FD-2109. Если ошибка осталась – TQ в ГЛИ (EL)."
+},
+"CTQ-32": {
+"r": "NO ANSWER",
+"rr": "НЕТ ОТВЕТА",
+"cru": "",
+"cen": "",
+"ke": "Not answered – but FA-SPBA is ПОЖНЕФТЕГАЗ document.",
+"kr": "Нет ответа – FA-SPBA документ ПОЖНЕФТЕГАЗ.",
+"ne": "Chase / send to: ПОЖНЕФТЕГАЗ (own FA-SPBA document – they must answer).",
+"nr": "Напомнить / направить: ПОЖНЕФТЕГАЗ (их документ FA-SPBA – ответ обязателен)."
+},
+"CTQ-33": {
+"r": "NO ANSWER",
+"rr": "НЕТ ОТВЕТА",
+"cru": "",
+"cen": "",
+"ke": "Not answered by ПОЖНЕФТЕГАЗ (outside their scope).",
+"kr": "ПОЖНЕФТЕГАЗ не ответил (не их объём).",
+"ne": "Chase / send to: GLE (EL, EMSV-LC) + GLE (Telecom GGSO).",
+"nr": "Напомнить / направить: ГЛИ (EL, EMSV-LC) + ГЛИ (связь GGSO)."
+}
+}
+}
