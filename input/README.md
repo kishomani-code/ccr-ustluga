@@ -16,6 +16,9 @@ File names must contain (upper/lower case and _ or space do not matter):
 | Documents register | `documents register` |
 | Project TQ register | `Technical Query Register` |
 | CTQ register | `CTQ Register` or `CCR TQ_Register` |
+| NCR register (532RHI-QA-RGS-006) | `NCR_Register` |
+| EP-3 E&I materials follow-up (stock / MRF) | `Materials_FollowUp` |
+| Aleksy closure-confirmation file | any .xlsx with title `Подтверждение закрытия` |
 
 Upload only the files that changed – the rest of the data is kept.
 After the update the Excel files are removed from this folder and the result is in `LAST_UPDATE.txt`.
