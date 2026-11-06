@@ -70,7 +70,7 @@ function dwCard(texts, title) { return window.DW ? DW.card(texts, title) : ''; }
 function gaCard(t, subs) { return (window.HO ? HO.card(t, subs) : '') + (window.GA ? GA.card(t, subs) : ''); }   // v4.17
 function punchBox(tag) { const ps = PUBY[tag] || []; if (!ps.length) return ''; const op = ps.filter(p => p.st === 'Open').length;
   return `<div class="card"><div class="h3">Punch items (${ps.length} · open ${op})</div><div class="list">${ps.map(pRow).join('')}</div></div>`; }
-function pRow(p) { return `<button class="li" onclick="go('#/pi/${p.i}')"><div class="m"><div class="t">${DISC_IC(p.d)} № ${esc(p.no)} · ${esc(p.tag || '-')}</div><div class="s">${esc(p.den || p.dru)}</div></div><div class="r">${pb(p)}<div style="margin-top:3px">${pcat(p)}</div>${siteSt(p) ? '<div style="margin-top:3px">' + (siteSt(p).v === 'F' ? '<span class="badge b-ok">✓ site</span>' : '<span class="badge b-no">✗ site</span>') + '</div>' : ''}</div><span class="chev">›</span></button>`; }
+function pRow(p) { return `<button class="li" onclick="go('#/pi/${p.i}')"><div class="m"><div class="t">${DISC_IC(p.d)} № ${esc(p.no)} · ${esc(p.tag || '-')}</div><div class="s">${esc(p.den || p.dru)}</div></div><div class="r">${pb(p)}<div style="margin-top:3px">${pcat(p)}</div>${window.PX ? PX.badge(p) : ''}${siteSt(p) ? '<div style="margin-top:3px">' + (siteSt(p).v === 'F' ? '<span class="badge b-ok">✓ site</span>' : '<span class="badge b-no">✗ site</span>') + '</div>' : ''}</div><span class="chev">›</span></button>`; }
 const SKEY = PRJ === '8810' ? 'g8810_site_v1' : PRJ === '1801' ? 'g1801_site_v1' : PRJ === 'D48' ? 'd48_site_v1' : PRJ === 'COLD' ? 'cold_site_v1' : 'ccr_site_v1'; let S2 = {c: {}, i: {}, m: {}, last: 0, lastText: '', rx: []};
 try { const v = localStorage.getItem(SKEY); if (v) S2 = Object.assign(S2, JSON.parse(v)); } catch (err) {}
 function ssave() { CSTC = {}; try { localStorage.setItem(SKEY, JSON.stringify(S2)); } catch (err) { toast('Could not save - send the report now'); } }
@@ -161,6 +161,9 @@ function route() {
   if (k === 'bm' && window.OA) return OA.bulk(a);   // v4.3 bulk materials (tray, conduits, earthing, supports…)
   if (k === 'lt' && window.LT) return LT.route(rest);   // v4.4 LOTO
   if (k === 'ra') { if (window.RA) return RA.home(); main.innerHTML = '<div class="empty">Loading…</div>'; return; }   // v4.8 client RFI accepted – check (owner)
+  if (k === 'ncr') { if (window.PX) return PX.ncrRoute(a); main.innerHTML = '<div class="empty">Loading…</div>'; return; }   // v4.28 NCR register (px.js + ncr.json)
+  if (k === 'px') { if (window.PX) return PX.route(rest); main.innerHTML = '<div class="empty">Loading…</div>'; return; }   // v4.28 signed PDF / Aleksy / waiting for materials
+  if (k === 'sp') { if (window.SP && window.PX) return SP.route(rest); main.innerHTML = '<div class="empty">Loading…</div>'; return; }   // v4.28 CCR-SPBA focus (sp.js)
   if (k === 'ak') { if (window.AK) return AK.home(); main.innerHTML = '<div class="empty">Loading…</div>'; return; }   // v4.26 Aleksy punch follow-up (ak.js + ak.json)
   if (k === 'ho') { if (window.HO) return a ? HO.view(a) : HO.home(); main.innerHTML = '<div class="empty">Loading…</div>'; return; }   // v4.24 handover before gas-in (ho.js + handover.json)
   if (k === 'ga') { if (window.GA) return GA.home(); main.innerHTML = '<div class="empty">Loading…</div>'; return; }   // v4.17 commissioning contacts (ga.js + ga.json)
@@ -223,6 +226,7 @@ function home() {
    <button class="tile main" style="width:100%;min-height:auto;margin-bottom:4px;background:${ppend ? '#7b3fb3' : '#0b6e6e'};border-color:${ppend ? '#7b3fb3' : '#0b6e6e'};color:#fff" onclick="openReport('punch')"><b>📤 Send punch report to Paul · ${ppend} new punch checks</b><span class="n" style="color:#fff">👷 ${esc(PS_.name || 'tap to set your name')} · ${PRJ === 'COLD' ? 'MAX → Sri ' + REC.tel : 'MAX punch group'}</span></button>
    ${window.HO ? HO.tile() : ''}
    ${window.AK ? AK.tile() : ''}
+   ${window.SP && window.PX ? SP.tile() : ''}${window.PX ? PX.ncrTile() : ''}
    <div class="sect">🏗️ Construction</div><div class="grid">
     ${T2('#/p', 'Panel cable check<br><span style="font-weight:400;font-size:12px">pulled / terminated per panel</span>', `${PAN.length} panels · ${pcomp} complete`, (PAN.length ? Math.round(100 * pcomp / PAN.length) : 0), 'main')}
     ${T2('#/ic', 'Interconnection cables<br><span style="font-weight:400;font-size:12px">to/from other buildings</span>', `${icd}/${ICX.length} complete`, ICX.length ? Math.round(100 * icd / ICX.length) : 0, 'main')}
@@ -399,6 +403,7 @@ function punchHome() {
    <div class="chips"><button class="chip on" onclick="go('#/pp')">📊 Daily progress</button><button class="chip" onclick="openReport('punch')">Send report to Paul</button><button class="chip" onclick="openXPunch()">🔗 Cross-punch report</button><button class="chip" onclick="document.getElementById('pimp2').click()">⬆ Import</button><button class="chip" onclick="askPName('route()')">👷 ${esc(PS_.name || 'Set name')}</button></div>
    <input type="file" id="pimp2" accept=".json,application/json" multiple style="display:none" onchange="importPunch(this.files);this.value=''">
    ${window.AK ? AK.tile() : ''}
+   ${window.PX ? PX.tiles() : ''}
    <button class="tile main" style="width:100%;min-height:auto;margin-bottom:4px" onclick="go('#/pk/all:')"><b>All open punch items (${op.length}) ›</b></button>
    <div class="sect">🛠 By punch type – for site team</div><div class="grid">${PTYX.map(y => { const x = L.filter(p => ptypes(p).includes(y[0])); if (!x.length) return ''; const o = x.filter(p => p.st === 'Open'), oa = o.filter(p => p.cat === 'A').length, pc = Math.round(100 * (x.length - o.length) / x.length);
      return `<button class="tile" onclick="go('#/pk/y:${y[0]}')"><b>${y[1]} ${esc(y[2])}</b><span style="font-size:11px;color:var(--mut)">${esc(y[3])}</span><div><span class="n">${o.length} open / ${x.length}${oa ? ' · A open ' + oa : ''}</span><div class="pc">${pc}% closed</div><div class="pbar"><i style="width:${pc}%"></i></div></div></button>`; }).join('')}</div>
@@ -427,7 +432,7 @@ function punchItem(i) {
   const p = PU[i]; setHead('Punch № ' + p.no, PT.sub[p.sub]);
   const tl = p.tag ? (CBY[p.tag] ? `<span class="link" onclick="go('#/c/${enc(p.tag)}')">${esc(p.tag)}</span>` : PBY[p.tag] ? `<span class="link" onclick="go('#/p/${enc(p.tag)}')">${esc(p.tag)}</span>` : (IBY[p.tag] ? `<span class="link" onclick="go('#/i/${IBY[p.tag][0].i}')">${esc(p.tag)}</span>` : esc(p.tag))) : '';
   main.innerHTML = `<div class="card"><div class="big">Punch № ${esc(p.no)}</div><div style="margin:6px 0">${pb(p)} ${pcat(p)} ${p.pri ? `<span class="badge b-na">${esc(p.pri)}</span>` : ''}</div>
-    ${p.den ? `<div class="note" style="background:#e8f6ee"><b>EN:</b> ${esc(p.den)}</div>` : ''}${p.dru ? `<div class="note" style="background:#eef3f8"><b>RU:</b> ${esc(p.dru)}</div>` : ''}</div>
+    ${p.den ? `<div class="note" style="background:#e8f6ee"><b>EN:</b> ${esc(p.den)}</div>` : ''}${p.dru ? `<div class="note" style="background:#eef3f8"><b>RU:</b> ${esc(p.dru)}</div>` : ''}</div>${window.PX ? PX.card(p) : ''}
    <div class="card"><div class="h3">Site check / Проверка на месте</div>${(() => { const e = siteSt(p);
      return `<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><button class="tile ${e && e.v === 'F' ? 'main' : ''}" style="min-height:58px;${e && e.v === 'F' ? 'background:var(--ok);border-color:var(--ok)' : ''}" onclick="setPunch('${esc(p.no)}','F')"><b>✓ Fixed<br><span style="font-weight:400;font-size:12px">Устранено</span></b></button>
        <button class="tile" style="min-height:58px;${e && e.v === 'N' ? 'background:var(--badbg);border-color:var(--bad)' : ''}" onclick="setPunch('${esc(p.no)}','N')"><b>✗ Not fixed<br><span style="font-weight:400;font-size:12px">Не устранено</span></b></button></div>
@@ -762,7 +767,7 @@ function ownPunch() { const d = VS.OW.d; const one = {}; (S2.rx || []).filter(r 
   copyText(Object.values(one).map(r => [r.no, r.v === 'F' ? 'Fixed' : 'Not fixed', d.split('-').reverse().join('.'), r.tag, r.by].join('\t')).join('\n')).then(() => toast('Punch list copied')); }
 
 // ======== v3.2 modules ========
-const APPV = '4.27';
+const APPV = '4.28';
 const shortT = t => String(t || '').replace(/^G0-D(18|48)10BX0-/, '').replace(/^G0-D(18|48)01FX0-/, 'FX0-');
 const SYSN = {'EL-ESPS': ['Substation 10/0.4 kV & power supply', 'Подстанция 10/0,4 кВ'], 'EL-EMSV': ['Power installation (boards, UPS, motors)', 'Силовое электрооборудование'], 'EL-ESBZ': ['Power supply from utility substation', 'Электроснабжение от ПС'], 'EL-ELOV': ['Indoor lighting', 'Внутреннее освещение'], 'EL-EG02': ['Earthing & lightning protection', 'Заземление и молниезащита'], 'EL-EG01': ['Area earthing', 'Заземление площадки'], 'EH-EOES': ['Electric heating', 'Электрообогрев'], 'EH-AEOG': ['Heat tracing', 'Электрообогрев (кабель)'], 'EH-EOBK': ['Electric heating (other)', 'Электрообогрев'],
   'IN-DCS': ['Distributed Control System (DCS)', 'РСУ'], 'IN-ESD': ['Emergency Shutdown (ESD)', 'ПАЗ'], 'IN-SPAP': ['Fire alarm & fire fighting control (AFA&FFS)', 'АСПС и ПТ'], 'IN-GDSS': ['Gas detection', 'Контроль загазованности'], 'IN-ASUE': ['Utilities control system', 'АСУ ЭО (утилиты)'], 'IN-ASUS': ['Power supply control system', 'АСУ ЭС'], 'IN-ASKU': ['Utility metering (AUMS)', 'АСКУ ЭР'], 'IN-MAEC': ['Rotating equipment monitoring (CMS)', 'МСО и ВО'], 'IN-MFMS': ['Material flow metering (MFMS)', 'СУМП'], 'IN-AKVS': ['Emission monitoring (CEMS)', 'АКВС'], 'IN-INTS': ['Operator training simulator', 'Тренажёр оператора'], 'IN-INSS': ['Information security', 'СОИБ'], 'IN-AOVK': ['HVAC automation', 'Автоматизация ОВиК'], 'IN-AKMP': ['Analyzer system', 'Анализаторы'],

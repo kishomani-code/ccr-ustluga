@@ -120,6 +120,10 @@ jobs:
           if [ -n "$reg" ]; then python3 tools/build_tq.py "$reg" tools/drive_files.json 2>&1 | tee -a build_log.txt; else echo "no TQ register in input - TQ app data unchanged" | tee -a build_log.txt; fi
           echo "===== ALEKSY PUNCH FOLLOW-UP =====" | tee -a build_log.txt
           python3 tools/build_ak.py --input input --out ak.json 2>&1 | tee -a build_log.txt
+          echo "===== NCR REGISTER =====" | tee -a build_log.txt
+          python3 tools/build_ncr.py --input input --out ncr.json 2>&1 | tee -a build_log.txt
+          echo "===== MATERIALS FOLLOW-UP (stock / MRF) =====" | tee -a build_log.txt
+          python3 tools/build_mat.py --input input --out mat.json 2>&1 | tee -a build_log.txt
 
       - name: New cache name so phones load the new data
         if: steps.chk.outputs.count != '0'
@@ -139,6 +143,6 @@ jobs:
           find input -type f -iname '*.xls*' -delete
           git config user.name ccr-auto-update
           git config user.email ccr-auto-update@users.noreply.github.com
-          git add -A input data.json data_1801.json data_8810.json data_d48.json data_cold.json rfi_ccr.json rfi_d48.json rfi_cold.json rfi_1801.json rfi_8810.json ak.json areas sw.js tracker/data.json tq/data.json
+          git add -A input data.json data_1801.json data_8810.json data_d48.json data_cold.json rfi_ccr.json rfi_d48.json rfi_cold.json rfi_1801.json rfi_8810.json ak.json ncr.json mat.json areas sw.js tracker/data.json tq/data.json
           git commit -m "Automatic data update" || echo "nothing to commit"
           git push

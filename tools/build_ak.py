@@ -20,7 +20,7 @@ rep=json.load(open(os.path.join(os.path.dirname(__file__),'punch_reported.json')
 if not files:
     print('Aleksy punch file: not found – ak.json kept, reported list refreshed')
     old['rep']=rep; json.dump(old,open(a.out,'w'),ensure_ascii=False); raise SystemExit
-MY=('G0-D1810','G0-D1801','G0-D4810','G0-D4801','G0-D8810','G0-D8801')
+MY=('G0-D1810','G0-D1801','G0-D4810','G0-D4801','G0-D8810','G0-D8801','G0-D8880')
 f=files[-1]; ws=openpyxl.load_workbook(f,data_only=True).worksheets[0]
 A={}; last=None
 for r in ws.iter_rows(min_row=10,values_only=True):
@@ -30,7 +30,7 @@ for r in ws.iter_rows(min_row=10,values_only=True):
     d=r[12]; ds=d.strftime('%d.%m.%Y') if isinstance(d,dt.datetime) else str(d or '')
     if isinstance(d,dt.datetime) and (last is None or d>last): last=d
     if not str(r[2] or '').startswith(MY): continue
-    A[no]=[str(r[11] or '').split('\n')[0].strip(),ds,str(r[2] or ''),str(r[3] or ''),str(r[5] or '')]
+    A[no]=[str(r[11] or '').split('\n')[0].strip(),ds,str(r[2] or ''),str(r[3] or ''),str(r[5] or ''),str(r[7] or '').strip(),str(r[11] or '').strip(),str(r[8] or '').strip()]   # v4.28: + category change, full status text, issued by
 out={'date':last.strftime('%d.%m.%Y') if last else '', 'src':os.path.basename(f),'a':A,'rep':rep}
 json.dump(out,open(a.out,'w'),ensure_ascii=False)
 print(f'Aleksy punch file {os.path.basename(f)}: {len(A)} punches, latest {out["date"]}; reported list {len(rep)}')
