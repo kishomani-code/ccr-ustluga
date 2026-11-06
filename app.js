@@ -161,6 +161,7 @@ function route() {
   if (k === 'bm' && window.OA) return OA.bulk(a);   // v4.3 bulk materials (tray, conduits, earthing, supports…)
   if (k === 'lt' && window.LT) return LT.route(rest);   // v4.4 LOTO
   if (k === 'ra') { if (window.RA) return RA.home(); main.innerHTML = '<div class="empty">Loading…</div>'; return; }   // v4.8 client RFI accepted – check (owner)
+  if (k === 'ak') { if (window.AK) return AK.home(); main.innerHTML = '<div class="empty">Loading…</div>'; return; }   // v4.26 Aleksy punch follow-up (ak.js + ak.json)
   if (k === 'ho') { if (window.HO) return a ? HO.view(a) : HO.home(); main.innerHTML = '<div class="empty">Loading…</div>'; return; }   // v4.24 handover before gas-in (ho.js + handover.json)
   if (k === 'ga') { if (window.GA) return GA.home(); main.innerHTML = '<div class="empty">Loading…</div>'; return; }   // v4.17 commissioning contacts (ga.js + ga.json)
   if (k === 'ug') { if (window.UG) return a ? UG.view(a) : UG.home(); main.innerHTML = '<div class="empty">Loading…</div>'; return; }   // v4.14/4.16 comments for site team (ug.js + ug.json)
@@ -221,6 +222,7 @@ function home() {
    <button class="tile main" style="width:100%;min-height:auto;margin-bottom:4px;background:${pend ? '#c55a11' : 'var(--pri)'};border-color:${pend ? '#c55a11' : 'var(--pri)'}" onclick="openReport('prog')"><b>📤 Send report to Paul · ${pend} new progress lines</b><span class="n">👷 ${esc(PS_.name || 'tap to set your name')} · ${PRJ === 'COLD' ? 'MAX → Sri ' + REC.tel : 'MAX progress group'}</span></button>
    <button class="tile main" style="width:100%;min-height:auto;margin-bottom:4px;background:${ppend ? '#7b3fb3' : '#0b6e6e'};border-color:${ppend ? '#7b3fb3' : '#0b6e6e'};color:#fff" onclick="openReport('punch')"><b>📤 Send punch report to Paul · ${ppend} new punch checks</b><span class="n" style="color:#fff">👷 ${esc(PS_.name || 'tap to set your name')} · ${PRJ === 'COLD' ? 'MAX → Sri ' + REC.tel : 'MAX punch group'}</span></button>
    ${window.HO ? HO.tile() : ''}
+   ${window.AK ? AK.tile() : ''}
    <div class="sect">🏗️ Construction</div><div class="grid">
     ${T2('#/p', 'Panel cable check<br><span style="font-weight:400;font-size:12px">pulled / terminated per panel</span>', `${PAN.length} panels · ${pcomp} complete`, (PAN.length ? Math.round(100 * pcomp / PAN.length) : 0), 'main')}
     ${T2('#/ic', 'Interconnection cables<br><span style="font-weight:400;font-size:12px">to/from other buildings</span>', `${icd}/${ICX.length} complete`, ICX.length ? Math.round(100 * icd / ICX.length) : 0, 'main')}
@@ -396,6 +398,7 @@ function punchHome() {
    <div class="kpi"><div><b style="color:var(--bad)">${cA}</b><span>open cat A</span></div><div><b style="color:var(--warn)">${cB}</b><span>open cat B</span></div><div><b>${cC}</b><span>open cat C</span></div></div>
    <div class="chips"><button class="chip on" onclick="go('#/pp')">📊 Daily progress</button><button class="chip" onclick="openReport('punch')">Send report to Paul</button><button class="chip" onclick="openXPunch()">🔗 Cross-punch report</button><button class="chip" onclick="document.getElementById('pimp2').click()">⬆ Import</button><button class="chip" onclick="askPName('route()')">👷 ${esc(PS_.name || 'Set name')}</button></div>
    <input type="file" id="pimp2" accept=".json,application/json" multiple style="display:none" onchange="importPunch(this.files);this.value=''">
+   ${window.AK ? AK.tile() : ''}
    <button class="tile main" style="width:100%;min-height:auto;margin-bottom:4px" onclick="go('#/pk/all:')"><b>All open punch items (${op.length}) ›</b></button>
    <div class="sect">🛠 By punch type – for site team</div><div class="grid">${PTYX.map(y => { const x = L.filter(p => ptypes(p).includes(y[0])); if (!x.length) return ''; const o = x.filter(p => p.st === 'Open'), oa = o.filter(p => p.cat === 'A').length, pc = Math.round(100 * (x.length - o.length) / x.length);
      return `<button class="tile" onclick="go('#/pk/y:${y[0]}')"><b>${y[1]} ${esc(y[2])}</b><span style="font-size:11px;color:var(--mut)">${esc(y[3])}</span><div><span class="n">${o.length} open / ${x.length}${oa ? ' · A open ' + oa : ''}</span><div class="pc">${pc}% closed</div><div class="pbar"><i style="width:${pc}%"></i></div></div></button>`; }).join('')}</div>
@@ -759,7 +762,7 @@ function ownPunch() { const d = VS.OW.d; const one = {}; (S2.rx || []).filter(r 
   copyText(Object.values(one).map(r => [r.no, r.v === 'F' ? 'Fixed' : 'Not fixed', d.split('-').reverse().join('.'), r.tag, r.by].join('\t')).join('\n')).then(() => toast('Punch list copied')); }
 
 // ======== v3.2 modules ========
-const APPV = '4.25';
+const APPV = '4.26';
 const shortT = t => String(t || '').replace(/^G0-D(18|48)10BX0-/, '').replace(/^G0-D(18|48)01FX0-/, 'FX0-');
 const SYSN = {'EL-ESPS': ['Substation 10/0.4 kV & power supply', 'Подстанция 10/0,4 кВ'], 'EL-EMSV': ['Power installation (boards, UPS, motors)', 'Силовое электрооборудование'], 'EL-ESBZ': ['Power supply from utility substation', 'Электроснабжение от ПС'], 'EL-ELOV': ['Indoor lighting', 'Внутреннее освещение'], 'EL-EG02': ['Earthing & lightning protection', 'Заземление и молниезащита'], 'EL-EG01': ['Area earthing', 'Заземление площадки'], 'EH-EOES': ['Electric heating', 'Электрообогрев'], 'EH-AEOG': ['Heat tracing', 'Электрообогрев (кабель)'], 'EH-EOBK': ['Electric heating (other)', 'Электрообогрев'],
   'IN-DCS': ['Distributed Control System (DCS)', 'РСУ'], 'IN-ESD': ['Emergency Shutdown (ESD)', 'ПАЗ'], 'IN-SPAP': ['Fire alarm & fire fighting control (AFA&FFS)', 'АСПС и ПТ'], 'IN-GDSS': ['Gas detection', 'Контроль загазованности'], 'IN-ASUE': ['Utilities control system', 'АСУ ЭО (утилиты)'], 'IN-ASUS': ['Power supply control system', 'АСУ ЭС'], 'IN-ASKU': ['Utility metering (AUMS)', 'АСКУ ЭР'], 'IN-MAEC': ['Rotating equipment monitoring (CMS)', 'МСО и ВО'], 'IN-MFMS': ['Material flow metering (MFMS)', 'СУМП'], 'IN-AKVS': ['Emission monitoring (CEMS)', 'АКВС'], 'IN-INTS': ['Operator training simulator', 'Тренажёр оператора'], 'IN-INSS': ['Information security', 'СОИБ'], 'IN-AOVK': ['HVAC automation', 'Автоматизация ОВиК'], 'IN-AKMP': ['Analyzer system', 'Анализаторы'],

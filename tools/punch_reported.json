@@ -1,0 +1,460 @@
+{
+ "note": "Punches we reported for closure (our punch reports). Add new reports here: {no, rep (report date), by, src}.",
+ "items": [
+  {
+   "no": "43787",
+   "rep": "06.11.2026",
+   "fixed": "03.11.2026",
+   "by": "Baiju",
+   "src": "Closed_punch_report_04-05.11.2026"
+  },
+  {
+   "no": "43813",
+   "rep": "06.11.2026",
+   "fixed": "03.11.2026",
+   "by": "Baiju",
+   "src": "Closed_punch_report_04-05.11.2026"
+  },
+  {
+   "no": "43814",
+   "rep": "06.11.2026",
+   "fixed": "03.11.2026",
+   "by": "Baiju",
+   "src": "Closed_punch_report_04-05.11.2026"
+  },
+  {
+   "no": "43815",
+   "rep": "06.11.2026",
+   "fixed": "03.11.2026",
+   "by": "Baiju",
+   "src": "Closed_punch_report_04-05.11.2026"
+  },
+  {
+   "no": "43816",
+   "rep": "06.11.2026",
+   "fixed": "03.11.2026",
+   "by": "Baiju",
+   "src": "Closed_punch_report_04-05.11.2026"
+  },
+  {
+   "no": "43817",
+   "rep": "06.11.2026",
+   "fixed": "03.11.2026",
+   "by": "Baiju",
+   "src": "Closed_punch_report_04-05.11.2026"
+  },
+  {
+   "no": "43818",
+   "rep": "06.11.2026",
+   "fixed": "03.11.2026",
+   "by": "Baiju",
+   "src": "Closed_punch_report_04-05.11.2026"
+  },
+  {
+   "no": "43819",
+   "rep": "06.11.2026",
+   "fixed": "03.11.2026",
+   "by": "Baiju",
+   "src": "Closed_punch_report_04-05.11.2026"
+  },
+  {
+   "no": "43823",
+   "rep": "06.11.2026",
+   "fixed": "03.11.2026",
+   "by": "Baiju",
+   "src": "Closed_punch_report_04-05.11.2026"
+  },
+  {
+   "no": "43824",
+   "rep": "06.11.2026",
+   "fixed": "03.11.2026",
+   "by": "Baiju",
+   "src": "Closed_punch_report_04-05.11.2026"
+  },
+  {
+   "no": "43810",
+   "rep": "06.11.2026",
+   "fixed": "03.11.2026",
+   "by": "Baiju",
+   "src": "Closed_punch_report_04-05.11.2026"
+  },
+  {
+   "no": "43832",
+   "rep": "06.11.2026",
+   "fixed": "03.11.2026",
+   "by": "Baiju",
+   "src": "Closed_punch_report_04-05.11.2026"
+  },
+  {
+   "no": "43836",
+   "rep": "06.11.2026",
+   "fixed": "03.11.2026",
+   "by": "Baiju",
+   "src": "Closed_punch_report_04-05.11.2026"
+  },
+  {
+   "no": "43845",
+   "rep": "06.11.2026",
+   "fixed": "03.11.2026",
+   "by": "Baiju",
+   "src": "Closed_punch_report_04-05.11.2026"
+  },
+  {
+   "no": "43877",
+   "rep": "06.11.2026",
+   "fixed": "03.11.2026",
+   "by": "Baiju",
+   "src": "Closed_punch_report_04-05.11.2026"
+  },
+  {
+   "no": "43886",
+   "rep": "06.11.2026",
+   "fixed": "03.11.2026",
+   "by": "Baiju",
+   "src": "Closed_punch_report_04-05.11.2026"
+  },
+  {
+   "no": "43889",
+   "rep": "06.11.2026",
+   "fixed": "03.11.2026",
+   "by": "Baiju",
+   "src": "Closed_punch_report_04-05.11.2026"
+  },
+  {
+   "no": "43898",
+   "rep": "06.11.2026",
+   "fixed": "03.11.2026",
+   "by": "Baiju",
+   "src": "Closed_punch_report_04-05.11.2026"
+  },
+  {
+   "no": "65333",
+   "rep": "06.11.2026",
+   "fixed": "03.11.2026",
+   "by": "Baiju",
+   "src": "Closed_punch_report_04-05.11.2026"
+  },
+  {
+   "no": "65340",
+   "rep": "06.11.2026",
+   "fixed": "03.11.2026",
+   "by": "Baiju",
+   "src": "Closed_punch_report_04-05.11.2026"
+  },
+  {
+   "no": "65343",
+   "rep": "06.11.2026",
+   "fixed": "03.11.2026",
+   "by": "Baiju",
+   "src": "Closed_punch_report_04-05.11.2026"
+  },
+  {
+   "no": "65350",
+   "rep": "06.11.2026",
+   "fixed": "03.11.2026",
+   "by": "Baiju",
+   "src": "Closed_punch_report_04-05.11.2026"
+  },
+  {
+   "no": "43913",
+   "rep": "06.11.2026",
+   "fixed": "03.11.2026",
+   "by": "Baiju",
+   "src": "Closed_punch_report_04-05.11.2026"
+  },
+  {
+   "no": "43916",
+   "rep": "06.11.2026",
+   "fixed": "03.11.2026",
+   "by": "Baiju",
+   "src": "Closed_punch_report_04-05.11.2026"
+  },
+  {
+   "no": "43925",
+   "rep": "06.11.2026",
+   "fixed": "03.11.2026",
+   "by": "Baiju",
+   "src": "Closed_punch_report_04-05.11.2026"
+  },
+  {
+   "no": "81468",
+   "rep": "06.11.2026",
+   "fixed": "03.11.2026",
+   "by": "Baiju",
+   "src": "Closed_punch_report_04-05.11.2026"
+  },
+  {
+   "no": "81469",
+   "rep": "06.11.2026",
+   "fixed": "03.11.2026",
+   "by": "Baiju",
+   "src": "Closed_punch_report_04-05.11.2026"
+  },
+  {
+   "no": "81470",
+   "rep": "06.11.2026",
+   "fixed": "03.11.2026",
+   "by": "Baiju",
+   "src": "Closed_punch_report_04-05.11.2026"
+  },
+  {
+   "no": "81471",
+   "rep": "06.11.2026",
+   "fixed": "03.11.2026",
+   "by": "Baiju",
+   "src": "Closed_punch_report_04-05.11.2026"
+  },
+  {
+   "no": "81472",
+   "rep": "06.11.2026",
+   "fixed": "03.11.2026",
+   "by": "Baiju",
+   "src": "Closed_punch_report_04-05.11.2026"
+  },
+  {
+   "no": "81473",
+   "rep": "06.11.2026",
+   "fixed": "03.11.2026",
+   "by": "Baiju",
+   "src": "Closed_punch_report_04-05.11.2026"
+  },
+  {
+   "no": "81474",
+   "rep": "06.11.2026",
+   "fixed": "03.11.2026",
+   "by": "Baiju",
+   "src": "Closed_punch_report_04-05.11.2026"
+  },
+  {
+   "no": "81475",
+   "rep": "06.11.2026",
+   "fixed": "03.11.2026",
+   "by": "Baiju",
+   "src": "Closed_punch_report_04-05.11.2026"
+  },
+  {
+   "no": "81476",
+   "rep": "06.11.2026",
+   "fixed": "03.11.2026",
+   "by": "Baiju",
+   "src": "Closed_punch_report_04-05.11.2026"
+  },
+  {
+   "no": "81477",
+   "rep": "06.11.2026",
+   "fixed": "03.11.2026",
+   "by": "Baiju",
+   "src": "Closed_punch_report_04-05.11.2026"
+  },
+  {
+   "no": "81478",
+   "rep": "06.11.2026",
+   "fixed": "03.11.2026",
+   "by": "Baiju",
+   "src": "Closed_punch_report_04-05.11.2026"
+  },
+  {
+   "no": "81479",
+   "rep": "06.11.2026",
+   "fixed": "03.11.2026",
+   "by": "Baiju",
+   "src": "Closed_punch_report_04-05.11.2026"
+  },
+  {
+   "no": "81480",
+   "rep": "06.11.2026",
+   "fixed": "03.11.2026",
+   "by": "Baiju",
+   "src": "Closed_punch_report_04-05.11.2026"
+  },
+  {
+   "no": "81506",
+   "rep": "06.11.2026",
+   "fixed": "03.11.2026",
+   "by": "Baiju",
+   "src": "Closed_punch_report_04-05.11.2026"
+  },
+  {
+   "no": "60519",
+   "rep": "06.11.2026",
+   "fixed": "05.11.2026",
+   "by": "Рамазан",
+   "src": "Closed_punch_report_04-05.11.2026"
+  },
+  {
+   "no": "60520",
+   "rep": "06.11.2026",
+   "fixed": "05.11.2026",
+   "by": "Рамазан",
+   "src": "Closed_punch_report_04-05.11.2026"
+  },
+  {
+   "no": "60522",
+   "rep": "06.11.2026",
+   "fixed": "05.11.2026",
+   "by": "Рамазан",
+   "src": "Closed_punch_report_04-05.11.2026"
+  },
+  {
+   "no": "60524",
+   "rep": "06.11.2026",
+   "fixed": "05.11.2026",
+   "by": "Рамазан",
+   "src": "Closed_punch_report_04-05.11.2026"
+  },
+  {
+   "no": "60526",
+   "rep": "06.11.2026",
+   "fixed": "05.11.2026",
+   "by": "Рамазан",
+   "src": "Closed_punch_report_04-05.11.2026"
+  },
+  {
+   "no": "83180",
+   "rep": "06.11.2026",
+   "fixed": "05.11.2026",
+   "by": "Site team",
+   "src": "Closed_punch_report_04-05.11.2026"
+  },
+  {
+   "no": "98951",
+   "rep": "06.11.2026",
+   "fixed": "05.11.2026",
+   "by": "Site team",
+   "src": "Closed_punch_report_04-05.11.2026"
+  },
+  {
+   "no": "98952",
+   "rep": "06.11.2026",
+   "fixed": "05.11.2026",
+   "by": "Site team",
+   "src": "Closed_punch_report_04-05.11.2026"
+  },
+  {
+   "no": "98953",
+   "rep": "06.11.2026",
+   "fixed": "05.11.2026",
+   "by": "Site team",
+   "src": "Closed_punch_report_04-05.11.2026"
+  },
+  {
+   "no": "98954",
+   "rep": "06.11.2026",
+   "fixed": "05.11.2026",
+   "by": "Site team",
+   "src": "Closed_punch_report_04-05.11.2026"
+  },
+  {
+   "no": "98955",
+   "rep": "06.11.2026",
+   "fixed": "05.11.2026",
+   "by": "Site team",
+   "src": "Closed_punch_report_04-05.11.2026"
+  },
+  {
+   "no": "98956",
+   "rep": "06.11.2026",
+   "fixed": "05.11.2026",
+   "by": "Site team",
+   "src": "Closed_punch_report_04-05.11.2026"
+  },
+  {
+   "no": "98957",
+   "rep": "06.11.2026",
+   "fixed": "05.11.2026",
+   "by": "Site team",
+   "src": "Closed_punch_report_04-05.11.2026"
+  },
+  {
+   "no": "98958",
+   "rep": "06.11.2026",
+   "fixed": "05.11.2026",
+   "by": "Site team",
+   "src": "Closed_punch_report_04-05.11.2026"
+  },
+  {
+   "no": "64319",
+   "rep": "06.11.2026",
+   "fixed": "05.11.2026",
+   "by": "8810 supervisor",
+   "src": "Closed_punch_report_04-05.11.2026"
+  },
+  {
+   "no": "64320",
+   "rep": "06.11.2026",
+   "fixed": "05.11.2026",
+   "by": "8810 supervisor",
+   "src": "Closed_punch_report_04-05.11.2026"
+  },
+  {
+   "no": "64321",
+   "rep": "06.11.2026",
+   "fixed": "05.11.2026",
+   "by": "8810 supervisor",
+   "src": "Closed_punch_report_04-05.11.2026"
+  },
+  {
+   "no": "64322",
+   "rep": "06.11.2026",
+   "fixed": "05.11.2026",
+   "by": "8810 supervisor",
+   "src": "Closed_punch_report_04-05.11.2026"
+  },
+  {
+   "no": "64323",
+   "rep": "06.11.2026",
+   "fixed": "05.11.2026",
+   "by": "8810 supervisor",
+   "src": "Closed_punch_report_04-05.11.2026"
+  },
+  {
+   "no": "64324",
+   "rep": "06.11.2026",
+   "fixed": "05.11.2026",
+   "by": "8810 supervisor",
+   "src": "Closed_punch_report_04-05.11.2026"
+  },
+  {
+   "no": "64325",
+   "rep": "06.11.2026",
+   "fixed": "05.11.2026",
+   "by": "8810 supervisor",
+   "src": "Closed_punch_report_04-05.11.2026"
+  },
+  {
+   "no": "64326",
+   "rep": "06.11.2026",
+   "fixed": "05.11.2026",
+   "by": "8810 supervisor",
+   "src": "Closed_punch_report_04-05.11.2026"
+  },
+  {
+   "no": "64327",
+   "rep": "06.11.2026",
+   "fixed": "05.11.2026",
+   "by": "8810 supervisor",
+   "src": "Closed_punch_report_04-05.11.2026"
+  },
+  {
+   "no": "64328",
+   "rep": "06.11.2026",
+   "fixed": "05.11.2026",
+   "by": "8810 supervisor",
+   "src": "Closed_punch_report_04-05.11.2026"
+  },
+  {
+   "no": "64329",
+   "rep": "06.11.2026",
+   "fixed": "05.11.2026",
+   "by": "8810 supervisor",
+   "src": "Closed_punch_report_04-05.11.2026"
+  },
+  {
+   "no": "64330",
+   "rep": "06.11.2026",
+   "fixed": "05.11.2026",
+   "by": "8810 supervisor",
+   "src": "Closed_punch_report_04-05.11.2026"
+  }
+ ]
+}
