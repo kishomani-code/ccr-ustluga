@@ -1,11 +1,11 @@
-// v4.25: client answers to our CTQs (ПОЖНЕФТЕГАЗ response 05.11.2026) + Rencons check vs rev 04 + next step.
+// v4.27: + client comments 06.11.2026 (2 replies). v4.25: client answers to our CTQs (ПОЖНЕФТЕГАЗ response 05.11.2026) + Rencons check vs rev 04 + next step.
 // ctqa.json = {date, by, src, a:{"CTQ-01": {r, rr, cru, cen, ke, kr, ne, nr}}}
 (function () {
   const CA = window.CA = {d: null};
   const DC = 'appdata-v1';
   const RU = (function () { try { return localStorage.getItem('ccr_lang') === 'ru'; } catch (e) { return false; } })();
   const L = (en, ru) => RU ? ru : en;
-  const COL = {'CLOSE': ['#e6f4ea', '#1e7b34'], 'RAISE TQS': ['#fde8e8', '#b42318'], 'NOT FIXED': ['#fde8e8', '#b42318'], 'SEND TO IN-SPAP': ['#fff4d6', '#8a5a00'], 'CLARIFY': ['#fff4d6', '#8a5a00'], 'CHECK EMSV': ['#fff4d6', '#8a5a00'], 'NO ANSWER': ['#eceff3', '#555']};
+  const COL = {'CLOSE': ['#e6f4ea', '#1e7b34'], 'RAISE TQS': ['#fde8e8', '#b42318'], 'NOT FIXED': ['#fde8e8', '#b42318'], 'SEND TO IN-SPAP': ['#fff4d6', '#8a5a00'], 'CLARIFY': ['#fff4d6', '#8a5a00'], 'CHECK EMSV': ['#fff4d6', '#8a5a00'], 'NO ANSWER': ['#eceff3', '#555'], 'REQUEST AGAIN': ['#fde8e8', '#b42318'], 'PARTLY': ['#fff4d6', '#8a5a00'], 'CHECK REV': ['#fff4d6', '#8a5a00'], 'TQS IN WORK': ['#fff4d6', '#8a5a00'], 'CORRECTION AGREED': ['#e6f4ea', '#1e7b34']};
   function net(f) { return fetch(f + '?t=' + Date.now(), {cache: 'no-store'}).then(r => { if (!r.ok) throw 'HTTP ' + r.status; const c2 = r.clone(); if ('caches' in window) caches.open(DC).then(c => c.put(f, c2)).catch(() => {}); return r.json(); }); }
   function cget(f) { if (!('caches' in window)) return Promise.resolve(null); return caches.open(DC).then(c => c.match(f)).then(r => r ? r.json() : null).catch(() => null); }
   function set(d) { if (!d || !d.a) return; const first = !CA.d; CA.d = d; if (first && /^#\/(ctq|c|p|i|s|tq)(\/|\?|$)/.test(location.hash)) { try { route(); } catch (e) {} } }
