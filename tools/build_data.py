@@ -557,6 +557,8 @@ def build_punch(mrows, rrows, prev):
         # v4.33: also take punches on this site's own tags that the client filed under another title
         # (e.g. 45462 title D8880FX0, tag G0-D8810BX0-C-SKUD-E-001) - but not titles of the user's other projects
         own_tag = S(col(r, 9)).startswith(CCR) and not re.search(OWN_TIT, tit)
+        if own_tag and not tit:
+            tit = '– (no title in master list)'   # e.g. 45382 / 45391: title '-' in the client file
         if not tit or not (re.search(SITE_RX, tit) or own_tag) or not S(col(r, 0)) or S(col(r, 0)) == '#':
             continue
         if DISC_RX.get(SITE) and not EH_TXT.search(' '.join(S(col(r, c)) for c in (5, 6, 8, 9, 10, 12, 13, 32))):
@@ -589,7 +591,8 @@ def build_punch(mrows, rrows, prev):
         rows += [list(r) for r in prev['punch']['rows'] if str(r[ino]).startswith('RHI-')]
     for r in (rrows or [])[1:]:
         t = S(col(r, 1))
-        if t not in CCR or not S(col(r, 0)):
+        own_tag = S(col(r, 6)).startswith(CCR) and not re.search(OWN_TIT, t)   # v4.33: own tag filed under another title
+        if (t not in CCR and not own_tag) or not S(col(r, 0)):
             continue
         if DISC_RX.get(SITE) and not EH_TXT.search(' '.join(S(col(r, c)) for c in (2, 3, 5, 6, 7, 9))):
             continue
@@ -605,7 +608,7 @@ def build_punch(mrows, rrows, prev):
         stv = S(col(r, 13))
         notes = ' · '.join(x for x in ('RFI ' + S(col(r, 4)) if S(col(r, 4)) else '', S(col(r, 5)),
                                        'Отменен' if re.search('отмен', stv, re.I) else '', S(col(r, 18))) if x)
-        o = {'no': 'RHI-' + acc_s(col(r, 0)), 'tit': tit_for[t] if tit_for[t] is not None else tx('tit', t),
+        o = {'no': 'RHI-' + acc_s(col(r, 0)), 'tit': tit_for[t] if tit_for.get(t) is not None else tx('tit', t or '– (no title)'),
              'sys': sy, 'sub': tx('sub', sub), 'subn': sn, 'pri': S(col(r, 20)),
              'disc': tx('disc', disc.get(S(col(r, 3)), 'АСУ и КИП')), 'tag': S(col(r, 6)), 'tagd': S(col(r, 7)),
              'sec': tx('sec', S(col(r, 8))), 'dru': S(col(r, 9)), 'den': '', 'stg': tx('stg', 'СМР'),
