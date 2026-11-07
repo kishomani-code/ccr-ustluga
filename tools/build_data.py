@@ -20,6 +20,7 @@ SITES = {'ccr': (('G0-D1810BX0', 'G0-D1801FX0'), 'D1810|D1801'),
          '8810': (('G0-D8810BX0', 'G0-D8801FX0'), 'D8810|D8801'),   # v4.23: fire-water pump station D88   # v4.21: CCR outdoor area as its own project
          # cold cables = heat tracing (EH: EOES power supply + AEOG automation) in the areas whose AEOG drawings the user holds
          'cold': (('G0-A10200X0', 'G0-D10250X0', 'G1-A30210X0'), 'A10200|D10250|A30210')}
+OWN_TIT = r'D1810|D1801|D4810|D4801|D8810|D8801'   # titles of the user's own projects
 NON_EI = re.compile(r'ВЕНТИЛЯЦ|Технолог|Трубопров|Динамич|Статич|^ТХ$', re.I)   # non E&I punch disciplines
 DISC_RX = {'cold': r'-EH-'}          # extra filter on the document number (discipline) for a site
 EH_TXT = re.compile(r'обогрев|heat trac|EOES|AEOG|EGNUC|-EHC|-Th-|-PJB-', re.I)
@@ -553,7 +554,10 @@ def build_punch(mrows, rrows, prev):
         rows = [list(r) for r in prev['punch']['rows'] if not str(r[ino]).startswith('RHI-')]
     for r in (mrows or [])[1:]:
         tit = S(col(r, 1))
-        if not tit or not re.search(SITE_RX, tit) or not S(col(r, 0)) or S(col(r, 0)) == '#':
+        # v4.33: also take punches on this site's own tags that the client filed under another title
+        # (e.g. 45462 title D8880FX0, tag G0-D8810BX0-C-SKUD-E-001) - but not titles of the user's other projects
+        own_tag = S(col(r, 9)).startswith(CCR) and not re.search(OWN_TIT, tit)
+        if not tit or not (re.search(SITE_RX, tit) or own_tag) or not S(col(r, 0)) or S(col(r, 0)) == '#':
             continue
         if DISC_RX.get(SITE) and not EH_TXT.search(' '.join(S(col(r, c)) for c in (5, 6, 8, 9, 10, 12, 13, 32))):
             continue
