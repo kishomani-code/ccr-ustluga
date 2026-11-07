@@ -14,14 +14,14 @@
 "nr": "Действий нет."
 },
 "CTQ-02": {
-"r": "REQUEST AGAIN",
-"rr": "ЗАПРОСИТЬ ПОВТОРНО",
+"r": "CLOSE",
+"rr": "ЗАКРЫТЬ",
 "cru": "06.11: Во вложении запись ЖАН от 26.08.26 по резисторам и диодам, номиналам, материал заказан в МТО КИПиА, руководство по выбору номинала резисторов указано в ссылочном документе GA-VD-(00-00-000)-J-ZK 6040.000.001.\n30.10: Согласно записи в ЖАН, количество и тип резисторов/диодов определять по месту согласно РЭ на оборудование. Данный материал в спецификацию вносится не будет. Материал заказан в рамках МТО КИПиА и в наличии на складе.",
 "cen": "06.11: Attached: ZhAN (author supervision log) record of 26.08.26 for resistors and diodes and their ratings; material ordered under I&C MTO; resistor rating selection guide is in reference document GA-VD-(00-00-000)-J-ZK 6040.000.001.\n30.10: As per the author supervision log (ZhAN), quantity and type of resistors / diodes are decided on site as per the equipment manual. Not added to the MTO. Material is ordered under I&C MTO and is in the warehouse.",
-"ke": "ZhAN record №17-ГЛИ is for title G0-D4810BX0 (D48), drawings G0-D4801FX0 SPBA/PSGN – not for CCR (G0-D1801FX0 / G0-D1810BX0). It lists diode 1N5408, resistors С1-4 1/2/4 kΩ, MTO GLE-(G0-Z00000X0)-IN-LP-005.023. CCR drawing shows 1N4007; our CCR count: 245 diodes, 188 resistors 2 kΩ (incl. 10 %).",
-"kr": "Запись ЖАН №17-ГЛИ – по титулу G0-D4810BX0 (D48), РД G0-D4801FX0 SPBA/PSGN – не по ЦО (G0-D1801FX0 / G0-D1810BX0). В ней диод 1N5408, резисторы С1-4 1/2/4 кОм, МТО GLE-(G0-Z00000X0)-IN-LP-005.023. На РД ЦО – 1N4007; по нашему подсчёту для ЦО: 245 диодов, 188 резисторов 2 кОм (с запасом 10 %).",
-"ne": "REQUEST AGAIN: ask ZhAN record for CCR (or written OK that №17 covers CCR), confirm diode type 1N5408 vs 1N4007, and issue of CCR quantity from I&C warehouse.",
-"nr": "ЗАПРОСИТЬ ПОВТОРНО: запись ЖАН для ЦО (или письменно, что №17 распространяется на ЦО), тип диода 1N5408 / 1N4007, выдача количества для ЦО со склада КИПиА."
+"ke": "Closed 07.11.2026 – diode / resistor comments closed.",
+"kr": "Закрыто 07.11.2026 – замечания по диодам / резисторам закрыты.",
+"ne": "No action.",
+"nr": "Действий нет."
 },
 "CTQ-03": {
 "r": "CLOSE",
