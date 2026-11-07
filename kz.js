@@ -62,15 +62,57 @@
   KZ.identsFor = function (x) { if (typeof SF === 'undefined' || !x) return []; const dw = String((T.dwg || [])[x.dwg] || ''); const m = dw.match(/\((G0-[A-Z0-9]+)\)-([A-Z]{2})-([A-Z0-9]+)/); if (!m) return [];
     const docs = SF.filter(s => s.doc.includes(m[1]) && s.doc.includes('-' + m[2] + '-' + m[3]));
     const want = toks((T.desc || [])[x.desc] + ' ' + (x.ctag || '')); if (!want.size) return [];
-    const sc = []; docs.forEach(s => (s.it || []).forEach(r => { const id = String(r[3] || '').trim().split(/\s+/)[0]; if (!/^[A-Z0-9]{6,12}$/.test(id)) return; const t = toks(r[2]); let n = 0; want.forEach(w => { if (t.has(w)) n++; }); if (n >= 2) sc.push({id, n, d: r[2], q: r[5], u: r[4], doc: s.doc}); }));
+    const sc = []; docs.forEach(s => (s.it || []).forEach(r => { const id = String(r[3] || '').trim().split(/\s+/)[0]; if (!/^[A-Z0-9]{6,12}$/.test(id)) return; const t = toks(r[2]); let n = 0; want.forEach(w => { if (t.has(w)) n++; }); if (n >= 2) sc.push({id, n, pos: r[0], d: r[2], q: r[5], u: r[4], doc: s.doc, rev: s.rev}); }));
     sc.sort((a, b) => b.n - a.n); const out = []; sc.forEach(s => { if (out.length < 2 && !out.some(o => o.id === s.id) && s.n >= sc[0].n - 1) out.push(s); }); return out; };
+  const isCab = x => /^Cable (pulling|termination)$/i.test(x.g) || /cable (laying|termination)/i.test(x.m || '') || /Cable (Laying|Termination)/i.test(x.g);
+  const titleOf = x => { const m = String((T.dwg || [])[x.dwg] || '').match(/\((G0-[A-Z0-9]+)\)/) || String(x.tag || '').match(/^(G0-[A-Z0-9]{8,9})/); return m ? m[1] : ''; };
+  const enPart = s => { s = String(s || ''); const parts = s.split(/\s+\/\s+/); const e = parts.filter(p => !/[А-Яа-яЁё]/.test(p)).sort((a, b) => b.length - a.length)[0]; if (e) return e.trim();
+    const m = s.search(/[A-Za-z]{3,}[^А-Яа-яЁё]{15,}$/); return m > 0 ? s.slice(m).trim() : s.replace(/[А-Яа-яЁё]+/g, '').replace(/\s+/g, ' ').trim(); };
+  // full material card for an IWP item (device / equipment / bulk): ident from SF, SF details, stock, MRF, alert + MRF Excel
+  KZ.itemCard = function (x) { if (!x || isCab(x)) return ''; const c = KZ.identsFor(x); const need = Math.max(x.q - x.f, 0); const tit = titleOf(x);
+    if (!c.length) return `<div class="card"><div class="h3">📦 ${L('Ident / material', 'Идент / материал')}</div><div class="note">${L('No matching ident in the SF drawing for this item – search the ident in "Warehouse stock by ident".', 'Подходящий идент в SF не найден – найдите идент в «Склад по иденту».')}</div><button class="tile" style="width:100%;min-height:auto" onclick="go('#/kz/wh')"><b>🔎 ${L('Warehouse stock by ident', 'Склад по иденту')}</b></button></div>`;
+    return `<div class="card" style="border-left:4px solid ${x.done ? 'var(--ok)' : '#b7791f'}"><div class="h3">📦 ${L('Ident & material (SF drawing + warehouse)', 'Идент и материал (SF + склад)')}</div>${c.map((s, k) => { const w = KZ.stock(s.id); const free = w ? w[1] - w[2] : 0; const ti = w && w[7] ? w[7][tit] : null;
+      let st, col, btn = false;
+      if (x.done) { st = L('✓ Installed – no action', '✓ Смонтировано – действий нет'); col = 'var(--ok)'; }
+      else if (ti && ti[0] >= need) { st = L(`✅ Already issued to RHI for ${tit}: ${fm(ti[0])} (MRF ${ti[1].join(', ') || '-'}) – check RHI site store`, `✅ Уже выдано РХИ на ${tit}: ${fm(ti[0])} (MRF ${ti[1].join(', ') || '-'}) – проверить склад РХИ`); col = 'var(--ok)'; }
+      else if (free > 0) { st = L(`🔔 Not installed and not received from warehouse – REQUEST MRF (free ${fm(free)} in warehouse)`, `🔔 Не смонтировано и не получено со склада – ОФОРМИТЬ MRF (свободно ${fm(free)})`); col = 'var(--bad)'; btn = true; }
+      else { st = KZ.verdict(w).t; col = 'var(--bad)'; btn = true; }
+      return `<div style="${k ? 'border-top:1px dashed var(--line);margin-top:6px;padding-top:6px' : ''}">${kv([[L('Ident', 'Идент'), s.id + (k ? ' (' + L('alternative', 'вариант') + ')' : '')], [L('SF drawing', 'SF чертёж'), s.doc + (s.rev ? ' rev ' + s.rev : '') + ' · ' + L('pos.', 'поз.') + ' ' + s.pos], [L('SF description', 'Описание SF'), String(s.d).slice(0, 260)], [L('SF qty', 'Кол-во SF'), fm(s.q) + ' ' + s.u], [L('Need for this item', 'Нужно для позиции'), fm(need) + ' ' + x.u]])}
+        ${w ? `<div class="s" style="font-size:13px">${L('Warehouse', 'Склад')}: ${L('received', 'получено')} <b>${fm(w[0])}</b> · ${L('issued', 'выдано')} <b>${fm(w[3])}</b> · ${L('balance', 'остаток')} <b>${fm(w[1])}</b> · ${L('reserved', 'резерв')} <b>${fm(w[2])}</b> · ${L('free', 'свободно')} <b style="color:${free > 0 ? 'var(--ok)' : 'var(--bad)'}">${fm(free)}</b></div>
+          <div class="s" style="font-size:12px;color:var(--mut)">MRF ${L('issued', 'выдача')}: ${esc(w[4].join(', ') || '-')} · MRF ${L('reserved', 'резерв')}: ${esc(w[5].join(', ') || '-')}${ti ? ` · ${L('issued for', 'выдано на')} ${esc(tit)}: ${fm(ti[0])} (${esc(ti[1].join(', ') || '-')})` : ''}</div>
+          ${w[8] && w[8].length ? `<div class="s" style="font-size:12px;color:var(--mut)">${L('Packing lists with stock', 'Упак. листы с остатком')}: ${w[8].map(p => `${esc(p[0])} (${fm(p[2] - p[3])} ${L('free', 'своб.')}${p[1] ? ', ' + esc(p[1]) : ''}, ${esc(p[4])})`).join(' · ')}</div>` : ''}` : `<div class="s" style="color:var(--bad)">${L('Ident not in warehouse follow-up', 'Идента нет в складской ведомости')}</div>`}
+        <div style="font-size:13.5px;font-weight:700;color:${col};margin-top:4px">${st}</div>
+        ${btn ? `<button class="tile main" style="width:100%;min-height:auto;margin-top:6px;background:#b42318;border-color:#b42318" onclick="KZ.mrf(${x.i},'${s.id}')"><b>📝 ${L('Request MRF – open filled MRF Excel', 'Оформить MRF – открыть заполненный Excel')}</b><span class="n" style="color:#ffe2d6">${esc(s.id)} · ${fm(need)} ${esc(x.u)} · ${esc(x.tag)}</span></button>` : ''}</div>`; }).join('')}
+      <div style="font-size:11px;color:var(--mut);margin-top:4px">${L('Warehouse follow-up', 'Складская ведомость')} ${esc(KZ.w ? KZ.w.date : '')} · ${L('ident matched from SF by description – check before sending', 'идент подобран по описанию SF – проверить перед отправкой')}</div></div>`; };
+  // ---------- MRF Excel (RHI template 532RHI-QC-IC-001, same layout as office MRFs) ----------
+  KZ.mrf = function (i, id) { if (!window.XL) return toast('Excel module not loaded'); const x = I[i]; if (!x) return; const s = KZ.identsFor(x).find(o => o.id === id) || {}; const w = KZ.stock(id); const tit = titleOf(x); const need = Math.max(x.q - x.f, 0) || x.q;
+    const P = w && w[8] && w[8][0] ? w[8][0] : ['', '', 0, 0, ''];
+    const desc = enPart(s.d) || (w ? w[9] : '') || id; const u = ((String(s.u || '').match(/[A-Za-z]+/g) || []).pop()) || (w ? w[10] : '') || x.u;
+    const E = n => Array(18).fill(''), R = [];
+    let r = E(); r[0] = 'RHI\nООО "РХИ"'; r[4] = 'MATERIAL REQUISITION FORM\nФОРМА ЗАЯВКИ НА МАТЕРИАЛ'; r[12] = 'Template No/№ шаблона'; r[13] = '532RHI-QC-IC-001'; R.push(r);
+    r = E(); r[12] = 'Rev./Ред.'; r[13] = '01'; R.push(r);
+    r = E(); r[12] = 'Rev. Date/Дата ред.'; r[13] = '14.12.2023'; R.push(r);
+    r = E(); r[0] = 'Plant:\nНаименование завода:'; r[2] = 'Газоперерабатывающий комплекс в составе Комплекса переработки этансодержащего газа в районе поселка Усть-Луга. Газоперерабатывающий завод и технологические объекты общезаводского хозяйства'; r[12] = 'Request No\nНомер Заявки:'; R.push(r);
+    r = E(); r[0] = 'SUBCONTRACTOR\nСУБПОДРЯДЧИК'; r[2] = ' ООО "Ренконс Хэви Индастри"'; r[12] = 'Request Date\nЗаявки Дата:'; R.push(r);
+    r = E(); r[0] = 'MATERIAL TYPE / DISCIPLINE\nТИП МАТЕРИАЛА / ДИСЦИПЛИНА'; r[2] = 'EP Material'; r[3] = 'X'; r[6] = 'CIVIL\nОБЩЕСТР.'; r[8] = 'MECH.  \nМЕХ.'; r[11] = 'HVAC \nОвиКВ.'; r[15] = 'Piping.\nТрубопр.'; R.push(r);
+    r = E(); r[2] = 'C Material'; r[6] = 'ELECT\nЭЛЕКТР. '; r[7] = 'X'; r[8] = 'PAINTING \nЛАКОКРАС.'; r[11] = 'STR.\nконстр.'; r[15] = 'OTHERS. \nДРУГОЕ.'; R.push(r);
+    R.push(E());
+    R.push(['Position No\n позиции №', 'PO No', 'Packing list No.\n№ упаковочного листа', 'CWA', 'Title / Unit\nТитул / Установка', 'IWP', 'Description of E&M\nОписание ТМЦ', 'НаименованиеКЛпоРД/Cablename', 'Номер барабана', 'Ident code  \nПроектный идентификационный номер ', 'Component No  \n№ теговый ', 'Detail design documentation No\nРабочая документация №', '', 'Количество по заявке', 'Количество по заявке', 'Received quantity\nВыданное кол-во', 'UoM\nЕдиница измерения', 'IC RFI No\nВК ЗПИ №']);
+    r = E(); r[0] = 1; r[1] = P[1]; r[2] = P[0]; r[3] = tit; r[4] = tit; r[6] = desc; r[9] = id; r[10] = x.tag; r[11] = s.doc || ''; r[14] = need; r[16] = u; R.push(r);
+    R.push(E()); R.push(E());
+    r = E(); r[2] = 'MRF Requestor\nИнициатор заявки'; r[4] = 'Const. Approval\nПодтверждение  отдела Строительства'; r[9] = 'QC approval'; r[12] = 'Warehouse Supervisor\nСупервайзер склада'; r[16] = 'REMARKS:\nПримечания:'; R.push(r);
+    r = E(); r[0] = 'Name Surname'; r[16] = `${x.g} · Access ID ${x.acc}${s.pos ? ' · SF pos. ' + s.pos : ''}${w ? ' · warehouse free ' + (w[1] - w[2]) + (P[4] ? ' (' + P[4] + ')' : '') : ''}`; R.push(r);
+    r = E(); r[0] = 'Date'; R.push(r);
+    const merges = ['A1:D3', 'E1:L3', 'N1:R1', 'N2:R2', 'N3:R3', 'A4:B4', 'C4:L4', 'N4:R4', 'A5:B5', 'C5:L5', 'N5:R5', 'A6:B7', 'D6:E6', 'D7:E7', 'J6:K6', 'J7:K7', 'M6:N6', 'M7:N7', 'Q6:R6', 'Q7:R7', 'A8:R8', 'L9:M9', 'L10:M10', 'L11:M11', 'L12:M12', 'A13:B13', 'C13:D13', 'E13:G13', 'H13:I13', 'J13:L13', 'M13:P13', 'Q13:R13', 'A14:B14', 'C14:D14', 'E14:G14', 'H14:I14', 'J14:L14', 'M14:P14', 'Q14:R15', 'A15:B15', 'C15:D15', 'E15:G15', 'H15:I15', 'J15:L15', 'M15:P15'];
+    XL.save(`MRF_${tit}_${String(x.tag).replace(/[^A-Za-z0-9\-]+/g, '_')}_${id}.xlsx`, [{name: 'Sheet1', rows: R, widths: [10, 21, 24, 19, 20, 29, 50, 30, 19, 28, 30, 26, 19, 17, 16, 22, 12, 14], merges, bold: [0, 8, 12]}]); };
   // ---------- cards ----------
   KZ.tagCard = function (tag) { if (!KZ.d || !tag) return ''; let h = '';
     const N2 = String(tag).toUpperCase(); const notes = KZ.d.notes[tag] || KZ.d.notes[N2] || [];
     if (notes.length) h += `<div class="card" style="border-left:4px solid #1a73e8"><div class="h3">📝 ${L('Engineering notes (office)', 'Замечания инженера (офис)')}</div>${notes.map(n => `<div class="note" style="background:#eef3f8">${esc(n)}</div>`).join('')}</div>`;
-    const m = (location.hash || '').match(/^#\/i\/(\d+)/); if (m && typeof I !== 'undefined') { const x = I[+m[1]]; if (x && x.tag === tag && !x.done && !/^Cable (pulling|termination)$/i.test(x.g) && !/cable (laying|termination)/i.test(x.m || '')) {
-      const c = KZ.identsFor(x); if (c.length) h += KZ.matCard(c.map(s => s.id), L('Not installed – material from SF drawing', 'Не смонтировано – материал по SF'), `${fm(Math.max(x.q - x.f, 0))} ${x.u}`) + `<div class="small" style="color:var(--mut);margin:-6px 0 8px 4px">${esc(c[0].doc)} · ${esc(String(c[0].d).slice(0, 110))}</div>`;
-      else h += `<div class="card"><div class="h3">📦 ${L('Material check', 'Проверка материала')}</div><div class="note">${L('No matching ident in the SF drawing for this item – open "Warehouse stock by ident" and search the ident.', 'Подходящий идент в SF не найден – откройте «Склад по иденту» и найдите идент.')}</div><button class="tile" style="width:100%;min-height:auto" onclick="go('#/kz/wh')"><b>🔎 ${L('Warehouse stock by ident', 'Склад по иденту')}</b></button></div>`; } }
+    if (typeof I === 'undefined') return h;
+    const m = (location.hash || '').match(/^#\/i\/(\d+)/);
+    if (m) { const x = I[+m[1]]; if (x && x.tag === tag) h += KZ.itemCard(x); }
+    else if (!/^#\/c\//.test(location.hash || '') && typeof IBY !== 'undefined') { (IBY[tag] || []).filter(x => !isCab(x) && !/Calibration/i.test(x.g)).slice(0, 3).forEach(x => { h += KZ.itemCard(x); }); }
     return h; };
   KZ.punchCard = function (p) { if (!KZ.d || !p) return ''; const g = KZ.d.gi[String(p.no)]; if (!g) return '';
     const col = /^Ready|^Can close/.test(g.cc) ? 'var(--ok)' : 'var(--bad)';
