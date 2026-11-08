@@ -163,6 +163,7 @@ function route() {
   if (k === 'ra') { if (window.RA) return RA.home(); main.innerHTML = '<div class="empty">Loading…</div>'; return; }   // v4.8 client RFI accepted – check (owner)
   if (k === 'ncr') { if (window.PX) return PX.ncrRoute(a); main.innerHTML = '<div class="empty">Loading…</div>'; return; }   // v4.28 NCR register (px.js + ncr.json)
   if (k === 'px') { if (window.PX) return PX.route(rest); main.innerHTML = '<div class="empty">Loading…</div>'; return; }   // v4.28 signed PDF / Aleksy / waiting for materials
+  if (k === 'ir') { if (window.IR) return IR.route(rest); main.innerHTML = '<div class="empty">Loading…</div>'; return; }   // v4.38 request IWP ID (iwpreq.js)
   if (k === 'kn') { if (window.KN) return KN.route(rest); main.innerHTML = '<div class="empty">Loading…</div>'; return; }   // v4.37 engineering knowledge (know.js)
   if (k === 'sy') { if (window.SY) return SY.route(rest); main.innerHTML = '<div class="empty">Loading…</div>'; return; }   // v4.36 system progress (sysp.js)
   if (k === 'lc') { if (window.LC) return LC.route(rest); main.innerHTML = '<div class="empty">Loading…</div>'; return; }   // v4.35 commissioning – loop check (loopc.js)
@@ -230,7 +231,7 @@ function home() {
    <button class="tile main" style="width:100%;min-height:auto;margin-bottom:4px;background:${ppend ? '#7b3fb3' : '#0b6e6e'};border-color:${ppend ? '#7b3fb3' : '#0b6e6e'};color:#fff" onclick="openReport('punch')"><b>📤 Send punch report to Paul · ${ppend} new punch checks</b><span class="n" style="color:#fff">👷 ${esc(PS_.name || 'tap to set your name')} · ${PRJ === 'COLD' ? 'MAX → Sri ' + REC.tel : 'MAX punch group'}</span></button>
    ${window.HO ? HO.tile() : ''}
    ${window.AK ? AK.tile() : ''}
-   ${window.KZ ? KZ.tile() : ''}${window.LC && LC.ok() ? LC.tile() : ''}${window.SY ? SY.tile() : ''}${window.KN ? KN.tile() : ''}${window.SP && window.PX ? SP.tile() : ''}${window.PX ? PX.ncrTile() : ''}
+   ${window.IR && PRJ !== 'COLD' ? IR.tile() : ''}${window.KZ ? KZ.tile() : ''}${window.LC && LC.ok() ? LC.tile() : ''}${window.SY ? SY.tile() : ''}${window.KN ? KN.tile() : ''}${window.SP && window.PX ? SP.tile() : ''}${window.PX ? PX.ncrTile() : ''}
    <div class="sect">🏗️ Construction</div><div class="grid">
     ${T2('#/p', 'Panel cable check<br><span style="font-weight:400;font-size:12px">pulled / terminated per panel</span>', `${PAN.length} panels · ${pcomp} complete`, (PAN.length ? Math.round(100 * pcomp / PAN.length) : 0), 'main')}
     ${T2('#/ic', 'Interconnection cables<br><span style="font-weight:400;font-size:12px">to/from other buildings</span>', `${icd}/${ICX.length} complete`, ICX.length ? Math.round(100 * icd / ICX.length) : 0, 'main')}
@@ -290,11 +291,11 @@ function cableBody(c) {
   return kv([['Status', `<span class="badge ${s.c}">${s.l}</span>`, 1], ['From', plinkText(c.f), 1], ['From room', c.fr], ['To', plinkText(c.o), 1], ['To room', c.tr], ['Type', c.ty], ['Cores', c.c], ['Length, m', c.ln], ['Drum', c.dr], ['Document', c.d]]);
 }
 function plinkText(t) { if (!t) return ''; return esc(t).replace(/G0-[A-Z0-9]+-[A-Z0-9()\-]+/g, tag => PBY[tag] ? `<span class="link" onclick="go('#/p/${enc(tag)}')">${tag}</span>` : tag); }
-function cRow(c, d) { const s = cst(c); return `<button class="li" onclick="go('#/c/${enc(c.t)}')"><div class="m"><div class="t">${d ? `<span class="badge b-na" style="margin-right:6px">${d}</span>` : ''}${esc(c.t)}${holdMini(c.t)}${probMini(c.t)}</div><div class="s">${esc((d === 'IN' ? c.f : c.o || '').slice(-70))}</div></div><span class="badge ${s.c}">${s.l}</span><span class="chev">›</span></button>`; }
+function cRow(c, d) { const s = cst(c); return `<button class="li" onclick="go('#/c/${enc(c.t)}')"><div class="m"><div class="t">${d ? `<span class="badge b-na" style="margin-right:6px">${d}</span>` : ''}${esc(c.t)}${holdMini(c.t)}${probMini(c.t)}${window.IR ? IR.mini(c) : ''}</div><div class="s">${esc((d === 'IN' ? c.f : c.o || '').slice(-70))}</div></div><span class="badge ${s.c}">${s.l}</span><span class="chev">›</span></button>`; }
 function cableView(t) {
   const c = CBY[t]; if (!c) { main.innerHTML = '<div class="empty">Cable not found</div>'; return; }
   const s = cst(c); setHead('Cable', c.t); const lines = IBY[c.t] || [];
-  main.innerHTML = `${probCard([c.t])}${holdCard(c.t)}${window.UG ? UG.card(c.t) : ''}<div class="card"><div class="big">${esc(c.t)}</div><div style="margin:6px 0"><span class="badge ${s.c}" style="font-size:13px">${s.l}</span>${holdMini(c.t)}${window.UG ? UG.mini(c.t) : ''}</div>${cableBody(c)}</div>
+  main.innerHTML = `${window.IR ? IR.card(c) : ''}${probCard([c.t])}${holdCard(c.t)}${window.UG ? UG.card(c.t) : ''}<div class="card"><div class="big">${esc(c.t)}</div><div style="margin:6px 0"><span class="badge ${s.c}" style="font-size:13px">${s.l}</span>${holdMini(c.t)}${window.UG ? UG.mini(c.t) : ''}</div>${cableBody(c)}</div>
    <div class="card"><div class="h3">Site check / Проверка на месте</div>${srcTbl(c, 'OUT')}<div style="font-size:12px;color:var(--mut);margin:10px 2px 4px">Site check on this phone / отметка на месте:</div>${tickBtns(c, 'OUT')}<input class="fin" style="margin-top:8px" placeholder="Remark / примечание" value="${esc((S2.c[c.t] || {}).R ? S2.c[c.t].R.v : '')}" onchange="cRem(decodeURIComponent('${enc(c.t)}'),this.value)"></div>
    <div class="card"><div class="h3">Pulling / Прокладка</div>${kv([['Status', s.p === true ? '✓ Completed' : (s.p === false ? '✗ Not completed' : '–')], ['Tracker', c.tp], ['Pull date', c.pd], ['IWP access ID', c.la], ['IWP qty / done', c.lq !== '' ? `${fmtn(c.lq)} / ${fmtn(c.lf)} m` : ''], ['Company', c.co]])}</div>
    <div class="card"><div class="h3">Termination / Подключение</div>${kv([['Status', s.t === true ? '✓ Completed' : (s.t === false ? '✗ Not completed' : '–')], ['Tracker', c.tt], ['From end date', c.tf], ['To end date', c.tto], ['IWP access ID', c.ta], ['IWP ends done', c.tq !== '' ? `${c.tfa} / ${c.tq}` : '']])}</div>
@@ -772,7 +773,7 @@ function ownPunch() { const d = VS.OW.d; const one = {}; (S2.rx || []).filter(r 
   copyText(Object.values(one).map(r => [r.no, r.v === 'F' ? 'Fixed' : 'Not fixed', d.split('-').reverse().join('.'), r.tag, r.by].join('\t')).join('\n')).then(() => toast('Punch list copied')); }
 
 // ======== v3.2 modules ========
-const APPV = '4.37';
+const APPV = '4.38';
 const shortT = t => String(t || '').replace(/^G0-D(18|48)10BX0-/, '').replace(/^G0-D(18|48)01FX0-/, 'FX0-');
 const SYSN = {'EL-ESPS': ['Substation 10/0.4 kV & power supply', 'Подстанция 10/0,4 кВ'], 'EL-EMSV': ['Power installation (boards, UPS, motors)', 'Силовое электрооборудование'], 'EL-ESBZ': ['Power supply from utility substation', 'Электроснабжение от ПС'], 'EL-ELOV': ['Indoor lighting', 'Внутреннее освещение'], 'EL-EG02': ['Earthing & lightning protection', 'Заземление и молниезащита'], 'EL-EG01': ['Area earthing', 'Заземление площадки'], 'EH-EOES': ['Electric heating', 'Электрообогрев'], 'EH-AEOG': ['Heat tracing', 'Электрообогрев (кабель)'], 'EH-EOBK': ['Electric heating (other)', 'Электрообогрев'],
   'IN-DCS': ['Distributed Control System (DCS)', 'РСУ'], 'IN-ESD': ['Emergency Shutdown (ESD)', 'ПАЗ'], 'IN-SPAP': ['Fire alarm & fire fighting control (AFA&FFS)', 'АСПС и ПТ'], 'IN-GDSS': ['Gas detection', 'Контроль загазованности'], 'IN-ASUE': ['Utilities control system', 'АСУ ЭО (утилиты)'], 'IN-ASUS': ['Power supply control system', 'АСУ ЭС'], 'IN-ASKU': ['Utility metering (AUMS)', 'АСКУ ЭР'], 'IN-MAEC': ['Rotating equipment monitoring (CMS)', 'МСО и ВО'], 'IN-MFMS': ['Material flow metering (MFMS)', 'СУМП'], 'IN-AKVS': ['Emission monitoring (CEMS)', 'АКВС'], 'IN-INTS': ['Operator training simulator', 'Тренажёр оператора'], 'IN-INSS': ['Information security', 'СОИБ'], 'IN-AOVK': ['HVAC automation', 'Автоматизация ОВиК'], 'IN-AKMP': ['Analyzer system', 'Анализаторы'],
