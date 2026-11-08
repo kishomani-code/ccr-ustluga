@@ -160,7 +160,7 @@
       <div class="note">${esc(SAFE)}</div>
       <div class="s2" style="margin-top:6px">${L('Acceptance values: per project spec / ITP', 'Значения приёмки: по спецификации проекта / ITP')} ${NV}</div></details>`;
     main.innerHTML = `<div class="chips">${back}<button class="chip" onclick="go('#/lc/sys/${enc(l.sys)}')">‹ ${esc(l.sys)}</button></div><div class="card"><div class="kv"><div>${L('Source', 'Источник')}</div><div>${esc(l.a || '–')}</div><div>${L('Destination', 'Назначение')}</div><div>${esc(l.b || '–')}</div><div>${L('Circuits', 'Цепи')}</div><div>${l.cs.length}</div></div></div>
-      <div class="card">${path}</div>${steps}<div class="sect">${L('Circuit checks', 'Проверка цепей')}</div>${circs}`;
+      <div class="card">${path}</div>${steps}${window.KN ? KN.card({loop: true, act: 'termination', txt: l.a + ' ' + l.b, max: 3}) : ''}<div class="sect">${L('Circuit checks', 'Проверка цепей')}</div>${circs}`;
   }
 
   function progPage(B_, back) {
