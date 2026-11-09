@@ -45,6 +45,30 @@
     chart: '<path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/>',
     key: '<circle cx="7.5" cy="15.5" r="5.5"/><path d="m21 2-9.6 9.6"/><path d="m15.5 7.5 3 3L22 7l-3-3"/>',
     note: '<path d="M16 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V8Z"/><path d="M15 3v4a2 2 0 0 0 2 2h4"/>',
+    send: '<path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/>',
+    pin: '<line x1="12" x2="12" y1="17" y2="22"/><path d="M5 17h14v-1.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V6h1a2 2 0 0 0 0-4H8a2 2 0 0 0 0 4h1v4.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24Z"/>',
+    flagc: '<path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" x2="4" y1="22" y2="15"/>',
+    plug: '<path d="M12 22v-5"/><path d="M9 8V2"/><path d="M15 8V2"/><path d="M18 8v5a4 4 0 0 1-4 4h-4a4 4 0 0 1-4-4V8Z"/>',
+    grad: '<path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/>',
+    flame: '<path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.07-2.14-.22-4.05 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.15.43-2.29 1-3a2.5 2.5 0 0 0 2.5 2.5z"/>',
+    build: '<rect width="16" height="20" x="4" y="2" rx="2"/><path d="M9 22v-4h6v4"/><path d="M8 6h.01"/><path d="M16 6h.01"/><path d="M12 6h.01"/><path d="M12 10h.01"/><path d="M12 14h.01"/><path d="M16 10h.01"/><path d="M16 14h.01"/><path d="M8 10h.01"/><path d="M8 14h.01"/>',
+    building: '<rect width="16" height="20" x="4" y="2" rx="2"/><path d="M9 22v-4h6v4"/><path d="M8 6h.01"/><path d="M16 6h.01"/><path d="M12 10h.01"/><path d="M8 14h.01"/><path d="M16 14h.01"/>',
+    lock: '<rect width="18" height="11" x="3" y="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>',
+    bulb: '<path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/>',
+    layers: '<path d="m12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83Z"/><path d="m22 17.65-9.17 4.16a2 2 0 0 1-1.66 0L2 17.65"/><path d="m22 12.65-9.17 4.16a2 2 0 0 1-1.66 0L2 12.65"/>',
+    search: '<circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>',
+    compass: '<circle cx="12" cy="12" r="10"/><path d="m16.24 7.76-1.8 5.4a2 2 0 0 1-1.28 1.28l-5.4 1.8 1.8-5.4a2 2 0 0 1 1.28-1.28z"/>',
+    ruler: '<path d="M21.3 15.3a2.4 2.4 0 0 1 0 3.4l-2.6 2.6a2.4 2.4 0 0 1-3.4 0L2.7 8.7a2.41 2.41 0 0 1 0-3.4l2.6-2.6a2.41 2.41 0 0 1 3.4 0Z"/><path d="m14.5 12.5 2-2"/><path d="m11.5 9.5 2-2"/><path d="m8.5 6.5 2-2"/><path d="m17.5 15.5 2-2"/>',
+    trend: '<polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/>',
+    user: '<path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>',
+    checkc: '<circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/>',
+    tree: '<path d="M10 10v.2A3 3 0 0 1 8.9 16H5a3 3 0 0 1-1-5.8V10a3 3 0 0 1 6 0Z"/><path d="M7 16v6"/><path d="M13 19v3"/><path d="M12 19h8.3a1 1 0 0 0 .7-1.7L18 14h.3a1 1 0 0 0 .7-1.7L16 9h.2a1 1 0 0 0 .8-1.7L13 3l-1.4 1.5"/>',
+    truck: '<path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"/><path d="M15 18H9"/><path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.62l-3.48-4.35A1 1 0 0 0 17.52 8H14"/><circle cx="17" cy="18" r="2"/><circle cx="7" cy="18" r="2"/>',
+    globe: '<circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/>',
+    cal: '<rect width="18" height="18" x="3" y="4" rx="2"/><path d="M16 2v4"/><path d="M8 2v4"/><path d="M3 10h18"/>',
+    folder: '<path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/>',
+    link: '<path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>',
+    cable: '<path d="M17 21v-2a1 1 0 0 1-1-1v-1a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v1a1 1 0 0 1-1 1"/><path d="M19 15V6.5a1 1 0 0 0-7 0v11a1 1 0 0 1-7 0V9"/><path d="M21 21v-2h-4"/><path d="M3 5h4V3"/><path d="M7 5a1 1 0 0 1 1 1v1a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a1 1 0 0 1 1-1V3"/>',
     menu: '<line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="18" y2="18"/>',
     back: '<path d="m12 19-7-7 7-7"/><path d="M19 12H5"/>',
     moon: '<path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/>',
@@ -135,38 +159,69 @@
       if (fill && ru() !== lang) fill();
       var sm = document.getElementById('smbtn'); if (sm && !sm.querySelector('svg')) { sm.innerHTML = ic('menu'); sm.style.fontSize = ''; }
       main.classList.remove('v5a'); void main.offsetWidth; main.classList.add('v5a');
-      hero(main);
+      hero(main); deco(main);
     }).observe(main, {childList: true});
   }
-  // ---------- dashboard hero on the home page (reads the app's own figures; nothing recalculated differently)
+  // ---------- dashboard hero on the home page (reads the app's own figures – same functions the home page uses)
+  function ring(pc, size, cls) { var R = 50, CF = 2 * Math.PI * R, col = pc >= 100 ? 'var(--ok)' : 'var(--amb)';
+    return '<div class="v5ring ' + (cls || '') + '" style="width:' + size + 'px;height:' + size + 'px"><svg viewBox="0 0 120 120" style="width:' + size + 'px;height:' + size + 'px"><circle class="bgc" cx="60" cy="60" r="' + R + '"/><circle class="fgc" data-pc="' + pc + '" cx="60" cy="60" r="' + R + '" style="stroke:' + (cls === 'w' ? '#fff' : col) + '" stroke-dasharray="' + CF.toFixed(1) + '" stroke-dashoffset="' + CF.toFixed(1) + '"/></svg><b>' + pc + '%</b></div>'; }
   function hero(main) {
     var h = location.hash; if (h && h !== '#/' && h !== '#') return;
     if (main.querySelector('.v5hero') || !main.querySelector('.grid')) return;
     try {
       var all = gstat(I), cc = C.filter(function (c) { return cst(c).ok; }).length;
-      var r = PU.filter(function (p) { return p.rhi; }), open = r.filter(function (p) { return p.st === 'Open'; }).length;
+      var r = PU.filter(function (p) { return p.rhi; }), op = r.filter(function (p) { return p.st === 'Open'; });
+      var oc = op.filter(function (p) { return !p.int; }), oi = op.filter(function (p) { return p.int; });
+      var cat = function (l, k) { return l.filter(function (p) { return String(p.cat) === k; }).length; };
       var ctq = (typeof CTQ !== 'undefined' && typeof ctqOpen === 'function') ? CTQ.filter(ctqOpen).length : null;
       var gs = {}; I.forEach(function (x) { (gs[x.g] = gs[x.g] || []).push(x); });
-      var bars = Object.keys(gs).map(function (g) { var s = gstat(gs[g]); return {g: g, n: s.n, pc: s.pc}; }).sort(function (a, b) { return b.n - a.n; }).slice(0, 6);
-      var pc = all.pc || 0, R = 50, CF = 2 * Math.PI * R;
+      var st = function (g) { return gs[g] ? gstat(gs[g]) : null; };
+      var pull = st('Cable pulling'), term = st('Cable termination');
+      var bars = Object.keys(gs).map(function (g) { var s = gstat(gs[g]); return {g: g, n: s.n, d: s.d, pc: s.pc}; }).sort(function (a, b) { return b.n - a.n; }).slice(0, 8);
       var e = function (s) { return String(s).replace(/[&<>"']/g, function (c) { return {'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'}[c]; }); };
       var en = function (s) { return typeof enc === 'function' ? enc(s) : encodeURIComponent(s); };
+      var col = function (pc) { return pc >= 100 ? 'ok' : 'amb'; };
+      var mini = function (t, s, href) { return s ? '<button class="v5mini" onclick="go(\'' + href + '\')">' + ring(s.pc, 64) + '<div><b>' + t + '</b><span>' + s.d + ' / ' + s.n + ' ' + L('lines', 'строк') + '</span></div></button>' : ''; };
+      var closed = r.length - op.length, oA = cat(op, 'A'), oBC = op.length - oA, tot = r.length || 1;
+      var pcl = Math.round(100 * closed / tot), pA = Math.round(100 * oA / tot);
+      var kpi = function (cls, icn, t, v, sub, href, badge) { return '<button class="v5k ' + cls + '" onclick="go(\'' + href + '\')"><div class="v5kh"><span>' + t + '</span><i>' + ic(icn) + '</i></div><b>' + v + '</b>' + (sub ? '<em>' + sub + '</em>' : '') + (badge ? '<s class="' + badge[0] + '">' + badge[1] + '</s>' : '') + '</button>'; };
       var d = document.createElement('div'); d.className = 'v5hero';
-      d.innerHTML = '<div class="v5hc dk"><div class="v5ht">' + L('Overall IWP progress', 'Общий прогресс IWP') + ' · ' + e(typeof PRJ !== 'undefined' ? PRJ : '') + '</div><div class="v5hb">'
-        + '<div class="v5ring"><svg viewBox="0 0 120 120"><circle class="bgc" cx="60" cy="60" r="' + R + '"/><circle class="fgc" cx="60" cy="60" r="' + R + '" stroke-dasharray="' + CF.toFixed(1) + '" stroke-dashoffset="' + CF.toFixed(1) + '"/></svg><b>' + pc + '%</b></div>'
-        + '<div class="v5kp"><div><b>' + all.d + '/' + all.n + '</b><span>' + L('IWP lines done', 'Строк IWP выполнено') + '</span></div>'
-        + '<div><b>' + cc + '/' + C.length + '</b><span>' + L('Cables complete', 'Кабели завершены') + '</span></div>'
-        + '<div><b>' + open + '</b><span>' + L('Open punch (RHI)', 'Открытые замечания (РХИ)') + '</span></div>'
-        + '<div><b>' + (ctq == null ? '–' : ctq) + '</b><span>' + L('Open CTQ', 'Открытые CTQ') + '</span></div></div></div></div>'
-        + '<div class="v5hc"><div class="v5ht" style="color:var(--mut)">' + L('Progress by activity', 'Прогресс по видам работ') + '</div><div class="v5bars">'
-        + bars.map(function (b) { return '<div class="v5bar" onclick="go(\'#/a/' + en(b.g) + '\')"><span class="v5bt" title="' + e(b.g) + '"><i class="v5dot" style="background:' + (b.pc >= 100 ? '#1e8a4c' : b.pc >= 50 ? '#6a4cff' : '#e0a100') + '"></i>' + e(b.g) + '</span><span class="v5bb"><i data-w="' + b.pc + '"></i></span><span class="v5bp">' + b.pc + '%</span></div>'; }).join('')
-        + '</div><div class="v5sc">' + L('Source: IWP status (Site Progress) · data', 'Источник: статус IWP (факт) · данные') + ' ' + e((typeof D !== 'undefined' && D.meta && D.meta.date) || '') + '</div></div>';
+      d.innerHTML = '<div class="v5kpis">'
+        + kpi('g', 'activity', L('Overall IWP progress', 'Общий прогресс IWP') + ' · ' + e(typeof PRJ !== 'undefined' ? PRJ : ''), (all.pc || 0) + '%', all.d + ' / ' + all.n + ' ' + L('lines done', 'строк'), '#/in', null)
+        + kpi('', 'zap', L('Cables complete', 'Кабели завершены'), cc, L('of', 'из') + ' ' + C.length, '#/p', [cc >= C.length ? 'ok' : 'amb', Math.round(100 * cc / (C.length || 1)) + '%'])
+        + kpi('', 'alert', L('Open punch (RHI)', 'Открытые замечания'), op.length, L('client', 'заказчик') + ' ' + oc.length + ' · ' + L('internal', 'внутр.') + ' ' + oi.length, '#/pl', [oA ? 'bad' : 'amb', 'A ' + oA])
+        + kpi('', 'tq', L('Open CTQ', 'Открытые CTQ'), ctq == null ? '–' : ctq, L('technical queries', 'тех. запросы'), '#/ctq', null)
+        + '</div><div class="v5cards">'
+        + '<div class="v5hc"><div class="v5ht m">' + ic('zap') + L('Cable pulling & termination', 'Прокладка и подключение') + '</div><div class="v5minis">' + mini(L('Cable pulling', 'Прокладка'), pull, '#/a/' + en('Cable pulling')) + mini(L('Cable termination', 'Подключение'), term, '#/a/' + en('Cable termination')) + '</div></div>'
+        + '<div class="v5hc"><div class="v5ht m">' + ic('alert') + L('Punch status (RHI)', 'Статус замечаний (РХИ)') + '</div><div class="v5don" onclick="go(\'#/pl\')"><div class="v5dn" style="background:conic-gradient(var(--ok) 0 ' + pcl + '%,var(--bad) ' + pcl + '% ' + (pcl + pA) + '%,var(--amb) ' + (pcl + pA) + '% 100%)"><b>' + pcl + '%<small>' + L('closed', 'закрыто') + '</small></b></div>'
+        + '<ul><li><i class="v5dot ok"></i>' + L('Closed', 'Закрыто') + '<b>' + closed + '</b></li><li><i class="v5dot bad"></i>' + L('Open cat. A', 'Открыто кат. A') + '<b>' + oA + '</b></li><li><i class="v5dot amb"></i>' + L('Open cat. B / C', 'Открыто кат. B / C') + '<b>' + oBC + '</b></li>'
+        + '<li class="v5sub">' + L('Client', 'Заказчик') + ' ' + oc.length + ' (A ' + cat(oc, 'A') + ' · B ' + cat(oc, 'B') + ' · C ' + cat(oc, 'C') + ')<br>' + L('RHI internal', 'Внутр. РХИ') + ' ' + oi.length + ' (A ' + cat(oi, 'A') + ' · B ' + cat(oi, 'B') + ' · C ' + cat(oi, 'C') + ')</li></ul></div></div>'
+        + '<div class="v5hc v5wide"><div class="v5ht m">' + ic('chart') + L('Progress by activity – done / total', 'Прогресс по видам работ – выполнено / всего') + '<button class="v5lk" onclick="go(\'#/sy\')">' + L('System progress', 'По системам') + ' ›</button></div><div class="v5bars">'
+        + bars.map(function (b) { return '<div class="v5bar" onclick="go(\'#/a/' + en(b.g) + '\')"><span class="v5bt" title="' + e(b.g) + '"><i class="v5dot ' + col(b.pc) + '"></i>' + e(b.g) + '</span><span class="v5bb"><i class="' + col(b.pc) + '" data-w="' + b.pc + '"></i></span><span class="v5bp">' + b.pc + '%<small>' + b.d + '/' + b.n + '</small></span></div>'; }).join('')
+        + '</div><div class="v5sc">' + L('Source: IWP status (Site Progress) · data', 'Источник: статус IWP (факт) · данные') + ' ' + e((typeof D !== 'undefined' && D.meta && D.meta.date) || '') + ' · <i class="v5dot ok"></i>' + L('complete', 'завершено') + ' <i class="v5dot amb"></i>' + L('in progress', 'в работе') + ' <i class="v5dot bad"></i>' + L('critical (punch cat. A)', 'критично (кат. A)') + '</div></div></div>';
       var first = main.firstElementChild; main.insertBefore(d, first ? first.nextSibling : null);
       requestAnimationFrame(function () { requestAnimationFrame(function () {
-        var f = d.querySelector('.fgc'); if (f) f.style.strokeDashoffset = (CF * (1 - Math.min(100, pc) / 100)).toFixed(1);
+        d.querySelectorAll('.fgc').forEach(function (f) { var CF = 2 * Math.PI * 50; f.style.strokeDashoffset = (CF * (1 - Math.min(100, +f.getAttribute('data-pc')) / 100)).toFixed(1); });
         d.querySelectorAll('.v5bb i').forEach(function (i) { i.style.width = Math.min(100, +i.getAttribute('data-w')) + '%'; });
       }); });
     } catch (err) { /* app globals not ready – the normal home page stays as it is */ }
   }
+  // ---------- icons instead of emojis (leading emoji of section titles, tile titles and chips only – text stays)
+  var EMO = {'📤': 'send', '🚩': 'flag', '🔔': 'bell', '⚠': 'alert', '📌': 'pin', '🏁': 'flagc', '🔌': 'plug', '📊': 'chart', '🎓': 'grad', '🔥': 'flame', '🏗': 'build', '🔒': 'lock', '🚪': 'door', '💡': 'bulb', '🧱': 'layers', '🔍': 'search', '📋': 'check', '📦': 'pkg', '🧵': 'disc', '🏬': 'store', '🧭': 'compass', '🔩': 'wrench', '📑': 'file', '❓': 'help', '📐': 'ruler', '📄': 'file', '🧰': 'wrench', '❗': 'alert', '📘': 'book', '💬': 'msg', '📞': 'phone', '🛠': 'wrench', '📝': 'note', '📈': 'trend', '✍': 'pen', '👤': 'user', '🔑': 'key', '✅': 'checkc', '🏢': 'building', '🌳': 'tree', '⚡': 'zap', '🚒': 'truck', '🌍': 'globe', '❄': 'snow', '🧪': 'flask', '🗓': 'cal', '📂': 'folder', '🔄': 'refresh', '🎛': 'server', '👷': 'user', '🧯': 'flame'};
+  var KW = [[/^Panel cable check/i, 'server'], [/^Interconnection/i, 'link'], [/^Installation check/i, 'wrench'], [/^Punch list/i, 'alert'], [/^Cable pulling/i, 'cable'], [/^Cable termination/i, 'plug']];
+  var ER = /^\s*([☀-➿⬀-⯿]|[\uD83C-\uDBFF][\uDC00-\uDFFF])[️‍]*\s*/;
+  function deco(root) {
+    root.querySelectorAll('.sect,.tile > b,.chip,.mgk span').forEach(function (el) {
+      if (el.querySelector(':scope > svg.v5e')) return;
+      var tn = el.firstChild; while (tn && tn.nodeType === 1 && tn.tagName === 'BR') tn = tn.nextSibling;
+      var name = null;
+      if (tn && tn.nodeType === 3) { var m = tn.nodeValue.match(ER); if (m) { var k = m[1]; name = EMO[k] || EMO[k.replace(/️/g, '')]; if (name) tn.nodeValue = tn.nodeValue.slice(m[0].length); } }
+      if (!name && el.matches('.tile > b')) { var t = el.textContent.trim(); KW.some(function (x) { if (x[0].test(t)) { name = x[1]; return true; } }); }
+      if (name) { var w = document.createElement('span'); w.innerHTML = ic(name).replace('<svg', '<svg class="v5e"'); el.insertBefore(w.firstChild, el.firstChild); }
+    });
+    // status colour of the app's own progress bars (green complete · amber in progress)
+    root.querySelectorAll('.pbar > i').forEach(function (i) { var w = parseFloat(i.style.width); if (isNaN(w)) return; i.classList.toggle('s-ok', w >= 100); i.classList.toggle('s-amb', w < 100); });
+  }
+  window.v5deco = deco;
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', build); else build();
 })();
