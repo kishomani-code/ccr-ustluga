@@ -61,6 +61,8 @@ select{font-family:var(--font);width:100%;padding:10px;border:1px solid var(--li
 .mgw{overflow-x:auto;background:#fff;border:1px solid var(--line);border-radius:12px}.mgtb{width:100%;border-collapse:collapse;font-size:var(--fs-td);font-variant-numeric:var(--num)}.mgtb th{position:sticky;top:0;background:var(--pri);color:#fff;text-align:left;padding:7px 8px;font-size:var(--fs-th);font-weight:var(--fw-th)}.mgtb td{padding:7px 8px;border-top:1px solid var(--line);white-space:nowrap;font-weight:var(--fw-td)}.mgtb td:first-child{white-space:normal;word-break:break-all}
 .mgbar{display:grid;grid-template-columns:minmax(90px,38%) 1fr 42px;gap:8px;align-items:center;padding:5px 0;cursor:pointer;font-size:var(--fs-sub)}.mgbar .n{overflow-wrap:anywhere}.mgbar .b{height:14px;background:var(--pri);border-radius:7px;overflow:hidden}.mgbar .b i{display:block;height:100%;background:var(--acc)}.mgbar .v{text-align:right;font-weight:var(--fw-pct);font-variant-numeric:var(--num)}
 </style>
+<link rel="stylesheet" href="theme.css">
+<script>try{document.documentElement.setAttribute('data-theme',localStorage.getItem('ccr_theme')||(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'))}catch(e){}</script>
 </head>
 <body>
 <header>
@@ -76,6 +78,7 @@ select{font-family:var(--font);width:100%;padding:10px;border:1px solid var(--li
 <div id="ldt" style="font-size:13px;color:#687384;margin-top:10px">Loading data… first time needs internet (≈10 MB), then works offline</div>
 </div><style>@keyframes ld{0%{margin-left:-40%}100%{margin-left:100%}}</style></main>
 <div class="toast" id="toast"></div>
+<script src="shell.js"></script>
 
 <script>
 var LL=(function(){try{return localStorage.getItem('ccr_lang')==='ru'}catch(e){return false}})();
