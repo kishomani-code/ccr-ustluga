@@ -33,7 +33,7 @@
       + (d.old.length ? '<div style="font-size:12px;margin-top:4px;color:var(--mut)">' + L('Superseded', 'Заменены') + ': ' + d.old.map(E).join(', ') + '</div>' : '')
       + (c[0] ? '<div style="font-size:12px;margin-top:4px"><a class="link" onclick="go(\'#/pl\');setTimeout(function(){var i=document.querySelector(\'#main input\');if(i){i.value=\'' + short(d.no) + '\';i.dispatchEvent(new Event(\'input\'))}},300)">⚠ ' + c[0] + ' ' + L('punch items quote this document', 'замечаний ссылаются на документ') + (c[1] ? ' · ' + c[1] + ' ' + L('open', 'открыто') : '') + '</a></div>' : '')
       + '<div style="font-size:12px;margin-top:6px;line-height:1.7">' + d.f.map(f => f[1] ? '📄 <a class="link" href="' + fl(f[1]) + '" target="_blank" rel="noopener">' + E(f[0]) + '</a>' : '📄 ' + E(f[0])).join('<br>') + '</div>'
-      + '<div style="margin-top:8px"><a class="chip" href="' + drive(d.no) + '" target="_blank" rel="noopener">' + L('Open in Google Drive', 'Открыть в Google Drive') + '</a></div></div>';
+      + '<div style="margin-top:8px"><a class="chip on" href="' + drive(d) + '" target="_blank" rel="noopener">' + L('Open latest rev', 'Открыть последнюю изм.') + ' ' + E(d.rev) + '</a></div></div>';
   }
   function draw() {
     const box = document.getElementById('psl'); if (!box) return;
