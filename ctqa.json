@@ -1,328 +1,338 @@
 {
-"date": "06.11.2026",
-"by": "ПОЖНЕФТЕГАЗ – Волосевич Е.В.",
-"src": "Client comments 30.10 + 06.11.2026 (2 replies). 06.11: FA designer responsible only for FA, IN questions → persons in charge of section IN; other points accepted, no comment.",
-"a": {
-"CTQ-01": {
-"r": "CLOSE",
-"rr": "ЗАКРЫТЬ",
-"cru": "06.11: нет нового комментария\n30.10: Откорректировано и учтено в rev. 04",
-"cen": "06.11: no new comment\n30.10: Corrected and included in rev. 04.",
-"ke": "Closed on 05.11 review (fixed in rev 04 / answer accepted).",
-"kr": "Закрыто при проверке 05.11 (исправлено в рев. 04 / ответ принят).",
-"ne": "No action.",
-"nr": "Действий нет."
-},
-"CTQ-02": {
-"r": "CLOSE",
-"rr": "ЗАКРЫТЬ",
-"cru": "06.11: Во вложении запись ЖАН от 26.08.26 по резисторам и диодам, номиналам, материал заказан в МТО КИПиА, руководство по выбору номинала резисторов указано в ссылочном документе GA-VD-(00-00-000)-J-ZK 6040.000.001.\n30.10: Согласно записи в ЖАН, количество и тип резисторов/диодов определять по месту согласно РЭ на оборудование. Данный материал в спецификацию вносится не будет. Материал заказан в рамках МТО КИПиА и в наличии на складе.",
-"cen": "06.11: Attached: ZhAN (author supervision log) record of 26.08.26 for resistors and diodes and their ratings; material ordered under I&C MTO; resistor rating selection guide is in reference document GA-VD-(00-00-000)-J-ZK 6040.000.001.\n30.10: As per the author supervision log (ZhAN), quantity and type of resistors / diodes are decided on site as per the equipment manual. Not added to the MTO. Material is ordered under I&C MTO and is in the warehouse.",
-"ke": "Closed 07.11.2026 – diode / resistor comments closed.",
-"kr": "Закрыто 07.11.2026 – замечания по диодам / резисторам закрыты.",
-"ne": "No action.",
-"nr": "Действий нет."
-},
-"CTQ-03": {
-"r": "CLOSE",
-"rr": "ЗАКРЫТЬ",
-"cru": "06.11: нет нового комментария\n30.10: Откорректировано и учтено в rev. 04",
-"cen": "06.11: no new comment\n30.10: Corrected and included in rev. 04.",
-"ke": "Closed on 05.11 review (fixed in rev 04 / answer accepted).",
-"kr": "Закрыто при проверке 05.11 (исправлено в рев. 04 / ответ принят).",
-"ne": "No action.",
-"nr": "Действий нет."
-},
-"CTQ-04": {
-"r": "CLOSE",
-"rr": "ЗАКРЫТЬ",
-"cru": "06.11: В РЭ МДУ-1-R3 «РУБЕЖ» указано, что подключение питания и управления (24 В и 220 В) выполняется через одну коробку. Аналогичный принцип предусмотрен концепцией IN-SD-51. Знак W-08 не входит в состав систем пожарной сигнализации (FA) и не может быть предусмотрен с нашей стороны; при необходимости его должен предусмотреть завод-изготовитель МДУ (в комплекте или на корпусе). Если клеммы закрыты пластиковым корпусом / заглушками – знак W-08 не требуется.\n30.10: Согласно техническому требованию IN-SD-051, подключение противопожарный клапанов осуществлено через 1 клеммную коробку. Если требуется изменение в РД - необходимо править документ с тех. Требованиями",
-"cen": "06.11: MDU-1-R3 \"RUBEZH\" manual: power and control (24 V and 220 V) are connected through one box; same principle in concept IN-SD-51. W-08 sign is not part of the FA system and cannot be provided by the designer; if needed, the MDU manufacturer must supply it (in the kit or on the housing). If terminals are closed by the plastic housing / plugs – no W-08 sign is needed.\n30.10: As per technical requirement IN-SD-051, fire dampers are connected through 1 junction box. For a design change, the technical requirement document must be revised first.",
-"ke": "Answer is clear: one box for 24 V and 220 V per MDU manual; W-08 not in FA scope. Accept.",
-"kr": "Ответ понятен: одна коробка для 24 В и 220 В по РЭ МДУ; знак W-08 не в объёме FA. Принимаем.",
-"ne": "CLOSE. Site: check 220 V terminals in MDU / JB are covered (plugs / housing); if open live parts – report to MDU supplier.",
-"nr": "ЗАКРЫТЬ. Площадка: проверить, что клеммы 220 В в МДУ / коробке закрыты (заглушки / корпус); если есть открытые токоведущие части – сообщить поставщику МДУ."
-},
-"CTQ-05": {
-"r": "CLOSE",
-"rr": "ЗАКРЫТЬ",
-"cru": "06.11: нет нового комментария\n30.10: Согласно записи в ЖАН, количество и тип резисторов/диодов определять по месту согласно РЭ на оборудование. Данный материал в спецификацию вносится не будет. Материал заказан в рамках МТО КИПиА и в наличии на складе.",
-"cen": "06.11: no new comment\n30.10: Same as CTQ-02: decided on site as per manual, not in MTO, material in I&C warehouse.",
-"ke": "Closed on 05.11 review (fixed in rev 04 / answer accepted).",
-"kr": "Закрыто при проверке 05.11 (исправлено в рев. 04 / ответ принят).",
-"ne": "No action.",
-"nr": "Действий нет."
-},
-"CTQ-06": {
-"r": "CLOSE",
-"rr": "ЗАКРЫТЬ",
-"cru": "06.11: нет нового комментария\n30.10: Действительно, для УДП в составе ОЛ комплектно идёт плата ТРБ-110, в рамках приводов ДУ, комплектно со шкафом ДУ \"ШКВАЛ\" \"ВЕЗА\" все остальные (21 шт. ТРБ-110) предусмотрены в комплекте со шкафом.",
-"cen": "06.11: no new comment\n30.10: Correct: for the manual call points the TRB-110 board comes complete. For the remote-control actuators, all other TRB-110 (21 pcs) come complete with the VEZA \"SHKVAL\" control cabinet.",
-"ke": "Closed on 05.11 review (fixed in rev 04 / answer accepted).",
-"kr": "Закрыто при проверке 05.11 (исправлено в рев. 04 / ответ принят).",
-"ne": "No action.",
-"nr": "Действий нет."
-},
-"CTQ-07": {
-"r": "REQUEST AGAIN",
-"rr": "ЗАПРОСИТЬ ПОВТОРНО",
-"cru": "06.11: В РД 4 рев. все корректно, запущен TQS на корректировку количества гофры в SF.\n30.10: Откорректировано, требуется корректировка SF в рамках технического запроса (TQS)",
-"cen": "06.11: RD rev 4 is correct; TQS started to correct the corrugated conduit quantity in SF.\n30.10: Corrected. SF correction is needed by a technical query (TQS).",
-"ke": "Client says RD rev 04 is correct, but rev 04 cable schedule (AL p.73) still shows SIB-401-C01 cable 70 m inside conduit 75 m – cable shorter than conduit. TQS only for conduit qty in SF.",
-"kr": "Заказчик пишет, что РД рев. 04 корректна, но в КЖ рев. 04 (AL с.73) SIB-401-C01: кабель 70 м в трубе 75 м – кабель короче трубы. TQS только на количество гофры в SF.",
-"ne": "REQUEST AGAIN with page reference (AL rev 04 p.73) – cable length to be ≥ conduit + termination (~80 m). Ask TQS number. Site: cut by actual length.",
-"nr": "ЗАПРОСИТЬ ПОВТОРНО со ссылкой (AL рев. 04, с.73) – длина кабеля ≥ трубы + запас на разделку (~80 м). Запросить № TQS. Площадка: резать по факту."
-},
-"CTQ-08": {
-"r": "NO ANSWER",
-"rr": "НЕТ ОТВЕТА",
-"cru": "06.11: нет нового комментария\n30.10: IN-SPAP",
-"cen": "06.11: no new comment\n30.10: IN-SPAP (question for the IN-SPAP designer).",
-"ke": "Client answered \"IN-SPAP\" on 30.10 – no answer from the SPAP designer yet.",
-"kr": "Заказчик 30.10 ответил «IN-SPAP» – ответа от проектировщика SPAP нет.",
-"ne": "REQUEST AGAIN – send the same question to Gazprom Automation (SPAP-LR designer) and ask the client to push.\nClient 06.11: FA designer is responsible only for FA, not IN – send to persons in charge of section IN.",
-"nr": "ЗАПРОСИТЬ ПОВТОРНО – направить вопрос в Газпром Автоматизацию (проектировщик SPAP-LR), попросить заказчика ускорить.\nЗаказчик 06.11: проектировщик отвечает только за FA, не за IN – направить ответственным за раздел IN."
-},
-"CTQ-09": {
-"r": "CLOSE",
-"rr": "ЗАКРЫТЬ",
-"cru": "06.11: нет нового комментария\n30.10: Откорректировано, приведенно соотвествие с SF",
-"cen": "06.11: no new comment\n30.10: Corrected, aligned with SF.",
-"ke": "Closed on 05.11 review (fixed in rev 04 / answer accepted).",
-"kr": "Закрыто при проверке 05.11 (исправлено в рев. 04 / ответ принят).",
-"ne": "No action.",
-"nr": "Действий нет."
-},
-"CTQ-10": {
-"r": "CLOSE",
-"rr": "ЗАКРЫТЬ",
-"cru": "06.11: нет нового комментария\n30.10: Проектная организация в праве называть тег кабельной линии согласно своим шаблонам, в данной случае было принят тег кабельной линии по зоне, а не по зданию (BX0 - FX0)",
-"cen": "06.11: no new comment\n30.10: The designer may name cable tags by its own template. Here the tag is by zone, not by building (BX0 – FX0).",
-"ke": "Closed on 05.11 review (fixed in rev 04 / answer accepted).",
-"kr": "Закрыто при проверке 05.11 (исправлено в рев. 04 / ответ принят).",
-"ne": "No action.",
-"nr": "Действий нет."
-},
-"CTQ-12": {
-"r": "TQS IN WORK",
-"rr": "TQS В РАБОТЕ",
-"cru": "06.11: По всем остальным пунктам, по которым уже запущена процедура TQS, ведутся работы по внесению корректировок.\n30.10: Требуется запуск технического запроса на корректировку (TQS)",
-"cen": "06.11: For all other items where TQS is already started, corrections are in progress.\n30.10: A technical query (TQS) for correction must be raised.",
-"ke": "Client: TQS started, corrections in progress. TQS number and planned revision not given.",
-"kr": "Заказчик: TQS запущен, исправления в работе. № TQS и ревизия не указаны.",
-"ne": "Ask TQS number and planned revision of FA-PSGN-SF; follow up.",
-"nr": "Запросить № TQS и ревизию FA-PSGN-SF; контролировать."
-},
-"CTQ-13": {
-"r": "CLOSE",
-"rr": "ЗАКРЫТЬ",
-"cru": "06.11: нет нового комментария\n30.10: Откорректировано и учтено в rev. 04",
-"cen": "06.11: no new comment\n30.10: Corrected and included in rev. 04.",
-"ke": "Closed on 05.11 review (fixed in rev 04 / answer accepted).",
-"kr": "Закрыто при проверке 05.11 (исправлено в рев. 04 / ответ принят).",
-"ne": "No action.",
-"nr": "Действий нет."
-},
-"CTQ-14": {
-"r": "TQS IN WORK",
-"rr": "TQS В РАБОТЕ",
-"cru": "06.11: По всем остальным пунктам, по которым уже запущена процедура TQS, ведутся работы по внесению корректировок.\n30.10: Откорректировано и учтено в rev. 04",
-"cen": "06.11: For all other items where TQS is already started, corrections are in progress.\n30.10: Corrected and included in rev. 04.",
-"ke": "Client: TQS started, corrections in progress. TQS number and planned revision not given.",
-"kr": "Заказчик: TQS запущен, исправления в работе. № TQS и ревизия не указаны.",
-"ne": "Ask TQS number and planned revision of FA-PSGN-SF; follow up.",
-"nr": "Запросить № TQS и ревизию FA-PSGN-SF; контролировать."
-},
-"CTQ-15": {
-"r": "CLOSE",
-"rr": "ЗАКРЫТЬ",
-"cru": "06.11: нет нового комментария\n30.10: В РД ECAEN00097, общепром исполнения, М20х1,15",
-"cen": "06.11: no new comment\n30.10: Design uses ECAEN00097, industrial (non-Ex) version, M20x1.5.",
-"ke": "Closed on 05.11 review (fixed in rev 04 / answer accepted).",
-"kr": "Закрыто при проверке 05.11 (исправлено в рев. 04 / ответ принят).",
-"ne": "No action.",
-"nr": "Действий нет."
-},
-"CTQ-16": {
-"r": "NO ANSWER",
-"rr": "НЕТ ОТВЕТА",
-"cru": "06.11: нет нового комментария\n30.10: IN-SPAP",
-"cen": "06.11: no new comment\n30.10: IN-SPAP (question for the IN-SPAP designer).",
-"ke": "Client answered \"IN-SPAP\" on 30.10 – no answer from the SPAP designer yet.",
-"kr": "Заказчик 30.10 ответил «IN-SPAP» – ответа от проектировщика SPAP нет.",
-"ne": "REQUEST AGAIN – send the same question to Gazprom Automation (SPAP-LR designer) and ask the client to push.\nClient 06.11: FA designer is responsible only for FA, not IN – send to persons in charge of section IN.",
-"nr": "ЗАПРОСИТЬ ПОВТОРНО – направить вопрос в Газпром Автоматизацию (проектировщик SPAP-LR), попросить заказчика ускорить.\nЗаказчик 06.11: проектировщик отвечает только за FA, не за IN – направить ответственным за раздел IN."
-},
-"CTQ-17": {
-"r": "NO ANSWER",
-"rr": "НЕТ ОТВЕТА",
-"cru": "06.11: нет нового комментария\n30.10: IN-SPAP",
-"cen": "06.11: no new comment\n30.10: IN-SPAP (question for the IN-SPAP designer).",
-"ke": "Client answered \"IN-SPAP\" on 30.10 – no answer from the SPAP designer yet.",
-"kr": "Заказчик 30.10 ответил «IN-SPAP» – ответа от проектировщика SPAP нет.",
-"ne": "REQUEST AGAIN – send the same question to Gazprom Automation (SPAP-LR designer) and ask the client to push.\nClient 06.11: FA designer is responsible only for FA, not IN – send to persons in charge of section IN.",
-"nr": "ЗАПРОСИТЬ ПОВТОРНО – направить вопрос в Газпром Автоматизацию (проектировщик SPAP-LR), попросить заказчика ускорить.\nЗаказчик 06.11: проектировщик отвечает только за FA, не за IN – направить ответственным за раздел IN."
-},
-"CTQ-18": {
-"r": "NO ANSWER",
-"rr": "НЕТ ОТВЕТА",
-"cru": "06.11: нет нового комментария",
-"cen": "06.11: no new comment",
-"ke": "No answer on 30.10 and 06.11.",
-"kr": "Ответа нет ни 30.10, ни 06.11.",
-"ne": "REQUEST AGAIN – resend the question (Gazprom Automation (SPAP-LR) + GLE (AOVK).)",
-"nr": "ЗАПРОСИТЬ ПОВТОРНО – направить вопрос ещё раз"
-},
-"CTQ-19": {
-"r": "NO ANSWER",
-"rr": "НЕТ ОТВЕТА",
-"cru": "06.11: нет нового комментария",
-"cen": "06.11: no new comment",
-"ke": "No answer on 30.10 and 06.11.",
-"kr": "Ответа нет ни 30.10, ни 06.11.",
-"ne": "REQUEST AGAIN – resend the question (Gazprom Automation (SPAP-LR) – LR vs FA-SPBA 04.1.)",
-"nr": "ЗАПРОСИТЬ ПОВТОРНО – направить вопрос ещё раз"
-},
-"CTQ-20": {
-"r": "NO ANSWER",
-"rr": "НЕТ ОТВЕТА",
-"cru": "06.11: нет нового комментария",
-"cen": "06.11: no new comment",
-"ke": "No answer on 30.10 and 06.11.",
-"kr": "Ответа нет ни 30.10, ни 06.11.",
-"ne": "REQUEST AGAIN – resend the question (GLE (EL, EMSV-LC) + Gazprom Automation.)",
-"nr": "ЗАПРОСИТЬ ПОВТОРНО – направить вопрос ещё раз"
-},
-"CTQ-21": {
-"r": "NO ANSWER",
-"rr": "НЕТ ОТВЕТА",
-"cru": "06.11: нет нового комментария",
-"cen": "06.11: no new comment",
-"ke": "No answer on 30.10 and 06.11.",
-"kr": "Ответа нет ни 30.10, ни 06.11.",
-"ne": "REQUEST AGAIN – resend the question (Gazprom Automation + GLE (CS telecom).)",
-"nr": "ЗАПРОСИТЬ ПОВТОРНО – направить вопрос ещё раз"
-},
-"CTQ-22": {
-"r": "NO ANSWER",
-"rr": "НЕТ ОТВЕТА",
-"cru": "06.11: нет нового комментария",
-"cen": "06.11: no new comment",
-"ke": "No answer on 30.10 and 06.11.",
-"kr": "Ответа нет ни 30.10, ни 06.11.",
-"ne": "REQUEST AGAIN – resend the question (Gazprom Automation (SPAP-LR).)",
-"nr": "ЗАПРОСИТЬ ПОВТОРНО – направить вопрос ещё раз"
-},
-"CTQ-23": {
-"r": "NO ANSWER",
-"rr": "НЕТ ОТВЕТА",
-"cru": "06.11: нет нового комментария\n30.10: IN-SPAP",
-"cen": "06.11: no new comment\n30.10: IN-SPAP (question for the IN-SPAP designer).",
-"ke": "Client answered \"IN-SPAP\" on 30.10 – no answer from the SPAP designer yet.",
-"kr": "Заказчик 30.10 ответил «IN-SPAP» – ответа от проектировщика SPAP нет.",
-"ne": "REQUEST AGAIN – send the same question to Gazprom Automation (SPAP-LR designer) and ask the client to push.\nClient 06.11: FA designer is responsible only for FA, not IN – send to persons in charge of section IN.",
-"nr": "ЗАПРОСИТЬ ПОВТОРНО – направить вопрос в Газпром Автоматизацию (проектировщик SPAP-LR), попросить заказчика ускорить.\nЗаказчик 06.11: проектировщик отвечает только за FA, не за IN – направить ответственным за раздел IN."
-},
-"CTQ-24": {
-"r": "NO ANSWER",
-"rr": "НЕТ ОТВЕТА",
-"cru": "06.11: нет нового комментария\n30.10: IN-SPAP",
-"cen": "06.11: no new comment\n30.10: IN-SPAP (question for the IN-SPAP designer).",
-"ke": "Client answered \"IN-SPAP\" on 30.10 – no answer from the SPAP designer yet.",
-"kr": "Заказчик 30.10 ответил «IN-SPAP» – ответа от проектировщика SPAP нет.",
-"ne": "REQUEST AGAIN – send the same question to Gazprom Automation (SPAP-LR designer) and ask the client to push.\nClient 06.11: FA designer is responsible only for FA, not IN – send to persons in charge of section IN.",
-"nr": "ЗАПРОСИТЬ ПОВТОРНО – направить вопрос в Газпром Автоматизацию (проектировщик SPAP-LR), попросить заказчика ускорить.\nЗаказчик 06.11: проектировщик отвечает только за FA, не за IN – направить ответственным за раздел IN."
-},
-"CTQ-25": {
-"r": "NO ANSWER",
-"rr": "НЕТ ОТВЕТА",
-"cru": "06.11: нет нового комментария",
-"cen": "06.11: no new comment",
-"ke": "No answer on 30.10 and 06.11.",
-"kr": "Ответа нет ни 30.10, ни 06.11.",
-"ne": "REQUEST AGAIN – resend the question (Gazprom Automation / cabinet vendor.)",
-"nr": "ЗАПРОСИТЬ ПОВТОРНО – направить вопрос ещё раз"
-},
-"CTQ-26": {
-"r": "PARTLY",
-"rr": "ЧАСТИЧНО",
-"cru": "06.11: CTQ-26 = CTQ-4 (один и тот же запрос).\n30.10: Требуется запуск технического запроса на корректировку (TQS)",
-"cen": "06.11: CTQ-26 = CTQ-4 (same query).\n30.10: A technical query (TQS) for correction must be raised.",
-"ke": "Only W-08 part answered (via CTQ-4). F10 signs for SIB-401…405 (5 pcs, missing in FA-PSGN-SF) – not answered.",
-"kr": "Ответ только по знаку W-08 (через CTQ-4). Знаки F10 для SIB-401…405 (5 шт., нет в FA-PSGN-SF) – ответа нет.",
-"ne": "REQUEST AGAIN for F10 (5 pcs, outdoor version) – add to SF by TQS. W-08 part: close as CTQ-4.",
-"nr": "ЗАПРОСИТЬ ПОВТОРНО по F10 (5 шт., уличное исп.) – внести в SF через TQS. По W-08 – закрыть как CTQ-4."
-},
-"CTQ-27": {
-"r": "CLOSE",
-"rr": "ЗАКРЫТЬ",
-"cru": "06.11: нет нового комментария\n30.10: Откорректировано и учтено в rev. 04",
-"cen": "06.11: no new comment\n30.10: Corrected and included in rev. 04.",
-"ke": "Closed on 05.11 review (fixed in rev 04 / answer accepted).",
-"kr": "Закрыто при проверке 05.11 (исправлено в рев. 04 / ответ принят).",
-"ne": "No action.",
-"nr": "Действий нет."
-},
-"CTQ-28": {
-"r": "NO ANSWER",
-"rr": "НЕТ ОТВЕТА",
-"cru": "06.11: нет нового комментария",
-"cen": "06.11: no new comment",
-"ke": "No answer on 30.10 and 06.11.",
-"kr": "Ответа нет ни 30.10, ни 06.11.",
-"ne": "REQUEST AGAIN – resend the question (HVAC automation designer (AOVK).)",
-"nr": "ЗАПРОСИТЬ ПОВТОРНО – направить вопрос ещё раз"
-},
-"CTQ-29": {
-"r": "NO ANSWER",
-"rr": "НЕТ ОТВЕТА",
-"cru": "06.11: нет нового комментария",
-"cen": "06.11: no new comment",
-"ke": "No answer on 30.10 and 06.11.",
-"kr": "Ответа нет ни 30.10, ни 06.11.",
-"ne": "REQUEST AGAIN – resend the question (Gazprom Automation (AOVK).)",
-"nr": "ЗАПРОСИТЬ ПОВТОРНО – направить вопрос ещё раз"
-},
-"CTQ-30": {
-"r": "NO ANSWER",
-"rr": "НЕТ ОТВЕТА",
-"cru": "06.11: нет нового комментария",
-"cen": "06.11: no new comment",
-"ke": "No answer on 30.10 and 06.11.",
-"kr": "Ответа нет ни 30.10, ни 06.11.",
-"ne": "REQUEST AGAIN – resend the question (GLE (Telecom GGSO) + Gazprom Automation.)",
-"nr": "ЗАПРОСИТЬ ПОВТОРНО – направить вопрос ещё раз"
-},
-"CTQ-31": {
-"r": "CHECK REV",
-"rr": "ПРОВЕРИТЬ РЕВ.",
-"cru": "06.11: нет нового комментария\n30.10: Откорректировано и учтено в rev. 04",
-"cen": "06.11: no new comment\n30.10: Corrected and included in rev. 04.",
-"ke": "Client says fixed in rev 04, but the issue is in EMSV-LC – latest EMSV-LC not received.",
-"kr": "Заказчик: исправлено в рев. 04, но вопрос в EMSV-LC – последняя ревизия EMSV-LC не получена.",
-"ne": "Ask latest EMSV-LC revision and check FD-1111 / 2104 / 2105 cables.",
-"nr": "Запросить последнюю ревизию EMSV-LC и проверить кабели FD-1111 / 2104 / 2105."
-},
-"CTQ-32": {
-"r": "CORRECTION AGREED",
-"rr": "КОРРЕКТИРОВКА СОГЛАСОВАНА",
-"cru": "06.11 (2): Подтверждаю потребность в корректировке кабельного журнала: в теге кабеля указана неверная позиция здания [G0-D48 → G0-D18]. Алексей Сергеевич, в дополнение к корректировке по замене табло прошу учесть данное замечание.\n06.11: В новой ревизии комплекта G0-D1801FX0-FA-SPBA_05_AL указанные замечания учтены. В данном пункте упоминается JU-220, однако неясно, к какому комплекту относятся замечания.",
-"cen": "06.11 (2): Confirmed – cable list to be corrected: cable tag has wrong building position [G0-D48 → G0-D18]. To be included (Alexey Sergeevich) in the next correction together with the scoreboard (табло) replacement.\n06.11: Comments are included in the new revision G0-D1801FX0-FA-SPBA_05_AL. JU-220 is mentioned, but it is not clear which document set the comment refers to.",
-"ke": "Corrections in FA-SPBA rev 05 – we do not have rev 05 yet. JU-220: cable G0-D4801FX0-JF01-JU-220-C01 is listed in the CCR set GLE-(G0-D1801FX0)-FA-SPBA-001 cable schedule (title code D4801 instead of D1801).",
-"kr": "Исправления в FA-SPBA рев. 05 – рев. 05 у нас нет. JU-220: кабель G0-D4801FX0-JF01-JU-220-C01 указан в КЖ комплекта ЦО GLE-(G0-D1801FX0)-FA-SPBA-001 (код титула D4801 вместо D1801).",
-"ne": "Wait for corrected FA-SPBA cable list (next revision with табло replacement); check JU-220 tag G0-D18…, JB28/JB24/JB29, JB-919/922-C01.",
-"nr": "Ждать исправленный КЖ FA-SPBA (след. ревизия с заменой табло); проверить тег JU-220 G0-D18…, JB28/JB24/JB29, JB-919/922-C01."
-},
-"CTQ-33": {
-"r": "NO ANSWER",
-"rr": "НЕТ ОТВЕТА",
-"cru": "06.11: нет нового комментария",
-"cen": "06.11: no new comment",
-"ke": "No answer on 30.10 and 06.11.",
-"kr": "Ответа нет ни 30.10, ни 06.11.",
-"ne": "REQUEST AGAIN – resend the question (GLE (EL, EMSV-LC) + GLE (Telecom GGSO).)",
-"nr": "ЗАПРОСИТЬ ПОВТОРНО – направить вопрос ещё раз"
-}
-},
-"note": "Client comments 30.10 + 06.11.2026 (2 replies). 06.11: FA designer responsible only for FA, IN questions → persons in charge of section IN; other points accepted, no comment."
+ "date": "06.11.2026",
+ "by": "ПОЖНЕФТЕГАЗ – Волосевич Е.В.",
+ "src": "Client comments 30.10 + 06.11.2026 (2 replies). 06.11: FA designer responsible only for FA, IN questions → persons in charge of section IN; other points accepted, no comment.",
+ "a": {
+  "CTQ-01": {
+   "r": "CLOSE",
+   "rr": "ЗАКРЫТЬ",
+   "cru": "06.11: нет нового комментария\n30.10: Откорректировано и учтено в rev. 04",
+   "cen": "06.11: no new comment\n30.10: Corrected and included in rev. 04.",
+   "ke": "Closed on 05.11 review (fixed in rev 04 / answer accepted).",
+   "kr": "Закрыто при проверке 05.11 (исправлено в рев. 04 / ответ принят).",
+   "ne": "No action.",
+   "nr": "Действий нет."
+  },
+  "CTQ-02": {
+   "r": "CLOSE",
+   "rr": "ЗАКРЫТЬ",
+   "cru": "06.11: Во вложении запись ЖАН от 26.08.26 по резисторам и диодам, номиналам, материал заказан в МТО КИПиА, руководство по выбору номинала резисторов указано в ссылочном документе GA-VD-(00-00-000)-J-ZK 6040.000.001.\n30.10: Согласно записи в ЖАН, количество и тип резисторов/диодов определять по месту согласно РЭ на оборудование. Данный материал в спецификацию вносится не будет. Материал заказан в рамках МТО КИПиА и в наличии на складе.",
+   "cen": "06.11: Attached: ZhAN (author supervision log) record of 26.08.26 for resistors and diodes and their ratings; material ordered under I&C MTO; resistor rating selection guide is in reference document GA-VD-(00-00-000)-J-ZK 6040.000.001.\n30.10: As per the author supervision log (ZhAN), quantity and type of resistors / diodes are decided on site as per the equipment manual. Not added to the MTO. Material is ordered under I&C MTO and is in the warehouse.",
+   "ke": "Closed 07.11.2026 – diode / resistor comments closed.",
+   "kr": "Закрыто 07.11.2026 – замечания по диодам / резисторам закрыты.",
+   "ne": "No action.",
+   "nr": "Действий нет."
+  },
+  "CTQ-03": {
+   "r": "CLOSE",
+   "rr": "ЗАКРЫТЬ",
+   "cru": "06.11: нет нового комментария\n30.10: Откорректировано и учтено в rev. 04",
+   "cen": "06.11: no new comment\n30.10: Corrected and included in rev. 04.",
+   "ke": "Closed on 05.11 review (fixed in rev 04 / answer accepted).",
+   "kr": "Закрыто при проверке 05.11 (исправлено в рев. 04 / ответ принят).",
+   "ne": "No action.",
+   "nr": "Действий нет."
+  },
+  "CTQ-04": {
+   "r": "CLOSE",
+   "rr": "ЗАКРЫТЬ",
+   "cru": "06.11: В РЭ МДУ-1-R3 «РУБЕЖ» указано, что подключение питания и управления (24 В и 220 В) выполняется через одну коробку. Аналогичный принцип предусмотрен концепцией IN-SD-51. Знак W-08 не входит в состав систем пожарной сигнализации (FA) и не может быть предусмотрен с нашей стороны; при необходимости его должен предусмотреть завод-изготовитель МДУ (в комплекте или на корпусе). Если клеммы закрыты пластиковым корпусом / заглушками – знак W-08 не требуется.\n30.10: Согласно техническому требованию IN-SD-051, подключение противопожарный клапанов осуществлено через 1 клеммную коробку. Если требуется изменение в РД - необходимо править документ с тех. Требованиями",
+   "cen": "06.11: MDU-1-R3 \"RUBEZH\" manual: power and control (24 V and 220 V) are connected through one box; same principle in concept IN-SD-51. W-08 sign is not part of the FA system and cannot be provided by the designer; if needed, the MDU manufacturer must supply it (in the kit or on the housing). If terminals are closed by the plastic housing / plugs – no W-08 sign is needed.\n30.10: As per technical requirement IN-SD-051, fire dampers are connected through 1 junction box. For a design change, the technical requirement document must be revised first.",
+   "ke": "Answer is clear: one box for 24 V and 220 V per MDU manual; W-08 not in FA scope. Accept.",
+   "kr": "Ответ понятен: одна коробка для 24 В и 220 В по РЭ МДУ; знак W-08 не в объёме FA. Принимаем.",
+   "ne": "CLOSE. Site: check 220 V terminals in MDU / JB are covered (plugs / housing); if open live parts – report to MDU supplier.",
+   "nr": "ЗАКРЫТЬ. Площадка: проверить, что клеммы 220 В в МДУ / коробке закрыты (заглушки / корпус); если есть открытые токоведущие части – сообщить поставщику МДУ."
+  },
+  "CTQ-05": {
+   "r": "CLOSE",
+   "rr": "ЗАКРЫТЬ",
+   "cru": "06.11: нет нового комментария\n30.10: Согласно записи в ЖАН, количество и тип резисторов/диодов определять по месту согласно РЭ на оборудование. Данный материал в спецификацию вносится не будет. Материал заказан в рамках МТО КИПиА и в наличии на складе.",
+   "cen": "06.11: no new comment\n30.10: Same as CTQ-02: decided on site as per manual, not in MTO, material in I&C warehouse.",
+   "ke": "Closed on 05.11 review (fixed in rev 04 / answer accepted).",
+   "kr": "Закрыто при проверке 05.11 (исправлено в рев. 04 / ответ принят).",
+   "ne": "No action.",
+   "nr": "Действий нет."
+  },
+  "CTQ-06": {
+   "r": "CLOSE",
+   "rr": "ЗАКРЫТЬ",
+   "cru": "06.11: нет нового комментария\n30.10: Действительно, для УДП в составе ОЛ комплектно идёт плата ТРБ-110, в рамках приводов ДУ, комплектно со шкафом ДУ \"ШКВАЛ\" \"ВЕЗА\" все остальные (21 шт. ТРБ-110) предусмотрены в комплекте со шкафом.",
+   "cen": "06.11: no new comment\n30.10: Correct: for the manual call points the TRB-110 board comes complete. For the remote-control actuators, all other TRB-110 (21 pcs) come complete with the VEZA \"SHKVAL\" control cabinet.",
+   "ke": "Closed on 05.11 review (fixed in rev 04 / answer accepted).",
+   "kr": "Закрыто при проверке 05.11 (исправлено в рев. 04 / ответ принят).",
+   "ne": "No action.",
+   "nr": "Действий нет."
+  },
+  "CTQ-07": {
+   "r": "REQUEST AGAIN",
+   "rr": "ЗАПРОСИТЬ ПОВТОРНО",
+   "cru": "06.11: В РД 4 рев. все корректно, запущен TQS на корректировку количества гофры в SF.\n30.10: Откорректировано, требуется корректировка SF в рамках технического запроса (TQS)",
+   "cen": "06.11: RD rev 4 is correct; TQS started to correct the corrugated conduit quantity in SF.\n30.10: Corrected. SF correction is needed by a technical query (TQS).",
+   "ke": "Client says RD rev 04 is correct, but rev 04 cable schedule (AL p.73) still shows SIB-401-C01 cable 70 m inside conduit 75 m – cable shorter than conduit. TQS only for conduit qty in SF.",
+   "kr": "Заказчик пишет, что РД рев. 04 корректна, но в КЖ рев. 04 (AL с.73) SIB-401-C01: кабель 70 м в трубе 75 м – кабель короче трубы. TQS только на количество гофры в SF.",
+   "ne": "REQUEST AGAIN with page reference (AL rev 04 p.73) – cable length to be ≥ conduit + termination (~80 m). Ask TQS number. Site: cut by actual length.",
+   "nr": "ЗАПРОСИТЬ ПОВТОРНО со ссылкой (AL рев. 04, с.73) – длина кабеля ≥ трубы + запас на разделку (~80 м). Запросить № TQS. Площадка: резать по факту."
+  },
+  "CTQ-08": {
+   "r": "NO ANSWER",
+   "rr": "НЕТ ОТВЕТА",
+   "cru": "06.11: нет нового комментария\n30.10: IN-SPAP",
+   "cen": "06.11: no new comment\n30.10: IN-SPAP (question for the IN-SPAP designer).",
+   "ke": "Client answered \"IN-SPAP\" on 30.10 – no answer from the SPAP designer yet.",
+   "kr": "Заказчик 30.10 ответил «IN-SPAP» – ответа от проектировщика SPAP нет.",
+   "ne": "REQUEST AGAIN – send the same question to Gazprom Automation (SPAP-LR designer) and ask the client to push.\nClient 06.11: FA designer is responsible only for FA, not IN – send to persons in charge of section IN.",
+   "nr": "ЗАПРОСИТЬ ПОВТОРНО – направить вопрос в Газпром Автоматизацию (проектировщик SPAP-LR), попросить заказчика ускорить.\nЗаказчик 06.11: проектировщик отвечает только за FA, не за IN – направить ответственным за раздел IN."
+  },
+  "CTQ-09": {
+   "r": "CLOSE",
+   "rr": "ЗАКРЫТЬ",
+   "cru": "06.11: нет нового комментария\n30.10: Откорректировано, приведенно соотвествие с SF",
+   "cen": "06.11: no new comment\n30.10: Corrected, aligned with SF.",
+   "ke": "Closed on 05.11 review (fixed in rev 04 / answer accepted).",
+   "kr": "Закрыто при проверке 05.11 (исправлено в рев. 04 / ответ принят).",
+   "ne": "No action.",
+   "nr": "Действий нет."
+  },
+  "CTQ-10": {
+   "r": "CLOSE",
+   "rr": "ЗАКРЫТЬ",
+   "cru": "06.11: нет нового комментария\n30.10: Проектная организация в праве называть тег кабельной линии согласно своим шаблонам, в данной случае было принят тег кабельной линии по зоне, а не по зданию (BX0 - FX0)",
+   "cen": "06.11: no new comment\n30.10: The designer may name cable tags by its own template. Here the tag is by zone, not by building (BX0 – FX0).",
+   "ke": "Closed on 05.11 review (fixed in rev 04 / answer accepted).",
+   "kr": "Закрыто при проверке 05.11 (исправлено в рев. 04 / ответ принят).",
+   "ne": "No action.",
+   "nr": "Действий нет."
+  },
+  "CTQ-12": {
+   "r": "TQS IN WORK",
+   "rr": "TQS В РАБОТЕ",
+   "cru": "06.11: По всем остальным пунктам, по которым уже запущена процедура TQS, ведутся работы по внесению корректировок.\n30.10: Требуется запуск технического запроса на корректировку (TQS)",
+   "cen": "06.11: For all other items where TQS is already started, corrections are in progress.\n30.10: A technical query (TQS) for correction must be raised.",
+   "ke": "Client: TQS started, corrections in progress. TQS number and planned revision not given.",
+   "kr": "Заказчик: TQS запущен, исправления в работе. № TQS и ревизия не указаны.",
+   "ne": "Ask TQS number and planned revision of FA-PSGN-SF; follow up.",
+   "nr": "Запросить № TQS и ревизию FA-PSGN-SF; контролировать."
+  },
+  "CTQ-13": {
+   "r": "CLOSE",
+   "rr": "ЗАКРЫТЬ",
+   "cru": "06.11: нет нового комментария\n30.10: Откорректировано и учтено в rev. 04",
+   "cen": "06.11: no new comment\n30.10: Corrected and included in rev. 04.",
+   "ke": "Closed on 05.11 review (fixed in rev 04 / answer accepted).",
+   "kr": "Закрыто при проверке 05.11 (исправлено в рев. 04 / ответ принят).",
+   "ne": "No action.",
+   "nr": "Действий нет."
+  },
+  "CTQ-14": {
+   "r": "TQS IN WORK",
+   "rr": "TQS В РАБОТЕ",
+   "cru": "06.11: По всем остальным пунктам, по которым уже запущена процедура TQS, ведутся работы по внесению корректировок.\n30.10: Откорректировано и учтено в rev. 04",
+   "cen": "06.11: For all other items where TQS is already started, corrections are in progress.\n30.10: Corrected and included in rev. 04.",
+   "ke": "Client: TQS started, corrections in progress. TQS number and planned revision not given.",
+   "kr": "Заказчик: TQS запущен, исправления в работе. № TQS и ревизия не указаны.",
+   "ne": "Ask TQS number and planned revision of FA-PSGN-SF; follow up.",
+   "nr": "Запросить № TQS и ревизию FA-PSGN-SF; контролировать."
+  },
+  "CTQ-15": {
+   "r": "CLOSE",
+   "rr": "ЗАКРЫТЬ",
+   "cru": "06.11: нет нового комментария\n30.10: В РД ECAEN00097, общепром исполнения, М20х1,15",
+   "cen": "06.11: no new comment\n30.10: Design uses ECAEN00097, industrial (non-Ex) version, M20x1.5.",
+   "ke": "Closed on 05.11 review (fixed in rev 04 / answer accepted).",
+   "kr": "Закрыто при проверке 05.11 (исправлено в рев. 04 / ответ принят).",
+   "ne": "No action.",
+   "nr": "Действий нет."
+  },
+  "CTQ-16": {
+   "r": "NO ANSWER",
+   "rr": "НЕТ ОТВЕТА",
+   "cru": "06.11: нет нового комментария\n30.10: IN-SPAP",
+   "cen": "06.11: no new comment\n30.10: IN-SPAP (question for the IN-SPAP designer).",
+   "ke": "Client answered \"IN-SPAP\" on 30.10 – no answer from the SPAP designer yet.",
+   "kr": "Заказчик 30.10 ответил «IN-SPAP» – ответа от проектировщика SPAP нет.",
+   "ne": "REQUEST AGAIN – send the same question to Gazprom Automation (SPAP-LR designer) and ask the client to push.\nClient 06.11: FA designer is responsible only for FA, not IN – send to persons in charge of section IN.",
+   "nr": "ЗАПРОСИТЬ ПОВТОРНО – направить вопрос в Газпром Автоматизацию (проектировщик SPAP-LR), попросить заказчика ускорить.\nЗаказчик 06.11: проектировщик отвечает только за FA, не за IN – направить ответственным за раздел IN."
+  },
+  "CTQ-17": {
+   "r": "NO ANSWER",
+   "rr": "НЕТ ОТВЕТА",
+   "cru": "06.11: нет нового комментария\n30.10: IN-SPAP",
+   "cen": "06.11: no new comment\n30.10: IN-SPAP (question for the IN-SPAP designer).",
+   "ke": "Client answered \"IN-SPAP\" on 30.10 – no answer from the SPAP designer yet.",
+   "kr": "Заказчик 30.10 ответил «IN-SPAP» – ответа от проектировщика SPAP нет.",
+   "ne": "REQUEST AGAIN – send the same question to Gazprom Automation (SPAP-LR designer) and ask the client to push.\nClient 06.11: FA designer is responsible only for FA, not IN – send to persons in charge of section IN.",
+   "nr": "ЗАПРОСИТЬ ПОВТОРНО – направить вопрос в Газпром Автоматизацию (проектировщик SPAP-LR), попросить заказчика ускорить.\nЗаказчик 06.11: проектировщик отвечает только за FA, не за IN – направить ответственным за раздел IN."
+  },
+  "CTQ-18": {
+   "r": "NO ANSWER",
+   "rr": "НЕТ ОТВЕТА",
+   "cru": "06.11: нет нового комментария",
+   "cen": "06.11: no new comment",
+   "ke": "No answer on 30.10 and 06.11.",
+   "kr": "Ответа нет ни 30.10, ни 06.11.",
+   "ne": "REQUEST AGAIN – resend the question (Gazprom Automation (SPAP-LR) + GLE (AOVK).)",
+   "nr": "ЗАПРОСИТЬ ПОВТОРНО – направить вопрос ещё раз"
+  },
+  "CTQ-19": {
+   "r": "NO ANSWER",
+   "rr": "НЕТ ОТВЕТА",
+   "cru": "06.11: нет нового комментария",
+   "cen": "06.11: no new comment",
+   "ke": "No answer on 30.10 and 06.11.",
+   "kr": "Ответа нет ни 30.10, ни 06.11.",
+   "ne": "REQUEST AGAIN – resend the question (Gazprom Automation (SPAP-LR) – LR vs FA-SPBA 04.1.)",
+   "nr": "ЗАПРОСИТЬ ПОВТОРНО – направить вопрос ещё раз"
+  },
+  "CTQ-20": {
+   "r": "NO ANSWER",
+   "rr": "НЕТ ОТВЕТА",
+   "cru": "06.11: нет нового комментария",
+   "cen": "06.11: no new comment",
+   "ke": "No answer on 30.10 and 06.11.",
+   "kr": "Ответа нет ни 30.10, ни 06.11.",
+   "ne": "REQUEST AGAIN – resend the question (GLE (EL, EMSV-LC) + Gazprom Automation.)",
+   "nr": "ЗАПРОСИТЬ ПОВТОРНО – направить вопрос ещё раз"
+  },
+  "CTQ-21": {
+   "r": "NO ANSWER",
+   "rr": "НЕТ ОТВЕТА",
+   "cru": "06.11: нет нового комментария",
+   "cen": "06.11: no new comment",
+   "ke": "No answer on 30.10 and 06.11.",
+   "kr": "Ответа нет ни 30.10, ни 06.11.",
+   "ne": "REQUEST AGAIN – resend the question (Gazprom Automation + GLE (CS telecom).)",
+   "nr": "ЗАПРОСИТЬ ПОВТОРНО – направить вопрос ещё раз"
+  },
+  "CTQ-22": {
+   "r": "NO ANSWER",
+   "rr": "НЕТ ОТВЕТА",
+   "cru": "06.11: нет нового комментария",
+   "cen": "06.11: no new comment",
+   "ke": "No answer on 30.10 and 06.11.",
+   "kr": "Ответа нет ни 30.10, ни 06.11.",
+   "ne": "REQUEST AGAIN – resend the question (Gazprom Automation (SPAP-LR).)",
+   "nr": "ЗАПРОСИТЬ ПОВТОРНО – направить вопрос ещё раз"
+  },
+  "CTQ-23": {
+   "r": "NO ANSWER",
+   "rr": "НЕТ ОТВЕТА",
+   "cru": "06.11: нет нового комментария\n30.10: IN-SPAP",
+   "cen": "06.11: no new comment\n30.10: IN-SPAP (question for the IN-SPAP designer).",
+   "ke": "Client answered \"IN-SPAP\" on 30.10 – no answer from the SPAP designer yet.",
+   "kr": "Заказчик 30.10 ответил «IN-SPAP» – ответа от проектировщика SPAP нет.",
+   "ne": "REQUEST AGAIN – send the same question to Gazprom Automation (SPAP-LR designer) and ask the client to push.\nClient 06.11: FA designer is responsible only for FA, not IN – send to persons in charge of section IN.",
+   "nr": "ЗАПРОСИТЬ ПОВТОРНО – направить вопрос в Газпром Автоматизацию (проектировщик SPAP-LR), попросить заказчика ускорить.\nЗаказчик 06.11: проектировщик отвечает только за FA, не за IN – направить ответственным за раздел IN."
+  },
+  "CTQ-24": {
+   "r": "NO ANSWER",
+   "rr": "НЕТ ОТВЕТА",
+   "cru": "06.11: нет нового комментария\n30.10: IN-SPAP",
+   "cen": "06.11: no new comment\n30.10: IN-SPAP (question for the IN-SPAP designer).",
+   "ke": "Client answered \"IN-SPAP\" on 30.10 – no answer from the SPAP designer yet.",
+   "kr": "Заказчик 30.10 ответил «IN-SPAP» – ответа от проектировщика SPAP нет.",
+   "ne": "REQUEST AGAIN – send the same question to Gazprom Automation (SPAP-LR designer) and ask the client to push.\nClient 06.11: FA designer is responsible only for FA, not IN – send to persons in charge of section IN.",
+   "nr": "ЗАПРОСИТЬ ПОВТОРНО – направить вопрос в Газпром Автоматизацию (проектировщик SPAP-LR), попросить заказчика ускорить.\nЗаказчик 06.11: проектировщик отвечает только за FA, не за IN – направить ответственным за раздел IN."
+  },
+  "CTQ-25": {
+   "r": "NO ANSWER",
+   "rr": "НЕТ ОТВЕТА",
+   "cru": "06.11: нет нового комментария",
+   "cen": "06.11: no new comment",
+   "ke": "No answer on 30.10 and 06.11.",
+   "kr": "Ответа нет ни 30.10, ни 06.11.",
+   "ne": "REQUEST AGAIN – resend the question (Gazprom Automation / cabinet vendor.)",
+   "nr": "ЗАПРОСИТЬ ПОВТОРНО – направить вопрос ещё раз"
+  },
+  "CTQ-26": {
+   "r": "PARTLY",
+   "rr": "ЧАСТИЧНО",
+   "cru": "06.11: CTQ-26 = CTQ-4 (один и тот же запрос).\n30.10: Требуется запуск технического запроса на корректировку (TQS)",
+   "cen": "06.11: CTQ-26 = CTQ-4 (same query).\n30.10: A technical query (TQS) for correction must be raised.",
+   "ke": "Only W-08 part answered (via CTQ-4). F10 signs for SIB-401…405 (5 pcs, missing in FA-PSGN-SF) – not answered.",
+   "kr": "Ответ только по знаку W-08 (через CTQ-4). Знаки F10 для SIB-401…405 (5 шт., нет в FA-PSGN-SF) – ответа нет.",
+   "ne": "REQUEST AGAIN for F10 (5 pcs, outdoor version) – add to SF by TQS. W-08 part: close as CTQ-4.",
+   "nr": "ЗАПРОСИТЬ ПОВТОРНО по F10 (5 шт., уличное исп.) – внести в SF через TQS. По W-08 – закрыть как CTQ-4."
+  },
+  "CTQ-27": {
+   "r": "CLOSE",
+   "rr": "ЗАКРЫТЬ",
+   "cru": "06.11: нет нового комментария\n30.10: Откорректировано и учтено в rev. 04",
+   "cen": "06.11: no new comment\n30.10: Corrected and included in rev. 04.",
+   "ke": "Closed on 05.11 review (fixed in rev 04 / answer accepted).",
+   "kr": "Закрыто при проверке 05.11 (исправлено в рев. 04 / ответ принят).",
+   "ne": "No action.",
+   "nr": "Действий нет."
+  },
+  "CTQ-28": {
+   "r": "NO ANSWER",
+   "rr": "НЕТ ОТВЕТА",
+   "cru": "06.11: нет нового комментария",
+   "cen": "06.11: no new comment",
+   "ke": "No answer on 30.10 and 06.11.",
+   "kr": "Ответа нет ни 30.10, ни 06.11.",
+   "ne": "REQUEST AGAIN – resend the question (HVAC automation designer (AOVK).)",
+   "nr": "ЗАПРОСИТЬ ПОВТОРНО – направить вопрос ещё раз"
+  },
+  "CTQ-29": {
+   "r": "NO ANSWER",
+   "rr": "НЕТ ОТВЕТА",
+   "cru": "06.11: нет нового комментария",
+   "cen": "06.11: no new comment",
+   "ke": "No answer on 30.10 and 06.11.",
+   "kr": "Ответа нет ни 30.10, ни 06.11.",
+   "ne": "REQUEST AGAIN – resend the question (Gazprom Automation (AOVK).)",
+   "nr": "ЗАПРОСИТЬ ПОВТОРНО – направить вопрос ещё раз"
+  },
+  "CTQ-30": {
+   "r": "NO ANSWER",
+   "rr": "НЕТ ОТВЕТА",
+   "cru": "06.11: нет нового комментария",
+   "cen": "06.11: no new comment",
+   "ke": "No answer on 30.10 and 06.11.",
+   "kr": "Ответа нет ни 30.10, ни 06.11.",
+   "ne": "REQUEST AGAIN – resend the question (GLE (Telecom GGSO) + Gazprom Automation.)",
+   "nr": "ЗАПРОСИТЬ ПОВТОРНО – направить вопрос ещё раз"
+  },
+  "CTQ-31": {
+   "r": "CHECK REV",
+   "rr": "ПРОВЕРИТЬ РЕВ.",
+   "cru": "06.11: нет нового комментария\n30.10: Откорректировано и учтено в rev. 04",
+   "cen": "06.11: no new comment\n30.10: Corrected and included in rev. 04.",
+   "ke": "Client says fixed in rev 04, but the issue is in EMSV-LC – latest EMSV-LC not received.",
+   "kr": "Заказчик: исправлено в рев. 04, но вопрос в EMSV-LC – последняя ревизия EMSV-LC не получена.",
+   "ne": "Ask latest EMSV-LC revision and check FD-1111 / 2104 / 2105 cables.",
+   "nr": "Запросить последнюю ревизию EMSV-LC и проверить кабели FD-1111 / 2104 / 2105."
+  },
+  "CTQ-32": {
+   "r": "CORRECTION AGREED",
+   "rr": "КОРРЕКТИРОВКА СОГЛАСОВАНА",
+   "cru": "06.11 (2): Подтверждаю потребность в корректировке кабельного журнала: в теге кабеля указана неверная позиция здания [G0-D48 → G0-D18]. Алексей Сергеевич, в дополнение к корректировке по замене табло прошу учесть данное замечание.\n06.11: В новой ревизии комплекта G0-D1801FX0-FA-SPBA_05_AL указанные замечания учтены. В данном пункте упоминается JU-220, однако неясно, к какому комплекту относятся замечания.",
+   "cen": "06.11 (2): Confirmed – cable list to be corrected: cable tag has wrong building position [G0-D48 → G0-D18]. To be included (Alexey Sergeevich) in the next correction together with the scoreboard (табло) replacement.\n06.11: Comments are included in the new revision G0-D1801FX0-FA-SPBA_05_AL. JU-220 is mentioned, but it is not clear which document set the comment refers to.",
+   "ke": "Corrections in FA-SPBA rev 05 – we do not have rev 05 yet. JU-220: cable G0-D4801FX0-JF01-JU-220-C01 is listed in the CCR set GLE-(G0-D1801FX0)-FA-SPBA-001 cable schedule (title code D4801 instead of D1801).",
+   "kr": "Исправления в FA-SPBA рев. 05 – рев. 05 у нас нет. JU-220: кабель G0-D4801FX0-JF01-JU-220-C01 указан в КЖ комплекта ЦО GLE-(G0-D1801FX0)-FA-SPBA-001 (код титула D4801 вместо D1801).",
+   "ne": "Wait for corrected FA-SPBA cable list (next revision with табло replacement); check JU-220 tag G0-D18…, JB28/JB24/JB29, JB-919/922-C01.",
+   "nr": "Ждать исправленный КЖ FA-SPBA (след. ревизия с заменой табло); проверить тег JU-220 G0-D18…, JB28/JB24/JB29, JB-919/922-C01."
+  },
+  "CTQ-33": {
+   "r": "NO ANSWER",
+   "rr": "НЕТ ОТВЕТА",
+   "cru": "06.11: нет нового комментария",
+   "cen": "06.11: no new comment",
+   "ke": "No answer on 30.10 and 06.11.",
+   "kr": "Ответа нет ни 30.10, ни 06.11.",
+   "ne": "REQUEST AGAIN – resend the question (GLE (EL, EMSV-LC) + GLE (Telecom GGSO).)",
+   "nr": "ЗАПРОСИТЬ ПОВТОРНО – направить вопрос ещё раз"
+  },
+  "CTQ-47": {
+   "r": "OPEN",
+   "rr": "ОТКРЫТО",
+   "cen": "10.11 (GLE, A.B. Yarovenko): Box drawing from supplier. R3 2 kΩ 0.5 W С1-4 OK. VD2 1N5408 (we use 1N4007 – 1N5408 failed on site). 4 entries and 0.5–2.5 mm² correct. Type 04 not approved. Plastic terminals not fire-resistant – ceramic required. VD2/R3 in JB-708 is a design error – install at annunciator terminals.",
+   "cru": "10.11 (ГЛИ, Яровенко А.Б.): Чертёж коробки – от поставщика. R3 2 кОм 0,5 Вт С1-4 – ОК. VD2 1N5408 (применяем 1N4007 – 1N5408 на площадке не работал). 4 ввода и 0,5–2,5 мм² – верно. Исп. 04 не согласовано. Пластиковые клеммы не огнестойкие – нужны керамические. VD2/R3 в JB-708 – ошибка проекта, установить на клеммы оповещателя.",
+   "ke": "Open. Waiting corrected drawing, box delivery date (35 pcs) and 1N4007 confirmation.",
+   "kr": "Открыто. Ждём исправленный чертёж, срок поставки 35 коробок и подтверждение 1N4007.",
+   "ne": "HOLD Type 20 boxes. Ceramic blocks purchase (44 / 429 pcs). R3 98 pcs from stock.",
+   "nr": "СТОП по коробкам исп. 20. Закупка керамических колодок (44 / 429 шт.). R3 98 шт. со склада."
+  }
+ },
+ "note": "Client comments 30.10 + 06.11.2026 (2 replies). 06.11: FA designer responsible only for FA, IN questions → persons in charge of section IN; other points accepted, no comment."
 }

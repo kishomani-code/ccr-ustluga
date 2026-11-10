@@ -1,3 +1,4 @@
+// v4.44: labelled floating Excel button on every page (header icon was hard to see on phones).
 // v4.43: panel pages export in the saved "panel wise cable check" format (Summary + one sheet per system, panel bands, full cable details).
 // v4.42: "Excel" button on every page for every user (no owner code). Exports what the open page shows –
 // lists, tables and detail cards – to .xlsx with the app's own offline writer (xl.js, no outside library).
@@ -134,11 +135,13 @@
     XL.save(name, sheets);
   };
 
-  // header button (all pages, all users)
+  // header button + floating "Excel" button (all pages, all users). v4.44: the header icon alone was too small on
+  // phones (text hidden), so a labelled floating button is always shown at the bottom right as well.
   function addBtn() {
-    if (document.getElementById('xlx')) return; const hm = document.getElementById('hm'); if (!hm) return;
-    hm.insertAdjacentHTML('beforebegin', '<button class="hbtn" id="xlx" onclick="xlPage()" title="Export this page to Excel" style="width:auto;padding:0 10px;font-size:13px;font-weight:600;white-space:nowrap">📗<span class="xt"> Excel</span></button>');
-    if (!document.getElementById('xlxcss')) document.head.insertAdjacentHTML('beforeend', '<style id="xlxcss">@media (max-width:480px){#xlx .xt{display:none}#xlx{padding:0 8px!important}}</style>');
+    const hm = document.getElementById('hm');
+    if (hm && !document.getElementById('xlx')) hm.insertAdjacentHTML('beforebegin', '<button class="hbtn" id="xlx" onclick="xlPage()" title="Export this page to Excel" style="width:auto;padding:0 10px;font-size:13px;font-weight:600;white-space:nowrap">📗<span class="xt"> Excel</span></button>');
+    if (!document.getElementById('xlfab')) document.body.insertAdjacentHTML('beforeend', '<button id="xlfab" onclick="xlPage()" title="Export this page to Excel / Выгрузить страницу в Excel">📗 Excel</button>');
+    if (!document.getElementById('xlxcss')) document.head.insertAdjacentHTML('beforeend', '<style id="xlxcss">@media (max-width:480px){#xlx .xt{display:none}#xlx{padding:0 8px!important}}#xlfab{position:fixed;right:14px;bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:900;background:#1d6f42;color:#fff;border:0;border-radius:24px;padding:11px 16px;font:600 14px/1 Inter,system-ui,sans-serif;box-shadow:0 3px 10px rgba(0,0,0,.28);cursor:pointer}#xlfab:active{transform:scale(.96)}body{padding-bottom:72px}@media print{#xlfab{display:none}}</style>');
   }
   addBtn(); window.addEventListener('hashchange', addBtn);
 })();
