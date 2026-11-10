@@ -1,3 +1,4 @@
+// v4.45: every page that lists cables exports in the panel wise cable check format (full details + terminal points from LR).
 // v4.44: labelled floating Excel button on every page (header icon was hard to see on phones).
 // v4.43: panel pages export in the saved "panel wise cable check" format (Summary + one sheet per system, panel bands, full cable details).
 // v4.42: "Excel" button on every page for every user (no owner code). Exports what the open page shows –
@@ -67,9 +68,18 @@
   // "Panel wise cable check" format (as CCR_Open_Client_Punch_by_Panel): Summary sheet first, then one sheet per system,
   // rows grouped by panel / box with a full-width band row, numbered 1..N, last column "Site comments" left empty.
   function sysOf(c) { const m = String(c.d || c.rf || '').match(/\b[A-Z]{2}-([A-Z0-9]{3,5})-(?:[A-Z]{2}-)?\d/); return m ? m[1] : 'Other'; }
-  const PH = ['No', 'Cable', 'Dir.', 'From', 'From room', 'To', 'To room', 'Cable type', 'Cores / size', 'Length m', 'Drum (tracker)', 'Drawing', 'Ref. drawing', 'Contractor', 'Pulling status', 'Pulled date', 'Laying Access ID', 'Laying qty / fact', 'Termination status', 'Termination date', 'Termination Access ID', 'Termination qty / fact', 'CTQ', 'TQS', 'Tracker remark', 'RFI (RAWP)', 'Status', 'Site comments'];
-  const PW = [5, 30, 5, 34, 8, 34, 8, 16, 11, 9, 16, 30, 16, 10, 14, 11, 13, 13, 16, 12, 13, 13, 10, 30, 22, 40, 16, 30];
+  const PH = ['No', 'Cable', 'Dir.', 'From', 'From room', 'From terminal point (LR: core – strip : terminal)', 'To', 'To room', 'To terminal point (LR: core – strip : terminal)', 'Cable type', 'Cores / size', 'Length m', 'Drum (tracker)', 'Drawing', 'Ref. drawing', 'Contractor', 'Pulling status', 'Pulled date', 'Laying Access ID', 'Laying qty / fact', 'Termination status', 'Termination date', 'Termination Access ID', 'Termination qty / fact', 'CTQ', 'TQS', 'Tracker remark', 'RFI (RAWP)', 'Status', 'Site comments'];
+  const PW = [5, 30, 5, 34, 8, 34, 34, 8, 34, 16, 11, 9, 16, 30, 16, 10, 14, 11, 13, 13, 16, 12, 13, 13, 10, 30, 22, 40, 16, 30];
   const LC = (() => { const n = PH.length; return n <= 26 ? String.fromCharCode(64 + n) : 'A' + String.fromCharCode(64 + n - 26); })();
+  // terminal points from the LR drawings in the app (core – strip : terminal at each end)
+  function termPt(ct, side) {
+    try { if (typeof lrEnds !== 'function') return ''; const E = lrEnds(ct); if (!E) return 'LR not in app';
+      const dev = side === 'F' ? E.from : E.to; const L = E.rows.map(r => { const X = side === 'F' ? r.F : r.T; return X.length ? `${r.core}: ${X.map(x => (x.tb || '-') + ' : ' + (x.tn || '-')).join(', ')}` : ''; }).filter(Boolean);
+      return L.length ? `${dev ? dev + ' – ' : ''}${L.join('; ')}` : (dev || ''); } catch (e) { return ''; } }
+  // panel for a cable (the panel / box whose cable list has it; "OUT" side first), else the From node
+  let CP = null;
+  function panelOf(ct, c) { if (!CP) { CP = {}; (typeof PAN !== 'undefined' ? PAN : []).forEach(p => (p.cs || []).forEach(([dir, t]) => { if (!CP[t] || dir === 'OUT') CP[t] = {tag: p.tag, dir}; })); }
+    if (CP[ct]) return CP[ct]; const f = String((c && c.f) || '').split(/\s+/)[0]; return {tag: f || '(no panel)', dir: ''}; }
   function panelBook(tags, onlyRem) {
     if (typeof PBY === 'undefined' || typeof CBY === 'undefined' || typeof cst !== 'function') return null;
     const prj = window.__P || 'CCR', d = new Date(), dd = String(d.getDate()).padStart(2, '0') + '.' + String(d.getMonth() + 1).padStart(2, '0') + '.' + d.getFullYear();
@@ -89,12 +99,35 @@
         bold.push(rows.length + 4); merges.push(`A${rows.length + 5}:${LC}${rows.length + 5}`);
         rows.push([`Panel / box: ${p.tag}${p.desc ? ' – ' + p.desc : ''}${p.room ? ' · room ' + p.room : ''}   (${L.length} cables, ${rem} remaining)`]);
         use.forEach(({dir, ct, c, s}) => { n++; c = c || {};
-          rows.push([n, ct, dir, c.f || '', c.fr || '', c.o || '', c.tr || '', c.ty || '', c.c || '', num(c.ln), c.dr || '', c.d || '', c.rf || '', c.co || '', c.tp || '', c.pd || '', num(c.la || ''), (c.lq !== undefined && c.lq !== '' ? c.lq + ' / ' + (c.lf || 0) : ''), c.tt || '', c.tf || '', num(c.ta || ''), (c.tq !== undefined && c.tq !== '' ? c.tq + ' / ' + (c.tfa || 0) : ''), c.q || '', c.tqs || '', c.h || '', String(c.cm || '').replace(/^\[|\]$/g, ''), s.l, '']); }); });
+          rows.push([n, ct, dir, c.f || '', c.fr || '', termPt(ct, 'F'), c.o || '', c.tr || '', termPt(ct, 'T'), c.ty || '', c.c || '', num(c.ln), c.dr || '', c.d || '', c.rf || '', c.co || '', c.tp || '', c.pd || '', num(c.la || ''), (c.lq !== undefined && c.lq !== '' ? c.lq + ' / ' + (c.lf || 0) : ''), c.tt || '', c.tf || '', num(c.ta || ''), (c.tq !== undefined && c.tq !== '' ? c.tq + ' / ' + (c.tfa || 0) : ''), c.q || '', c.tqs || '', c.h || '', String(c.cm || '').replace(/^\[|\]$/g, ''), s.l, '']); }); });
       sheets.push({name: sn, rows: [[`${prj} – ${sys} – ${onlyRem ? 'remaining cables' : 'cable check'} by panel`], [`Cable tracker / IWP data in the app · ${nAll} cables (${nRem} remaining) · exported ${dd} · write site status in the last column`], []].concat([PH], rows), bold, merges: merges.concat([`A1:${LC}1`, `A2:${LC}2`]), freeze: 4, widths: PW});
     });
     if (!sheets.length) return null;
     const sum = {name: 'Summary', rows: [[`${prj} – panel wise cable check${onlyRem ? ' – remaining' : ''}`], ['Remaining = cable not yet pulled and terminated (tracker / IWP / site entries) · one sheet per system'], [], ['System', 'Panel / box', 'Cables', 'Remaining', 'Not pulled', 'Termination open', 'Sheet']].concat(sumRows), bold: [0, 3], freeze: 4, widths: [12, 40, 9, 11, 11, 16, 12]};
     return [sum].concat(sheets);
+  }
+
+  // any page that lists cables (activity lists, remaining pulling, search, cable page ...): same panel wise cable check format
+  function pageCables(main) {
+    if (typeof CBY === 'undefined') return [];
+    const out = [], seen = new Set();
+    const h = location.hash.replace(/^#\//, '').split('/');
+    if (h[0] === 'c' && h[1]) { const t = decodeURIComponent(h.slice(1).join('/')); if (CBY[t]) return [t]; }
+    main.querySelectorAll('.list > *').forEach(li => { const tx = (li.innerText || '').split(/[\s·|,;()]+/); for (const w of tx) { const t = w.replace(/^[^A-Z0-9]+|[^A-Za-z0-9]+$/g, ''); if (t.length > 8 && CBY[t] && !seen.has(t)) { seen.add(t); out.push(t); break; } } });
+    return out; }
+  function cableBook(tags, title) {
+    const prj = window.__P || 'CCR', d = new Date(), dd = String(d.getDate()).padStart(2, '0') + '.' + String(d.getMonth() + 1).padStart(2, '0') + '.' + d.getFullYear();
+    const bySys = {}, used = new Set(['summary', 'page list']), sheets = [], sumRows = [];
+    tags.forEach(ct => { const c = CBY[ct]; if (!c) return; const sys = sysOf(c), p = panelOf(ct, c); const g = (bySys[sys] = bySys[sys] || {}); (g[p.tag] = g[p.tag] || []).push({ct, c, dir: p.dir, s: cst(c)}); });
+    Object.keys(bySys).sort().forEach(sys => { const sn = sheetName(sys, used); const rows = [], bold = [0, 3], merges = []; let n = 0, nRem = 0, nAll = 0;
+      Object.keys(bySys[sys]).sort().forEach(pt => { const L = bySys[sys][pt]; const rem = L.filter(x => !x.s.ok).length; nRem += rem; nAll += L.length; const P = (typeof PBY !== 'undefined' && PBY[pt]) || {};
+        sumRows.push([sys, pt, L.length, rem, L.filter(x => x.s.p === false || x.s.p === null).length, L.filter(x => x.s.p && !x.s.t).length, sn]);
+        bold.push(rows.length + 4); merges.push(`A${rows.length + 5}:${LC}${rows.length + 5}`);
+        rows.push([`Panel / box: ${pt}${P.desc ? ' – ' + P.desc : ''}${P.room ? ' · room ' + P.room : ''}   (${L.length} cables, ${rem} remaining)`]);
+        L.forEach(({ct, c, dir, s}) => { n++; rows.push([n, ct, dir, c.f || '', c.fr || '', termPt(ct, 'F'), c.o || '', c.tr || '', termPt(ct, 'T'), c.ty || '', c.c || '', num(c.ln), c.dr || '', c.d || '', c.rf || '', c.co || '', c.tp || '', c.pd || '', num(c.la || ''), (c.lq !== undefined && c.lq !== '' ? c.lq + ' / ' + (c.lf || 0) : ''), c.tt || '', c.tf || '', num(c.ta || ''), (c.tq !== undefined && c.tq !== '' ? c.tq + ' / ' + (c.tfa || 0) : ''), c.q || '', c.tqs || '', c.h || '', String(c.cm || '').replace(/^\[|\]$/g, ''), s.l, '']); }); });
+      sheets.push({name: sn, rows: [[`${prj} – ${sys} – ${title}`], [`Cable tracker / IWP / LR data in the app · ${nAll} cables (${nRem} remaining) · exported ${dd} · write site status in the last column`], []].concat([PH], rows), bold, merges: merges.concat([`A1:${LC}1`, `A2:${LC}2`]), freeze: 4, widths: PW}); });
+    if (!sheets.length) return null;
+    return [{name: 'Summary', rows: [[`${prj} – panel wise cable check – ${title}`], ['Remaining = cable not yet pulled and terminated (tracker / IWP / site entries) · one sheet per system · terminal points from LR drawings where available'], [], ['System', 'Panel / box', 'Cables', 'Remaining', 'Not pulled', 'Termination open', 'Sheet']].concat(sumRows), bold: [0, 3], freeze: 4, widths: [12, 40, 9, 11, 11, 16, 12]}].concat(sheets);
   }
   const decTag = el => { const m = (el.getAttribute('onclick') || '').match(/go\('#\/p\/([^']+)'\)/); return m ? decodeURIComponent(m[1]) : null; };
 
@@ -110,6 +143,11 @@
       const bk = panelBook(tags, !h[1] && typeof VS !== 'undefined' && VS.P && VS.P.f === 'open');
       if (bk) return bk;
     }
+    const cabs = pageCables(main);
+    if (cabs.length) { const bk = cableBook(cabs, pageTitle() + (pageSub() ? ' · ' + pageSub() : '')); if (bk) {
+      const pl = []; main.querySelectorAll('.list').forEach(l => { if (!l.closest('table') && !(l.parentElement && l.parentElement.closest('.list'))) { const r = listRows(l); if (r) pl.push(...(pl.length ? r.slice(1) : r)); } });
+      if (pl.length > 1) bk.push({name: 'Page list', rows: [[pageTitle() + ' – list as shown in the app (IWP / access ID / qty)'], []].concat(pl), bold: [0, 2], freeze: 3, widths: widths(pl)});
+      return bk; } }
     main.querySelectorAll('table').forEach(tb => add(headingFor(tb, main), tableRows(tb)));
     main.querySelectorAll('.list').forEach(l => { if (l.closest('table') || (l.parentElement && l.parentElement.closest('.list'))) return; add(headingFor(l, main), listRows(l)); });
     main.querySelectorAll('.sect').forEach(sc => { if (h[0] === 'p' && h[1]) return; const bl = []; let n = sc.nextElementSibling; while (n && !n.matches('.sect,.card,.chips')) { bl.push(n); n = n.nextElementSibling; } add(txt(sc), blockRows(bl)); });
