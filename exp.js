@@ -1,3 +1,4 @@
+// v4.43: panel pages export in the saved "panel wise cable check" format (Summary + one sheet per system, panel bands, full cable details).
 // v4.42: "Excel" button on every page for every user (no owner code). Exports what the open page shows –
 // lists, tables and detail cards – to .xlsx with the app's own offline writer (xl.js, no outside library).
 // "Show more" lists are opened fully before the export, so the Excel has every line, not only the first 150.
@@ -62,6 +63,38 @@
       const s = cst(c); rows.push([t, p.desc, p.room || '', dir, c.t, c.f || '', c.o || '', c.ty || '', c.c || '', num(c.ln), c.d || '', s.l, s.p === true ? 'yes' : s.p === false ? 'no' : '', s.t === true ? 'yes' : s.t === false ? 'no' : '', c.q ? 'CTQ' : '']); }); });
     return rows.length > 1 ? rows : null;
   }
+  // "Panel wise cable check" format (as CCR_Open_Client_Punch_by_Panel): Summary sheet first, then one sheet per system,
+  // rows grouped by panel / box with a full-width band row, numbered 1..N, last column "Site comments" left empty.
+  function sysOf(c) { const m = String(c.d || c.rf || '').match(/\b[A-Z]{2}-([A-Z0-9]{3,5})-(?:[A-Z]{2}-)?\d/); return m ? m[1] : 'Other'; }
+  const PH = ['No', 'Cable', 'Dir.', 'From', 'From room', 'To', 'To room', 'Cable type', 'Cores / size', 'Length m', 'Drum (tracker)', 'Drawing', 'Ref. drawing', 'Contractor', 'Pulling status', 'Pulled date', 'Laying Access ID', 'Laying qty / fact', 'Termination status', 'Termination date', 'Termination Access ID', 'Termination qty / fact', 'CTQ', 'TQS', 'Tracker remark', 'RFI (RAWP)', 'Status', 'Site comments'];
+  const PW = [5, 30, 5, 34, 8, 34, 8, 16, 11, 9, 16, 30, 16, 10, 14, 11, 13, 13, 16, 12, 13, 13, 10, 30, 22, 40, 16, 30];
+  const LC = (() => { const n = PH.length; return n <= 26 ? String.fromCharCode(64 + n) : 'A' + String.fromCharCode(64 + n - 26); })();
+  function panelBook(tags, onlyRem) {
+    if (typeof PBY === 'undefined' || typeof CBY === 'undefined' || typeof cst !== 'function') return null;
+    const prj = window.__P || 'CCR', d = new Date(), dd = String(d.getDate()).padStart(2, '0') + '.' + String(d.getMonth() + 1).padStart(2, '0') + '.' + d.getFullYear();
+    const bySys = {}, sumRows = [];
+    tags.forEach(t => { const p = PBY[t]; if (!p) return;
+      const L = p.cs.map(([dir, ct]) => ({dir, ct, c: CBY[ct]})).map(x => Object.assign(x, {s: x.c ? cst(x.c) : {l: 'Not in tracker', ok: false}}));
+      const use = onlyRem ? L.filter(x => !x.s.ok) : L; if (!use.length) return;
+      const cnt = {}; L.forEach(x => { if (x.c) { const k = sysOf(x.c); cnt[k] = (cnt[k] || 0) + 1; } });
+      const sys = Object.keys(cnt).sort((a, b) => cnt[b] - cnt[a])[0] || 'Other';
+      (bySys[sys] = bySys[sys] || []).push({p, L, use}); });
+    const used = new Set(['summary']), sheets = [];
+    Object.keys(bySys).sort().forEach(sys => {
+      const sn = sheetName(sys, used); const grp = bySys[sys]; let n = 0, nRem = 0, nAll = 0;
+      const rows = [], bold = [0, 3], merges = [];
+      grp.forEach(({p, L, use}) => { const rem = L.filter(x => !x.s.ok).length; nRem += rem; nAll += use.length;
+        sumRows.push([sys, p.tag, L.length, rem, L.filter(x => x.s.p === false || x.s.p === null).length, L.filter(x => x.s.p && !x.s.t).length, sn]);
+        bold.push(rows.length + 4); merges.push(`A${rows.length + 5}:${LC}${rows.length + 5}`);
+        rows.push([`Panel / box: ${p.tag}${p.desc ? ' – ' + p.desc : ''}${p.room ? ' · room ' + p.room : ''}   (${L.length} cables, ${rem} remaining)`]);
+        use.forEach(({dir, ct, c, s}) => { n++; c = c || {};
+          rows.push([n, ct, dir, c.f || '', c.fr || '', c.o || '', c.tr || '', c.ty || '', c.c || '', num(c.ln), c.dr || '', c.d || '', c.rf || '', c.co || '', c.tp || '', c.pd || '', num(c.la || ''), (c.lq !== undefined && c.lq !== '' ? c.lq + ' / ' + (c.lf || 0) : ''), c.tt || '', c.tf || '', num(c.ta || ''), (c.tq !== undefined && c.tq !== '' ? c.tq + ' / ' + (c.tfa || 0) : ''), c.q || '', c.tqs || '', c.h || '', String(c.cm || '').replace(/^\[|\]$/g, ''), s.l, '']); }); });
+      sheets.push({name: sn, rows: [[`${prj} – ${sys} – ${onlyRem ? 'remaining cables' : 'cable check'} by panel`], [`Cable tracker / IWP data in the app · ${nAll} cables (${nRem} remaining) · exported ${dd} · write site status in the last column`], []].concat([PH], rows), bold, merges: merges.concat([`A1:${LC}1`, `A2:${LC}2`]), freeze: 4, widths: PW});
+    });
+    if (!sheets.length) return null;
+    const sum = {name: 'Summary', rows: [[`${prj} – panel wise cable check${onlyRem ? ' – remaining' : ''}`], ['Remaining = cable not yet pulled and terminated (tracker / IWP / site entries) · one sheet per system'], [], ['System', 'Panel / box', 'Cables', 'Remaining', 'Not pulled', 'Termination open', 'Sheet']].concat(sumRows), bold: [0, 3], freeze: 4, widths: [12, 40, 9, 11, 11, 16, 12]};
+    return [sum].concat(sheets);
+  }
   const decTag = el => { const m = (el.getAttribute('onclick') || '').match(/go\('#\/p\/([^']+)'\)/); return m ? decodeURIComponent(m[1]) : null; };
 
   function widths(rows) { const w = []; rows.slice(0, 400).forEach(r => r.forEach((v, i) => { w[i] = Math.min(60, Math.max(w[i] || 8, String(v == null ? '' : v).length + 2)); })); return w; }
@@ -73,8 +106,8 @@
     const h = location.hash.replace(/^#\//, '').split('/');
     if (h[0] === 'p') {
       const tags = h[1] ? [decodeURIComponent(h.slice(1).join('/'))] : [...main.querySelectorAll('#pl .li')].map(decTag).filter(Boolean);
-      const pc = panelCables(tags);
-      if (pc) { add(h[1] ? 'Cables' : 'Panel cables (all)', pc); const rem = [pc[0]].concat(pc.slice(1).filter(r => r[11] !== 'COMPLETED')); add('Remaining cables', rem); }
+      const bk = panelBook(tags, !h[1] && typeof VS !== 'undefined' && VS.P && VS.P.f === 'open');
+      if (bk) return bk;
     }
     main.querySelectorAll('table').forEach(tb => add(headingFor(tb, main), tableRows(tb)));
     main.querySelectorAll('.list').forEach(l => { if (l.closest('table') || (l.parentElement && l.parentElement.closest('.list'))) return; add(headingFor(l, main), listRows(l)); });
@@ -97,7 +130,7 @@
     if (!window.XL || !XL.make) return toast('Excel writer not loaded yet – try again');
     const sheets = collect(); if (!sheets.length) return toast('Nothing to export on this page');
     const d = new Date(), dd = String(d.getDate()).padStart(2, '0') + '.' + String(d.getMonth() + 1).padStart(2, '0') + '.' + d.getFullYear();
-    const name = (pageTitle() + (pageSub() ? ' ' + pageSub() : '')).replace(/[^\p{L}\p{N}.%-]+/gu, '_').replace(/_+/g, '_').replace(/^_|_$/g, '').slice(0, 70) + '_' + dd + '.xlsx';
+    const name = (sheets[0].name === 'Summary' && /^#\/p(\/|$)/.test(location.hash) ? String(sheets[0].rows[0][0]) + (location.hash.split('/')[2] ? ' ' + decodeURIComponent(location.hash.split('/').slice(2).join('/')) : '') : pageTitle() + (pageSub() ? ' ' + pageSub() : '')).replace(/[^\p{L}\p{N}.%-]+/gu, '_').replace(/_+/g, '_').replace(/^_|_$/g, '').slice(0, 70) + '_' + dd + '.xlsx';
     XL.save(name, sheets);
   };
 
