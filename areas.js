@@ -14,6 +14,8 @@
   const atHome = () => { const k = location.hash.replace(/^#\/?/, '').split('/')[0]; return !k || k[0] === '?'; };
   const PR = PRJN.rx;
   const isOwn = a => PR.test(a.a);
+  // v4.50: only areas related to the user's three areas (CCR, D48, D88): own titles + titles with a cable ending in those buildings
+  const relA = L => (L || []).some(x => x.rel != null) ? L.filter(x => x.rel > 0) : (L || []);
   OA.proj = function () { return typeof PRJ !== 'undefined' ? PRJ : 'CCR'; };
 
   // ---------------- top bar: CCR / D48 / OTHER AREA
@@ -33,13 +35,13 @@
   // ---------------- dashboard card on the first page
   OA.dash = function () { const d = OA.idx; VS.OD = VS.OD || {f: 'rhi', s: 'cab'}; const v = VS.OD;
     if (!d) { OA.loadIdx(() => { if (atHome()) route(); }); return `<div class="card" style="font-size:13px;color:var(--mut)">📊 Total project dashboard – loading areas/index.json… (needs internet the first time)</div>`; }
-    const A = d.areas, rhi = v.f === 'rhi';
+    const A = relA(d.areas), rhi = v.f === 'rhi';
     const cab = A.reduce((t, a) => { t.n += rhi ? a.cab[1] : a.cab[0]; t.p += a.cab[2]; t.t += a.cab[3]; t.m += a.cab[4]; t.pm += a.cab[5]; return t; }, {n: 0, p: 0, t: 0, m: 0, pm: 0});
     const G = tot(A, rhi); const keys = MAIN.filter(k => G[k]).concat(Object.keys(G).filter(k => !MAIN.includes(k) && G[k][0] >= 50).sort((x, y) => G[y][0] - G[x][0]));
     const gk = v.s === 'cab' ? null : v.s;
     const rows = A.map(a => { if (!gk) return {a, d: a.cab[2], n: rhi ? a.cab[1] : a.cab[0], u: 'lines'}; const e = (a.g || {})[gk]; return e ? {a, d: rhi ? e[8] : e[3], n: rhi ? e[7] : e[2], u: e[4]} : null; }).filter(x => x && x.n > 0).sort((x, y) => (y.n - y.d) - (x.n - x.d));
     const show = VS.OD.all ? rows : rows.slice(0, 12);
-    return `<div class="card" style="padding:12px"><div style="display:flex;justify-content:space-between;align-items:center"><div class="h3" style="margin:0">📊 Total project dashboard</div><span style="font-size:11px;color:var(--mut)">${esc(d.date)} · ${A.length} areas</span></div>
+    return `<div class="card" style="padding:12px"><div style="display:flex;justify-content:space-between;align-items:center"><div class="h3" style="margin:0">📊 Dashboard – my areas and linked areas</div><span style="font-size:11px;color:var(--mut)">${esc(d.date)} · ${A.length} areas</span></div>
      <div class="chips" style="margin-top:6px">${[['rhi', 'RHI'], ['all', 'Whole project']].map(([k, l]) => `<button class="chip ${v.f === k ? 'on' : ''}" onclick="VS.OD.f='${k}';route()">${l}</button>`).join('')}</div>
      <div class="kpi" style="margin-bottom:6px"><div><b>${fm(cab.n)}</b><span>cables${rhi ? ' (RHI)' : ''}</span></div><div><b style="color:var(--ok)">${fm(cab.p)}</b><span>pulled · ${P(cab.p, cab.n)}%</span></div><div><b style="color:var(--bad)">${fm(cab.n - cab.p)}</b><span>remaining to pull</span></div></div>
      <div class="kpi" style="margin-bottom:6px"><div><b>${fm(cab.pm)} m</b><span>pulled of ${fm(cab.m)} m</span></div><div><b style="color:var(--ok)">${fm(cab.t)}</b><span>terminated · ${P(cab.t, cab.n)}%</span></div><div><b style="color:var(--bad)">${fm(cab.n - cab.t)}</b><span>remaining to terminate</span></div></div>
@@ -52,11 +54,11 @@
      <button class="more" style="margin-top:6px" onclick="go('#/oa')">🌍 Open OTHER AREA – area by area ›</button></div>`; };
 
   // ---------------- OTHER AREA: list of areas
-  OA.home = function () { setHead('Other area', 'all titles from the cable tracker · data ' + ((OA.idx || {}).date || '…')); qbox.value = '';
+  OA.home = function () { setHead('Other area', 'only areas linked to CCR / D48 / D88 · data ' + ((OA.idx || {}).date || '…')); qbox.value = '';
     if (!OA.idx) { main.innerHTML = OA.topBar('OA') + '<div class="empty">Loading areas…</div>'; OA.loadIdx(() => { if (location.hash === '#/oa') OA.home(); }); return; }
     VS.OA = VS.OA || {q: '', g: '', f: 'rhi'}; const v = VS.OA; const nq = N(v.q);
-    const L = OA.idx.areas.filter(a => (!v.g || a.a.startsWith(v.g)) && (v.f !== 'rhi' || a.cab[1] > 0 || a.rh[0] > 0 || a.cl[0] > 0) && (!nq || N(a.a + ' ' + a.nm).includes(nq)));
-    main.innerHTML = OA.topBar('OA') + `<div style="font-size:12px;color:var(--mut);margin:0 2px 6px">ℹ️ Information only – read from the cable tracker, IWP, punch lists and drum data. No site entry, no report to Paul here (that stays in CCR / D48).</div><input class="fin" placeholder="Area: G0-D1810BX0, G1-B61, name…" value="${esc(v.q)}" oninput="VS.OA.q=this.value;OA.home()">
+    const L = relA(OA.idx.areas).filter(a => (!v.g || a.a.startsWith(v.g)) && (v.f !== 'rhi' || a.cab[1] > 0 || a.rh[0] > 0 || a.cl[0] > 0) && (!nq || N(a.a + ' ' + a.nm).includes(nq)));
+    main.innerHTML = OA.topBar('OA') + `<div style="font-size:12px;color:var(--mut);margin:0 2px 6px">ℹ️ Only areas that have cables to / from CCR, D48 or D88 are listed. Information only – read from the cable tracker, IWP, punch lists and drum data. No site entry, no report to Paul here (that stays in CCR / D48).</div><input class="fin" placeholder="Area: G0-D1810BX0, G1-B61, name…" value="${esc(v.q)}" oninput="VS.OA.q=this.value;OA.home()">
      <div class="chips">${[['', 'All'], ['G0', 'G0'], ['G1', 'G1'], ['G2', 'G2']].map(([k, l]) => `<button class="chip ${v.g === k ? 'on' : ''}" onclick="VS.OA.g='${k}';OA.home()">${l}</button>`).join('')}${[['rhi', 'RHI areas'], ['all', 'All areas']].map(([k, l]) => `<button class="chip ${v.f === k ? 'on' : ''}" onclick="VS.OA.f='${k}';OA.home()">${l}</button>`).join('')}</div>
      <div style="font-size:12px;color:var(--mut);margin:0 2px 6px">${L.length} areas · cables pulled % (RHI scope) · punch open</div>
      <div class="list">${L.map(a => { const n = a.cab[1] || a.cab[0], pc = P(a.cab[2], n), tc = P(a.cab[3], n);

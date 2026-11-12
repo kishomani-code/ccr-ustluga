@@ -108,6 +108,30 @@ def sys_of(doc):
 CK = ['t', 'f', 'o', 'ty', 'c', 'id', 'ln', 'pm', 'pd', 'ps', 'tf', 'tt', 'tc', 'dr', 'co', 'sys', 'dc', 'h', 'rfi', 'doc']
 
 
+OWN_T = ('G0-D1810BX0', 'G0-D1801FX0', 'G0-D4810BX0', 'G0-D4801FX0', 'G0-D8810BX0', 'G0-D8801FX0')
+OWN_END = re.compile(r'G0-D1810BX0|G0-D1801FX0|G0-D4810BX0|G0-D4801FX0|G0-D8810BX0|G0-D8801FX0|-D18-\d|-D48-\d|-D88-\d')
+
+
+def related_areas(rows):
+    """v4.50: titles related to the user's three areas (CCR, D48, D88) = own titles + titles of cables with one end
+    in those buildings (True From / True To title, or the From / To text). Heat tracing (EH) does not make a title related."""
+    rel = {}
+    for r in rows[5:]:
+        if len(r) < 60 or not S(col(r, 21)) or S(col(r, 35)):
+            continue
+        a = area_key(col(r, 14))
+        if not a:
+            continue
+        if a in OWN_T:
+            rel[a] = rel.get(a, 0) + 1
+            continue
+        if '-EH-' in S(col(r, 0)):
+            continue
+        if S(col(r, 24)) in OWN_T or S(col(r, 25)) in OWN_T or OWN_END.search(S(col(r, 22)) + ' | ' + S(col(r, 23))):
+            rel[a] = rel.get(a, 0) + 1
+    return rel
+
+
 def build_cables(rows):
     """tracker rows -> {area: [cable rows]} ; drums -> {drum no: drum}"""
     by_area, drums = {}, {}
@@ -262,6 +286,7 @@ def main():
         sys.exit('cable tracker not found')
     rows = {k: read_sheet(f, SHEETS[k]) for k, f in files.items()}
     cab, drums = build_cables(rows['cables'])
+    REL = related_areas(rows['cables'])   # v4.50
     items = build_items(rows['iwp']) if 'iwp' in rows else {}
     cl, names = build_master(rows['master']) if 'master' in rows else ({}, {})
     rh = build_rhi(rows['rhi']) if 'rhi' in rows else {}
@@ -305,7 +330,7 @@ def main():
                       num(sum(c[ck['ln']] for c in EH)), num(sum(c[ck['pm']] for c in EH)), sum(1 for c in EHR if c[ck['ps']] == 'Completed'), sum(1 for c in EHR if c[ck['tc']] == 'Completed')],
                'cab': [len(C), len(rhi), pulled, term, num(sum(c[ck['ln']] for c in rhi)), num(sum(c[ck['pm']] for c in rhi))],
                'iwp': [len(I), done], 'cl': [len(P), sum(1 for p in P if p[pk['st']] == 'Open')],
-               'rh': [len(R), sum(1 for p in R if p[pk['st']] == 'Open')], 'dr': len(D)}
+               'rh': [len(R), sum(1 for p in R if p[pk['st']] == 'Open')], 'dr': len(D), 'rel': REL.get(ar, 0)}
         index.append(row)
         with open(os.path.join(a.out, ar + '.json'), 'w', encoding='utf-8') as f:
             json.dump({'a': ar, 'nm': row['nm'], 'date': a.date, 'CK': CK, 'cables': C, 'IK': IK, 'items': I,
