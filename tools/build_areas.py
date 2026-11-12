@@ -141,6 +141,19 @@ def build_cables(rows):
             hdr = i
             break
     start = (hdr + 1) if hdr is not None else 5
+    # v4.53: column positions from the header row (the tracker got an extra column, fixed numbers were one off:
+    # pulled / terminated / company were read from the wrong columns -> 0 pulled, 0 RHI in OTHER AREA and the dashboard)
+    H = [S(x).replace('\n', ' ') for x in (rows[hdr] if hdr is not None else rows[4])]
+    def hx(name, default):
+        for i, h in enumerate(H):
+            if h.lower().startswith(name.lower()):
+                return i
+        return default
+    P = hx('Cable Pulling Status', 50)
+    TC = hx('Termination Completed', P + 5)
+    CO = hx('Company', 75)
+    DIST = [i for i, h in enumerate(H) if 'Финальное распределение' in h and i < CO and '2 участок' not in h and 'комментарии' not in h]
+    DR = DIST[-1] if DIST else P + 10
     for r in rows[start:]:
         t = S(col(r, 21))
         if not t or len(r) < 60:
@@ -150,15 +163,16 @@ def build_cables(rows):
         a = area_key(col(r, 14))
         if not a:
             continue
-        co = S(col(r, 74)) or S(col(r, 65)) or S(col(r, 38))
+        co = S(col(r, CO)) or S(col(r, 38))
         co = 'RHI' if co in ('RHI', 'РХИ', 'РХИ_') else co
         doc = S(col(r, 0))
-        dr = S(col(r, 59)) or S(col(r, 63)) or S(col(r, 60))
+        dr = S(col(r, DR)) or S(col(r, P - 2))
+        dr = '' if dr.lower() in ('vendor', 'удалена', 'задвоение') else dr
         c = {'t': t, 'f': S(col(r, 22))[:120], 'o': S(col(r, 23))[:120], 'ty': S(col(r, 26)), 'c': S(col(r, 27)),
-             'id': S(col(r, 29)), 'ln': num(col(r, 32)), 'pm': num(col(r, 47)), 'pd': xdate(col(r, 48)),
-             'ps': S(col(r, 49)), 'tf': xdate(col(r, 51)), 'tt': xdate(col(r, 52)), 'tc': S(col(r, 54)),
+             'id': S(col(r, 29)), 'ln': num(col(r, 32)), 'pm': num(col(r, P - 3)), 'pd': xdate(col(r, P - 1)),
+             'ps': S(col(r, P)), 'tf': xdate(col(r, P + 2)), 'tt': xdate(col(r, P + 3)), 'tc': S(col(r, TC)),
              'dr': dr, 'co': co, 'sys': sys_of(doc), 'dc': S(col(r, 10)), 'h': S(col(r, 36))[:80],
-             'rfi': (S(col(r, 56)) + ' ' + xdate(col(r, 57))).strip(), 'doc': doc}
+             'rfi': (S(col(r, P + 7)) + ' ' + xdate(col(r, P + 8))).strip(), 'doc': doc}
         by_area.setdefault(a, []).append([c[k] for k in CK])
         if dr:
             d = drums.setdefault(dr, {'no': dr, 'id': S(col(r, 29)), 'ty': S(col(r, 26)), 'c': S(col(r, 27)),
