@@ -120,23 +120,30 @@
   // E&I only: electrical, control system, I&C, C&I disciplines (no telecom, HVAC, piping, fire-fighting)
   const isEI = p => { const d = String((PT.discE || [])[p.disc] || '') + ' ' + String(PT.disc[p.disc] || ''); return /Electrical|Control|Instrument|Электротех|АСУ|КИП/i.test(d); };
   MC.isEI = isEI;
+  // v4.47: cross only when it is the same tag AND the same punch (same description text, or the same punch type from the description)
+  const xN = v => String(v == null || v === 'None' ? '' : v).toLowerCase().replace(/ё/g, 'е').replace(/[^0-9a-zа-я]/g, '');
+  const xDs = p => p._xd || (p._xd = [xN(p.dru), xN(p.den)].filter(x => x.length > 3));
+  const xTy = p => (typeof ptypes === 'function' ? ptypes(p) : []).filter(x => x !== 'oth');
+  const xSame = (p, q) => { const A = xDs(p), B = xDs(q); if (A.some(x => B.some(y => x === y || (Math.min(x.length, y.length) >= 12 && (x.includes(y) || y.includes(x)))))) return true; const T = xTy(q); return xTy(p).some(x => T.includes(x)); };
+  MC.xSame = xSame;
   MC.xGroups = function () { const G = {}; PU.forEach(p => { if (!p._t || !isEI(p)) return; const k = p._t; const g = G[k] = G[k] || {tag: p.tag, area: areaOf(p), c: [], r: []}; (p.int ? g.r : g.c).push(p); });
     const rep = [], close = [], ask = [];
-    Object.values(G).forEach(g => { if (!g.c.length) return; g.c.sort((a, b) => dParse(a.idate) - dParse(b.idate) || String(a.no).localeCompare(String(b.no), undefined, {numeric: true})); const last = g.c[g.c.length - 1];
-      if (last.st === 'Closed') { g.c.slice(0, -1).filter(p => p.st === 'Open').forEach(p => rep.push({g, p, last})); g.r.filter(p => p.st === 'Open').forEach(p => close.push({g, p, last})); }
-      else g.r.filter(p => p.st === 'Closed').forEach(p => ask.push({g, p, last})); });
+    Object.values(G).forEach(g => { if (!g.c.length) return; g.c.sort((a, b) => dParse(a.idate) - dParse(b.idate) || String(a.no).localeCompare(String(b.no), undefined, {numeric: true}));
+      g.c.forEach((p, i) => { if (p.st !== 'Open') return; const M = g.c.slice(i + 1).filter(q => xSame(p, q)); const last = M[M.length - 1]; if (last && last.st === 'Closed') rep.push({g, p, last}); });
+      g.r.forEach(p => { const M = g.c.filter(q => xSame(p, q)); if (!M.length) return; const last = M[M.length - 1];
+        if (p.st === 'Open' && last.st === 'Closed') close.push({g, p, last}); else if (p.st === 'Closed' && last.st !== 'Closed') ask.push({g, p, last}); }); });
     return {rep, close, ask}; };
-  window.xPunch = p => (p._t && isEI(p)) ? PU.filter(q => q !== p && q._t === p._t && q.int !== p.int && isEI(q)) : [];
+  window.xPunch = p => (p._t && isEI(p)) ? PU.filter(q => q !== p && q._t === p._t && q.int !== p.int && isEI(q) && xSame(p, q)) : [];
   window.xPunchText = function () { const X = MC.xGroups(); const cl = v => (v == null || v === 'None') ? '' : String(v); const ln = p => `${p.no} | ${cl(p.den) || cl(p.dru) || cl(p.tagd)}`.replace(/\s+/g, ' ').trim().slice(0, 140) + ` | ${t(p.st)} | ${cl(p.idate)}`;
     const sec = (title, L, f) => L.length ? `${title} (${L.length})\n` + L.map(f).join('\n') + '\n\n' : '';
-    const text = `${t('Cross-punch report')} · ${PRJ} · ${tstr(Date.now())}${PS_.name ? ' · ' + PS_.name : ''}\nE&I punch only – same tag in client punch list and RHI punch register\n\n` +
+    const text = `${t('Cross-punch report')} · ${PRJ} · ${tstr(Date.now())}${PS_.name ? ' · ' + PS_.name : ''}\nE&I punch only – same tag and same punch (description / punch type) in client punch list and RHI punch register\n\n` +
       sec('1. ' + t('Old client punch – can be reported closed (latest client punch for the tag is closed)'), X.rep, r => `${r.g.area} · ${r.g.tag}\n  ${t('Report')}: ${ln(r.p)}\n  ${t('Latest closed')}: ${r.last.no} ${r.last.cdate || ''}`) +
       sec('2. ' + t('RHI punch – can be closed (client punch for the tag is closed)'), X.close, r => `${r.g.area} · ${r.g.tag}\n  RHI: ${ln(r.p)}\n  ${t('Client closed')}: ${r.last.no} ${r.last.cdate || ''}`) +
       sec('3. ' + t('Client punch still open – RHI punch already closed (ask client to close)'), X.ask, r => `${r.g.area} · ${r.g.tag}\n  ${t('Client open')}: ${ln(r.last)}\n  RHI ${t('closed')}: ${r.p.no} ${r.p.cdate || ''}`);
     return {n: X.rep.length + X.close.length + X.ask.length, text, X}; };
   window.openXPunch = function () { const r = window.xPunchText(); REP = {kind: 'xpunch', L: [], text: r.text};
     modalP(`<div class="h3">🔗 Cross-punch report</div><div class="mgs"><div class="mgk"><b>${r.X.rep.length}</b><span>old client punch to report</span></div><div class="mgk"><b>${r.X.close.length}</b><span>RHI punch to close</span></div><div class="mgk"><b>${r.X.ask.length}</b><span>client open · RHI closed</span></div></div>
-     <div class="s2" style="margin:4px 0">E&I punch only (electrical, control, I&C) · matched by same tag. Latest client punch closed → older client punches of the same tag can be reported, and RHI punches of the same tag can be closed.</div>
+     <div class="s2" style="margin:4px 0">E&I punch only (electrical, control, I&C) · matched by same tag AND same punch (same description or same punch type). Different punches on the same tag are not crossed.</div>
      <textarea id="rtx" class="fin" style="height:220px;font:12px monospace;white-space:pre" readonly>${esc(r.text)}</textarea>
      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><button class="tile" style="min-height:auto" onclick="copyText(REP.text).then(ok=>toast(ok?'Copied':'Select the text and copy'))"><b>📋 Copy</b></button>
      <button class="tile main" style="min-height:auto" onclick="MC.xExcel()"><b>⬇ Excel${S2.owner ? '' : ' 🔒'}</b><span class="n">owner</span></button></div><button class="more" onclick="closeP()">Close</button>`); };
@@ -146,7 +153,7 @@
     const sh = (name, L, src, act, refFn) => ({name, rows: [H].concat(L.map(r => row(r, src, act, refFn(r)))), widths: [14, 30, 12, 9, 8, 60, 8, 11, 11, 14, 10, 12, 34], bold: [0], freeze: 1});
     XL.save(`${PRJ}_cross_punch_${dstr(Date.now())}.xlsx`, [sh('Client to report', X.rep, 'Client', 'Report closed – latest client punch closed', r => r.last), sh('RHI to close', X.close, 'RHI', 'Close RHI punch – client punch closed', r => r.last), sh('Client open RHI closed', X.ask, 'RHI', 'Ask client to close', r => r.last)]); };
   window.xPunchCard = function (p) { const L = window.xPunch(p); if (!L.length) return '';
-    return `<div class="card" style="border-left:5px solid var(--acc)"><div class="h3">${p.int ? 'Client E&I punch – same tag' : 'RHI E&I punch – same tag'} (${L.length})</div><div class="list">${L.map(q => `<button class="li" onclick="go('#/pi/${q.i}')"><div class="m"><div class="t">№ ${esc(q.no)}</div><div class="s" style="white-space:normal">${esc(q.den || q.dru || '')}</div></div><div class="r">${pb(q)}</div><span class="chev">›</span></button>`).join('')}</div></div>`; };
+    return `<div class="card" style="border-left:5px solid var(--acc)"><div class="h3">${p.int ? 'Client E&I punch – same tag, same punch' : 'RHI E&I punch – same tag, same punch'} (${L.length})</div><div class="list">${L.map(q => `<button class="li" onclick="go('#/pi/${q.i}')"><div class="m"><div class="t">№ ${esc(q.no)}</div><div class="s" style="white-space:normal">${esc(q.den || q.dru || '')}</div></div><div class="r">${pb(q)}</div><span class="chev">›</span></button>`).join('')}</div></div>`; };
 
   // ---------------- side menu (☰) – overall dashboard lives only here
   const showTot = () => { try { return localStorage.getItem('gpp_showtot') === '1'; } catch (e) { return false; } };

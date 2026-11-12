@@ -16,9 +16,11 @@
   RA.punch = function () { if (RA._P) return RA._P; const G = {};
     PU.forEach(p => { if (!p._t) return; const k = p._t + '|' + areaOf(p); const g = G[k] = G[k] || {c: [], r: []}; (p.int ? g.r : g.c).push(p); });
     const out = [];
-    Object.values(G).forEach(g => { if (!g.c.length || !g.r.length || g.c.some(p => p.st !== 'Closed')) return;
-      const cl = g.c.slice().sort((a, b) => String(b.cdate || '').split('.').reverse().join('').localeCompare(String(a.cdate || '').split('.').reverse().join('')));
-      g.r.filter(p => p.st !== 'Closed').forEach(p => out.push({p, cl, area: areaOf(p)})); });
+    const same = (p, q) => !(window.MC && MC.xSame) || MC.xSame(p, q);   // v4.47: same tag AND same punch (description / punch type)
+    Object.values(G).forEach(g => { if (!g.c.length || !g.r.length) return;
+      g.r.filter(p => p.st !== 'Closed').forEach(p => { const M = g.c.filter(q => same(p, q)); if (!M.length || M.some(q => q.st !== 'Closed')) return;
+        const cl = M.slice().sort((a, b) => String(b.cdate || '').split('.').reverse().join('').localeCompare(String(a.cdate || '').split('.').reverse().join('')));
+        out.push({p, cl, area: areaOf(p)}); }); });
     return RA._P = out; };
 
   RA.lists = function () { if (RA._L && RA._d === MC.d) return RA._L; const d = MC.d || {cab: {}, ss: []};
@@ -47,7 +49,7 @@
      <div class="mgf"><input class="fin" placeholder="${v.tab === 'p' ? 'Search tag / punch No / subsystem…' : 'Search cable / RFI / subsystem…'}" value="${esc(v.q)}" oninput="VS.RA.q=this.value;VS.RA.lim=150;RA.list()"><select style="${v.tab === 'p' ? 'display:none' : ''}" onchange="VS.RA.a=this.value;VS.RA.lim=150;RA.list()"><option value="">Pulling + termination</option><option value="Cable pulling" ${v.a === 'Cable pulling' ? 'selected' : ''}>Cable pulling</option><option value="Cable termination" ${v.a === 'Cable termination' ? 'selected' : ''}>Cable termination</option></select></div>
      <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:8px 0"><button class="tile main" style="min-height:auto" onclick="RA.excel()"><b>⬇ Export Excel</b></button><button class="tile" style="min-height:auto" onclick="RA.share()"><b>↗ Share</b></button></div>
      <div id="ral"></div>
-     <div class="foot">Client RFI = Cable RAWP inspection progress (accepted incl. "with comments"). IWP = Site Progress fact of the IWP line (by cable tag). RHI punch: open / hold RHI punch where every client punch with the same tag and title is closed – read both descriptions before closing. Excel for IWP is in your IWP daily report format – the remaining quantity is in the date column.</div>`;
+     <div class="foot">Client RFI = Cable RAWP inspection progress (accepted incl. "with comments"). IWP = Site Progress fact of the IWP line (by cable tag). RHI punch: open / hold RHI punch where every client punch with the same tag, title and same punch (description / punch type) is closed – read both descriptions before closing. Excel for IWP is in your IWP daily report format – the remaining quantity is in the date column.</div>`;
     RA.list(); };
 
   RA.filt = function () { const v = VS.RA, nq = N(v.q), L = RA.lists();
