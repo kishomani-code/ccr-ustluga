@@ -25,21 +25,24 @@
   RP.data = function () {
     if (RP._d && RP._dv === D.meta.ver) return RP._d;
     const comm = I.filter(x => COMM.test(x.g || '')), noq = I.filter(x => !COMM.test(x.g || '') && !(Number(x.q) > 0));
-    const IT = I.filter(x => !COMM.test(x.g || '') && Number(x.q) > 0);          // each IWP line counted once
     const isRhi = x => /^(RHI|РХИ)/i.test(String(T.co[x.co] || ''));
-    const all = cnt(IT), rhi = cnt(IT.filter(isRhi));
-    const CL = C.filter(c => !dead(c)); const cp = CL.filter(c => cst(c).p === true).length, ct = CL.filter(c => cst(c).t === true).length;
+    // v4.55: RHI scope only – lines of other companies and "Not assigned" lines are not in any figure of the reports
+    const IT = I.filter(x => !COMM.test(x.g || '') && Number(x.q) > 0 && isRhi(x));          // each IWP line counted once
+    const nonRhi = I.filter(x => !COMM.test(x.g || '') && Number(x.q) > 0 && !isRhi(x)).length;
+    const all = cnt(IT), rhi = {n: nonRhi};
+    const CL = C.filter(c => !dead(c) && /^(RHI|РХИ)/i.test(String(c.co || ''))); const cp = CL.filter(c => cst(c).p === true).length, ct = CL.filter(c => cst(c).t === true).length;
     // systems
     const G = {}; IT.forEach(x => { const k = x.sy || '-'; (G[k] = G[k] || []).push(x); });
     const opBySys = {}; const tagSys = {}; IT.forEach(x => { if (x.tag && !tagSys[x.tag]) tagSys[x.tag] = x.sy || '-'; });
     PU.forEach(p => { if (p.st !== 'Open') return; const s = tagSys[p.tag]; if (s) opBySys[s] = (opBySys[s] || 0) + 1; });
     const sys = Object.keys(G).sort().map(k => { const s = cnt(G[k]); const hold = CTQ.filter(t => ctqOpen(t) && new RegExp('\\b' + k.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&') + '\\b').test((t.dwg || '') + ' ' + (t.sub || ''))).length;
       return Object.assign({k, nm: sysName(k) === k ? '' : sysName(k), punch: opBySys[k] || 0, ctq: hold, rem: [s.p ? s.p + ' not started' : '', opBySys[k] ? opBySys[k] + ' open punch' : '', hold ? hold + ' open CTQ' : ''].filter(Boolean).join(' · ') || (s.pc >= 100 ? 'Completed' : '')}, s); });
+    const rc = c => /^(RHI|РХИ)/i.test(String(c.co || ''));
     // subsystems (client subsystem list – only where the app has it)
     let subs = []; const S = (window.MC && MC.d && MC.d.ss && MC.d.ss.length) ? MC.stats() : null;
-    if (S) subs = S.map(x => { const it = x.it.filter(i => !COMM.test(i.g || '') && Number(i.q) > 0), s = cnt(it), ho = window.HO && HO.by && HO.by[x.code];
-      return Object.assign({k: x.code, sys: x.sys || '', nm: String((x.s && (x.s[1] || x.s[2])) || ''), cn: x.cn, cp: x.cp, ct: x.ct, pA: x.pA, pB: x.pB, pR: x.pR, po: x.pO, tgt: isDate(ho && ho.mc),
-        rem: [x.cn ? `cables ${x.cp}/${x.cn} pulled, ${x.ct}/${x.cn} terminated` : '', x.pO ? `open punch A ${x.pA} · B ${x.pB} · RHI ${x.pR}` : ''].filter(Boolean).join(' · ')}, s); }).filter(x => x.n || x.cn || x.po).sort((a, b) => a.k < b.k ? -1 : 1);
+    if (S) subs = S.map(x => { const it = x.it.filter(i => !COMM.test(i.g || '') && Number(i.q) > 0 && isRhi(i)), s = cnt(it), ho = window.HO && HO.by && HO.by[x.code];
+      return Object.assign({k: x.code, sys: x.sys || '', nm: String((x.s && (x.s[1] || x.s[2])) || ''), cn: (x.cs || []).filter(rc).length, cp: (x.cs || []).filter(c => rc(c) && cst(c).p === true).length, ct: (x.cs || []).filter(c => rc(c) && cst(c).t === true).length, pA: x.pA, pB: x.pB, pR: x.pR, po: x.pO, tgt: isDate(ho && ho.mc),
+        rem: [(x.cs || []).filter(rc).length ? `RHI cables ${(x.cs || []).filter(c => rc(c) && cst(c).p === true).length}/${(x.cs || []).filter(rc).length} pulled, ${(x.cs || []).filter(c => rc(c) && cst(c).t === true).length}/${(x.cs || []).filter(rc).length} terminated` : '', x.pO ? `open punch A ${x.pA} · B ${x.pB} · RHI ${x.pR}` : ''].filter(Boolean).join(' · ')}, s); }).filter(x => x.n || x.cn || x.po).sort((a, b) => a.k < b.k ? -1 : 1);
     // activities
     const A = {}; IT.forEach(x => { (A[x.g] = A[x.g] || []).push(x); });
     const acts = Object.keys(A).map(g => { const L = A[g], s = cnt(L); const us = [...new Set(L.map(x => x.u))]; const u = us.length === 1 ? us[0] : ''; let q = 0, f = 0; if (u) L.forEach(x => { q += Number(x.q) || 0; f += Math.min(Number(x.f) || 0, Number(x.q) || 0); });
@@ -83,9 +86,9 @@
 @media screen{#rpprint{display:none}}
 @media print{html,body{background:#fff!important;margin:0!important;padding:0!important;height:auto!important;overflow:visible!important}body>*:not(#rpprint){display:none!important}#rpprint{display:block!important}.rpdoc{zoom:1!important}#rpfull{width:100%;padding:0}#rpfull section.pb{page-break-before:always}#rpfull tr{page-break-inside:avoid}#rpfull thead{display:table-header-group}}`;
   function css(page) { let e = document.getElementById('rpcss'); if (!e) { e = document.createElement('style'); e.id = 'rpcss'; document.head.appendChild(e); } e.textContent = CSS + `@page{size:${page};margin:8mm}`; }
-  const donut = (pc, sz) => `<div style="width:${sz}mm;height:${sz}mm;border-radius:50%;background:conic-gradient(#2e9e4f 0 ${pc}%,#e6e8ec ${pc}% 100%);display:flex;align-items:center;justify-content:center;margin:auto"><div style="width:${sz * .68}mm;height:${sz * .68}mm;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;flex-direction:column"><b style="font-size:16pt">${pc}%</b><span style="font-size:7pt">IWP lines done</span></div></div>`;
+  const donut = (pc, sz) => `<div style="width:${sz}mm;height:${sz}mm;border-radius:50%;background:conic-gradient(#2e9e4f 0 ${pc}%,#e6e8ec ${pc}% 100%);display:flex;align-items:center;justify-content:center;margin:auto"><div style="width:${sz * .68}mm;height:${sz * .68}mm;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;flex-direction:column"><b style="font-size:16pt">${pc}%</b><span style="font-size:7pt">RHI IWP lines done</span></div></div>`;
   const head = (title, n) => `<div class="rph"><div><b>${esc(title)}</b><div>Ust-Luga Gas Processing Plant (GPP) · E&amp;I Department · Rencons (RHI) · ${esc(PNAME)}</div></div><div style="text-align:right">Report date: <b style="font-size:1em">${esc(n.date || today())}</b> · Rev. ${esc(n.rev || '0')}<br>Prepared by: ${esc(n.by || (typeof PS_ !== 'undefined' && PS_.name) || '')} · App data: ${esc(D.meta.date)}</div></div>`;
-  const basis = d => `Progress basis: count of IWP lines (activity weights are not in the app data – N/A). Completed = IWP fact ≥ quantity · Ongoing = fact &gt; 0 · Pending = fact 0. Each IWP line is counted once.${d.noq ? ` ${d.noq} lines without quantity are not counted.` : ''}${d.comm ? ` ${d.comm} commissioning lines (client scope) are excluded.` : ' Commissioning is client scope and is not included.'} Punch closure and CTQ status are shown separately and are not part of the installation %. Planned progress / delay: N/A (no planned dates in the app data).`;
+  const basis = d => `Scope: RHI lines and RHI cables only${d.rhi.n ? ` – ${d.rhi.n} IWP lines of other companies / not assigned are not included` : ''}. Progress basis: count of IWP lines (activity weights are not in the app data – N/A). Completed = IWP fact ≥ quantity · Ongoing = fact &gt; 0 · Pending = fact 0. Each IWP line is counted once.${d.noq ? ` ${d.noq} lines without quantity are not counted.` : ''}${d.comm ? ` ${d.comm} commissioning lines (client scope) are excluded.` : ' Commissioning is client scope and is not included.'} Punch closure and CTQ status are shown separately and are not part of the installation %. Planned progress / delay: N/A (no planned dates in the app data).`;
 
   // ---------- A3 manager meeting report ----------
   RP.a3html = function () { const d = RP.data(), n = RP.notes(), a = d.all;
@@ -102,10 +105,10 @@
     return `<div id="rpa3" class="rpdoc">${head('E&I MANAGER MEETING REPORT', n)}
 <div class="cols">
  <div class="col"><div class="ah">AREA 1 – OVERALL PROJECT STATUS</div>
-  <div style="display:grid;grid-template-columns:1fr 1.25fr;gap:2mm;align-items:center">${donut(a.pc, 38)}<div class="rpk" style="grid-template-columns:1fr 1fr">${kp(d.sys.length, 'systems')}${kp(d.subs.length || 'N/A', 'subsystems')}${kp(a.n, 'IWP activities (lines)')}${kp(a.c, 'completed')}${kp(a.o, 'ongoing')}${kp(a.p, 'pending')}</div></div>
+  <div style="display:grid;grid-template-columns:1fr 1.25fr;gap:2mm;align-items:center">${donut(a.pc, 38)}<div class="rpk" style="grid-template-columns:1fr 1fr">${kp(d.sys.length, 'systems')}${kp(d.subs.length || 'N/A', 'subsystems')}${kp(a.n, 'RHI IWP activities (lines)')}${kp(a.c, 'completed')}${kp(a.o, 'ongoing')}${kp(a.p, 'pending')}</div></div>
   <table style="margin-top:2mm"><tr><th>Indicator</th><th class="n">Done / total</th><th>Actual %</th></tr>
-   <tr><td>All IWP lines</td><td class="n">${a.c} / ${a.n}</td><td>${bar(a.pc)}</td></tr><tr><td>RHI lines only</td><td class="n">${d.rhi.c} / ${d.rhi.n}</td><td>${bar(d.rhi.pc)}</td></tr>
-   <tr><td>Cable pulling (cables)</td><td class="n">${d.cab.p} / ${d.cab.n}</td><td>${bar(P(d.cab.p, d.cab.n))}</td></tr><tr><td>Cable termination (both ends)</td><td class="n">${d.cab.t} / ${d.cab.n}</td><td>${bar(P(d.cab.t, d.cab.n))}</td></tr>
+   <tr><td>RHI IWP lines</td><td class="n">${a.c} / ${a.n}</td><td>${bar(a.pc)}</td></tr>
+   <tr><td>Cable pulling (RHI cables)</td><td class="n">${d.cab.p} / ${d.cab.n}</td><td>${bar(P(d.cab.p, d.cab.n))}</td></tr><tr><td>Cable termination (both ends)</td><td class="n">${d.cab.t} / ${d.cab.n}</td><td>${bar(P(d.cab.t, d.cab.n))}</td></tr>
    <tr><td>Planned progress</td><td class="n" colspan="2">N/A – no planned dates in app data</td></tr><tr><td>Overall status</td><td colspan="2">${pill(a.pc >= 100 ? 'COMPLETED' : 'IN PROGRESS – ' + a.pc + '%', stc(a.pc))} · open punch ${d.pun.o} · open CTQ ${d.cq.o}</td></tr></table>
   <div class="rpt">Activity-wise progress (largest remaining first)</div><table><tr><th>Activity</th><th class="n">Done</th><th>%</th></tr>${actRows}</table>
   ${txt('Major achievements', n.ach)}${txt('Critical delays / management attention required', n.crit)}
@@ -134,8 +137,8 @@
     const c3 = x => `<td class="n">${x.n}</td><td class="n rpg">${x.c}</td><td class="n rpy">${x.o}</td><td class="n rpr">${x.p}</td><td style="min-width:70px">${bar(x.pc)}</td>`;
     return `<div id="rpfull" class="rpdoc">${head('E&I PROJECT PROGRESS REPORT', n)}
 <section><h2>A. Overall project progress</h2><table><tr><th>Indicator</th><th class="n">Total</th><th class="n">Completed</th><th class="n">Ongoing</th><th class="n">Pending</th><th>Actual %</th><th>Status</th></tr>
- <tr><td>All IWP lines (count based)</td>${c3(a)}<td class="rp${stc(a.pc)}">${stl(a.pc)}</td></tr><tr><td>RHI lines only</td>${c3(d.rhi)}<td class="rp${stc(d.rhi.pc)}">${stl(d.rhi.pc)}</td></tr>
- <tr><td>Cable pulling (cables, tracker)</td><td class="n">${d.cab.n}</td><td class="n rpg">${d.cab.p}</td><td class="n">–</td><td class="n rpr">${d.cab.n - d.cab.p}</td><td>${bar(P(d.cab.p, d.cab.n))}</td><td></td></tr>
+ <tr><td>RHI IWP lines (count based)</td>${c3(a)}<td class="rp${stc(a.pc)}">${stl(a.pc)}</td></tr>
+ <tr><td>Cable pulling (RHI cables, tracker)</td><td class="n">${d.cab.n}</td><td class="n rpg">${d.cab.p}</td><td class="n">–</td><td class="n rpr">${d.cab.n - d.cab.p}</td><td>${bar(P(d.cab.p, d.cab.n))}</td><td></td></tr>
  <tr><td>Cable termination (both ends)</td><td class="n">${d.cab.n}</td><td class="n rpg">${d.cab.t}</td><td class="n">–</td><td class="n rpr">${d.cab.n - d.cab.t}</td><td>${bar(P(d.cab.t, d.cab.n))}</td><td></td></tr>
  <tr><td>Planned progress</td><td colspan="6">N/A – planned dates / weights are not in the app data</td></tr><tr><td>Delayed activities</td><td colspan="6">N/A – no planned dates to compare with</td></tr></table><div class="rpnote" style="margin-top:3px">${basis(d)}</div></section>
 <section><h2>B. System-wise progress (${d.sys.length} systems)</h2><table><thead><tr><th>System</th><th>Name</th><th class="n">Total</th><th class="n">Completed</th><th class="n">Ongoing</th><th class="n">Pending</th><th>%</th><th>Remarks</th></tr></thead><tbody>${d.sys.map(x => `<tr><td><b>${esc(x.k)}</b></td><td>${esc(x.nm)}</td>${c3(x)}<td>${esc(x.rem)}</td></tr>`).join('')}</tbody></table></section>
@@ -153,11 +156,11 @@
 
   // ---------- Excel ----------
   RP.excel = function () { if (!window.XL) return toast('Excel module not loaded'); const d = RP.data(), n = RP.notes(), a = d.all;
-    const fills = (rows, col, from) => { const f = {}; rows.forEach((r, i) => { if (i < from) return; const v = r[col]; if (typeof v === 'number') f[i + ',' + col] = stc(v); }); return f; };
+    const _f = 0; const fills = (rows, col, from) => { const f = {}; rows.forEach((r, i) => { if (i < from) return; const v = r[col]; if (typeof v === 'number') f[i + ',' + col] = stc(v); }); return f; };
     const hdr = [['E&I PROJECT PROGRESS REPORT – ' + PNAME], ['Ust-Luga GPP · Rencons (RHI) · report date ' + (n.date || today()) + ' · Rev. ' + (n.rev || '0') + ' · prepared by ' + (n.by || '') + ' · app data ' + D.meta.date], []];
     const o = hdr.concat([['Indicator', 'Total', 'Completed', 'Ongoing', 'Pending', 'Actual %', 'Status'],
-      ['All IWP lines (count based)', a.n, a.c, a.o, a.p, a.pc, stl(a.pc)], ['RHI lines only', d.rhi.n, d.rhi.c, d.rhi.o, d.rhi.p, d.rhi.pc, stl(d.rhi.pc)],
-      ['Cable pulling (cables, tracker)', d.cab.n, d.cab.p, '', d.cab.n - d.cab.p, P(d.cab.p, d.cab.n), ''], ['Cable termination (both ends)', d.cab.n, d.cab.t, '', d.cab.n - d.cab.t, P(d.cab.t, d.cab.n), ''],
+      ['RHI IWP lines (count based)', a.n, a.c, a.o, a.p, a.pc, stl(a.pc)],
+      ['Cable pulling (RHI cables, tracker)', d.cab.n, d.cab.p, '', d.cab.n - d.cab.p, P(d.cab.p, d.cab.n), ''], ['Cable termination (both ends)', d.cab.n, d.cab.t, '', d.cab.n - d.cab.t, P(d.cab.t, d.cab.n), ''],
       ['Planned progress', 'N/A', '', '', '', '', 'planned dates / weights are not in the app data'], ['Delayed activities', 'N/A', '', '', '', '', 'no planned dates to compare with'], [],
       ['Punch (RHI E&I) – total / open / closed', d.pun.n, d.pun.c, '', d.pun.o, P(d.pun.c, d.pun.n), 'not part of installation %'], ['CTQ – total / closed / open', d.cq.n, d.cq.c, '', d.cq.o, P(d.cq.c, d.cq.n), 'not part of installation %'], [],
       [basis(d).replace(/&gt;/g, '>').replace(/&amp;/g, '&')]]);
@@ -170,7 +173,7 @@
     const cf = {}; d.ctq.forEach((t, i) => { cf[(i + 1) + ',13'] = t.open ? (t.hold === 'Yes' ? 'r' : 'y') : 'g'; });
     const mn = [['Manager meeting notes – ' + PNAME], ['Meeting date', n.date || ''], ['Prepared by', n.by || ''], ['Revision', n.rev || '0'], [], ['Major achievements', n.ach || ''], ['Critical delays / management attention', n.crit || ''], ['Discussion points', n.disc || ''], ['Major technical issues', n.issues || ''], ['Decisions taken', n.dec || ''], ['Client comments', n.cli || ''], [], ['Action item', 'Responsible', 'Target date', 'Status']].concat(n.acts.filter(x => x.a).map(x => [x.a, x.r, x.t, x.s]));
     XL.save(`EI_Project_Report_${PRJ}_${today()}.xlsx`, [
-      {name: 'A Overall', rows: o, widths: [44, 12, 12, 12, 12, 12, 44], bold: [0, 3], fills: fills(o, 5, 4)},
+      {name: 'A Overall', rows: o, widths: [44, 12, 12, 12, 12, 12, 44], bold: [0, 3], fills: fills(o.slice(0, 7), 5, 4)},
       {name: 'B Systems', rows: sy, widths: [14, 46, 12, 12, 12, 12, 12, 50], bold: [0], freeze: 1, fills: fills(sy, 6, 1)},
       {name: 'C Subsystems', rows: sb, widths: [22, 50, 12, 10, 10, 10, 10, 10, 9, 9, 10, 9, 9, 9, 14, 50], bold: [0], freeze: 1, fills: fills(sb, 7, 1)},
       {name: 'D Activities', rows: ac, widths: [44, 11, 11, 11, 11, 10, 12, 12, 8, 9, 14], bold: [0], freeze: 1, fills: fills(ac, 5, 1)},
@@ -198,7 +201,7 @@
     setHead('Reports', `${PRJ} · project report · manager meeting report`);
     const ta = (k, l, ph) => `<label style="display:block;font-size:12px;font-weight:600;margin-top:8px">${l}</label><textarea class="fin" rows="3" style="width:100%;height:auto" placeholder="${ph || ''}" onchange="RP.setN('${k}',this.value)">${esc(n[k] || '')}</textarea>`;
     const inp = (k, l, w) => `<label style="font-size:12px;font-weight:600;flex:${w || 1};min-width:110px">${l}<input class="fin" style="width:100%" value="${esc(n[k] || '')}" onchange="RP.setN('${k}',this.value)"></label>`;
-    main.innerHTML = `<div class="card"><div class="h3">📑 Project report</div><div style="font-size:13px;color:var(--mut)">Overall, system, subsystem and activity progress, punch summary and CTQ register – ${d.all.n} IWP lines · ${d.sys.length} systems · ${d.subs.length || 'N/A'} subsystems · ${d.pun.n} punches · ${d.cq.n} CTQ</div>
+    main.innerHTML = `<div class="card"><div class="h3">📑 Project report</div><div style="font-size:13px;color:var(--mut)">Overall, system, subsystem and activity progress, punch summary and CTQ register – RHI scope: ${d.all.n} IWP lines · ${d.sys.length} systems · ${d.subs.length || 'N/A'} subsystems · ${d.pun.n} punches · ${d.cq.n} CTQ</div>
       <div class="chips" style="margin-top:8px"><button class="chip on" onclick="go('#/rp/full')">📄 PDF report</button><button class="chip on" onclick="RP.excel()">📊 Excel report</button></div></div>
      <div class="card"><div class="h3">🗂 Manager meeting report – A3 landscape</div><div style="font-size:13px;color:var(--mut)">One page, three areas: overall status · system / subsystem progress · punch, CTQ and meeting notes</div>
       <div class="chips" style="margin-top:8px"><button class="chip on" onclick="go('#/rp/a3')">📄 Open A3 report (PDF)</button></div></div>
