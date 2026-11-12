@@ -782,7 +782,7 @@ function ownPunch() { const d = VS.OW.d; const one = {}; (S2.rx || []).filter(r 
   copyText(Object.values(one).map(r => [r.no, r.v === 'F' ? 'Fixed' : 'Not fixed', d.split('-').reverse().join('.'), r.tag, r.by].join('\t')).join('\n')).then(() => toast('Punch list copied')); }
 
 // ======== v3.2 modules ========
-const APPV = '4.51';
+const APPV = '4.52';
 const shortT = t => String(t || '').replace(/^G0-D(18|48)10BX0-/, '').replace(/^G0-D(18|48)01FX0-/, 'FX0-');
 const SYSN = {'EL-ESPS': ['Substation 10/0.4 kV & power supply', 'Подстанция 10/0,4 кВ'], 'EL-EMSV': ['Power installation (boards, UPS, motors)', 'Силовое электрооборудование'], 'EL-ESBZ': ['Power supply from utility substation', 'Электроснабжение от ПС'], 'EL-ELOV': ['Indoor lighting', 'Внутреннее освещение'], 'EL-EG02': ['Earthing & lightning protection', 'Заземление и молниезащита'], 'EL-EG01': ['Area earthing', 'Заземление площадки'], 'EH-EOES': ['Electric heating', 'Электрообогрев'], 'EH-AEOG': ['Heat tracing', 'Электрообогрев (кабель)'], 'EH-EOBK': ['Electric heating (other)', 'Электрообогрев'],
   'IN-DCS': ['Distributed Control System (DCS)', 'РСУ'], 'IN-ESD': ['Emergency Shutdown (ESD)', 'ПАЗ'], 'IN-SPAP': ['Fire alarm & fire fighting control (AFA&FFS)', 'АСПС и ПТ'], 'IN-GDSS': ['Gas detection', 'Контроль загазованности'], 'IN-ASUE': ['Utilities control system', 'АСУ ЭО (утилиты)'], 'IN-ASUS': ['Power supply control system', 'АСУ ЭС'], 'IN-ASKU': ['Utility metering (AUMS)', 'АСКУ ЭР'], 'IN-MAEC': ['Rotating equipment monitoring (CMS)', 'МСО и ВО'], 'IN-MFMS': ['Material flow metering (MFMS)', 'СУМП'], 'IN-AKVS': ['Emission monitoring (CEMS)', 'АКВС'], 'IN-INTS': ['Operator training simulator', 'Тренажёр оператора'], 'IN-INSS': ['Information security', 'СОИБ'], 'IN-AOVK': ['HVAC automation', 'Автоматизация ОВиК'], 'IN-AKMP': ['Analyzer system', 'Анализаторы'],
@@ -1261,7 +1261,7 @@ function mgPanel(p) {
 }
 function mgHome() {
   setHead('Manager dashboard', `progress overview · data ${D.meta.date}`); qbox.value = '';
-  MGC = PAN.map(mgPanel); VS.MG = VS.MG || {q: '', iw: '', pu: '', tl: window.innerWidth >= 700};
+  MGC = PAN.map(mgPanel); VS.MG = VS.MG || {q: '', iw: '', pu: '', tl: window.innerWidth >= 700}; VS.MG.tab = VS.MG.tab || 'ss';
   const v = VS.MG;
   const all = gstat(I), cp = C.filter(c => cst(c).p === true).length, ct = C.filter(c => cst(c).t === true).length;
   const pOpen = PU.filter(p => p.st === 'Open'), pRhi = pOpen.filter(p => /^RHI-/.test(p.no)).length;
@@ -1275,24 +1275,36 @@ function mgHome() {
     ${card(pOpen.length, '', 'Punch open', `client ${pOpen.length - pRhi} · RHI ${pRhi}`, pOpen.length > 0)}
     ${card(ep, '%', 'Equipment installed', `${eqS}/${INST.length} lines`, ep < 50)}
     ${card(ctqA.length, '', 'CTQ on hold', `${ctqH} hold points`, ctqA.length > 0)}</div>
-   <div class="sect">Panel progress (${PAN.length})</div>
-   <div class="mgf"><input class="fin" placeholder="Filter panel / description…" value="${esc(v.q)}" oninput="VS.MG.q=this.value;mgTable()">
+   <div class="chips" style="margin-top:10px">${[['ss', '🧩 Subsystem wise'], ['act', '🛠 Activity wise']].map(([k, l]) => `<button class="chip ${v.tab === k ? 'on' : ''}" style="flex:1;padding:10px;font-weight:700" onclick="VS.MG.tab='${k}';mgHome()">${l}</button>`).join('')}</div>
+   <div class="mgf"><input class="fin" placeholder="${v.tab === 'act' ? 'Filter activity…' : 'Filter subsystem / name…'}" value="${esc(v.q)}" oninput="VS.MG.q=this.value;mgTable()">
     <select onchange="VS.MG.iw=this.value;mgTable()"><option value="">IWP % – any</option>${[['lo', '< 25%'], ['mid', '25–75%'], ['hi', '> 75%']].map(([k, l]) => `<option value="${k}" ${v.iw === k ? 'selected' : ''}>IWP ${l}</option>`).join('')}</select>
     <select onchange="VS.MG.pu=this.value;mgTable()"><option value="">Punch – any</option>${[['0', 'Open punch > 0'], ['5', 'Open punch > 5']].map(([k, l]) => `<option value="${k}" ${v.pu === k ? 'selected' : ''}>${l}</option>`).join('')}</select></div>
    <div id="mgt"></div>
    <button class="chip ${v.tl ? 'on' : ''}" style="margin-top:12px" onclick="VS.MG.tl=!VS.MG.tl;mgTl()">${v.tl ? '▲' : '▼'} Timeline</button><div id="mgl"></div>
-   <div class="foot">IWP % = done IWP lines of the panel and its cables · Cables pulled % = panel cables pulled · Open punch = client + RHI punch on the panel tag and its cables · Equipment % = installation lines of the panel tag.</div>`;
+   <div class="foot">Subsystem wise: IWP % = done IWP lines of the subsystem · Pulled / Term. % = cables of the subsystem · Punch = open client A / B and RHI punch of the subsystem. Activity wise: quantity done / total from IWP (Site Progress fact), with the remaining quantity.</div>`;
   mgTable(); mgTl();
 }
+// v4.52: manager dashboard tables – subsystem wise and activity wise (panel table removed)
+function mgSubs() { const S = (window.MC && MC.d && MC.d.ss && MC.d.ss.length) ? MC.stats() : null;
+  if (S && S.length) return {kind: 'Subsystem', rows: S.map(x => ({k: x.code, nm: String((x.s && (x.s[1] || x.s[2])) || ''), iw: x.n ? pct(x.dn, x.n) : null, n: x.n, dn: x.dn, cb: x.cn ? pct(x.cp, x.cn) : null, ct: x.cn ? pct(x.ct, x.cn) : null, cn: x.cn, pA: x.pA, pB: x.pB, pR: x.pR, po: x.pO, go: `#/mc/${enc(x.code)}`}))};
+  const G = {}; I.forEach(x => { const k = x.sy || '-'; const g = G[k] = G[k] || {k, nm: (typeof sysName === 'function' ? sysName(k) : '') || '', n: 0, dn: 0, tags: new Set()}; g.n++; if (x.done) g.dn++; if (x.tag) g.tags.add(x.tag); });
+  return {kind: 'System', rows: Object.values(G).map(g => { const cs = [...g.tags].map(t => CBY[t]).filter(Boolean); let pA = 0, pB = 0, pR = 0; g.tags.forEach(t => (PUBY[t] || []).forEach(q => { if (q.st !== 'Open') return; if (q.int) pR++; else if (q.cat === 'A') pA++; else if (q.cat === 'B') pB++; }));
+    return {k: g.k, nm: g.nm, iw: pct(g.dn, g.n), n: g.n, dn: g.dn, cb: cs.length ? pct(cs.filter(c => cst(c).p === true).length, cs.length) : null, ct: cs.length ? pct(cs.filter(c => cst(c).t === true).length, cs.length) : null, cn: cs.length, pA, pB, pR, po: pA + pB + pR, go: ''}; })}; }
+function mgActs() { const G = {}; I.forEach(x => { const g = G[x.g] = G[x.g] || {g: x.g, n: 0, d: 0, q: 0, f: 0, u: x.u || ''}; g.n++; if (x.done) g.d++; g.q += Number(x.q) || 0; g.f += Math.min(Number(x.f) || 0, Number(x.q) || Number(x.f) || 0); });
+  return Object.values(G).sort((a, b) => (b.n - b.d) - (a.n - a.d)); }
 function mgTable() {
-  const v = VS.MG, nq = N(v.q), ql = v.q.trim().toLowerCase(), f = x => x == null ? '–' : x + '%';
-  const L = MGC.filter(r => (!nq || r.p._n.includes(nq) || String(r.p.desc).toLowerCase().includes(ql)) &&
-    (!v.iw || (r.iw != null && (v.iw === 'lo' ? r.iw < 25 : v.iw === 'mid' ? r.iw >= 25 && r.iw <= 75 : r.iw > 75))) &&
-    (!v.pu || r.po > Number(v.pu)));
+  const v = VS.MG, nq = N(v.q), f = x => x == null ? '–' : x + '%', el = document.getElementById('mgt'); if (!el) return;
   const col = x => x == null ? '' : x >= 75 ? 'color:var(--ok)' : x < 25 ? 'color:var(--bad)' : 'color:var(--warn)';
-  document.getElementById('mgt').innerHTML = L.length ? `<div class="mgw"><table class="mgtb"><thead><tr><th>Panel</th><th>IWP</th><th>Pulled</th><th>Punch</th><th>Equip.</th></tr></thead><tbody>${L.map(r => `<tr>
-    <td><span class="link" onclick="go('#/p/${enc(r.tag)}')">${esc(r.tag.replace(/^G0-D18(10BX0|01FX0)-/, ''))}</span></td>
-    <td style="${col(r.iw)}"><b>${f(r.iw)}</b></td><td style="${col(r.cb)}">${f(r.cb)}</td><td style="${r.po ? 'color:var(--bad);font-weight:700' : ''}">${r.po}</td><td style="${col(r.eq)}">${f(r.eq)}</td></tr>`).join('')}</tbody></table></div><div class="s2" style="margin-top:4px">${L.length} of ${MGC.length} panels</div>` : '<div class="empty">No panels match the filter</div>';
+  const inIw = x => !v.iw || (x != null && (v.iw === 'lo' ? x < 25 : v.iw === 'mid' ? x >= 25 && x <= 75 : x > 75));
+  if (v.tab === 'act') { const A = mgActs().filter(g => (!nq || N(g.g).includes(nq)) && inIw(g.q ? pct(g.f, g.q) : pct(g.d, g.n)));
+    el.innerHTML = A.length ? `<div class="mgw"><table class="mgtb"><thead><tr><th>Activity</th><th>Done / total</th><th>Remaining</th><th>%</th><th>Lines</th></tr></thead><tbody>${A.map(g => { const p = g.q ? pct(g.f, g.q) : pct(g.d, g.n);
+      return `<tr><td><span class="link" onclick="go('#/a/${enc(g.g)}')">${esc(g.g)}</span></td><td>${fmtn(Math.round(g.f))} / ${fmtn(Math.round(g.q))} ${esc(g.u)}</td><td style="${g.q - g.f > 0.5 ? 'color:var(--bad);font-weight:700' : ''}">${fmtn(Math.round(g.q - g.f))}</td><td style="${col(p)}"><b>${p}%</b></td><td>${g.d}/${g.n}</td></tr>`; }).join('')}</tbody></table></div><div class="s2" style="margin-top:4px">${A.length} activities · most remaining lines first</div>` : '<div class="empty">No activity matches the filter</div>';
+    return; }
+  if (window.MC && !MC.d && typeof MC.load === 'function') { el.innerHTML = '<div class="empty">Loading subsystem data…</div>'; MC.load(() => { if (location.hash.startsWith('#/mg')) mgTable(); }); return; }
+  const R = mgSubs(); const L = R.rows.filter(r => (!nq || N(r.k + ' ' + r.nm).includes(nq)) && inIw(r.iw) && (!v.pu || r.po > Number(v.pu))).sort((a, b) => (b.n - b.dn) - (a.n - a.dn));
+  el.innerHTML = L.length ? `<div class="mgw"><table class="mgtb"><thead><tr><th>${R.kind}</th><th>IWP</th><th>Pulled</th><th>Term.</th><th>Punch A / B / RHI</th></tr></thead><tbody>${L.map(r => `<tr>
+    <td>${r.go ? `<span class="link" style="white-space:nowrap" onclick="go('${r.go}')">${esc(r.k)}</span>` : `<b style="white-space:nowrap">${esc(r.k)}</b>`}<div style="font-size:11px;color:var(--mut);white-space:normal">${esc(r.nm.slice(0, 60))}</div></td>
+    <td style="${col(r.iw)}"><b>${f(r.iw)}</b><div style="font-size:11px;color:var(--mut)">${r.dn}/${r.n}</div></td><td style="${col(r.cb)}">${f(r.cb)}</td><td style="${col(r.ct)}">${f(r.ct)}</td><td style="${r.po ? 'color:var(--bad);font-weight:700' : ''}">${r.pA} / ${r.pB} / ${r.pR}</td></tr>`).join('')}</tbody></table></div><div class="s2" style="margin-top:4px">${L.length} of ${R.rows.length} ${R.kind.toLowerCase()}s · most remaining IWP lines first${R.kind === 'System' ? ' · no subsystem list for this area, grouped by IWP system' : ''}</div>` : '<div class="empty">Nothing matches the filter</div>';
 }
 function mgTl() {
   const v = VS.MG, el = document.getElementById('mgl'); if (!el) return;
