@@ -23,7 +23,7 @@
   // ---------- calculation ----------
   const cnt = L => { let c = 0, o = 0, p = 0; L.forEach(x => { if (x.done) c++; else if (Number(x.f) > 0) o++; else p++; }); return {n: L.length, c, o, p, pc: P(c, L.length)}; };
   RP.data = function () {
-    if (RP._d && RP._dv === D.meta.ver) return RP._d;
+    const ver = D.meta.ver + '|' + ((window.MC && MC.d && (MC.d.date || 'mc')) || '') + '|' + ((window.HO && HO.d && 'ho') || ''); if (RP._d && RP._dv === ver) return RP._d;
     const comm = I.filter(x => COMM.test(x.g || '')), noq = I.filter(x => !COMM.test(x.g || '') && !(Number(x.q) > 0));
     const isRhi = x => /^(RHI|РХИ)/i.test(String(T.co[x.co] || ''));
     // v4.55: RHI scope only – lines of other companies and "Not assigned" lines are not in any figure of the reports
@@ -64,7 +64,7 @@
     const cq = {n: ctq.length, o: ctq.filter(t => t.open).length, c: ctq.filter(t => !t.open).length, hold: ctq.filter(t => t.open && t.hold === 'Yes').length, wait: ctq.filter(t => t.open && (!t.ans || /no client answer|ответа[^.]{0,20}нет|нет ответа/i.test(t.ans.slice(0, 80)))).length};
     const W = {}; IT.forEach(x => { if (x.done) return; const k = (x.sy || '-') + '|' + x.g; const e = W[k] = W[k] || {sy: x.sy || '-', g: x.g, n: 0, o: 0, u: x.u, q: 0, mix: false}; e.n++; if (Number(x.f) > 0) e.o++; if (e.u !== x.u) e.mix = true; e.q += Math.max(0, (Number(x.q) || 0) - (Number(x.f) || 0)); });
     const work = Object.values(W).sort((x, y) => y.n - x.n);
-    RP._dv = D.meta.ver;
+    RP._dv = ver;
     return RP._d = {all, rhi, comm: comm.length, noq: noq.length, cab: {n: CL.length, p: cp, t: ct}, sys, subs, acts, pun, ctq, cq, work};
   };
 
@@ -83,14 +83,15 @@
 .rpp{display:inline-block;padding:0 5px;border-radius:8px;font-weight:700;font-size:.9em}.rph{background:#023362;color:#fff;padding:5px 8px;display:flex;justify-content:space-between;align-items:center;gap:10px}.rph b{font-size:1.25em}
 .rpk{display:grid;gap:4px}.rpk div{border:1px solid #8a8f98;border-radius:3px;padding:3px 5px}.rpk b{display:block;font-size:1.55em;line-height:1.1}.rpk span{font-size:.9em;color:#333}
 .rpt{font-weight:700;background:#dfe6ee;border:1px solid #8a8f98;padding:2px 5px;margin:4px 0 2px}.rpnote{font-size:.88em;color:#444}
-#rpa3{width:404mm;height:279mm;font-size:8.4pt;line-height:1.18;display:grid;grid-template-rows:auto 1fr auto;gap:2mm;overflow:hidden;box-sizing:border-box}
-#rpa3 .cols{display:grid;grid-template-columns:27fr 40fr 33fr;gap:3mm;min-height:0}#rpa3 .col{border:1.5px solid #023362;padding:1.5mm;overflow:hidden;min-width:0}
-#rpa3 .ah{background:#023362;color:#fff;font-weight:700;font-size:10pt;padding:2px 6px;margin:-1.5mm -1.5mm 1.5mm}
+.rpset{width:404mm}.rpa3{width:404mm;height:279mm;font-size:8.4pt;line-height:1.18;display:grid;grid-template-rows:auto 1fr auto;gap:2mm;overflow:hidden;box-sizing:border-box}
+.rpa3 .cols{display:grid;grid-template-columns:27fr 40fr 33fr;gap:3mm;min-height:0}.rpa3 .col{border:1.5px solid #023362;padding:1.5mm;overflow:hidden;min-width:0}
+.rpa3 .ah{background:#023362;color:#fff;font-weight:700;font-size:10pt;padding:2px 6px;margin:-1.5mm -1.5mm 1.5mm}
+.rpa3x td.rp1{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:78mm}.rpa3x th{white-space:nowrap}.rpa3x{width:404mm;font-size:8.6pt;line-height:1.2;margin-top:5mm;box-sizing:border-box}.rpa3+.rpa3,.rpa3x+.rpa3{margin-top:5mm}
 #rpfull{font-size:8.5pt;line-height:1.25}#rpfull h2{font-size:12pt;margin:0 0 4px;background:#dfe6ee;padding:3px 6px;border-left:5px solid #023362}#rpfull section{margin-bottom:10px}
 @media screen{.rpwrap{overflow:hidden;border:1px solid #c9ced6;background:#fff;margin-top:8px}#rpfull{padding:8px;overflow-x:auto}}
 .rpfoot{font-size:7pt;color:#444;border-top:1px solid #8a8f98;padding-top:1px;margin-top:6px}
 @media screen{#rpprint{display:none}}
-@media print{html,body{background:#fff!important;margin:0!important;padding:0!important;height:auto!important;overflow:visible!important}body>*:not(#rpprint){display:none!important}#rpprint{display:block!important}.rpdoc{zoom:1!important}#rpfull{width:100%;padding:0}#rpfull section.pb{page-break-before:always}#rpfull tr{page-break-inside:avoid}#rpfull thead{display:table-header-group}}`;
+@media print{html,body{background:#fff!important;margin:0!important;padding:0!important;height:auto!important;overflow:visible!important}body>*:not(#rpprint){display:none!important}#rpprint{display:block!important}.rpdoc{zoom:1!important}#rpfull{width:100%;padding:0}#rpfull section.pb{page-break-before:always}#rpfull tr{page-break-inside:avoid}#rpfull thead{display:table-header-group}.rpa3,.rpa3x{break-after:page;page-break-after:always;margin-top:0!important}.rpset>:last-child{break-after:auto;page-break-after:auto}.rpa3x tr{break-inside:avoid;page-break-inside:avoid}.rpa3x thead{display:table-header-group}}`;
   function css(page) { let e = document.getElementById('rpcss'); if (!e) { e = document.createElement('style'); e.id = 'rpcss'; document.head.appendChild(e); } e.textContent = CSS + `@page{size:${page};margin:8mm}`; }
   const donut = (pc, sz) => `<div style="width:${sz}mm;height:${sz}mm;border-radius:50%;background:conic-gradient(#2e9e4f 0 ${pc}%,#e6e8ec ${pc}% 100%);display:flex;align-items:center;justify-content:center;margin:auto"><div style="width:${sz * .68}mm;height:${sz * .68}mm;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;flex-direction:column"><b style="font-size:16pt">${pc}%</b><span style="font-size:7pt">RHI IWP lines done</span></div></div>`;
   const head = (title, n) => `<div class="rph"><div><b>${esc(title)}</b><div>Ust-Luga Gas Processing Plant (GPP) · E&amp;I Department · Rencons (RHI) · ${esc(PNAME)}</div></div><div style="text-align:right">Report date: <b style="font-size:1em">${esc(n.date || today())}</b> · Rev. ${esc(n.rev || '0')}<br>Prepared by: ${esc(n.by || (typeof PS_ !== 'undefined' && PS_.name) || '')} · App data: ${esc(D.meta.date)}</div></div>`;
@@ -107,7 +108,13 @@
     const wk = d.work.slice(0, 6);
     const acts = n.acts.filter(x => x.a).slice(0, 8), opC = d.ctq.filter(t => t.open).sort((x, y) => (y.hold === 'Yes') - (x.hold === 'Yes')).slice(0, 7);
     const txt = (lbl, v) => `<div class="rpt">${lbl}</div><div style="min-height:7mm;padding:1px 3px">${v ? nl(cut(v, 420)) : '<span class="rpnote">–</span>'}</div>`;
-    return `<div id="rpa3" class="rpdoc">${head('E&I MANAGER MEETING REPORT', n)}
+    const c7 = x => `<td class="n">${x.n}</td><td class="n rpg">${x.c}</td><td class="n rpy">${x.o}</td><td class="n rpr">${x.p}</td><td style="min-width:26mm">${bar(x.pc)}</td>`;
+    const cont = `<div class="rpa3x">${head('E&I MANAGER MEETING REPORT – system / subsystem details (all, nothing hidden)', n)}
+<div style="display:grid;grid-template-columns:36fr 64fr;gap:4mm;align-items:start;margin-top:2mm">
+ <div><div class="rpt" style="margin-top:0">All systems (${d.sys.length})</div><table><thead><tr><th>System</th><th>Name</th><th class="n">Total</th><th class="n">Compl.</th><th class="n">Ongoing</th><th class="n">Pending</th><th>Progress %</th></tr></thead><tbody>${sysL.map(x => `<tr><td style="white-space:nowrap"><b>${esc(x.k)}</b></td><td class="rp1">${esc(cut(x.nm, 46))}</td>${c7(x)}</tr>`).join('')}<tr><td colspan="2"><b>Total</b></td>${c7(a)}</tr></tbody></table></div>
+ <div><div class="rpt" style="margin-top:0">All subsystems (${subL.length})${d.subs.length ? '' : ' – N/A, the client subsystem list is not loaded for this project'}</div>${subL.length ? `<table><thead><tr><th>Subsystem</th><th>Description</th><th class="n">Total</th><th class="n">Compl.</th><th class="n">Ongoing</th><th class="n">Pending</th><th>Progress %</th><th class="n">Cables pulled</th><th class="n">Terminated</th><th class="n">Punch A / B / RHI</th><th>Handover target</th></tr></thead><tbody>${subL.map(x => `<tr><td><b style="white-space:nowrap">${esc(x.k)}</b></td><td class="rp1">${esc(cut(x.nm, 90))}</td>${c7(x)}<td class="n">${x.cn ? x.cp + ' / ' + x.cn : ''}</td><td class="n">${x.cn ? x.ct + ' / ' + x.cn : ''}</td><td class="n ${x.pA ? 'rpr' : ''}">${x.pA} / ${x.pB} / ${x.pR}</td><td>${esc(x.tgt || 'N/A')}</td></tr>`).join('')}</tbody></table>` : ''}</div>
+</div></div>`;
+    return `<div class="rpa3">${head('E&I MANAGER MEETING REPORT', n)}
 <div class="cols">
  <div class="col"><div class="ah">AREA 1 – OVERALL PROJECT STATUS</div>
   <div style="display:grid;grid-template-columns:1fr 1.25fr;gap:2mm;align-items:center">${donut(a.pc, 38)}<div class="rpk" style="grid-template-columns:1fr 1fr">${kp(d.sys.length, 'systems')}${kp(d.subs.length || 'N/A', 'subsystems')}${kp(a.n, 'RHI IWP activities (lines)')}${kp(a.c, 'completed')}${kp(a.o, 'ongoing')}${kp(a.p, 'pending')}</div></div>
@@ -119,9 +126,9 @@
   ${txt('Major achievements', n.ach)}${txt('Critical delays / management attention required', n.crit)}
  </div>
  <div class="col"><div class="ah">AREA 2 – SYSTEM / SUBSYSTEM PROGRESS</div>
-  <table id="rpsys"><tr><th>System</th><th>Name</th><th class="n">Total</th><th class="n">Compl.</th><th class="n">Ongoing</th><th class="n">Pending</th><th>Progress %</th></tr>${sysL.map(x => row(`<b>${esc(x.k)}</b>`, esc(cut(x.nm, 40)), x, 'rs')).join('')}</table>
+  <table class="rpsys"><tr><th>System</th><th>Name</th><th class="n">Total</th><th class="n">Compl.</th><th class="n">Ongoing</th><th class="n">Pending</th><th>Progress %</th></tr>${sysL.map(x => row(`<b>${esc(x.k)}</b>`, esc(cut(x.nm, 40)), x, 'rs')).join('')}</table>
   <div class="rpt">Major ongoing activities / critical pending works (largest remaining first)</div><table><tr><th>System</th><th>Activity</th><th class="n">Not completed</th><th class="n">of which ongoing</th><th class="n">Remaining qty</th></tr>${wk.length ? wk.map(w => `<tr><td><b>${esc(w.sy)}</b></td><td>${esc(cut(w.g, 44))}</td><td class="n rpr">${w.n}</td><td class="n rpy">${w.o}</td><td class="n">${w.mix ? '–' : fmtn(Math.round(w.q * 10) / 10) + ' ' + esc(w.u || '')}</td></tr>`).join('') : '<tr><td colspan="5">No remaining RHI work in the IWP</td></tr>'}</table>
-  ${d.subs.length ? `<div class="rpt">Subsystem progress (most remaining work first)</div><table id="rpsub"><tr><th>Subsystem</th><th>Description</th><th class="n">Total</th><th class="n">Compl.</th><th class="n">Ongoing</th><th class="n">Pending</th><th>Progress %</th></tr>${subL.map(x => row(`<b style="white-space:nowrap">${esc(x.k)}</b>`, esc(cut(x.nm, 44)), x, 'rs')).join('')}</table>` : '<div class="rpnote" style="margin-top:2mm">Subsystem-wise progress: N/A – the client subsystem list is not loaded for this project.</div>'}
+  ${d.subs.length ? `<div class="rpt">Subsystem progress (most remaining work first)</div><table class="rpsub"><tr><th>Subsystem</th><th>Description</th><th class="n">Total</th><th class="n">Compl.</th><th class="n">Ongoing</th><th class="n">Pending</th><th>Progress %</th></tr>${subL.map(x => row(`<b style="white-space:nowrap">${esc(x.k)}</b>`, esc(cut(x.nm, 44)), x, 'rs')).join('')}</table>` : '<div class="rpnote" style="margin-top:2mm">Subsystem-wise progress: N/A – the client subsystem list is not loaded for this project.</div>'}
   <div class="rpnote" style="margin-top:1mm">Green = completed · yellow = ongoing · red = pending (not started). Delayed activities: N/A (no planned dates).</div>
  </div>
  <div class="col"><div class="ah">AREA 3 – PUNCH / CTQ / MEETING NOTES</div>
@@ -136,7 +143,7 @@
   <table style="margin-top:1mm"><tr><th>Action item</th><th>Responsible</th><th>Target</th><th>Status</th></tr>${acts.length ? acts.map(x => `<tr><td>${esc(cut(x.a, 70))}</td><td>${esc(cut(x.r, 16))}</td><td>${esc(x.t)}</td><td class="${/clos|done/i.test(x.s) ? 'rpg' : /progress|ongoing/i.test(x.s) ? 'rpy' : 'rpr'}">${esc(x.s)}</td></tr>`).join('') : '<tr><td colspan="4">No action items entered</td></tr>'}</table>
  </div>
 </div>
-<div class="rpnote">${basis(d)}</div></div>`; };
+<div class="rpnote">${basis(d)}</div></div>${cont}`; };
 
   // ---------- detailed project report ----------
   RP.fullhtml = function () { const d = RP.data(), n = RP.notes(), a = d.all;
@@ -189,34 +196,55 @@
       {name: 'Meeting notes', rows: mn, widths: [44, 60, 16, 16], bold: [0, 12]}]); };
 
   // ---------- pages ----------
-  function show(kind) { const a3 = kind === 'a3'; const ph = document.getElementById('rpprint'); if (ph) ph.innerHTML = ''; css(a3 ? 'A3 landscape' : 'A4 landscape');
-    setHead(a3 ? 'Manager meeting report – A3' : 'Project report', `${PRJ} · data ${D.meta.date}`);
-    main.innerHTML = `<div class="chips"><button class="chip" onclick="go('#/rp')">‹ Reports</button><button class="chip on" onclick="RP.print()">🖨 Print / Save as PDF${a3 ? ' (A3 landscape)' : ''}</button>${a3 ? '' : '<button class="chip" onclick="RP.excel()">📊 Excel</button>'}</div>
-     <div class="foot" style="margin:4px 0">In the print window choose “Save as PDF”${a3 ? ', paper size A3, landscape' : ''}. Switch on “Background graphics” so the colours print.</div>
-     <div class="rpwrap" id="rpw">${a3 ? RP.a3html() : RP.fullhtml()}</div>`;
-    if (a3) { RP.trim(); fit(); } }
+function show(kind, html) { const a3 = kind === 'a3'; const ph = document.getElementById('rpprint'); if (ph) ph.innerHTML = ''; css(a3 ? 'A3 landscape' : 'A4 landscape');
+    setHead(a3 ? 'Manager meeting report – A3' : 'Project report', html ? 'CCR · D48 · D88' : `${PRJ} · data ${D.meta.date}`);
+    main.innerHTML = `<div class="chips"><button class="chip" onclick="go('#/rp')">‹ Reports</button><button class="chip on" onclick="RP.print()">🖨 Print / Save as PDF${a3 ? ' (A3 landscape)' : ''}</button>${a3 ? (html ? '' : '<button class="chip" onclick="go(\'#/rp/a3all\')">🖨 Print 3 areas – CCR + D48 + D88</button>') : '<button class="chip" onclick="RP.excel()">📊 Excel</button>'}</div>
+     <div class="foot" style="margin:4px 0">In the print window choose “Save as PDF”${a3 ? ', paper size A3, landscape' : ''}. Switch on “Background graphics” so the colours print.${a3 ? ' Page 1 of each area = one-page overview; the next page(s) list every system and subsystem.' : ''}</div>
+     <div class="rpwrap" id="rpw">${a3 ? `<div class="rpdoc rpset" id="rpset">${html || RP.a3html()}</div>` : RP.fullhtml()}</div>`;
+    if (a3) { RP.trim(); fit(); if (!html && window.MC && !MC.d && typeof MC.load === 'function') MC.load(() => { if (location.hash === '#/rp/a3') show('a3'); }); } }
   // A3 area 2: drop rows from the end of the subsystem table (then the system table) until the column fits, and total them in one "+ N more" row
-  RP.trim = function () { const e = document.getElementById('rpa3'); if (!e || e.dataset.trim) return; const col = e.querySelectorAll('.col')[1]; if (!col) return; const z = e.style.zoom; e.style.zoom = 1;
-    const cutT = (id, lbl, min) => { const t = document.getElementById(id); if (!t) return; const acc = t._acc = t._acc || [0, 0, 0, 0]; let k = t._k || 0, more = t._more || null;
-      const put = () => { if (!k) return; if (!more) { more = t._more = document.createElement('tr'); t.tBodies[0].appendChild(more); } more.innerHTML = `<td><i>+ ${k} more ${lbl}</i></td><td><i>see Project report</i></td><td class="n">${acc[0]}</td><td class="n rpg">${acc[1]}</td><td class="n rpy">${acc[2]}</td><td class="n rpr">${acc[3]}</td><td>${bar(P(acc[1], acc[0]))}</td>`; };
-      while (col.scrollHeight > col.clientHeight + 1) { const rs = t.querySelectorAll('tr.rs'); if (rs.length <= min) break; const r = rs[rs.length - 1]; r.dataset.s.split(',').forEach((v, i) => acc[i] += Number(v)); r.remove(); k++; t._k = k; put(); } };
-    if (document.getElementById('rpsub')) cutT('rpsys', 'systems', 14); cutT('rpsub', 'subsystems', 4); cutT('rpsys', 'systems', 6); e.dataset.trim = '1'; e.style.zoom = z; };
-  function fit() { const w = document.getElementById('rpw'), e = document.getElementById('rpa3'); if (!w || !e) return; e.style.zoom = 1; const z = Math.min(1, (w.clientWidth - 2) / e.offsetWidth); e.style.zoom = z; }
-  window.addEventListener('resize', () => { if (document.getElementById('rpa3')) fit(); });
+  RP.trim = function () { const set = document.getElementById('rpset'); if (!set) return; const z = set.style.zoom; set.style.zoom = 1;
+    set.querySelectorAll('.rpa3').forEach(e => { if (e.dataset.trim) return; const col = e.querySelectorAll('.col')[1]; if (!col) return;
+      const cutT = (cls, lbl, min) => { const t = e.querySelector('table.' + cls); if (!t) return; const acc = t._acc = t._acc || [0, 0, 0, 0]; let k = t._k || 0, more = t._more || null;
+        const put = () => { if (!k) return; if (!more) { more = t._more = document.createElement('tr'); t.tBodies[0].appendChild(more); } more.innerHTML = `<td><i>+ ${k} more ${lbl}</i></td><td><i>see next page</i></td><td class="n">${acc[0]}</td><td class="n rpg">${acc[1]}</td><td class="n rpy">${acc[2]}</td><td class="n rpr">${acc[3]}</td><td>${bar(P(acc[1], acc[0]))}</td>`; };
+        while (col.scrollHeight > col.clientHeight + 1) { const rs = t.querySelectorAll('tr.rs'); if (rs.length <= min) break; const r = rs[rs.length - 1]; r.dataset.s.split(',').forEach((v, i) => acc[i] += Number(v)); r.remove(); k++; t._k = k; put(); } };
+      if (e.querySelector('table.rpsub')) cutT('rpsys', 'systems', 14); cutT('rpsub', 'subsystems', 4); cutT('rpsys', 'systems', 6); e.dataset.trim = '1'; });
+    set.style.zoom = z; };
+  function fit() { const w = document.getElementById('rpw'), e = document.getElementById('rpset'); if (!w || !e || e.parentNode !== w) return; e.style.zoom = 1; const z = Math.min(1, (w.clientWidth - 2) / e.offsetWidth); e.style.zoom = z; }
+  window.addEventListener('resize', () => { if (document.getElementById('rpset')) fit(); });
+  // ---------- one click: CCR + D48 + D88 in one print (the other two areas are opened in the background) ----------
+  const AREAS3 = ['CCR', 'D48', '8810'];
+  function other(p) { return new Promise(res => { const f = document.createElement('iframe'); f.style.cssText = 'position:fixed;left:-3000px;top:0;width:1200px;height:800px;visibility:hidden'; f.src = 'index.html?rp=' + Date.now() + '#/?p=' + p; document.body.appendChild(f);
+    const t0 = Date.now(); let asked = false; const done = h => { clearInterval(iv); f.remove(); res(h); };
+    const iv = setInterval(() => { let w = null; try { w = f.contentWindow; } catch (e) {} const late = Date.now() - t0;
+      if (w && w.RP && w.RP.a3html) { let mc = null, ok = false; try { mc = w.MC; ok = String(w.__P).toUpperCase() === p; } catch (e) {}
+        if (!ok) return done('');
+        if (mc && !mc.d && !asked && typeof mc.load === 'function') { asked = true; try { mc.load(() => {}); } catch (e) {} }
+        if (!mc || mc.d || late > 25000) { let h = ''; try { h = w.RP.a3html(); } catch (e) {} return done(h); } }
+      if (late > 45000) done(''); }, 400); }); }
+  RP.all3 = async function () { if (RP._busy) return; RP._busy = true; css('A3 landscape'); setHead('Manager meeting report – A3', 'CCR · D48 · D88');
+    main.innerHTML = '<div class="empty" id="rp3m">Preparing the three areas… 0 / 3</div>'; const out = [], miss = [];
+    try { for (let i = 0; i < AREAS3.length; i++) { const p = AREAS3[i]; let h = '';
+        if (p === PRJ) { if (window.MC && !MC.d && typeof MC.load === 'function') await new Promise(r => { let k = 0; MC.load(() => {}); const iv = setInterval(() => { if (MC.d || ++k > 40) { clearInterval(iv); r(); } }, 300); }); RP._d = null; h = RP.a3html(); } else h = await other(p);
+        if (h) out.push(h); else miss.push(p === '8810' ? 'D88' : p);
+        const m = document.getElementById('rp3m'); if (m) m.textContent = `Preparing the three areas… ${i + 1} / 3`; } }
+    finally { RP._busy = false; try { sessionStorage.setItem('proj', PRJ); localStorage.setItem('proj_last', PRJ); } catch (e) {} }
+    if (!out.length) { main.innerHTML = '<div class="empty">Could not prepare the report – open the app once with internet and try again.</div>'; return; }
+    show('a3', out.join('')); if (miss.length) toast('Not loaded: ' + miss.join(', ') + ' – open that area once, then print again'); else setTimeout(() => RP.print(), 500); };
   // the report is moved to a top-level holder while printing, so only the report is on the paper (also when the browser's own Print is used)
   RP.toPrint = function () { const e = document.querySelector('#rpw .rpdoc'); if (!e) return; let h = document.getElementById('rpprint'); if (!h) { h = document.createElement('div'); h.id = 'rpprint'; document.body.appendChild(h); } e.style.zoom = 1; h.appendChild(e); };
   RP.fromPrint = function () { const h = document.getElementById('rpprint'), w = document.getElementById('rpw'); if (!h || !h.firstChild) return; if (w) { w.appendChild(h.firstChild); fit(); } else h.innerHTML = ''; };
   window.addEventListener('beforeprint', RP.toPrint); window.addEventListener('afterprint', RP.fromPrint);
   RP.print = function () { RP.toPrint(); setTimeout(() => { window.print(); setTimeout(RP.fromPrint, 600); }, 80); };
-  RP.tile = function () { return `<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:6px"><button class="tile main" style="min-height:auto;background:#1f5c2e;border-color:#1f5c2e;color:#fff" onclick="go('#/rp')"><b>📑 EXPORT PROJECT REPORT</b><span class="n" style="color:#e3f3e6">PDF · Excel · progress, punch, CTQ</span></button><button class="tile main" style="min-height:auto;background:#4b1d7a;border-color:#4b1d7a;color:#fff" onclick="go('#/rp/a3')"><b>🗂 EXPORT MANAGER MEETING REPORT – A3</b><span class="n" style="color:#ece1f7">one page · landscape · notes</span></button></div>`; };
+  RP.tile = function () { return `<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:6px"><button class="tile main" style="min-height:auto;background:#1f5c2e;border-color:#1f5c2e;color:#fff" onclick="go('#/rp')"><b>📑 EXPORT PROJECT REPORT</b><span class="n" style="color:#e3f3e6">PDF · Excel · progress, punch, CTQ</span></button><button class="tile main" style="min-height:auto;background:#4b1d7a;border-color:#4b1d7a;color:#fff" onclick="go('#/rp/a3')"><b>🗂 EXPORT MANAGER MEETING REPORT – A3</b><span class="n" style="color:#ece1f7">one page · landscape · notes</span></button><button class="tile main" style="grid-column:1/3;min-height:auto;background:#023362;border-color:#023362;color:#fff" onclick="go('#/rp/a3all')"><b>🖨 PRINT MEETING REPORT – 3 AREAS (CCR · D48 · D88) – ONE CLICK</b><span class="n" style="color:#dbe7f5">A3 landscape · all systems and subsystems</span></button></div>`; };
   RP.home = function () { const n = RP.notes(), d = RP.data();
     setHead('Reports', `${PRJ} · project report · manager meeting report`);
     const ta = (k, l, ph) => `<label style="display:block;font-size:12px;font-weight:600;margin-top:8px">${l}</label><textarea class="fin" rows="3" style="width:100%;height:auto" placeholder="${ph || ''}" onchange="RP.setN('${k}',this.value)">${esc(n[k] || '')}</textarea>`;
     const inp = (k, l, w) => `<label style="font-size:12px;font-weight:600;flex:${w || 1};min-width:110px">${l}<input class="fin" style="width:100%" value="${esc(n[k] || '')}" onchange="RP.setN('${k}',this.value)"></label>`;
     main.innerHTML = `<div class="card"><div class="h3">📑 Project report</div><div style="font-size:13px;color:var(--mut)">Overall, system, subsystem and activity progress, punch summary and CTQ register – RHI scope: ${d.all.n} IWP lines · ${d.sys.length} systems · ${d.subs.length || 'N/A'} subsystems · ${d.pun.n} punches · ${d.cq.n} CTQ</div>
       <div class="chips" style="margin-top:8px"><button class="chip on" onclick="go('#/rp/full')">📄 PDF report</button><button class="chip on" onclick="RP.excel()">📊 Excel report</button></div></div>
-     <div class="card"><div class="h3">🗂 Manager meeting report – A3 landscape</div><div style="font-size:13px;color:var(--mut)">One page, three areas: overall status · system / subsystem progress · punch, CTQ and meeting notes</div>
-      <div class="chips" style="margin-top:8px"><button class="chip on" onclick="go('#/rp/a3')">📄 Open A3 report (PDF)</button></div></div>
+     <div class="card"><div class="h3">🗂 Manager meeting report – A3 landscape</div><div style="font-size:13px;color:var(--mut)">Page 1 = one-page overview with three areas: overall status · system / subsystem progress · punch, CTQ and meeting notes</div>
+      <div class="chips" style="margin-top:8px"><button class="chip on" onclick="go('#/rp/a3')">📄 Open A3 report (PDF) – ${esc(PRJ)}</button><button class="chip on" onclick="go('#/rp/a3all')">🖨 Print 3 areas – CCR + D48 + D88 (one click)</button></div></div>
      <div class="card"><div class="h3">📝 Manager meeting notes</div><div style="font-size:12px;color:var(--mut)">Saved on this device for ${esc(PRJ)} and printed on the A3 report and in the Excel report.</div>
       <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:6px">${inp('date', 'Meeting date')}${inp('by', 'Prepared by', 2)}${inp('rev', 'Report revision')}</div>
       ${ta('ach', 'Major achievements')}${ta('crit', 'Critical delays / management attention required')}${ta('disc', 'Discussion points')}${ta('issues', 'Major technical issues')}${ta('dec', 'Decisions taken')}${ta('cli', 'Client comments')}
@@ -224,6 +252,6 @@
       ${n.acts.map((x, i) => `<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;border:1px solid var(--line);border-radius:8px;padding:6px;margin-top:6px"><input class="fin" style="grid-column:1/3" placeholder="Action item" value="${esc(x.a)}" onchange="RP.setA(${i},'a',this.value)"><input class="fin" placeholder="Responsible person" value="${esc(x.r)}" onchange="RP.setA(${i},'r',this.value)"><input class="fin" placeholder="Target date" value="${esc(x.t)}" onchange="RP.setA(${i},'t',this.value)"><select class="fin" onchange="RP.setA(${i},'s',this.value)">${['Open', 'In progress', 'Closed'].map(s => `<option ${x.s === s ? 'selected' : ''}>${s}</option>`).join('')}</select><button class="chip" onclick="RP.delA(${i})">Delete</button></div>`).join('')}
       <button class="chip on" style="margin-top:8px" onclick="RP.addA()">＋ Add action item</button></div>
      <div class="foot">${basis(d)}</div>`; };
-  RP.route = function (rest) { const k = rest && rest[0]; if (k === 'a3') return show('a3'); if (k === 'full') return show('full'); RP.home(); };
+  RP.route = function (rest) { const k = rest && rest[0]; if (k === 'a3all') return RP.all3(); if (k === 'a3') return show('a3'); if (k === 'full') return show('full'); RP.home(); };
   try { const h = location.hash; if (!h || h === '#/' || /^#\/(rp|mg)/.test(h)) route(); } catch (e) {}
 })();
