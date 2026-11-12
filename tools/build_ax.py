@@ -66,13 +66,13 @@ try:
         sysof = lambda c: (re.search(r'\b([A-Z]{2}-[A-Z0-9]{3,6})-', c[K['d']].split(' ', 1)[-1]) or [None, ''])[1]
         DRM, MAT = {}, {}
         for c in d['cables']:
-            ty = (c[K['ty']] + ' ' + c[K['c']]).strip(); sy = sysof(c); ln = fl(c[K['ln']]); done = c[K['tp']] == 'Completed'
-            pm = fl(c[K['lf']]) or (ln if done else 0)
+            ty = (c[K['ty']] + ' ' + c[K['c']]).strip(); sy = sysof(c); ln = fl(c[K['ln']]); pulled = c[K['tp']] == 'Completed'
+            pm = fl(c[K['lf']]) or (ln if pulled else 0)
             m = MAT.setdefault((sy, ty), [sy, ty, 'from cable tracker', 0, 0, 0.0, 0.0])
-            m[3] += 1; m[4] += 1 if done else 0; m[5] += ln; m[6] += pm if done else 0
+            m[3] += 1; m[4] += 1 if pulled else 0; m[5] += ln; m[6] += pm if pulled else 0
             for no in [z.strip() for z in re.split(r'[;,\n]+', c[K['dr']]) if z.strip()]:
                 e = DRM.setdefault(no, [no, '', ty, 0, 'm', '', '', '', 0.0, 0, [], [], []])
-                e[8] += pm; e[12].append([c[0], pm or ln, x['a'], '' if done else 'not pulled'])
+                e[8] += pm; e[12].append([c[0], pm or ln, x['a'], '' if pulled else 'not pulled'])
                 if sy and sy not in e[10]:
                     e[10].append(sy)
         d['drums'] = [DRM[k] for k in sorted(DRM)]
