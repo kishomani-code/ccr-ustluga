@@ -59,8 +59,10 @@
     // CTQ (existing records only)
     const ctq = CTQ.map(t => { const o = ctqOpen(t); const m = String(t.rem || '').match(/Client answers[^:]*:\s*([\s\S]*?)(?:\nFinal resolution|$)/i); return {no: t.no, pri: t.pri, d: t.sub, sys: ((t.dwg || '').match(/\)-([A-Z]{2}-[A-Z0-9]+)/) || [])[1] || '', dwg: [t.dwg, t.rev, t.sh].filter(Boolean).join(' · '), tags: t.tags, act: t.act, resp: t.resp, hold: t.hold, tqs: [t.rel, t.rels].filter(Boolean).join(' – '), st: t.st, dt: t.dt, open: o, ans: m ? m[1].trim() : '', rem: t.rem || ''}; });
     const cq = {n: ctq.length, o: ctq.filter(t => t.open).length, c: ctq.filter(t => !t.open).length, hold: ctq.filter(t => t.open && t.hold === 'Yes').length, wait: ctq.filter(t => t.open && (!t.ans || /no client answer|ответа[^.]{0,20}нет|нет ответа/i.test(t.ans.slice(0, 80)))).length};
+    const W = {}; IT.forEach(x => { if (x.done) return; const k = (x.sy || '-') + '|' + x.g; const e = W[k] = W[k] || {sy: x.sy || '-', g: x.g, n: 0, o: 0, u: x.u, q: 0, mix: false}; e.n++; if (Number(x.f) > 0) e.o++; if (e.u !== x.u) e.mix = true; e.q += Math.max(0, (Number(x.q) || 0) - (Number(x.f) || 0)); });
+    const work = Object.values(W).sort((x, y) => y.n - x.n);
     RP._dv = D.meta.ver;
-    return RP._d = {all, rhi, comm: comm.length, noq: noq.length, cab: {n: CL.length, p: cp, t: ct}, sys, subs, acts, pun, ctq, cq};
+    return RP._d = {all, rhi, comm: comm.length, noq: noq.length, cab: {n: CL.length, p: cp, t: ct}, sys, subs, acts, pun, ctq, cq, work};
   };
 
   // ---------- small html helpers ----------
@@ -94,12 +96,11 @@
   RP.a3html = function () { const d = RP.data(), n = RP.notes(), a = d.all;
     const kp = (v, l) => `<div><b>${v}</b><span>${l}</span></div>`;
     const actRows = d.acts.slice(0, 14).map(x => `<tr><td>${esc(cut(x.g, 34))}</td><td class="n">${x.c}/${x.n}</td><td style="width:26%">${bar(x.pc)}</td></tr>`).join('');
-    const budget = 33, sysN = Math.min(d.sys.length, d.subs.length ? 16 : budget), subN = d.subs.length ? Math.max(0, budget - sysN - 2) : 0;
-    const sysL = d.sys.slice().sort((x, y) => (y.n - y.c) - (x.n - x.c)); const sysShow = sysL.slice(0, sysN), sysRest = sysL.slice(sysN);
-    const subL = d.subs.filter(x => x.n).sort((x, y) => (y.n - y.c) - (x.n - x.c)); const subShow = subL.slice(0, subN), subRest = subL.slice(subN);
+    const sysL = d.sys.slice().sort((x, y) => (y.n - y.c) - (x.n - x.c));
+    const subL = d.subs.filter(x => x.n).sort((x, y) => (y.n - y.c) - (x.n - x.c));   // all rows are rendered; RP.trim() removes rows from the end until the column fits the page
     const sum = L => L.reduce((s, x) => ({n: s.n + x.n, c: s.c + x.c, o: s.o + x.o, p: s.p + x.p}), {n: 0, c: 0, o: 0, p: 0});
-    const row = (a1, a2, x) => `<tr><td>${a1}</td><td>${a2}</td><td class="n">${x.n}</td><td class="n rpg">${x.c}</td><td class="n rpy">${x.o}</td><td class="n rpr">${x.p}</td><td style="width:15%">${bar(P(x.c, x.n))}</td></tr>`;
-    const rest = (L, lbl) => L.length ? row(`<i>+ ${L.length} more ${lbl}</i>`, '<i>see Project report</i>', sum(L)) : '';
+    const row = (a1, a2, x, cls) => `<tr class="${cls || ''}" data-s="${x.n},${x.c},${x.o},${x.p}"><td>${a1}</td><td>${a2}</td><td class="n">${x.n}</td><td class="n rpg">${x.c}</td><td class="n rpy">${x.o}</td><td class="n rpr">${x.p}</td><td style="width:15%">${bar(P(x.c, x.n))}</td></tr>`;
+    const wk = d.work.slice(0, 6);
     const critP = d.pun.crit.slice(0, 7), acts = n.acts.filter(x => x.a).slice(0, 8), opC = d.ctq.filter(t => t.open).sort((x, y) => (y.hold === 'Yes') - (x.hold === 'Yes')).slice(0, 7);
     const txt = (lbl, v) => `<div class="rpt">${lbl}</div><div style="min-height:7mm;padding:1px 3px">${v ? nl(cut(v, 420)) : '<span class="rpnote">–</span>'}</div>`;
     return `<div id="rpa3" class="rpdoc">${head('E&I MANAGER MEETING REPORT', n)}
@@ -114,8 +115,9 @@
   ${txt('Major achievements', n.ach)}${txt('Critical delays / management attention required', n.crit)}
  </div>
  <div class="col"><div class="ah">AREA 2 – SYSTEM / SUBSYSTEM PROGRESS</div>
-  <table><tr><th>System</th><th>Name</th><th class="n">Total</th><th class="n">Compl.</th><th class="n">Ongoing</th><th class="n">Pending</th><th>Progress %</th></tr>${sysShow.map(x => row(`<b>${esc(x.k)}</b>`, esc(cut(x.nm, 40)), x)).join('')}${rest(sysRest, 'systems')}</table>
-  ${d.subs.length ? `<div class="rpt">Subsystems with the most remaining work</div><table><tr><th>Subsystem</th><th>Description</th><th class="n">Total</th><th class="n">Compl.</th><th class="n">Ongoing</th><th class="n">Pending</th><th>Progress %</th></tr>${subShow.map(x => row(`<b>${esc(x.k)}</b>`, esc(cut(x.nm, 44)), x)).join('')}${rest(subRest, 'subsystems')}</table>` : '<div class="rpnote" style="margin-top:2mm">Subsystem-wise progress: N/A – the client subsystem list is not loaded for this project.</div>'}
+  <table id="rpsys"><tr><th>System</th><th>Name</th><th class="n">Total</th><th class="n">Compl.</th><th class="n">Ongoing</th><th class="n">Pending</th><th>Progress %</th></tr>${sysL.map(x => row(`<b>${esc(x.k)}</b>`, esc(cut(x.nm, 40)), x, 'rs')).join('')}</table>
+  <div class="rpt">Major ongoing activities / critical pending works (largest remaining first)</div><table><tr><th>System</th><th>Activity</th><th class="n">Not completed</th><th class="n">of which ongoing</th><th class="n">Remaining qty</th></tr>${wk.length ? wk.map(w => `<tr><td><b>${esc(w.sy)}</b></td><td>${esc(cut(w.g, 44))}</td><td class="n rpr">${w.n}</td><td class="n rpy">${w.o}</td><td class="n">${w.mix ? '–' : fmtn(Math.round(w.q * 10) / 10) + ' ' + esc(w.u || '')}</td></tr>`).join('') : '<tr><td colspan="5">No remaining RHI work in the IWP</td></tr>'}</table>
+  ${d.subs.length ? `<div class="rpt">Subsystem progress (most remaining work first)</div><table id="rpsub"><tr><th>Subsystem</th><th>Description</th><th class="n">Total</th><th class="n">Compl.</th><th class="n">Ongoing</th><th class="n">Pending</th><th>Progress %</th></tr>${subL.map(x => row(`<b style="white-space:nowrap">${esc(x.k)}</b>`, esc(cut(x.nm, 44)), x, 'rs')).join('')}</table>` : '<div class="rpnote" style="margin-top:2mm">Subsystem-wise progress: N/A – the client subsystem list is not loaded for this project.</div>'}
   <div class="rpnote" style="margin-top:1mm">Green = completed · yellow = ongoing · red = pending (not started). Delayed activities: N/A (no planned dates).</div>
  </div>
  <div class="col"><div class="ah">AREA 3 – PUNCH / CTQ / MEETING NOTES</div>
@@ -188,7 +190,13 @@
     main.innerHTML = `<div class="chips"><button class="chip" onclick="go('#/rp')">‹ Reports</button><button class="chip on" onclick="RP.print()">🖨 Print / Save as PDF${a3 ? ' (A3 landscape)' : ''}</button>${a3 ? '' : '<button class="chip" onclick="RP.excel()">📊 Excel</button>'}</div>
      <div class="foot" style="margin:4px 0">In the print window choose “Save as PDF”${a3 ? ', paper size A3, landscape' : ''}. Switch on “Background graphics” so the colours print.</div>
      <div class="rpwrap" id="rpw">${a3 ? RP.a3html() : RP.fullhtml()}</div>`;
-    if (a3) fit(); }
+    if (a3) { RP.trim(); fit(); } }
+  // A3 area 2: drop rows from the end of the subsystem table (then the system table) until the column fits, and total them in one "+ N more" row
+  RP.trim = function () { const e = document.getElementById('rpa3'); if (!e || e.dataset.trim) return; const col = e.querySelectorAll('.col')[1]; if (!col) return; const z = e.style.zoom; e.style.zoom = 1;
+    const cutT = (id, lbl, min) => { const t = document.getElementById(id); if (!t) return; const acc = t._acc = t._acc || [0, 0, 0, 0]; let k = t._k || 0, more = t._more || null;
+      const put = () => { if (!k) return; if (!more) { more = t._more = document.createElement('tr'); t.tBodies[0].appendChild(more); } more.innerHTML = `<td><i>+ ${k} more ${lbl}</i></td><td><i>see Project report</i></td><td class="n">${acc[0]}</td><td class="n rpg">${acc[1]}</td><td class="n rpy">${acc[2]}</td><td class="n rpr">${acc[3]}</td><td>${bar(P(acc[1], acc[0]))}</td>`; };
+      while (col.scrollHeight > col.clientHeight + 1) { const rs = t.querySelectorAll('tr.rs'); if (rs.length <= min) break; const r = rs[rs.length - 1]; r.dataset.s.split(',').forEach((v, i) => acc[i] += Number(v)); r.remove(); k++; t._k = k; put(); } };
+    if (document.getElementById('rpsub')) cutT('rpsys', 'systems', 14); cutT('rpsub', 'subsystems', 4); cutT('rpsys', 'systems', 6); e.dataset.trim = '1'; e.style.zoom = z; };
   function fit() { const w = document.getElementById('rpw'), e = document.getElementById('rpa3'); if (!w || !e) return; e.style.zoom = 1; const z = Math.min(1, (w.clientWidth - 2) / e.offsetWidth); e.style.zoom = z; }
   window.addEventListener('resize', () => { if (document.getElementById('rpa3')) fit(); });
   // the report is moved to a top-level holder while printing, so only the report is on the paper (also when the browser's own Print is used)
