@@ -107,6 +107,7 @@ jobs:
           set -o pipefail
           echo "===== OTHER AREA PROJECTS =====" | tee -a build_log.txt
           python3 tools/build_ax.py --input input 2>&1 | grep -E "^=====|^OK|FAILED|OTHER AREA projects" | tee -a build_log.txt
+          python3 tools/build_scope.py --input input --out scope.json 2>&1 | tail -1 | tee -a build_log.txt
 
       - name: Build rfi_*.json (RFI register, subsystems, mechanical completion)
         if: steps.chk.outputs.count != '0'
