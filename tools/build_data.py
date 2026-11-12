@@ -20,6 +20,7 @@ SITES = {'ccr': (('G0-D1810BX0', 'G0-D1801FX0'), 'D1810|D1801'),
          '8810': (('G0-D8810BX0', 'G0-D8801FX0'), 'D8810|D8801'),   # v4.23: fire-water pump station D88   # v4.21: CCR outdoor area as its own project
          # cold cables = heat tracing (EH: EOES power supply + AEOG automation) in the areas whose AEOG drawings the user holds
          'cold': (('G0-A10200X0', 'G0-D10250X0', 'G1-A30210X0'), 'A10200|D10250|A30210')}
+END_RX = {'ccr': r'G0-D1810BX0|G0-D1801FX0|-D18-\d', 'd48': r'G0-D4810BX0|G0-D4801FX0|-D48-\d', '8810': r'G0-D8810BX0|G0-D8801FX0|-D88-\d'}   # v4.49: an end of the cable is in this building
 OWN_TIT = r'D1810|D1801|D4810|D4801|D8810|D8801'   # titles of the user's own projects
 NON_EI = re.compile(r'ВЕНТИЛЯЦ|Технолог|Трубопров|Динамич|Статич|^ТХ$', re.I)   # non E&I punch disciplines
 DISC_RX = {'cold': r'-EH-'}          # extra filter on the document number (discipline) for a site
@@ -307,7 +308,7 @@ def drum(r):
     return S(col(r, 48)) or S(col(r, 64)) or S(col(r, 60))
 
 
-def build_cables(rows, prev, items, rawp_rows):
+def build_cables(rows, prev, items, rawp_rows, iwp_rows=None):
     CK = prev['CK']
     K = {k: i for i, k in enumerate(CK)}
     by = tracker_index(rows)
@@ -338,7 +339,10 @@ def build_cables(rows, prev, items, rawp_rows):
         if t in have:
             continue
         r = pick_row(cands)
-        if not (S(col(r, 14)) in CCR or S(col(r, 24)) in CCR or S(col(r, 25)) in CCR) or not in_disc(col(r, 0)):
+        # v4.49: also cables with one end in this building by the From / To text (True From / To title wrong or empty in the tracker);
+        # heat tracing (EH) is not added this way - it has its own project
+        end_txt = bool(END_RX.get(SITE)) and '-EH-' not in S(col(r, 0)) and bool(re.search(END_RX[SITE], S(col(r, 22)) + ' | ' + S(col(r, 23))))
+        if not (S(col(r, 14)) in CCR or S(col(r, 24)) in CCR or S(col(r, 25)) in CCR or end_txt) or not in_disc(col(r, 0)):
             continue
         if S(col(r, 35)):          # deleted / duplicated / in another project -> not added
             continue
@@ -386,6 +390,38 @@ def build_cables(rows, prev, items, rawp_rows):
     for c in cables:
         fill(c, pull.get(c[K['t']]), 'la', 'lq', 'lf')
         fill(c, term.get(c[K['t']]), 'ta', 'tq', 'tfa')
+    # v4.49: cable of another title (other-area cable with one end in this building): take its IWP Access ID, quantity and fact
+    # from the IWP lines of that title, so the site report carries the Access ID; note the IWP title and company in the remark
+    xa = 0
+    if iwp_rows:
+        other = {}
+        for r in iwp_rows[5:]:
+            if len(r) < 47 or S(col(r, 2)) in CCR:
+                continue
+            mp, tg, a = S(col(r, 1)), S(col(r, 14)), acc_s(col(r, 34))
+            k = 'l' if re.fullmatch(r'(?i)(electrical|instrument) cable laying', mp) else 't' if re.fullmatch(r'(?i)(electrical|instrument) cable termination', mp) else None
+            if k and tg and a:
+                other.setdefault(tg, {}).setdefault(k, []).append(r)
+        for c in cables:
+            c[K['cm']] = re.sub(r'\s*\[Other area cable:[^\]]*\]', '', c[K['cm']] or '')
+            d = other.get(c[K['t']])
+            if not d or ncab[c[K['t']]] > 1 or not re.search(r'\d', c[K['t']]):
+                continue
+            src = None
+            for k, ka, kq, kf in (('l', 'la', 'lq', 'lf'), ('t', 'ta', 'tq', 'tfa')):
+                lst = d.get(k)
+                if not lst or (c[K[ka]] and c[K[ka]] != acc_s(col(lst[0], 34))):
+                    continue
+                c[K[ka]] = acc_s(col(lst[0], 34))
+                c[K[kq]] = num(sum(num(col(x, 42)) if col(x, 42) not in (None, '') else num(col(x, 21)) for x in lst))
+                c[K[kf]] = num(sum(num(col(x, 43)) for x in lst))
+                src = lst[0]
+            if src is not None:
+                co = S(col(src, 46))
+                co = co if co and co not in ('0', '0.0') else 'not assigned'
+                c[K['cm']] = ((c[K['cm']] + ' ') if c[K['cm']] else '') + f"[Other area cable: IWP title {S(col(src, 2))} · IWP company {co}]"
+                xa += 1
+        print(f'other-area cables with IWP Access ID from another title: {xa}')
     # RAWP: fill missing laying / termination dates and add RFI info to the comment
     rw = 0
     if rawp_rows:
@@ -804,7 +840,7 @@ def main():
         notes.append(f'equipment control: {m} CCR RFI records, {n} IWP items got RFI status in notes')
     prev_nc = len(prev['cables'])
     if rows.get('cables'):
-        out['cables'], upd, add, rw = build_cables(rows['cables'], prev, out['items'], rows.get('rawp'))
+        out['cables'], upd, add, rw = build_cables(rows['cables'], prev, out['items'], rows.get('rawp'), rows.get('iwp'))
         notes.append(f'cable tracker: {upd} cables updated, {add} new cables added (From/To kept for existing)')
         notes.append(f'RAWP: {rw} cables got laying/termination RFI info')
         out['panels'] = json.loads(json.dumps(prev['panels']))
