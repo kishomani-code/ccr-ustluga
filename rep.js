@@ -54,7 +54,10 @@
     const pr = {}; op.forEach(p => { const k = PT.resp[p.resp] || '-'; pr[k] = (pr[k] || 0) + 1; });
     const subTgt = p => { const ho = window.HO && HO.by && HO.by[PT.sub[p.sub]]; return isDate(ho && ho.mc) || 'N/A'; };
     const crit = op.filter(p => !p.int && catN(p.cat) === 'A').sort((a, b) => (Number(b.delay) || 0) - (Number(a.delay) || 0)).map(p => ({no: p.no, tit: PT.tit[p.tit] || '', sub: PT.sub[p.sub] || '', tag: p.tage || p.tagd || p.tag || '', d: p.den || p.dru || '', id: p.idate || '', dl: Number(p.delay) || 0, resp: PT.resp[p.resp] || '', tgt: subTgt(p)}));
-    const pun = {n: PU.length, o: op.length, c: cl.length, oth, cats: Object.values(pc).sort((a, b) => (a.src + a.cat < b.src + b.cat ? -1 : 1)), tits: Object.values(pt).sort((a, b) => b.o - a.o), resp: Object.entries(pr).sort((a, b) => b[1] - a[1]), crit,
+    // punch by kind (the app's punch types; a punch with several kinds is counted once, under its first kind)
+    const ty = {}; PU.forEach(p => { const k = ptypes(p)[0]; const e = ty[k] = ty[k] || {k, n: 0, o: 0, c: 0, a: 0}; e.n++; if (p.st === 'Open') { e.o++; if (!p.int && catN(p.cat) === 'A') e.a++; } else if (p.st === 'Closed') e.c++; });
+    const types = Object.values(ty).map(e => Object.assign(e, {nm: (PTYX.find(y => y[0] === e.k) || [, , e.k])[2], sh: P(e.o, op.length), cp: P(e.c, e.n)})).sort((x, y) => y.o - x.o);
+    const pun = {types, n: PU.length, o: op.length, c: cl.length, oth, cats: Object.values(pc).sort((a, b) => (a.src + a.cat < b.src + b.cat ? -1 : 1)), tits: Object.values(pt).sort((a, b) => b.o - a.o), resp: Object.entries(pr).sort((a, b) => b[1] - a[1]), crit,
       oA: op.filter(p => !p.int && catN(p.cat) === 'A').length, oB: op.filter(p => !p.int && catN(p.cat) === 'B').length, oC: op.filter(p => !p.int && catN(p.cat) === 'C').length, oR: op.filter(p => p.int).length};
     // CTQ (existing records only)
     const ctq = CTQ.map(t => { const o = ctqOpen(t); const m = String(t.rem || '').match(/Client answers[^:]*:\s*([\s\S]*?)(?:\nFinal resolution|$)/i); return {no: t.no, pri: t.pri, d: t.sub, sys: ((t.dwg || '').match(/\)-([A-Z]{2}-[A-Z0-9]+)/) || [])[1] || '', dwg: [t.dwg, t.rev, t.sh].filter(Boolean).join(' · '), tags: t.tags, act: t.act, resp: t.resp, hold: t.hold, tqs: [t.rel, t.rels].filter(Boolean).join(' – '), st: t.st, dt: t.dt, open: o, ans: m ? m[1].trim() : '', rem: t.rem || ''}; });
@@ -69,6 +72,7 @@
   const stc = pc => pc >= 100 ? 'g' : pc > 0 ? 'y' : 'r';
   const stl = pc => pc >= 100 ? 'Completed' : pc > 0 ? 'Ongoing' : 'Not started';
   const bar = pc => `<div class="rpb"><i class="rp${stc(pc)}" style="width:${Math.max(0, Math.min(100, pc))}%"></i><b>${pc}%</b></div>`;
+  const shb = pc => `<div class="rpb"><i style="width:${Math.max(0, Math.min(100, pc))}%;background:#f4a29b"></i><b>${pc}%</b></div>`;   // share of the open punches
   const pill = (t, c) => `<span class="rpp rp${c}">${esc(t)}</span>`;
   const cut = (s, n) => { s = String(s || '').replace(/\s+/g, ' ').trim(); return s.length > n ? s.slice(0, n - 1) + '…' : s; };
   const nl = s => esc(s || '').replace(/\n/g, '<br>');
@@ -101,7 +105,7 @@
     const sum = L => L.reduce((s, x) => ({n: s.n + x.n, c: s.c + x.c, o: s.o + x.o, p: s.p + x.p}), {n: 0, c: 0, o: 0, p: 0});
     const row = (a1, a2, x, cls) => `<tr class="${cls || ''}" data-s="${x.n},${x.c},${x.o},${x.p}"><td>${a1}</td><td>${a2}</td><td class="n">${x.n}</td><td class="n rpg">${x.c}</td><td class="n rpy">${x.o}</td><td class="n rpr">${x.p}</td><td style="width:15%">${bar(P(x.c, x.n))}</td></tr>`;
     const wk = d.work.slice(0, 6);
-    const critP = d.pun.crit.slice(0, 7), acts = n.acts.filter(x => x.a).slice(0, 8), opC = d.ctq.filter(t => t.open).sort((x, y) => (y.hold === 'Yes') - (x.hold === 'Yes')).slice(0, 7);
+    const acts = n.acts.filter(x => x.a).slice(0, 8), opC = d.ctq.filter(t => t.open).sort((x, y) => (y.hold === 'Yes') - (x.hold === 'Yes')).slice(0, 7);
     const txt = (lbl, v) => `<div class="rpt">${lbl}</div><div style="min-height:7mm;padding:1px 3px">${v ? nl(cut(v, 420)) : '<span class="rpnote">–</span>'}</div>`;
     return `<div id="rpa3" class="rpdoc">${head('E&I MANAGER MEETING REPORT', n)}
 <div class="cols">
@@ -123,7 +127,7 @@
  <div class="col"><div class="ah">AREA 3 – PUNCH / CTQ / MEETING NOTES</div>
   <div class="rpt" style="margin-top:0">1. Punch list summary (RHI E&amp;I)</div>
   <div class="rpk" style="grid-template-columns:repeat(6,1fr)">${kp(d.pun.n, 'total')}${kp(d.pun.o, 'open')}${kp(d.pun.c, 'closed')}${kp(d.pun.oA, 'open A (client)')}${kp(d.pun.oB + d.pun.oC, 'open B + C')}${kp(d.pun.oR, 'open RHI int.')}</div>
-  <table style="margin-top:1mm"><tr><th>Critical open punch (client cat. A, oldest)</th><th>Tag</th><th class="n">Days</th><th>Resp.</th><th>Target</th></tr>${critP.length ? critP.map(p => `<tr><td>${esc(p.no)} · ${esc(cut(p.d, 46))}</td><td>${esc(cut(p.tag, 22))}</td><td class="n">${p.dl || ''}</td><td>${esc(cut(p.resp, 10))}</td><td>${esc(p.tgt)}</td></tr>`).join('') : '<tr><td colspan="5">No open client category A punch</td></tr>'}</table>
+  <table style="margin-top:1mm"><tr><th>Kind of punch</th><th class="n">Total</th><th class="n">Open</th><th class="n">Open A</th><th>% of open punches</th><th>Closed %</th></tr>${d.pun.types.map(x => `<tr><td>${esc(x.nm)}</td><td class="n">${x.n}</td><td class="n ${x.o ? 'rpr' : ''}">${x.o}</td><td class="n">${x.a}</td><td style="width:20%">${shb(x.sh)}</td><td style="width:20%">${bar(x.cp)}</td></tr>`).join('')}</table>
   <div class="rpt">2. CTQ summary</div>
   <div class="rpk" style="grid-template-columns:repeat(5,1fr)">${kp(d.cq.n, 'total CTQ')}${kp(d.cq.o, 'open')}${kp(d.cq.c, 'closed')}${kp(d.cq.wait, 'no client answer yet')}${kp(d.cq.hold, 'hold points')}</div>
   <table style="margin-top:1mm"><tr><th>Open CTQ</th><th>Issue</th><th>Hold</th></tr>${opC.length ? opC.map(t => `<tr><td><b>${esc(t.no)}</b></td><td>${esc(cut(t.d, 78))}</td><td class="${t.hold === 'Yes' ? 'rpr' : ''}">${esc(t.hold || '')}</td></tr>`).join('') : '<tr><td colspan="3">No open CTQ</td></tr>'}</table>
@@ -150,9 +154,9 @@
  <table><tr><th>Source</th><th>Category</th><th class="n">Total</th><th class="n">Open</th><th class="n">Closed</th><th>Closed %</th></tr>${d.pun.cats.map(x => `<tr><td>${esc(x.src)}</td><td>${esc(x.cat)}</td><td class="n">${x.n}</td><td class="n ${x.o ? 'rpr' : ''}">${x.o}</td><td class="n rpg">${x.c}</td><td>${bar(P(x.c, x.n))}</td></tr>`).join('')}<tr><td colspan="2"><b>Total</b></td><td class="n"><b>${d.pun.n}</b></td><td class="n"><b>${d.pun.o}</b></td><td class="n"><b>${d.pun.c}</b></td><td>${bar(P(d.pun.c, d.pun.n))}</td></tr></table>
  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:6px"><table><tr><th>Area (title)</th><th class="n">Total</th><th class="n">Open</th><th class="n">Open A (client)</th><th class="n">Closed</th></tr>${d.pun.tits.map(x => `<tr><td>${esc(x.k)}</td><td class="n">${x.n}</td><td class="n">${x.o}</td><td class="n ${x.a ? 'rpr' : ''}">${x.a}</td><td class="n">${x.c}</td></tr>`).join('')}</table>
  <table><tr><th>Responsible party (open punches)</th><th class="n">Open</th></tr>${d.pun.resp.map(x => `<tr><td>${esc(x[0])}</td><td class="n">${x[1]}</td></tr>`).join('')}</table></div>
- <div class="rpt">Critical outstanding punch – client category A, oldest first (${Math.min(40, d.pun.crit.length)} of ${d.pun.crit.length}; full list in the Excel report)</div>
- <table><thead><tr><th>Punch</th><th>Area</th><th>Subsystem</th><th>Tag</th><th>Description</th><th>Issued</th><th class="n">Days open</th><th>Responsible</th><th>Target closure</th></tr></thead><tbody>${d.pun.crit.slice(0, 40).map(p => `<tr><td>${esc(p.no)}</td><td>${esc(p.tit)}</td><td>${esc(p.sub)}</td><td>${esc(cut(p.tag, 60))}</td><td>${esc(cut(p.d, 160))}</td><td>${esc(p.id)}</td><td class="n">${p.dl || ''}</td><td>${esc(p.resp)}</td><td>${esc(p.tgt)}</td></tr>`).join('')}</tbody></table>
- <div class="rpnote">Target closure = client handover target date of the subsystem where the app has it; otherwise N/A.</div></section>
+ <div class="rpt">Punch by kind (main kind of each punch) – share of the open punches and closed %</div>
+ <table><thead><tr><th>Kind of punch</th><th class="n">Total</th><th class="n">Open</th><th class="n">Open A (client)</th><th class="n">Closed</th><th>% of open punches</th><th>Closed %</th></tr></thead><tbody>${d.pun.types.map(x => `<tr><td><b>${esc(x.nm)}</b></td><td class="n">${x.n}</td><td class="n ${x.o ? 'rpr' : ''}">${x.o}</td><td class="n">${x.a}</td><td class="n rpg">${x.c}</td><td style="min-width:90px">${shb(x.sh)}</td><td style="min-width:90px">${bar(x.cp)}</td></tr>`).join('')}<tr><td><b>Total</b></td><td class="n"><b>${d.pun.n}</b></td><td class="n"><b>${d.pun.o}</b></td><td class="n"><b>${d.pun.oA}</b></td><td class="n"><b>${d.pun.c}</b></td><td>${shb(d.pun.o ? 100 : 0)}</td><td>${bar(P(d.pun.c, d.pun.n))}</td></tr></tbody></table>
+ <div class="rpnote">Summary only – the punch-by-punch list stays in the app punch menu.</div></section>
 <section class="pb"><h2>F. CTQ summary – ${d.cq.n} records · ${d.cq.o} open · ${d.cq.c} closed (not part of installation %)</h2><table><thead><tr><th>CTQ</th><th>Technical query</th><th>System</th><th>Drawing reference</th><th>Client response</th><th>Evidence / related TQS</th><th>Hold</th><th>Status</th></tr></thead><tbody>${d.ctq.map(t => `<tr><td><b>${esc(t.no)}</b></td><td>${esc(t.d)}</td><td>${esc(t.sys)}</td><td>${esc(t.dwg)}</td><td>${nl(cut(t.ans, 420)) || '<span class="rpnote">no answer recorded</span>'}</td><td>${esc(t.tqs)}</td><td class="${t.open && t.hold === 'Yes' ? 'rpr' : ''}">${esc(t.hold || '')}</td><td class="${t.open ? (t.hold === 'Yes' ? 'rpr' : 'rpy') : 'rpg'}">${esc(t.open ? (t.st || 'Open') : 'Closed')}${t.dt ? '<br>' + esc(t.dt) : ''}</td></tr>`).join('')}</tbody></table></section>
 <div class="rpfoot">Rencons (RHI) · Ust-Luga GPP · E&amp;I · ${esc(PNAME)} · Project progress report · generated ${today()} · Rev. ${esc(n.rev || '0')} · app data ${esc(D.meta.date)} (${esc(D.meta.src || '')})</div></div>`; };
 
@@ -170,7 +174,7 @@
     const sb = [['Subsystem', 'Description', 'System', 'Total activities', 'Completed', 'Ongoing', 'Pending', 'Completion %', 'Cables', 'Pulled', 'Terminated', 'Open punch A', 'Open punch B', 'Open RHI punch', 'Handover target', 'Remarks']].concat(d.subs.length ? d.subs.map(x => [x.k, x.nm, x.sys, x.n, x.c, x.o, x.p, x.pc, x.cn, x.cp, x.ct, x.pA, x.pB, x.pR, x.tgt || 'N/A', x.rem]) : [['N/A – client subsystem list not loaded for this project']]);
     const ac = [['Activity (IWP group)', 'Total lines', 'Completed', 'Ongoing', 'Pending', 'Lines %', 'Qty done', 'Qty total', 'Unit', 'Qty %', 'Status']].concat(d.acts.map(x => [x.g, x.n, x.c, x.o, x.p, x.pc, x.u ? x.f : '', x.u ? x.q : '', x.u || 'mixed', x.qp == null ? 'N/A' : x.qp, stl(x.pc)]));
     const pu = [['Source', 'Category', 'Total', 'Open', 'Closed', 'Closed %']].concat(d.pun.cats.map(x => [x.src, x.cat, x.n, x.o, x.c, P(x.c, x.n)])).concat([['Total', '', d.pun.n, d.pun.o, d.pun.c, P(d.pun.c, d.pun.n)], [], ['Area (title)', 'Total', 'Open', 'Open A (client)', 'Closed']]).concat(d.pun.tits.map(x => [x.k, x.n, x.o, x.a, x.c])).concat([[], ['Responsible party (open punches)', 'Open']]).concat(d.pun.resp.map(x => [x[0], x[1]]));
-    const cr = [['Punch', 'Area', 'Subsystem', 'Tag', 'Description', 'Issued', 'Days open', 'Responsible', 'Target closure']].concat(d.pun.crit.map(p => [p.no, p.tit, p.sub, p.tag, p.d, p.id, p.dl || '', p.resp, p.tgt]));
+    const cr = [['Kind of punch', 'Total', 'Open', 'Open A (client)', 'Closed', '% of open punches', 'Closed %']].concat(d.pun.types.map(x => [x.nm, x.n, x.o, x.a, x.c, x.sh, x.cp])).concat([['Total', d.pun.n, d.pun.o, d.pun.oA, d.pun.c, d.pun.o ? 100 : 0, P(d.pun.c, d.pun.n)]]);
     const cq = [['CTQ', 'Priority', 'Technical query', 'System', 'Drawing reference', 'Tags', 'Requested action', 'Responsible', 'Client response', 'Evidence / related TQS', 'Hold', 'Status', 'Date', 'Open / closed']].concat(d.ctq.map(t => [t.no, t.pri, t.d, t.sys, t.dwg, t.tags, t.act, t.resp, t.ans, t.tqs, t.hold, t.st, t.dt, t.open ? 'Open' : 'Closed']));
     const cf = {}; d.ctq.forEach((t, i) => { cf[(i + 1) + ',13'] = t.open ? (t.hold === 'Yes' ? 'r' : 'y') : 'g'; });
     const mn = [['Manager meeting notes – ' + PNAME], ['Meeting date', n.date || ''], ['Prepared by', n.by || ''], ['Revision', n.rev || '0'], [], ['Major achievements', n.ach || ''], ['Critical delays / management attention', n.crit || ''], ['Discussion points', n.disc || ''], ['Major technical issues', n.issues || ''], ['Decisions taken', n.dec || ''], ['Client comments', n.cli || ''], [], ['Action item', 'Responsible', 'Target date', 'Status']].concat(n.acts.filter(x => x.a).map(x => [x.a, x.r, x.t, x.s]));
@@ -180,7 +184,7 @@
       {name: 'C Subsystems', rows: sb, widths: [22, 50, 12, 10, 10, 10, 10, 10, 9, 9, 10, 9, 9, 9, 14, 50], bold: [0], freeze: 1, fills: fills(sb, 7, 1)},
       {name: 'D Activities', rows: ac, widths: [44, 11, 11, 11, 11, 10, 12, 12, 8, 9, 14], bold: [0], freeze: 1, fills: fills(ac, 5, 1)},
       {name: 'E Punch summary', rows: pu, widths: [36, 16, 10, 16, 10, 10], bold: [0, d.pun.cats.length + 3, d.pun.cats.length + d.pun.tits.length + 5]},
-      {name: 'E Open punch cat A', rows: cr, widths: [10, 14, 22, 36, 70, 11, 10, 16, 14], bold: [0], freeze: 1},
+      {name: 'E Punch by kind', rows: cr, widths: [44, 10, 10, 16, 10, 18, 12], bold: [0, d.pun.types.length + 1], freeze: 1},
       {name: 'F CTQ', rows: cq, widths: [10, 9, 60, 10, 40, 34, 46, 22, 60, 40, 7, 12, 11, 11], bold: [0], freeze: 1, fills: cf},
       {name: 'Meeting notes', rows: mn, widths: [44, 60, 16, 16], bold: [0, 12]}]); };
 
