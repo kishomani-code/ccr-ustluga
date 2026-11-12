@@ -21,7 +21,7 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
-    timeout-minutes: 40
+    timeout-minutes: 75
     steps:
       - uses: actions/checkout@v4
 
@@ -100,6 +100,14 @@ jobs:
             --date "$(TZ=Europe/Moscow date '+%d.%m.%Y')" 2>&1 | tee -a build_log.txt
           cp /tmp/cold_drawings.json areas/cold_drawings.json 2>/dev/null || true
 
+      - name: Build ax/ (OTHER AREA as full projects – areas linked to CCR / D48 / D88)
+        if: steps.chk.outputs.count != '0'
+        continue-on-error: true
+        run: |
+          set -o pipefail
+          echo "===== OTHER AREA PROJECTS =====" | tee -a build_log.txt
+          python3 tools/build_ax.py --input input 2>&1 | grep -E "^=====|^OK|FAILED|OTHER AREA projects" | tee -a build_log.txt
+
       - name: Build rfi_*.json (RFI register, subsystems, mechanical completion)
         if: steps.chk.outputs.count != '0'
         continue-on-error: true
@@ -143,6 +151,6 @@ jobs:
           find input -type f -iname '*.xls*' -delete
           git config user.name ccr-auto-update
           git config user.email ccr-auto-update@users.noreply.github.com
-          git add -A input data.json data_1801.json data_8810.json data_d48.json data_cold.json rfi_ccr.json rfi_d48.json rfi_cold.json rfi_1801.json rfi_8810.json ak.json ncr.json mat.json areas sw.js tracker/data.json tq/data.json
+          git add -A input data.json data_1801.json data_8810.json data_d48.json data_cold.json rfi_ccr.json rfi_d48.json rfi_cold.json rfi_1801.json rfi_8810.json ak.json ncr.json mat.json areas ax sw.js tracker/data.json tq/data.json
           git commit -m "Automatic data update" || echo "nothing to commit"
           git push

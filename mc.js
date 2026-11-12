@@ -3,7 +3,7 @@
 // Data: rfi_<site>.json (subsystem per IWP line, cable RFI from Cable RAWP, equipment RFI from E&I equipment control).
 (function () {
   const MC = window.MC = {d: null, busy: false};
-  const SITE = PRJ === '8810' ? '8810' : PRJ === '1801' ? '1801' : PRJ === 'D48' ? 'd48' : PRJ === 'COLD' ? 'cold' : 'ccr';
+  const SITE = (typeof AXP !== 'undefined' && AXP) ? 'ax_none' : PRJ === '8810' ? '8810' : PRJ === '1801' ? '1801' : PRJ === 'D48' ? 'd48' : PRJ === 'COLD' ? 'cold' : 'ccr';
   const F = 'rfi_' + SITE + '.json', DC = 'appdata-v1';
   const P = (d, n) => n ? Math.round(100 * d / n) : 0;
   const fm = v => fmtn(Math.round(v));

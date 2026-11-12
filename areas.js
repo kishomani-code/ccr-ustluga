@@ -17,11 +17,16 @@
   // v4.50: only areas related to the user's three areas (CCR, D48, D88): own titles + titles with a cable ending in those buildings
   const relA = L => (L || []).some(x => x.rel != null) ? L.filter(x => x.rel > 0) : (L || []);
   OA.proj = function () { return typeof PRJ !== 'undefined' ? PRJ : 'CCR'; };
+  // v4.51: OTHER AREA as a full project (ax/<TITLE>.json, same menus as CCR / 8810). ax/index.json lists the areas that have one.
+  const OWNP = {'G0-D1810BX0': 'CCR', 'G0-D1801FX0': '1801', 'G0-D4810BX0': 'D48', 'G0-D4801FX0': 'D48', 'G0-D8810BX0': '8810', 'G0-D8801FX0': '8810'};
+  OA.axl = null;
+  OA.loadAx = function (cb) { getJ('ax/index.json').then(d => { OA.axl = {}; ((d && d.areas) || []).forEach(x => OA.axl[x.a] = x); cb && cb(); }).catch(() => { OA.axl = {}; }); };
+  OA.open = function (a) { if (OWNP[a]) return projSwitch(OWNP[a]); if ((OA.axl || {})[a]) return projSwitch(a); go('#/oa/' + encodeURIComponent(a)); };
 
   // ---------------- top bar: CCR / D48 / OTHER AREA
   OA.topBar = function (on) { const p = OA.proj();
-    const chip = (k, l, h) => `<button class="chip ${(on || p) === k ? 'on' : ''}" data-nt="1" style="flex:1;padding:10px 4px;font-size:14px;font-weight:700" onclick="${h}">${l}</button>`;
-    return `<div><div style="display:flex;gap:6px;margin-bottom:6px">${chip('CCR', '🏢 CCR', p === 'CCR' ? "go('#/')" : "projSwitch('CCR')")}${chip('1801', '🌳 1801', p === '1801' ? "go('#/')" : "projSwitch('1801')")}${chip('D48', '⚡ D48', p === 'D48' ? "go('#/')" : "projSwitch('D48')")}${chip('8810', '🚒 8810', p === '8810' ? "go('#/')" : "projSwitch('8810')")}</div><div style="display:flex;gap:6px;margin-bottom:9px">${chip('OA', '🌍 OTHER AREA', "go('#/oa')")}${chip('COLD', '❄️ COLD CABLES', p === 'COLD' ? "go('#/')" : "projSwitch('COLD')")}</div></div>`; };
+    const chip = (k, l, h) => `<button class="chip ${(on || ((typeof AXP !== 'undefined' && AXP) ? 'OA' : p)) === k ? 'on' : ''}" data-nt="1" style="flex:1;padding:10px 4px;font-size:14px;font-weight:700" onclick="${h}">${l}</button>`;
+    return `<div><div style="display:flex;gap:6px;margin-bottom:6px">${chip('CCR', '🏢 CCR', p === 'CCR' ? "go('#/')" : "projSwitch('CCR')")}${chip('1801', '🌳 1801', p === '1801' ? "go('#/')" : "projSwitch('1801')")}${chip('D48', '⚡ D48', p === 'D48' ? "go('#/')" : "projSwitch('D48')")}${chip('8810', '🚒 8810', p === '8810' ? "go('#/')" : "projSwitch('8810')")}</div><div style="display:flex;gap:6px;margin-bottom:9px">${chip('OA', (typeof AXP !== 'undefined' && AXP) ? '🌍 ' + p : '🌍 OTHER AREA', "go('#/oa')")}${chip('COLD', '❄️ COLD CABLES', p === 'COLD' ? "go('#/')" : "projSwitch('COLD')")}</div></div>`; };
   if (typeof window.projBar === 'function') window.projBar = () => OA.topBar();
 
   // ---------------- "Primavera" bars: done vs remaining per row
@@ -57,12 +62,14 @@
   OA.home = function () { setHead('Other area', 'only areas linked to CCR / D48 / D88 · data ' + ((OA.idx || {}).date || '…')); qbox.value = '';
     if (!OA.idx) { main.innerHTML = OA.topBar('OA') + '<div class="empty">Loading areas…</div>'; OA.loadIdx(() => { if (location.hash === '#/oa') OA.home(); }); return; }
     VS.OA = VS.OA || {q: '', g: '', f: 'rhi'}; const v = VS.OA; const nq = N(v.q);
+    if (!OA.axl) OA.loadAx(() => { if (location.hash === '#/oa') OA.home(); });
     const L = relA(OA.idx.areas).filter(a => (!v.g || a.a.startsWith(v.g)) && (v.f !== 'rhi' || a.cab[1] > 0 || a.rh[0] > 0 || a.cl[0] > 0) && (!nq || N(a.a + ' ' + a.nm).includes(nq)));
-    main.innerHTML = OA.topBar('OA') + `<div style="font-size:12px;color:var(--mut);margin:0 2px 6px">ℹ️ Only areas that have cables to / from CCR, D48 or D88 are listed. Information only – read from the cable tracker, IWP, punch lists and drum data. No site entry, no report to Paul here (that stays in CCR / D48).</div><input class="fin" placeholder="Area: G0-D1810BX0, G1-B61, name…" value="${esc(v.q)}" oninput="VS.OA.q=this.value;OA.home()">
+    main.innerHTML = OA.topBar('OA') + `<div style="font-size:12px;color:var(--mut);margin:0 2px 6px">ℹ️ Only areas that have cables to / from CCR, D48 or D88 are listed. Tap an area with “full menu” to open it like CCR / 8810: cable tracker + IWP, panels, punch, site entry and report to Paul. “Info only” areas (very few linked cables) show the tracker / IWP / punch data without site entry.</div><input class="fin" placeholder="Area: G0-D1810BX0, G1-B61, name…" value="${esc(v.q)}" oninput="VS.OA.q=this.value;OA.home()">
      <div class="chips">${[['', 'All'], ['G0', 'G0'], ['G1', 'G1'], ['G2', 'G2']].map(([k, l]) => `<button class="chip ${v.g === k ? 'on' : ''}" onclick="VS.OA.g='${k}';OA.home()">${l}</button>`).join('')}${[['rhi', 'RHI areas'], ['all', 'All areas']].map(([k, l]) => `<button class="chip ${v.f === k ? 'on' : ''}" onclick="VS.OA.f='${k}';OA.home()">${l}</button>`).join('')}</div>
      <div style="font-size:12px;color:var(--mut);margin:0 2px 6px">${L.length} areas · cables pulled % (RHI scope) · punch open</div>
      <div class="list">${L.map(a => { const n = a.cab[1] || a.cab[0], pc = P(a.cab[2], n), tc = P(a.cab[3], n);
-      return `<button class="li" onclick="go('#/oa/${enc(a.a)}')"><div class="m" style="min-width:0"><div class="t">${isOwn(a) ? '★ ' : ''}${esc(a.a)}${a.cab[1] ? '' : ' <span class="badge b-na">not RHI</span>'}</div><div class="s" style="white-space:normal">${esc((a.nm || '').slice(0, 70))}</div><div class="s">${fm(n)} cables · pulled ${pc}% · term. ${tc}% · IWP ${a.iwp[1]}/${a.iwp[0]} · punch ${a.cl[1] + a.rh[1]} open · ${a.dr} drums</div><div class="pbar" style="margin-top:4px"><i style="width:${pc}%"></i></div></div><span class="chev">›</span></button>`; }).join('') || '<div class="empty">No area found</div>'}</div>`; };
+      const full = OWNP[a.a] || (OA.axl || {})[a.a];
+      return `<button class="li" onclick="OA.open('${esc(a.a)}')"><div class="m" style="min-width:0"><div class="t">${isOwn(a) ? '★ ' : ''}${esc(a.a)}${full ? ' <span class="badge b-ok">full menu</span>' : ' <span class="badge b-na">info only</span>'}${a.cab[1] ? '' : ' <span class="badge b-na">not RHI</span>'}</div><div class="s" style="white-space:normal">${esc((a.nm || '').slice(0, 70))}</div><div class="s">${fm(n)} cables · pulled ${pc}% · term. ${tc}% · IWP ${a.iwp[1]}/${a.iwp[0]} · punch ${a.cl[1] + a.rh[1]} open · ${a.dr} drums</div><div class="pbar" style="margin-top:4px"><i style="width:${pc}%"></i></div></div><span class="chev">›</span></button>`; }).join('') || '<div class="empty">No area found</div>'}</div>`; };
 
   // ---------------- one area: sub-menu
   OA.area = function (a, sub, arg) { const ix = (OA.idx || {areas: []}).areas.find(x => x.a === a);

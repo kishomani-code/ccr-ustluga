@@ -1,11 +1,14 @@
 if (typeof t !== 'function') window.t = k => k;
-const PRJ = window.__P === 'D48' ? 'D48' : window.__P === 'COLD' ? 'COLD' : window.__P === '1801' ? '1801' : window.__P === '8810' ? '8810' : 'CCR';   // v4.21: 1801 = G0-D1801FX0 own project
+const AXP = /^G\d-[A-Z0-9]{6,9}$/.test(String(window.__P || ''));   // v4.51: OTHER AREA opened as a full project (title = project code)
+const PRJ = AXP ? window.__P : window.__P === 'D48' ? 'D48' : window.__P === 'COLD' ? 'COLD' : window.__P === '1801' ? '1801' : window.__P === '8810' ? '8810' : 'CCR';   // v4.21: 1801 = G0-D1801FX0 own project
    // v4.0: CCR / D48 · v4.3: COLD (heat tracing cold cables)
-const PRJN = PRJ === '8810' ? {b: 'G0-D8810BX0', a: 'G0-D8801FX0', nm: 'Fire-water pump station (D88)', rx: /D8810|D8801|-D88-/}
+const PRJN = AXP ? {b: PRJ, a: 'other area', nm: 'Other area ' + PRJ, rx: new RegExp(PRJ.slice(3).replace(/[.*+?^${}()|[\]\\]/g, '\\$&'))}
+  : PRJ === '8810' ? {b: 'G0-D8810BX0', a: 'G0-D8801FX0', nm: 'Fire-water pump station (D88)', rx: /D8810|D8801|-D88-/}
   : PRJ === '1801' ? {b: 'G0-D1801FX0', a: 'CCR outdoor area', nm: 'CCR outdoor area (1801)', rx: /D1801/}
   : PRJ === 'D48' ? {b: 'G0-D4810BX0', a: 'G0-D4801FX0', nm: 'Utilities Substation & IRR', rx: /D4810|D4801|-D48-/}
   : PRJ === 'COLD' ? {b: 'G1-A30210X0', a: 'G0-A10200X0 / G0-D10250X0', nm: 'Cold cables – electrical heat tracing (EOES / AEOG)', rx: /A10200|D10250|A30210/}
   : {b: 'G0-D1810BX0', a: 'G0-D1801FX0', nm: 'Central Control Room', rx: /D1810|D1801|-D18-/};
+if (AXP) { const _tx = window.t; window.t = k => String(_tx(k)).replace(/\bCCR\b/g, PRJ); }
 if (PRJ === '8810') { const _t0 = window.t; window.t = k => String(_t0(k)).replace(/\bCCR\b/g, '8810'); }
 if (PRJ === '1801') { const _t0 = window.t; window.t = k => String(_t0(k)).replace(/\bCCR\b/g, '1801'); }
 if (PRJ === 'D48') { const _t0 = window.t; window.t = k => String(_t0(k)).replace(/\bCCR\b/g, 'D48'); }
@@ -71,7 +74,7 @@ function gaCard(t, subs) { return (window.HO ? HO.card(t, subs) : '') + (window.
 function punchBox(tag) { const ps = PUBY[tag] || []; if (!ps.length) return ''; const op = ps.filter(p => p.st === 'Open').length;
   return `<div class="card"><div class="h3">Punch items (${ps.length} · open ${op})</div><div class="list">${ps.map(pRow).join('')}</div></div>`; }
 function pRow(p) { return `<button class="li" onclick="go('#/pi/${p.i}')"><div class="m"><div class="t">${DISC_IC(p.d)} № ${esc(p.no)} · ${esc(p.tag || '-')}</div><div class="s">${esc(p.den || p.dru)}</div></div><div class="r">${pb(p)}<div style="margin-top:3px">${pcat(p)}</div>${window.PX ? PX.badge(p) : ''}${siteSt(p) ? '<div style="margin-top:3px">' + (siteSt(p).v === 'F' ? '<span class="badge b-ok">✓ site</span>' : '<span class="badge b-no">✗ site</span>') + '</div>' : ''}</div><span class="chev">›</span></button>`; }
-const SKEY = PRJ === '8810' ? 'g8810_site_v1' : PRJ === '1801' ? 'g1801_site_v1' : PRJ === 'D48' ? 'd48_site_v1' : PRJ === 'COLD' ? 'cold_site_v1' : 'ccr_site_v1'; let S2 = {c: {}, i: {}, m: {}, last: 0, lastText: '', rx: []};
+const SKEY = AXP ? 'ax_' + PRJ + '_site_v1' : PRJ === '8810' ? 'g8810_site_v1' : PRJ === '1801' ? 'g1801_site_v1' : PRJ === 'D48' ? 'd48_site_v1' : PRJ === 'COLD' ? 'cold_site_v1' : 'ccr_site_v1'; let S2 = {c: {}, i: {}, m: {}, last: 0, lastText: '', rx: []};
 try { const v = localStorage.getItem(SKEY); if (v) S2 = Object.assign(S2, JSON.parse(v)); } catch (err) {}
 function ssave() { CSTC = {}; try { localStorage.setItem(SKEY, JSON.stringify(S2)); } catch (err) { toast('Could not save - send the report now'); } }
 const MAXLINK = 'https://max.ru/u/f9LHodD0cOJtQE7ljdbFZtb7Z8mLZSYAeSDsBgSF4tXPzXK-0S2T-VwbXkU';
@@ -331,7 +334,7 @@ function panelView(t) {
    ${inst.length ? `<div class="card"><div class="h3">Installation (IWP)</div><div class="list">${inst.map(y => { const s2 = ist(y); return `<button class="li" onclick="go('#/i/${y.i}')"><div class="m"><div class="t">${esc(y.g)}</div><div class="s">Access ID ${esc(y.acc)} · ${fmtn(y.f)}/${fmtn(y.q)} ${esc(y.u)}</div></div><span class="badge ${s2.c}">${s2.l}</span><span class="chev">›</span></button>`; }).join('')}</div></div>` : ''}
    ${lrAtCard(t)}${dwCard((() => { const p0 = PBY[t]; const s = new Set(); if (p0) p0.cs.forEach(([dd, ct]) => { const cc = CBY[ct]; if (cc) { if (cc.d) s.add(cc.d); if (cc.rf) s.add(cc.rf); } }); return [...s].slice(0, 30); })())}${punchBox(t)}${gaCard(t)}${nOut ? `<div class="sect">Outgoing cables (${nOut})</div>${rows('OUT')}` : ''}${nIn ? `<div class="sect">Incoming cables (${nIn})</div>${rows('IN')}` : ''}`;
 }
-const PKEY = PRJ === '8810' ? 'g8810_punch_v1' : PRJ === '1801' ? 'g1801_punch_v1' : PRJ === 'D48' ? 'd48_punch_v1' : PRJ === 'COLD' ? 'cold_punch_v1' : 'ccr_punch_v1'; let PS_ = {name: '', e: {}, x: {}};
+const PKEY = AXP ? 'ax_' + PRJ + '_punch_v1' : PRJ === '8810' ? 'g8810_punch_v1' : PRJ === '1801' ? 'g1801_punch_v1' : PRJ === 'D48' ? 'd48_punch_v1' : PRJ === 'COLD' ? 'cold_punch_v1' : 'ccr_punch_v1'; let PS_ = {name: '', e: {}, x: {}};
 try { const v = localStorage.getItem(PKEY); if (v) PS_ = Object.assign(PS_, JSON.parse(v)); } catch (err) {}
 function psave() { try { localStorage.setItem(PKEY, JSON.stringify(PS_)); } catch (err) { toast('Could not save - send the report now'); } }
 const PNO = {}; PU.forEach(p => PNO[p.no] = p);
@@ -779,7 +782,7 @@ function ownPunch() { const d = VS.OW.d; const one = {}; (S2.rx || []).filter(r 
   copyText(Object.values(one).map(r => [r.no, r.v === 'F' ? 'Fixed' : 'Not fixed', d.split('-').reverse().join('.'), r.tag, r.by].join('\t')).join('\n')).then(() => toast('Punch list copied')); }
 
 // ======== v3.2 modules ========
-const APPV = '4.50';
+const APPV = '4.51';
 const shortT = t => String(t || '').replace(/^G0-D(18|48)10BX0-/, '').replace(/^G0-D(18|48)01FX0-/, 'FX0-');
 const SYSN = {'EL-ESPS': ['Substation 10/0.4 kV & power supply', 'Подстанция 10/0,4 кВ'], 'EL-EMSV': ['Power installation (boards, UPS, motors)', 'Силовое электрооборудование'], 'EL-ESBZ': ['Power supply from utility substation', 'Электроснабжение от ПС'], 'EL-ELOV': ['Indoor lighting', 'Внутреннее освещение'], 'EL-EG02': ['Earthing & lightning protection', 'Заземление и молниезащита'], 'EL-EG01': ['Area earthing', 'Заземление площадки'], 'EH-EOES': ['Electric heating', 'Электрообогрев'], 'EH-AEOG': ['Heat tracing', 'Электрообогрев (кабель)'], 'EH-EOBK': ['Electric heating (other)', 'Электрообогрев'],
   'IN-DCS': ['Distributed Control System (DCS)', 'РСУ'], 'IN-ESD': ['Emergency Shutdown (ESD)', 'ПАЗ'], 'IN-SPAP': ['Fire alarm & fire fighting control (AFA&FFS)', 'АСПС и ПТ'], 'IN-GDSS': ['Gas detection', 'Контроль загазованности'], 'IN-ASUE': ['Utilities control system', 'АСУ ЭО (утилиты)'], 'IN-ASUS': ['Power supply control system', 'АСУ ЭС'], 'IN-ASKU': ['Utility metering (AUMS)', 'АСКУ ЭР'], 'IN-MAEC': ['Rotating equipment monitoring (CMS)', 'МСО и ВО'], 'IN-MFMS': ['Material flow metering (MFMS)', 'СУМП'], 'IN-AKVS': ['Emission monitoring (CEMS)', 'АКВС'], 'IN-INTS': ['Operator training simulator', 'Тренажёр оператора'], 'IN-INSS': ['Information security', 'СОИБ'], 'IN-AOVK': ['HVAC automation', 'Автоматизация ОВиК'], 'IN-AKMP': ['Analyzer system', 'Анализаторы'],

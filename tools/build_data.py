@@ -799,8 +799,12 @@ def main():
     ap.add_argument('--current', default='data.json', help='current data.json; used for carry-forward if valid')
     ap.add_argument('--out', default='data.json')
     ap.add_argument('--site', default='ccr', choices=sorted(SITES), help='ccr = G0-D1810/D1801, 1801 = G0-D1801FX0, d48 = G0-D4810/D4801, cold = heat tracing (EH) in A10200/D10250/A30210')
+    ap.add_argument('--title', default='', help='v4.51: build an OTHER AREA project for this title (e.g. G0-A10300X0) -> site "ax"')
     a = ap.parse_args()
     global SITE, CCR, SITE_RX
+    if a.title:
+        SITES['ax'] = ((a.title,), re.escape(a.title[3:]))
+        a.site = 'ax'
     SITE = a.site
     CCR, SITE_RX = SITES[SITE]
     log(f'site: {SITE} {CCR}')
