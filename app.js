@@ -169,6 +169,7 @@ function route() {
   if (k === 'ir') { if (window.IR) return IR.route(rest); main.innerHTML = '<div class="empty">Loading…</div>'; return; }   // v4.38 request IWP ID (iwpreq.js)
   if (k === 'ps') { if (window.PS) return PS.route(rest); main.innerHTML = '<div class="empty">Loading…</div>'; return; }   // v4.40 procedures & specifications (ps.js)
   if (k === 'kn') { if (window.KN) return KN.route(rest); main.innerHTML = '<div class="empty">Loading…</div>'; return; }   // v4.37 engineering knowledge (know.js)
+  if (k === 'rp') { if (window.RP) return RP.route(rest); main.innerHTML = '<div class="empty">Loading…</div>'; return; }   // v4.54 project report / manager meeting report (rep.js)
   if (k === 'sy') { if (window.SY) return SY.route(rest); main.innerHTML = '<div class="empty">Loading…</div>'; return; }   // v4.36 system progress (sysp.js)
   if (k === 'lc') { if (window.LC) return LC.route(rest); main.innerHTML = '<div class="empty">Loading…</div>'; return; }   // v4.35 commissioning – loop check (loopc.js)
   if (k === 'kz') { if (window.KZ) return KZ.route(rest); main.innerHTML = '<div class="empty">Loading…</div>'; return; }   // v4.29 engineering updates (kz.js)
@@ -233,6 +234,7 @@ function home() {
    ${S2.owner ? (() => { const n = alCount(); return `<button class="tile main" style="width:100%;min-height:auto;margin-bottom:8px;background:${n ? '#b42318' : '#2b2f36'};border-color:${n ? '#b42318' : '#2b2f36'}" onclick="go('#/al')"><b>🔔 Alerts from site · ${n} new</b><span class="n" style="color:#f3d6d2">issues · permits · revisions · TQ</span></button>`; })() : ''}
    <button class="tile main" style="width:100%;min-height:auto;margin-bottom:4px;background:${pend ? '#c55a11' : 'var(--pri)'};border-color:${pend ? '#c55a11' : 'var(--pri)'}" onclick="openReport('prog')"><b>📤 Send report to Paul · ${pend} new progress lines</b><span class="n">👷 ${esc(PS_.name || 'tap to set your name')} · ${PRJ === 'COLD' ? 'MAX → Sri ' + REC.tel : 'MAX progress group'}</span></button>
    <button class="tile main" style="width:100%;min-height:auto;margin-bottom:4px;background:${ppend ? '#7b3fb3' : '#0b6e6e'};border-color:${ppend ? '#7b3fb3' : '#0b6e6e'};color:#fff" onclick="openReport('punch')"><b>📤 Send punch report to Paul · ${ppend} new punch checks</b><span class="n" style="color:#fff">👷 ${esc(PS_.name || 'tap to set your name')} · ${PRJ === 'COLD' ? 'MAX → Sri ' + REC.tel : 'MAX punch group'}</span></button>
+   ${window.RP ? RP.tile() : ''}
    ${window.HO ? HO.tile() : ''}
    ${window.AK ? AK.tile() : ''}
    ${window.IR && PRJ !== 'COLD' ? IR.tile() : ''}${window.KZ ? KZ.tile() : ''}${window.LC && LC.ok() ? LC.tile() : ''}${window.SY ? SY.tile() : ''}${window.KN ? KN.tile() : ''}${window.SP && window.PX ? SP.tile() : ''}${window.PX ? PX.ncrTile() : ''}
@@ -783,7 +785,7 @@ function ownPunch() { const d = VS.OW.d; const one = {}; (S2.rx || []).filter(r 
   copyText(Object.values(one).map(r => [r.no, r.v === 'F' ? 'Fixed' : 'Not fixed', d.split('-').reverse().join('.'), r.tag, r.by].join('\t')).join('\n')).then(() => toast('Punch list copied')); }
 
 // ======== v3.2 modules ========
-const APPV = '4.53';
+const APPV = '4.54';
 const shortT = t => String(t || '').replace(/^G0-D(18|48)10BX0-/, '').replace(/^G0-D(18|48)01FX0-/, 'FX0-');
 const SYSN = {'EL-ESPS': ['Substation 10/0.4 kV & power supply', 'Подстанция 10/0,4 кВ'], 'EL-EMSV': ['Power installation (boards, UPS, motors)', 'Силовое электрооборудование'], 'EL-ESBZ': ['Power supply from utility substation', 'Электроснабжение от ПС'], 'EL-ELOV': ['Indoor lighting', 'Внутреннее освещение'], 'EL-EG02': ['Earthing & lightning protection', 'Заземление и молниезащита'], 'EL-EG01': ['Area earthing', 'Заземление площадки'], 'EH-EOES': ['Electric heating', 'Электрообогрев'], 'EH-AEOG': ['Heat tracing', 'Электрообогрев (кабель)'], 'EH-EOBK': ['Electric heating (other)', 'Электрообогрев'],
   'IN-DCS': ['Distributed Control System (DCS)', 'РСУ'], 'IN-ESD': ['Emergency Shutdown (ESD)', 'ПАЗ'], 'IN-SPAP': ['Fire alarm & fire fighting control (AFA&FFS)', 'АСПС и ПТ'], 'IN-GDSS': ['Gas detection', 'Контроль загазованности'], 'IN-ASUE': ['Utilities control system', 'АСУ ЭО (утилиты)'], 'IN-ASUS': ['Power supply control system', 'АСУ ЭС'], 'IN-ASKU': ['Utility metering (AUMS)', 'АСКУ ЭР'], 'IN-MAEC': ['Rotating equipment monitoring (CMS)', 'МСО и ВО'], 'IN-MFMS': ['Material flow metering (MFMS)', 'СУМП'], 'IN-AKVS': ['Emission monitoring (CEMS)', 'АКВС'], 'IN-INTS': ['Operator training simulator', 'Тренажёр оператора'], 'IN-INSS': ['Information security', 'СОИБ'], 'IN-AOVK': ['HVAC automation', 'Автоматизация ОВиК'], 'IN-AKMP': ['Analyzer system', 'Анализаторы'],
@@ -1276,6 +1278,7 @@ function mgHome() {
     ${card(pOpen.length, '', 'Punch open', `client ${pOpen.length - pRhi} · RHI ${pRhi}`, pOpen.length > 0)}
     ${card(ep, '%', 'Equipment installed', `${eqS}/${INST.length} lines`, ep < 50)}
     ${card(ctqA.length, '', 'CTQ on hold', `${ctqH} hold points`, ctqA.length > 0)}</div>
+   ${window.RP ? RP.tile() : ''}
    <div class="chips" style="margin-top:10px">${[['ss', '🧩 Subsystem wise'], ['act', '🛠 Activity wise']].map(([k, l]) => `<button class="chip ${v.tab === k ? 'on' : ''}" style="flex:1;padding:10px;font-weight:700" onclick="VS.MG.tab='${k}';mgHome()">${l}</button>`).join('')}</div>
    <div class="mgf"><input class="fin" placeholder="${v.tab === 'act' ? 'Filter activity…' : 'Filter subsystem / name…'}" value="${esc(v.q)}" oninput="VS.MG.q=this.value;mgTable()">
     <select onchange="VS.MG.iw=this.value;mgTable()"><option value="">IWP % – any</option>${[['lo', '< 25%'], ['mid', '25–75%'], ['hi', '> 75%']].map(([k, l]) => `<option value="${k}" ${v.iw === k ? 'selected' : ''}>IWP ${l}</option>`).join('')}</select>
