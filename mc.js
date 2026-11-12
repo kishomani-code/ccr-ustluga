@@ -124,12 +124,13 @@
   const xN = v => String(v == null || v === 'None' ? '' : v).toLowerCase().replace(/ё/g, 'е').replace(/[^0-9a-zа-я]/g, '');
   const xDs = p => p._xd || (p._xd = [xN(p.dru), xN(p.den)].filter(x => x.length > 3));
   const xTy = p => (typeof ptypes === 'function' ? ptypes(p) : []).filter(x => x !== 'oth');
-  const xSame = (p, q) => { const A = xDs(p), B = xDs(q); if (A.some(x => B.some(y => x === y || (Math.min(x.length, y.length) >= 12 && (x.includes(y) || y.includes(x)))))) return true; const T = xTy(q); return xTy(p).some(x => T.includes(x)); };
+  const xText = (p, q) => { const A = xDs(p), B = xDs(q); return A.some(x => B.some(y => x === y || (Math.min(x.length, y.length) >= 12 && (x.includes(y) || y.includes(x))))); };   // v4.48: same description text
+  const xSame = (p, q) => { if (xText(p, q)) return true; const T = xTy(q).filter(x => x !== 'doc'); return xTy(p).some(x => T.includes(x)); };   // v4.48: inspection / document (FRI) punches never match by type
   MC.xSame = xSame;
   MC.xGroups = function () { const G = {}; PU.forEach(p => { if (!p._t || !isEI(p)) return; const k = p._t; const g = G[k] = G[k] || {tag: p.tag, area: areaOf(p), c: [], r: []}; (p.int ? g.r : g.c).push(p); });
     const rep = [], close = [], ask = [];
     Object.values(G).forEach(g => { if (!g.c.length) return; g.c.sort((a, b) => dParse(a.idate) - dParse(b.idate) || String(a.no).localeCompare(String(b.no), undefined, {numeric: true}));
-      g.c.forEach((p, i) => { if (p.st !== 'Open') return; const M = g.c.slice(i + 1).filter(q => xSame(p, q)); const last = M[M.length - 1]; if (last && last.st === 'Closed') rep.push({g, p, last}); });
+      g.c.forEach((p, i) => { if (p.st !== 'Open') return; const M = g.c.slice(i + 1).filter(q => xText(p, q)); const last = M[M.length - 1]; if (last && last.st === 'Closed') rep.push({g, p, last}); });
       g.r.forEach(p => { const M = g.c.filter(q => xSame(p, q)); if (!M.length) return; const last = M[M.length - 1];
         if (p.st === 'Open' && last.st === 'Closed') close.push({g, p, last}); else if (p.st === 'Closed' && last.st !== 'Closed') ask.push({g, p, last}); }); });
     return {rep, close, ask}; };
@@ -143,7 +144,7 @@
     return {n: X.rep.length + X.close.length + X.ask.length, text, X}; };
   window.openXPunch = function () { const r = window.xPunchText(); REP = {kind: 'xpunch', L: [], text: r.text};
     modalP(`<div class="h3">🔗 Cross-punch report</div><div class="mgs"><div class="mgk"><b>${r.X.rep.length}</b><span>old client punch to report</span></div><div class="mgk"><b>${r.X.close.length}</b><span>RHI punch to close</span></div><div class="mgk"><b>${r.X.ask.length}</b><span>client open · RHI closed</span></div></div>
-     <div class="s2" style="margin:4px 0">E&I punch only (electrical, control, I&C) · matched by same tag AND same punch (same description or same punch type). Different punches on the same tag are not crossed.</div>
+     <div class="s2" style="margin:4px 0">E&I punch only (electrical, control, I&C) · matched by same tag AND same punch. Old client punch: same description text only. RHI ↔ client: same description or same punch type (inspection / FRI punches are never matched by type).</div>
      <textarea id="rtx" class="fin" style="height:220px;font:12px monospace;white-space:pre" readonly>${esc(r.text)}</textarea>
      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><button class="tile" style="min-height:auto" onclick="copyText(REP.text).then(ok=>toast(ok?'Copied':'Select the text and copy'))"><b>📋 Copy</b></button>
      <button class="tile main" style="min-height:auto" onclick="MC.xExcel()"><b>⬇ Excel${S2.owner ? '' : ' 🔒'}</b><span class="n">owner</span></button></div><button class="more" onclick="closeP()">Close</button>`); };
