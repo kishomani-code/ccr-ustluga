@@ -777,7 +777,7 @@ def validate(out, base):
     for k in ('items', 'cables', 'panels'):
         if not out[k]:
             err.append(f'{k} is empty')
-    if not out['punch']['rows']:
+    if not out['punch']['rows'] and SITE != 'ax':   # v4.51: an OTHER AREA project may have no RHI punch
         err.append('punch.rows is empty')
     if not out['tq']['ctq'] and SITE == 'ccr':
         err.append('tq.ctq is empty')
