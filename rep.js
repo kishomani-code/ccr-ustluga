@@ -79,7 +79,7 @@
     const W = {}; IT.forEach(x => { if (x.done) return; const k = (x.sy || '-') + '|' + x.g; const e = W[k] = W[k] || {sy: x.sy || '-', g: x.g, n: 0, o: 0, u: x.u, q: 0, mix: false}; e.n++; if (Number(x.f) > 0) e.o++; if (e.u !== x.u) e.mix = true; e.q += Math.max(0, (Number(x.q) || 0) - (Number(x.f) || 0)); });
     const work = Object.values(W).sort((x, y) => y.n - x.n);
     RP._dv = ver;
-    return RP._d = {all, rhi, scope: RP.sc ? {who: RP.sc.who, n: RP.sc.n, date: RP.sc.date} : null, comm: comm.length, noq: noq.length, cab: {n: CL.length, p: cp, t: ct}, sys, subs, acts, pun, ctq, cq, work};
+    return RP._d = {all, rhi, scope: RP.sc ? {who: RP.sc.who, n: RP.sc.n, date: RP.sc.date} : null, comm: comm.length, noq: noq.length, cab: {n: CL.length, p: cp, t: ct}, sys, subs, acts, pun, ctq, cq, work, it: IT};
   };
 
   // ---------- small html helpers ----------
