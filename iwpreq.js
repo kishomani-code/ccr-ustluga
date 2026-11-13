@@ -7,6 +7,11 @@
   const L = (en, ru) => RU ? ru : en;
   const OWN = ['G0-D1810BX0', 'G0-D1801FX0', 'G0-D4810BX0', 'G0-D4801FX0', 'G0-D8810BX0', 'G0-D8801FX0'];
   let SETS = null, RES = null;
+  // v4.67: drawing check – a cable goes to "Request" only when its tag is confirmed in a saved drawing (ircheck.json, made in the office).
+  // Not confirmed (drawing not saved / tag not found) -> tab "Check drawing first", so nothing deleted is requested by mistake.
+  let CHK = null;
+  fetch('ircheck.json?t=' + Date.now(), {cache: 'no-store'}).catch(() => fetch('ircheck.json')).then(r => r && r.ok ? r.json() : null).catch(() => null)
+    .then(j => { if (j && j.tags) { CHK = j; RES = null; try { if (!location.hash || location.hash === '#/' || /^#\/(ir|c\/)/.test(location.hash)) route(); } catch (e) {} } });
   function sets() {
     if (SETS) return SETS;
     const pull = new Set(), term = new Set();
@@ -32,11 +37,12 @@
     if (!noL && !noT) return null;
     const txt = [c.ln, c.h, c.cm].join(' ');
     const kind = /удал|deleted/i.test(txt) ? 'del' : (/RJ45|AOC-|patch|патч|комплект|vendor|поставщ|вендор|LC\/U-LC|NTSS-FOAM/i.test(String(c.ty) + ' ' + txt) || /^\s*(vendor|вендор)/i.test(String(c.dr || ''))) ? 'dev'   /* v4.66: drum = vendor in the tracker -> vendor cable, never in the request list */ : OWN.includes(title(c)) ? 'req' : 'oth';
-    return {noL, noT, kind, title: title(c)};
+    const ck = CHK && CHK.tags[c.t];
+    return {noL, noT, kind: kind === 'req' && CHK && !(ck && ck[0] === 'ok') ? 'chk' : kind, title: title(c), ck: ck ? ck[1] : (kind === 'req' && CHK ? 'Not checked against the saved drawings yet (new in the tracker since ' + CHK.date + ') – check the drawing before requesting' : '')};
   };
   function all() {
     if (RES) return RES;
-    const r = {req: [], oth: [], dev: [], del: []};
+    const r = {req: [], chk: [], oth: [], dev: [], del: []};
     C.forEach(c => { const x = IR.of(c); if (x) r[x.kind].push([c, x]); });
     return (RES = r);
   }
@@ -45,27 +51,28 @@
   IR.card = function (c) {
     const x = IR.of(c); if (!x) return '';
     const st = {req: ['#fde6e3', 'var(--bad)', '⚠ ' + L('No IWP ID – request IWP code from client', 'Нет ID IWP – запросить код IWP у заказчика')],
+      chk: ['#fff2d8', '#8a5a00', '⚠ ' + L('No IWP ID – check the drawing first, do not request yet', 'Нет ID IWP – сначала проверить по чертежу, пока не запрашивать')],
       oth: ['#fff2d8', '#8a5a00', '⚠ ' + L('No IWP line in our IWP – other title ' + x.title + ', check with Paul', 'Нет строки в нашем IWP – другой титул ' + x.title + ', уточнить у Paul')],
       dev: ['#eef2f6', 'var(--mut)', 'ℹ ' + L('Device / vendor or factory pre-terminated cable – no separate claim now', 'Кабель в комплекте / заводской сборки – отдельно не предъявляем')],
       del: ['#eef2f6', 'var(--mut)', 'ℹ ' + L('Deleted in design but marked done in tracker – check', 'Удалён в проекте, но отмечен в трекере – проверить')]}[x.kind];
-    return `<div class="card" style="background:${st[0]};border-left:5px solid ${st[1]}"><b style="color:${st[1]}">${st[2]}</b><div class="s2" style="margin-top:4px">${L('Done in tracker, missing IWP for', 'Выполнено по трекеру, нет IWP на')}: <b>${need(x)}</b>${x.kind === 'req' ? ' · ' + L('listed in "Request IWP ID"', 'в списке «Запрос ID IWP»') : ''}</div></div>`;
+    return `<div class="card" style="background:${st[0]};border-left:5px solid ${st[1]}"><b style="color:${st[1]}">${st[2]}</b><div class="s2" style="margin-top:4px">${L('Done in tracker, missing IWP for', 'Выполнено по трекеру, нет IWP на')}: <b>${need(x)}</b>${x.kind === 'req' ? ' · ' + L('listed in "Request IWP ID"', 'в списке «Запрос ID IWP»') : ''}${x.ck ? `<div style="margin-top:3px">${esc(x.ck)}</div>` : ''}</div></div>`;
   };
   IR.mini = function (c) { const x = IR.of(c); return x && x.kind === 'req' ? `<span class="badge b-no" style="margin-left:6px">${L('no IWP', 'нет IWP')}</span>` : ''; };
 
   IR.tile = function () {
-    const r = all(); if (!r.req.length && !r.oth.length) return '';
-    return `<div class="sect">⚠ ${L('Request IWP ID', 'Запрос ID IWP')}</div><div class="grid"><button class="tile" style="border-left:5px solid var(--bad)" onclick="go('#/ir')"><b>⚠ ${L('Done in tracker – no IWP ID', 'Выполнено по трекеру – нет ID IWP')}</b><div><span class="n">${r.req.length} ${L('to request', 'к запросу')} · ${r.oth.length} ${L('other title', 'другой титул')}</span></div></button></div>`;
+    const r = all(); if (!r.req.length && !r.oth.length && !r.chk.length) return '';
+    return `<div class="sect">⚠ ${L('Request IWP ID', 'Запрос ID IWP')}</div><div class="grid"><button class="tile" style="border-left:5px solid var(--bad)" onclick="go('#/ir')"><b>⚠ ${L('Done in tracker – no IWP ID', 'Выполнено по трекеру – нет ID IWP')}</b><div><span class="n">${r.req.length} ${L('to request', 'к запросу')} · ${r.chk.length} ${L('check drawing first', 'сначала чертёж')} · ${r.oth.length} ${L('other title', 'другой титул')}</span></div></button></div>`;
   };
   IR.f = 'req';
   IR.route = function () {
     window.scrollTo(0, 0);
     const r = all(); setHead('⚠ ' + L('Request IWP ID', 'Запрос ID IWP'), PRJ + ' · ' + r.req.length + ' ' + L('to request', 'к запросу'));
-    const tabs = [['req', L('Request (our titles)', 'Запрос (наши титулы)')], ['oth', L('Other title', 'Другой титул')], ['dev', L('Device / vendor', 'В комплекте')], ['del', L('Deleted', 'Удалены')]];
+    const tabs = [['req', L('Request – confirmed on drawing', 'Запрос – подтверждено по чертежу')], ['chk', L('Check drawing first', 'Сначала проверить чертёж')], ['oth', L('Other title', 'Другой титул')], ['dev', L('Device / vendor', 'В комплекте')], ['del', L('Deleted', 'Удалены')]];
     const list = r[IR.f] || [];
     const cnt = {L: list.filter(([c, x]) => x.noL && !x.noT).length, T: list.filter(([c, x]) => !x.noL && x.noT).length, B: list.filter(([c, x]) => x.noL && x.noT).length};
     main.innerHTML = `<div class="chips">${tabs.map(([k, l]) => `<button class="chip ${IR.f === k ? 'on' : ''}" onclick="IR.f='${k}';IR.route()">${l} (${r[k].length})</button>`).join('')}</div>
       <div class="card"><div class="s2">${L('Cables pulled / terminated in the cable tracker with no IWP line for that work. Laying only', 'Кабели, проложенные / подключённые по трекеру без строки IWP. Только прокладка')} ${cnt.L} · ${L('termination only', 'только подключение')} ${cnt.T} · ${L('both', 'оба')} ${cnt.B}</div></div>
-      <div class="list">${list.slice(0, 400).map(([c, x]) => `<button class="li" onclick="go('#/c/${enc(c.t)}')"><div class="m"><div class="t">${esc(c.t)}</div><div class="s">${esc(c.ty || '')} ${esc(c.c || '')} · ${esc(c.ln || '')} m · ${esc(x.title)}</div></div><span class="badge ${x.kind === 'req' ? 'b-no' : 'b-part'}">${need(x)}</span><span class="chev">›</span></button>`).join('') || '<div class="empty">–</div>'}</div>
+      <div class="list">${list.slice(0, 400).map(([c, x]) => `<button class="li" onclick="go('#/c/${enc(c.t)}')"><div class="m"><div class="t">${esc(c.t)}</div><div class="s">${esc(c.ty || '')} ${esc(c.c || '')} · ${esc(c.ln || '')} m · ${esc(x.title)}${x.ck ? '<br>' + esc(x.ck) : ''}</div></div><span class="badge ${x.kind === 'req' ? 'b-no' : 'b-part'}">${need(x)}</span><span class="chev">›</span></button>`).join('') || '<div class="empty">–</div>'}</div>
       ${list.length > 400 ? `<div class="s2">${L('First 400 shown', 'Показаны первые 400')}</div>` : ''}`;
   };
 })();
