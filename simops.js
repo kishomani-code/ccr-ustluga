@@ -1,16 +1,13 @@
-// v4.64: SIMOPS / work permit menu – English summary of the permit package the site lead supplied
-// (work permit form 10-18438 .xlsm + work scheme for G0-D6710RX0). Content is taken from those files only; nothing is added.
+// v4.65: SIMOPS / work permit menu – common rules in English, taken from a sample work permit package (work at height, cable tray / cable / earthing works).
+// No personal details, permit numbers, dates or locations of the sample are kept – it belonged to another team.
 (function () {
   const SO = window.SO = {};
   const P = {
-    src: 'Work permit form 10-18438 (Excel) and work scheme "G0-D6710RX0" (attachment to the permit) – received 13.11.2026',
-    facts: [['Permit No.', '10-18438'], ['Permit type / category', 'Other (category 2)'], ['Presence category', 'Cat. C'], ['Validity', '7 days'],
-      ['Planned start', '13.11.2026 08:00'], ['Planned finish', '26.11.2026 20:00'], ['Facility', 'GPP (gas processing plant)'], ['Work location', 'Pipe racks G0-D67'],
-      ['Work area', 'G0-02-120'], ['Equipment ID', 'G0-D6710RX0 – pipe rack of the amine and hot oil storage area'], ['Elevation / axes', '0 m to +14 m, axes A–B / 1–10'],
-      ['Organisation', 'Rencons Heavy Industries LLC'], ['Crew size', '10 (allowed 2 to 15)'], ['Isolation', 'None – isolation not required'], ['Risk assessment level', 'Level 1'], ['Instrument safety override request', 'Not required'],
-      ['Aerial work platform', '1048 HA 50, 14 m'], ['Work at height', 'Under this permit No. 18438']],
-    roles: [['Requested / approved (facility manager role)', 'Karaoglu Baris – Chief engineer, commissioning and testing'], ['Area supervisor – certifies and issues the permit to work', 'Abdrykov Marat Delyusovich – Head of area'],
-      ['Shift supervisor – agreed for approval', 'Myachin Aleksandr Sergeevich'], ['Work supervisor – accepts, suspends and closes the work', 'Khaitboev Khasanboy Saidabdullaevich – Work performer']],
+    src: 'Common points from a sample work permit package for cable tray, cable and earthing works at height',
+    facts: [['Permit number and type / category', 'as issued for your work'], ['Validity', 'the number of days written in the permit – no work outside it'], ['Planned start and finish', 'date and time in the permit'],
+      ['Work location / work area / equipment ID', 'must match where you really work'], ['Elevation and axes', 'stated in the short description'], ['Organisation and crew size', 'minimum and maximum number of people'],
+      ['Isolation', 'required or not required'], ['Risk assessment level', 'level 1 or 2'], ['Lifting equipment', 'type and height of the aerial platform, if used'], ['Attachments', 'work scheme, work locations, method statement familiarisation sheet']],
+    roles: [['Facility manager', 'approves the permit'], ['Area supervisor', 'certifies the permit and issues it to work'], ['Shift supervisor', 'agrees the permit for approval'], ['Work supervisor (work performer)', 'accepts the work, can suspend it, and closes it when finished'], ['Permit coordinator', 'confirms the risk assessment']],
     scope: ['Installation of cable trays and earthing elements', 'Pulling and fixing of cable lines', 'Installation of cable tags', 'Work at height using the aerial work platform', 'Tools in use: electric drill, screwdriver'],
     mat: ['Materials: cable trays and connecting parts; cable fixings and ties; bolts, nuts, washers; earthing strip and conductor; cable lugs and connectors; cable tags and marking materials; consumables.',
       'Tools: set of spanners and sockets; screwdrivers; pliers, side cutters; cable shears; insulation stripping tool; crimping pliers for lugs; electric drill, screwdriver; tape measure, level.',
@@ -20,8 +17,8 @@
     rules: ['Work only with an issued permit and after the task-specific briefing.', 'Before starting, check the aerial platform is in good order and its documents are available.', 'At height, wear the safety harness and attach it as shown in the aerial platform scheme.',
       'Fence the work zone and put up warning signs.', 'Nobody is allowed under the place where work at height is going on.', 'Before starting, check there is no voltage on the cable route sections where this is required.',
       'Secure tools and materials against falling from height.', 'Set the aerial platform on firm ground, within its permitted load and the weather limits.', 'Stop work at height in strong wind, rain or snow or other bad conditions.', 'Give every worker the required PPE.'],
-    ppe: ['Workwear protecting against mechanical impact, short exposure to open flame and static electricity', 'Safety footwear', 'Helmet with adjustable chin strap', 'Self-rescuers', 'Multi-point safety harness, fire-resistant type', 'Safety goggles', 'Portable breathing device PDU-3 (5)',
-      'Gas detector: TOP-SENS 310 (CH4 – H2S – CO – O2)', 'Harness: TECNOALP (TA50P R XXL), TECNOALP (ALN212 V)', 'Communication: radio (Motorola)'],
+    ppe: ['Workwear protecting against mechanical impact, short exposure to open flame and static electricity', 'Safety footwear', 'Helmet with adjustable chin strap', 'Self-rescuers', 'Multi-point safety harness, fire-resistant type', 'Safety goggles', 'Portable breathing device',
+      'Gas detector for CH4 – H2S – CO – O2, with a valid verification certificate', 'Communication: radio'],
     risk: [['Hand tool injury', [['Keep a first-aid kit at the work place.', 1], ['Check hand tools and devices before work. Faulty tools must not be used.', 1], ['Wear safety goggles.', 0], ['Store and carry tools in closed boxes or tool backpacks.', 0], ['Place tools so they cannot roll or fall.', 1], ['Use spanners that match the nut and bolt size. No packing pieces in gaps.', 1], ['Keep fasteners in a suitable container.', 0]]],
       ['Fall of a worker from height', [['Install a protective barrier or rigid fence.', 1], ['Put up warning signs.', 1], ['Appoint a person responsible for access to the fenced zone.', 1], ['Watch the work zone all the time; no outsiders.', 0], ['Use a safety harness – always above 1.8 m.', 0], ['Check the fall-protection equipment before every use.', 1], ['Use a positioning system.', 0], ['Use standard scaffolding / platforms for access.', 0], ['Check the scaffold has a green tag before working from it.', 1], ['Inspect the scaffold before starting.', 1], ['Tie the top of a ladder to a stable structure before starting.', 1], ['From a ladder above 1.8 m use a safety belt.', 1], ['Attach the harness lanyard with stopper to an anchor point on the main structure.', 1]]],
       ['Fall from the lifting platform (basket)', [['No work in the basket in poor visibility (rain, snow, fog) or icing.', 0], ['No work in the basket at wind speed above 10 m/s.', 0], ['Stop in bad weather (rain, thunderstorm, wind).', 0], ['Attach the harness lanyard with stopper to the anchor point.', 1]]],
@@ -41,8 +38,7 @@
       'Crew changes: every person added to or removed from the crew is recorded with qualification, signature, date and time, and allowed by the work supervisor. For work at height the responsible performer must be named.',
       'Gas test record: initial test and repeat (periodic) tests – detector serial number, date, time, sampling point, O2 %, % LEL methane, CO ppm, H2S ppm, name and signature. The repeat interval is set in the risk assessment.',
       'Completion: the work supervisor confirms at the work place that the work is finished, the crew has left and the site is left safe, clean and tidy.'],
-    att: ['Facility manager (permit approver)', 'Work supervisor', 'Aerial platform operator', 'Work schemes G0-D6710RX0', 'Work locations', 'Method statement / technological card – familiarisation sheet',
-      'Referenced documents: GSP-(G0-Z00000X0)-CT-MC-120.009 · GSP-(G0-Z00000X0)-CT-MC-120.014 · GSP-(G0-Z00000X0)-CT-MC-120 · GSP-(G0-Z00000X0)-HS-PR-007 · RHI-(G0-Z00000X0)-CT-MC-107'],
+    att: ['Facility manager and work supervisor named in the permit', 'Aerial platform operator named, if a platform is used', 'Work scheme of the place of work', 'Work locations', 'Method statement / technological card – familiarisation sheet signed by the crew'],
     docs: ['Risk assessment certificate', 'Task-specific briefing and per-shift admission certificate', 'Gas detector verification certificate (contractor)', 'General plan showing the work place and the evacuation routes',
       'Detailed scheme of the work place: module, room, floor, tier, fire-fighting equipment, hazardous zone boundary, air sampling points', 'Approved request to override safety / ESD systems (if applicable)', 'Gas / flame detector layout (if applicable)',
       'Industrial safety certification record of the person responsible for the work (contractor)', 'Copy of the order appointing the persons responsible for high-risk work (contractor)', 'Personal isolation scheme (if applicable)', 'Isolation certificate with isolation scheme and air sampling points (if applicable)', 'Air analysis certificate (if applicable)'],
@@ -52,12 +48,12 @@
   };
   const li = L => `<ul style="margin:4px 0 0 18px;padding:0;font-size:13.5px;line-height:1.45">${L.map(x => `<li>${esc(x)}</li>`).join('')}</ul>`;
   const card = (t, body, col) => `<div class="card" style="${col ? 'border-left:5px solid ' + col : ''}"><div class="h3">${t}</div>${body}</div>`;
-  SO.tile = function () { return `<button class="tile main" style="min-height:auto;width:100%;margin-bottom:6px;background:#8a1c1c;border-color:#8a1c1c;color:#fff" onclick="go('#/so')"><b>⛑ SIMOPS / WORK PERMIT – WHAT TO FOLLOW</b><span class="n" style="color:#f6dede">permit 10-18438 · work at height · rules, PPE, briefing</span></button>`; };
-  SO.view = function () { setHead('SIMOPS / work permit', 'Permit 10-18438 · G0-D6710RX0 · what we must follow');
+  SO.tile = function () { return `<button class="tile main" style="min-height:auto;width:100%;margin-bottom:6px;background:#8a1c1c;border-color:#8a1c1c;color:#fff" onclick="go('#/so')"><b>⛑ SIMOPS / WORK PERMIT – WHAT TO FOLLOW</b><span class="n" style="color:#f6dede">work at height · rules, PPE, briefing, records</span></button>`; };
+  SO.view = function () { setHead('SIMOPS / work permit', 'Common rules · what we must follow');
     main.innerHTML = `<div class="chips"><button class="chip on" onclick="window.print()">🖨 Print</button><button class="chip" onclick="SO.excel()">📊 Excel</button></div>
      ${card('⚠ Simultaneous works – keep in mind', li(P.simops), '#b42318')}
-     ${card('Permit at a glance', `<table style="width:100%;border-collapse:collapse;font-size:13px">${P.facts.map(f => `<tr><td style="padding:3px 6px 3px 0;color:var(--mut);width:42%;vertical-align:top">${esc(f[0])}</td><td style="padding:3px 0"><b>${esc(f[1])}</b></td></tr>`).join('')}</table>`)}
-     ${card('Who signs what', `<table style="width:100%;border-collapse:collapse;font-size:13px">${P.roles.map(f => `<tr><td style="padding:3px 6px 3px 0;color:var(--mut);width:50%;vertical-align:top">${esc(f[0])}</td><td style="padding:3px 0">${esc(f[1])}</td></tr>`).join('')}</table>`)}
+     ${card('What the permit states – check before you start', `<table style="width:100%;border-collapse:collapse;font-size:13px">${P.facts.map(f => `<tr><td style="padding:3px 6px 3px 0;color:var(--mut);width:42%;vertical-align:top">${esc(f[0])}</td><td style="padding:3px 0"><b>${esc(f[1])}</b></td></tr>`).join('')}</table>`)}
+     ${card('Who does what', `<table style="width:100%;border-collapse:collapse;font-size:13px">${P.roles.map(f => `<tr><td style="padding:3px 6px 3px 0;color:var(--mut);width:50%;vertical-align:top">${esc(f[0])}</td><td style="padding:3px 0">${esc(f[1])}</td></tr>`).join('')}</table>`)}
      ${card('Scope of work', li(P.scope) + `<div style="margin-top:6px;font-size:12.5px;color:var(--mut)">${P.mat.map(esc).join('<br>')}</div>`)}
      ${card('Special hazards', li(P.haz), '#d97706')}
      ${card('Rules for this work', li(P.rules), '#1f7a3a')}
@@ -65,17 +61,17 @@
      ${card('Risk assessment – control measures', P.risk.map(g => `<div style="font-weight:700;margin-top:8px;font-size:13.5px">${esc(g[0])}</div><ul style="margin:2px 0 0 18px;padding:0;font-size:13px;line-height:1.4">${g[1].map(c => `<li>${esc(c[0])}${c[1] ? ' <span style="color:#1f7a3a;font-weight:700;white-space:nowrap">· before start</span>' : ''}</li>`).join('')}</ul>`).join('') + '<div class="foot" style="text-align:left">"before start" = marked as a preliminary measure in the permit risk assessment.</div>')}
      ${card('Briefing before the work (6 stages)', `<ol style="margin:4px 0 0 18px;padding:0;font-size:13.5px;line-height:1.45">${P.brief.map(b => `<li><b>${esc(b[0])}</b> – ${esc(b[1])}</li>`).join('')}</ol>`)}
      ${card('Records to keep during the work', li(P.after))}
-     ${card('Attachments listed in the permit', li(P.att))}
+     ${card('Attachments a permit needs', li(P.att))}
      ${card('Documents to submit with a high-risk work permit', li(P.docs) + '<div class="foot" style="text-align:left">From the checklist sheet of the permit form (high-risk work / potential sparking).</div>')}
-     ${card('Work scheme – G0-D6710RX0', `<div style="font-size:13px">Legend: green line = personnel routes / evacuation routes · green box = place of work · green sign = assembly point.</div><img src="simops_scheme.jpg" alt="Work scheme G0-D6710RX0" style="width:100%;margin-top:6px;border:1px solid var(--line)">`)}
-     <div class="foot">Source: ${esc(P.src)}. English summary for the crew – the signed Russian permit is the valid document. Note: the work scheme is marked as attachment to permit No. 10-18462, the form is No. 10-18438 – check which number is correct.</div>`; };
-  SO.excel = function () { if (!window.XL) return toast('Excel module not loaded'); const R = [['SIMOPS / work permit 10-18438 – G0-D6710RX0 – what to follow'], [P.src], []];
+     ${card('Work scheme', `<div style="font-size:13.5px">Every permit has a work scheme. Before starting, find on it: the personnel routes and evacuation routes, the place of work, and the assembly point.</div>`)}
+     <div class="foot">${esc(P.src)}. This is a general guide for the crew – the signed permit for your own work is the valid document.</div>`; };
+  SO.excel = function () { if (!window.XL) return toast('Excel module not loaded'); const R = [['SIMOPS / work permit – common rules – what to follow'], [P.src], []];
     const sec = (t, L) => { R.push([t]); L.forEach((x, i) => R.push([i + 1, x])); R.push([]); };
-    sec('Simultaneous works', P.simops); R.push(['Permit at a glance']); P.facts.forEach(f => R.push([f[0], f[1]])); R.push([]); R.push(['Who signs what']); P.roles.forEach(f => R.push([f[0], f[1]])); R.push([]);
+    sec('Simultaneous works', P.simops); R.push(['What the permit states']); P.facts.forEach(f => R.push([f[0], f[1]])); R.push([]); R.push(['Who does what']); P.roles.forEach(f => R.push([f[0], f[1]])); R.push([]);
     sec('Scope of work', P.scope.concat(P.mat)); sec('Special hazards', P.haz); sec('Rules for this work', P.rules); sec('PPE and equipment', P.ppe);
     R.push(['Risk assessment – control measures']); P.risk.forEach(g => g[1].forEach(c => R.push([g[0], c[0], c[1] ? 'before start' : '']))); R.push([]);
-    sec('Briefing – 6 stages', P.brief.map(b => b[0] + ' – ' + b[1])); sec('Records to keep', P.after); sec('Attachments listed in the permit', P.att); sec('Documents to submit', P.docs);
-    XL.save('SIMOPS_work_permit_10-18438.xlsx', [{name: 'Permit', rows: R, widths: [44, 110, 14], bold: [0]}]); };
+    sec('Briefing – 6 stages', P.brief.map(b => b[0] + ' – ' + b[1])); sec('Records to keep', P.after); sec('Attachments a permit needs', P.att); sec('Documents to submit', P.docs);
+    XL.save('SIMOPS_work_permit_common_rules.xlsx', [{name: 'Permit', rows: R, widths: [44, 110, 14], bold: [0]}]); };
   SO.route = function () { SO.view(); };
   try { const h = location.hash; if (!h || h === '#/' || /^#\/so/.test(h)) route(); } catch (e) {}
 })();
