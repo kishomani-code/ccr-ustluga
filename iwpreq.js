@@ -31,7 +31,7 @@
     const noL = p && !c.la && !S.pull.has(n), noT = t && !c.ta && !S.term.has(n);
     if (!noL && !noT) return null;
     const txt = [c.ln, c.h, c.cm].join(' ');
-    const kind = /удал|deleted/i.test(txt) ? 'del' : /RJ45|AOC-|patch|патч|комплект|vendor|поставщ|вендор|LC\/U-LC|NTSS-FOAM/i.test(String(c.ty) + ' ' + txt) ? 'dev' : OWN.includes(title(c)) ? 'req' : 'oth';
+    const kind = /удал|deleted/i.test(txt) ? 'del' : (/RJ45|AOC-|patch|патч|комплект|vendor|поставщ|вендор|LC\/U-LC|NTSS-FOAM/i.test(String(c.ty) + ' ' + txt) || /^\s*(vendor|вендор)/i.test(String(c.dr || ''))) ? 'dev'   /* v4.66: drum = vendor in the tracker -> vendor cable, never in the request list */ : OWN.includes(title(c)) ? 'req' : 'oth';
     return {noL, noT, kind, title: title(c)};
   };
   function all() {
