@@ -14,7 +14,7 @@
   const obj = (K, r) => { const o = {}; K.forEach((k, i) => o[k] = r[i]); return o; };
   function set(d) { if (!d || !Array.isArray(d.iwp)) return; const first = !TY.d; TY.d = d; TY.I = d.iwp.map(r => obj(d.IK, r)); TY.M = d.mat.map(r => obj(d.MK, r));
     TY.by = {}; TY.I.forEach(x => { x.en = x.en || x.tag; x.ru = x.ru || x.tag; x.tr = x.tr || ''; TY.by[x.acc] = x; });
-    const n = document.getElementById('tyn'); if (n) n.innerHTML = TY.sum();
+    const n = document.getElementById('tytile'); if (n) n.innerHTML = TY.tile();
     const h = location.hash.replace(/^#\/?/, '').replace(/[?&]p=[^&]*$/i, '');
     if (first && (/^ty(\/|$)/.test(h) || (h === '' && TY.mine())) && typeof route === 'function') { try { route(); } catch (e) {} } }
   TY.load = function () { cget('tray.json').then(d => { if (d) set(d); return net('tray.json'); }).then(d => { if (d && (!TY.d || d.ver !== TY.d.ver)) set(d); }).catch(() => {}); };
@@ -49,8 +49,16 @@
   TY.sum = function () { if (!TY.d) return L('loading…', 'загрузка…'); const I = TY.I; const dn = I.filter(x => stOf(x) === 'Completed').length;
     const c = k => TY.M.filter(m => m.st === k).length; const pend = TY.st().e.filter(e => !e.sent).length;
     return `${dn}/${I.length} ${L('IWP lines done', 'строк IWP выполнено')} · MRF ${c('mrf') + c('part')} · CTQ ${c('ctq') + c('nodel')}${pend ? ' · ' + pend + ' ' + L('not sent', 'не отправлено') : ''}`; };
-  TY.tile = function () { if (TY.mine() || PRJ !== 'CCR') return '';
-    return `<button class="tile main" style="min-height:auto;width:100%;margin-bottom:6px;background:#0b6e6e;border-color:#0b6e6e;color:#fff" onclick="projSwitch('G2-B1301FX0')"><b>🧱 ${L('TRAY INSTALLATION – G2-B1301FX0', 'МОНТАЖ ЛОТКОВ – G2-B1301FX0')}</b><span class="n" id="tyn" style="color:#d8f0f0">${TY.sum()}</span></button>`; };
+  TY.tile = function () { if (TY.mine()) return '';
+    if (!TY.d) return `<button class="tile main" style="min-height:auto;width:100%;margin-bottom:8px;background:#0b6e6e;border-color:#0b6e6e;color:#fff" onclick="go('#/ty')"><b>🧱 ${L('TRAY INSTALLATION – G2-B1301FX0', 'МОНТАЖ ЛОТКОВ – G2-B1301FX0')}</b><span class="n" style="color:#d8f0f0">${L('loading…', 'загрузка…')}</span></button>`;
+    const pend = TY.st().e.filter(e => !e.sent).length; const bar = (lab, d, n, col) => `<div style="display:flex;align-items:center;gap:6px;font-size:12px;margin-top:4px"><span style="width:92px;white-space:nowrap;overflow:hidden">${lab}</span><div style="flex:1;height:7px;background:rgba(255,255,255,.25);border-radius:4px"><div style="width:${pc(d, n)}%;height:7px;background:${col};border-radius:4px"></div></div><span style="width:62px;text-align:right">${d}/${n}</span></div>`;
+    const B = (h, txt, bg) => `<button onclick="event.stopPropagation();${h}" style="flex:1;border:0;border-radius:8px;padding:9px 4px;font:600 12px inherit;color:#fff;background:${bg}">${txt}</button>`;
+    const c = k => TY.M.filter(m => m.st === k).length;
+    return `<div onclick="go('#/ty')" style="cursor:pointer;background:linear-gradient(135deg,#0b6e6e,#13959a);color:#fff;border-radius:14px;padding:12px 14px;margin-bottom:8px;box-shadow:0 2px 8px rgba(0,0,0,.25)">
+      <div style="display:flex;justify-content:space-between;align-items:center"><b style="font-size:16px">🧱 ${L('TRAY INSTALLATION · G2-B1301FX0', 'МОНТАЖ ЛОТКОВ · G2-B1301FX0')}</b><span style="font-size:20px">›</span></div>
+      <div style="font-size:12px;opacity:.9">${L('Main work now · open tray menu', 'Основная работа сейчас · открыть меню лотков')} · MRF ${c('mrf') + c('part')} · CTQ ${c('ctq') + c('nodel')}</div>
+      ${['A', 'B', 'C'].map(t => { const s = teamStat(t); return bar({A: L('A · trays', 'A · лотки'), B: L('B · supports', 'B · опоры'), C: L('C · conduits', 'C · трубы')}[t], s.d, s.n, t === 'A' ? '#8ecbff' : t === 'B' ? '#ffc58a' : '#d7b8ff'); }).join('')}
+      <div style="display:flex;gap:6px;margin-top:10px">${B('TY.report()', `📤 ${L('Report to Paul', 'Отчёт Паулю')}${pend ? ' · ' + pend : ''}`, pend ? '#c55a11' : 'rgba(0,0,0,.28)')}${B("go('#/ty/l/A')", `✍️ ${L('Entry', 'Ввод')}`, 'rgba(0,0,0,.28)')}${B("go('#/ty/rp/day')", `📊 ${L('Reports', 'Отчёты')}`, 'rgba(0,0,0,.28)')}</div></div>`; };
   // ---------- routing ----------
   TY.route = function (rest) { const k = rest[0] || '', a = dec(rest.slice(1).join('/'));
     if (!TY.d) { main.innerHTML = '<div class="empty">Loading…</div>'; TY.load(); return; }
