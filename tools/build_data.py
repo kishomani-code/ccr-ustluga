@@ -775,7 +775,7 @@ def validate(out, base):
         if any(not (isinstance(i, int) and 0 <= i < nc) for e in g['e'] for i in e[2]):
             err.append(f'sg.{s} cable index out of range'); break
     for k in ('items', 'cables', 'panels'):
-        if not out[k]:
+        if not out[k] and not (k == 'panels' and SITE == 'ax'):   # v4.72: an outdoor OTHER AREA may have no panels
             err.append(f'{k} is empty')
     if not out['punch']['rows'] and SITE != 'ax':   # v4.51: an OTHER AREA project may have no RHI punch
         err.append('punch.rows is empty')

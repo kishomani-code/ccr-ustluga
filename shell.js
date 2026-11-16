@@ -87,7 +87,7 @@
     ['Engineering', 'Инжиниринг', [['#/ctq', 'tq', 'CTQ register', 'Реестр CTQ'], ['#/ntq', 'help', 'Need TQs', 'Нужны TQ'], ['#/dg', 'file', 'Drawings', 'Чертежи'], ['#/ps', 'book', 'Procedures & specifications', 'Процедуры и спецификации'], ['#/bd', 'net', 'System block diagrams', 'Структурные схемы'], ['#/kn', 'book', 'Engineering knowledge', 'Инженерные знания'], ['#/ug', 'msg', 'Comments for site team', 'Комментарии для участка'], ['#/lt', 'shield', 'LOTO', 'LOTO']]],
     ['Commissioning (client scope)', 'Пусконаладка (объём заказчика)', [['#/lc', 'flask', 'Loop check', 'Проверка контуров'], ['#/ga', 'phone', 'Gazprom commissioning contacts', 'Контакты ПНР Газпром']]],
     ['Progress', 'Прогресс', [['#/dp', 'pen', 'Daily progress entry', 'Ввод прогресса'], ['#/rb', 'users', 'Reported by', 'Кто отчитался'], ['#/ir', 'tag', 'Request IWP ID', 'Запрос IWP ID'], ['#/nt', 'note', 'Site notes', 'Заметки']]],
-    ['Areas', 'Зоны', [['#/oa', 'map', 'Other area', 'Другие зоны'], ['#/cc', 'snow', 'Cold cables', 'Холодные кабели']]],
+    ['Areas', 'Зоны', [['#/oa', 'map', 'Other area', 'Другие зоны'], ['#/cc', 'snow', 'Cold cables', 'Холодные кабели'], ['#/ty', 'map', 'Tray G2-B1301FX0', 'Лотки G2-B1301FX0']]],
     ['Management', 'Управление', [['mg', 'chart', 'Manager dashboard', 'Панель менеджера'], ['ow', 'key', 'Owner menu', 'Меню владельца'], ['mc', 'menu', 'Overall dashboard & settings', 'Общая панель и настройки']]]
   ];
   window.v5nav = function (h) {
