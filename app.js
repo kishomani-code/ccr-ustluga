@@ -158,7 +158,8 @@ function setHead(t, s) { document.getElementById('ttl').textContent = t; documen
 function route() {
   const h = location.hash.replace(/^#\//, '').replace(/[?&]p=(ccr|d48|cold)$/i, ''); const [k, ...rest] = h.split('/'); const a = dec(rest.join('/'));
   window.scrollTo(0, 0);
-  if (!k) return home();
+  if (!k) return (PRJ === 'G2-B1301FX0' && window.TY) ? TY.route([]) : home();   // v4.73 tray scope has its own main menu
+  if (k === 'axh') return home();   // v4.73 whole title G2-B1301FX0 (cables, IWP, punch)
   if (k === 'oa' && window.OA) return OA.route(rest);   // v4.3 OTHER AREA
   if (k === 'cc' && window.OA) return OA.route(rest, true);   // v4.3 COLD CABLES
   if (k === 'bm' && window.OA) return OA.bulk(a);   // v4.3 bulk materials (tray, conduits, earthing, supports…)
@@ -228,6 +229,7 @@ function route() {
 }
 // --- views
 function home() {
+  if (PRJ === 'G2-B1301FX0' && window.TY && !/^#\/axh/.test(location.hash)) return TY.route([]);   // v4.73 tray main menu
   setHead((PRJ === 'COLD' ? 'Cold cables' : PRJ) + ' · GPP E&I', `v${APPV} · data ${D.meta.date} · ${PRJN.b} / ${PRJN.a}`); qbox.value = '';
   const all = gstat(I), cc = C.filter(c => cst(c).ok).length;
   const tile = (g, cls) => { const s = gstat(I.filter(x => x.g === g)); return `<button class="tile ${cls || ''}" onclick="go('#/a/${enc(g)}')"><b>${esc(g)}</b><div><div class="row"><span class="n">${s.d}/${s.n} lines${s.u === 'lines' ? (() => { const m = I.filter(x => x.g === g && x.u === 'm'); return m.length ? ' · ' + fmtn(m.reduce((a, x) => a + x.f, 0)) + ' / ' + fmtn(m.reduce((a, x) => a + x.q, 0)) + ' m' : ''; })() : ' · ' + fmtn(s.f) + ' / ' + fmtn(s.q) + ' ' + s.u}</span></div><div class="pc">${s.pc}%</div><div class="pbar"><i style="width:${s.pc}%"></i></div></div></button>`; };
@@ -795,7 +797,7 @@ function ownPunch() { const d = VS.OW.d; const one = {}; (S2.rx || []).filter(r 
   copyText(Object.values(one).map(r => [r.no, r.v === 'F' ? 'Fixed' : 'Not fixed', d.split('-').reverse().join('.'), r.tag, r.by].join('\t')).join('\n')).then(() => toast('Punch list copied')); }
 
 // ======== v3.2 modules ========
-const APPV = '4.72';
+const APPV = '4.73';
 const shortT = t => String(t || '').replace(/^G0-D(18|48)10BX0-/, '').replace(/^G0-D(18|48)01FX0-/, 'FX0-');
 const SYSN = {'EL-ESPS': ['Substation 10/0.4 kV & power supply', 'Подстанция 10/0,4 кВ'], 'EL-EMSV': ['Power installation (boards, UPS, motors)', 'Силовое электрооборудование'], 'EL-ESBZ': ['Power supply from utility substation', 'Электроснабжение от ПС'], 'EL-ELOV': ['Indoor lighting', 'Внутреннее освещение'], 'EL-EG02': ['Earthing & lightning protection', 'Заземление и молниезащита'], 'EL-EG01': ['Area earthing', 'Заземление площадки'], 'EH-EOES': ['Electric heating', 'Электрообогрев'], 'EH-AEOG': ['Heat tracing', 'Электрообогрев (кабель)'], 'EH-EOBK': ['Electric heating (other)', 'Электрообогрев'],
   'IN-DCS': ['Distributed Control System (DCS)', 'РСУ'], 'IN-ESD': ['Emergency Shutdown (ESD)', 'ПАЗ'], 'IN-SPAP': ['Fire alarm & fire fighting control (AFA&FFS)', 'АСПС и ПТ'], 'IN-GDSS': ['Gas detection', 'Контроль загазованности'], 'IN-ASUE': ['Utilities control system', 'АСУ ЭО (утилиты)'], 'IN-ASUS': ['Power supply control system', 'АСУ ЭС'], 'IN-ASKU': ['Utility metering (AUMS)', 'АСКУ ЭР'], 'IN-MAEC': ['Rotating equipment monitoring (CMS)', 'МСО и ВО'], 'IN-MFMS': ['Material flow metering (MFMS)', 'СУМП'], 'IN-AKVS': ['Emission monitoring (CEMS)', 'АКВС'], 'IN-INTS': ['Operator training simulator', 'Тренажёр оператора'], 'IN-INSS': ['Information security', 'СОИБ'], 'IN-AOVK': ['HVAC automation', 'Автоматизация ОВиК'], 'IN-AKMP': ['Analyzer system', 'Анализаторы'],
@@ -1476,7 +1478,7 @@ var NTQS = {}; try { NTQS = JSON.parse(localStorage.getItem(PRJ.toLowerCase() + 
 function ntqSave() { try { localStorage.setItem(PRJ.toLowerCase() + '_ntq_v1', JSON.stringify(NTQS)); } catch (err) {} }
 const sevC = s => s === 'High' ? 'b-no' : s === 'Medium' ? 'b-part' : 'b-na';
 function projBar() { const o = PRJ === 'D48' ? 'CCR' : 'D48';
-  return `<div style="display:flex;gap:6px;margin-bottom:9px">${['CCR', '1801', 'D48', '8810'].map(k => `<button class="chip ${k === PRJ ? 'on' : ''}" style="flex:1;padding:10px;font-size:15px;font-weight:700" onclick="${k === PRJ ? '' : `projSwitch('${k}')`}">${k === 'CCR' ? '🏢 CCR' : k === '1801' ? '🌳 1801' : k === '8810' ? '🚒 8810' : '⚡ D48'}</button>`).join('')}</div>`; }
+  return `<div style="display:flex;gap:6px;margin-bottom:9px">${['CCR', '1801', 'D48', '8810', 'G2-B1301FX0'].map(k => `<button class="chip ${k === PRJ ? 'on' : ''}" style="flex:1;padding:10px 4px;font-size:14px;font-weight:700" onclick="${k === PRJ ? '' : `projSwitch('${k}')`}">${k === 'CCR' ? '🏢 CCR' : k === '1801' ? '🌳 1801' : k === '8810' ? '🚒 8810' : k === 'G2-B1301FX0' ? '🧱 Tray' : '⚡ D48'}</button>`).join('')}</div>`; }
 function projSwitch(k) { try { sessionStorage.setItem('proj', k); localStorage.setItem('proj_last', k); } catch (err) {} location.hash = ''; location.reload(); }
 function engTiles() { const T2 = (h, b, n, cls) => `<button class="tile ${cls || ''}" onclick="go('${h}')"><b>${b}</b><div><span class="n">${n}</span></div></button>`;
   const op = NTQ.filter(x => !(NTQS[x.id] && NTQS[x.id].st === 'raised')).length; const m = E.mct || {};

@@ -1,8 +1,9 @@
-// v4.72: TRAY INSTALLATION – G2-B1301FX0 (Demethanizer Area, Train 2). Manager mail 16.11.2026: cable trays and
-// support profiles first, day + night; Team A installs trays where supports are ready, Team B makes / installs supports.
-// Scope: GLE-(G2-B1301FX0)-IN-ATHP-SF-001 rev 03 AS02 + EL-EMSV-SF-001 rev 03. Data: tray.json (IWP lines with the
-// typical to follow per access ID, SF material vs MRF vs warehouse, MRF drafts, CTQ list). Site entry kept on the phone.
-// Rebuild: /home/claude/tray/data.py + build_json.py (same model as G2-B1301FX0_Tray_Followup_<date>.xlsx).
+// v4.73: TRAY INSTALLATION – G2-B1301FX0 (Demethanizer Area, Train 2) – own main menu like CCR / D48.
+// Manager mail 16.11.2026: cable trays and support profiles first, day + night; Team A trays where supports are ready, Team B supports / profiles.
+// Scope: GLE-(G2-B1301FX0)-IN-ATHP-SF-001 rev 03 AS02 + EL-EMSV-SF-001 rev 03. Data: tray.json (IWP lines with EN/RU/TR component names and the
+// typical per access ID; material from the stock check EP-3/EP-12 13.11.2026 + RHI MRF follow-up + warehouse issue records).
+// Reports: progress to Paul (MAX progress group, same as CCR), daily, weekly, progress status, material/MRF, CTQ, Excel (CSV) export.
+// Rebuild data: /home/claude/tray/build_json2.py (same model as G2-B1301FX0_Tray_Progress_Followup_<date>.xlsx and the MRF workbook).
 (function () {
   const TY = window.TY = {d: null};
   const DC = 'appdata-v1', KEY = 'tray_g2_v1';
@@ -12,90 +13,200 @@
   function cget(f) { if (!('caches' in window)) return Promise.resolve(null); return caches.open(DC).then(c => c.match(f)).then(r => r ? r.json() : null).catch(() => null); }
   const obj = (K, r) => { const o = {}; K.forEach((k, i) => o[k] = r[i]); return o; };
   function set(d) { if (!d || !Array.isArray(d.iwp)) return; const first = !TY.d; TY.d = d; TY.I = d.iwp.map(r => obj(d.IK, r)); TY.M = d.mat.map(r => obj(d.MK, r));
-    TY.by = {}; TY.I.forEach(x => TY.by[x.acc] = x);
+    TY.by = {}; TY.I.forEach(x => { x.en = x.en || x.tag; x.ru = x.ru || x.tag; x.tr = x.tr || ''; TY.by[x.acc] = x; });
     const n = document.getElementById('tyn'); if (n) n.innerHTML = TY.sum();
-    if (first && (/^#\/ty(\/|$)/.test(location.hash) || !location.hash || location.hash === '#/') && typeof route === 'function') { try { route(); } catch (e) {} } }
+    const h = location.hash.replace(/^#\/?/, '').replace(/[?&]p=[^&]*$/i, '');
+    if (first && (/^ty(\/|$)/.test(h) || (h === '' && TY.mine())) && typeof route === 'function') { try { route(); } catch (e) {} } }
   TY.load = function () { cget('tray.json').then(d => { if (d) set(d); return net('tray.json'); }).then(d => { if (d && (!TY.d || d.ver !== TY.d.ver)) set(d); }).catch(() => {}); };
-  // ---------- site entry (this phone) ----------
-  TY.st = function () { if (TY._s) return TY._s; let s = null; try { s = JSON.parse(localStorage.getItem(KEY) || 'null'); } catch (e) {} return (TY._s = s && s.e ? s : {e: [], sup: {}, sent: 0}); };
+  TY.mine = () => typeof PRJ !== 'undefined' && PRJ === 'G2-B1301FX0';
+  // ---------- site entries (this phone) ----------
+  TY.st = function () { if (TY._s) return TY._s; let s = null; try { s = JSON.parse(localStorage.getItem(KEY) || 'null'); } catch (e) {} TY._s = s && s.e ? s : {e: [], sup: {}};
+    TY._s.e.forEach(e => { if (!e.t) { const p = String(e.d || '').split('.'); e.t = p.length === 3 ? new Date(+p[2], +p[1] - 1, +p[0], 12).getTime() : Date.now(); } if (e.sent === 1) e.sent = e.t; }); return TY._s; };
   TY.save = function () { try { localStorage.setItem(KEY, JSON.stringify(TY._s)); } catch (e) {} };
-  const today = () => { const t = new Date(); const p = n => String(n).padStart(2, '0'); return `${p(t.getDate())}.${p(t.getMonth() + 1)}.${t.getFullYear()}`; };
+  const p2 = n => String(n).padStart(2, '0');
+  const ds = ts => { const t = new Date(ts); return `${p2(t.getDate())}.${p2(t.getMonth() + 1)}.${t.getFullYear()}`; };
+  const iso = ts => { const t = new Date(ts); return `${t.getFullYear()}-${p2(t.getMonth() + 1)}-${p2(t.getDate())}`; };
+  const isoTs = v => { const p = String(v || '').split('-'); return p.length === 3 ? new Date(+p[0], +p[1] - 1, +p[2], 12).getTime() : Date.now(); };
+  const nowS = () => { const t = new Date(); return ds(t) + ' ' + p2(t.getHours()) + ':' + p2(t.getMinutes()); };
+  const who = () => (typeof PS_ !== 'undefined' && PS_.name) || '';
   const doneSite = acc => TY.st().e.filter(x => x.acc === acc).reduce((a, x) => a + x.q, 0);
   const total = x => x.fact + doneSite(x.acc);
   const rem = x => Math.max(0, x.qty - total(x));
+  const pc = (a, b) => b > 0 ? Math.min(100, Math.round(100 * a / b)) : 0;
   const stOf = x => total(x) >= x.qty && x.qty > 0 ? 'Completed' : total(x) > 0 ? 'In progress' : (TY.st().sup[x.acc] === 'N' && x.team === 'A' ? 'Waiting supports' : 'Not started');
-  const TEAM = {A: [L('Team A – trays', 'Бригада A – лотки'), '#1a73e8'], B: [L('Team B – supports / profiles', 'Бригада B – опоры / профили'), '#b54708'], C: [L('Team C – conduits', 'Бригада C – трубы'), '#5b2a86']};
+  const STL = {Completed: L('Completed', 'Выполнено'), 'In progress': L('In progress', 'В работе'), 'Not started': L('Not started', 'Не начато'), 'Waiting supports': L('Waiting supports', 'Ждёт опоры')};
+  const TEAM = {A: [L('Team A – trays', 'Бригада A – лотки'), '#1a73e8', 'A – Trays / Лотки / Tavalar'], B: [L('Team B – supports / profiles', 'Бригада B – опоры / профили'), '#b54708', 'B – Supports / Опоры / Destekler'], C: [L('Team C – conduits', 'Бригада C – трубы'), '#5b2a86', 'C – Conduits / Трубы / Borular']};
+  const WT0 = {profile: ['Support profiles', 'Профили опор', 'Destek profilleri'], bracket: ['Cantilever brackets', 'Консоли', 'Konsollar'], steel: ['Small steel structure', 'Мелкие металлоконструкции', 'Küçük çelik yapı'],
+    straight: ['Tray / ladder – straight', 'Прямые лотки', 'Düz tava'], fitting: ['Tray / ladder – fittings', 'Фасонные элементы', 'Tava bağlantı parçaları'], cover: ['Covers', 'Крышки', 'Kapaklar'],
+    strip: ['Separation strip', 'Перегородка', 'Ayırıcı'], conduit: ['Flexible conduit', 'Гибкая труба', 'Esnek boru']};
+  const WT = {}; Object.keys(WT0).forEach(k => WT[k] = [L(WT0[k][0], WT0[k][1]), WT0[k].join(' / ')]);
   const STC = {Completed: 'b-ok', 'In progress': 'b-na', 'Not started': '', 'Waiting supports': 'b-no'};
-  const MST = {covered: [L('Covered by MRF', 'Уже по MRF'), 'b-ok'], mrf: [L('New MRF – stock OK', 'Новый MRF – склад есть'), 'b-na'], part: [L('Part MRF – stock short', 'Частично – не хватает'), 'b-no'], ctq: [L('No free stock – CTQ', 'Нет на складе – CTQ'), 'b-no']};
-  const nf = v => fmtn(Math.round(v * 10) / 10);
+  const MST = {covered: [L('Received on earlier MRF', 'Получено по MRF'), 'b-ok'], mrf: [L('MRF ready – stock OK', 'MRF готов – склад есть'), 'b-na'], part: [L('MRF ready – part short', 'MRF – частично'), 'b-no'],
+    ctq: [L('No free stock – CTQ', 'Нет на складе – CTQ'), 'b-no'], nodel: [L('Not delivered – CTQ', 'Не поставлено – CTQ'), 'b-no'], len: [L('Pipe length to confirm', 'Уточнить длину трубы'), 'b-no']};
+  const nf = v => fmtn(Math.round(v * 100) / 100);
+  const comp = x => RU ? x.ru : x.en;
+  const comp3 = x => `${esc(comp(x))}<div style="font-size:11px;color:var(--mut)">${esc(RU ? x.en : x.ru)} · ${esc(x.tr)}</div>`;
   TY.sum = function () { if (!TY.d) return L('loading…', 'загрузка…'); const I = TY.I; const dn = I.filter(x => stOf(x) === 'Completed').length;
-    const c = k => TY.M.filter(m => m.st === k).length;
-    return `${dn}/${I.length} ${L('IWP lines done', 'строк IWP выполнено')} · ${L('MRF ready', 'к MRF')} ${c('mrf') + c('part')} · CTQ ${c('ctq')}`; };
-  TY.tile = function () { if (PRJ !== 'G2-B1301FX0' && PRJ !== 'CCR') return '';
-    return `<button class="tile main" style="min-height:auto;width:100%;margin-bottom:6px;background:#0b6e6e;border-color:#0b6e6e;color:#fff" onclick="go('#/ty')"><b>🧱 ${L('TRAY INSTALLATION – G2-B1301FX0', 'МОНТАЖ ЛОТКОВ – G2-B1301FX0')}</b><span class="n" id="tyn" style="color:#d8f0f0">${TY.sum()}</span></button>`; };
-  // ---------- pages ----------
+    const c = k => TY.M.filter(m => m.st === k).length; const pend = TY.st().e.filter(e => !e.sent).length;
+    return `${dn}/${I.length} ${L('IWP lines done', 'строк IWP выполнено')} · MRF ${c('mrf') + c('part')} · CTQ ${c('ctq') + c('nodel')}${pend ? ' · ' + pend + ' ' + L('not sent', 'не отправлено') : ''}`; };
+  TY.tile = function () { if (TY.mine() || PRJ !== 'CCR') return '';
+    return `<button class="tile main" style="min-height:auto;width:100%;margin-bottom:6px;background:#0b6e6e;border-color:#0b6e6e;color:#fff" onclick="projSwitch('G2-B1301FX0')"><b>🧱 ${L('TRAY INSTALLATION – G2-B1301FX0', 'МОНТАЖ ЛОТКОВ – G2-B1301FX0')}</b><span class="n" id="tyn" style="color:#d8f0f0">${TY.sum()}</span></button>`; };
+  // ---------- routing ----------
   TY.route = function (rest) { const k = rest[0] || '', a = dec(rest.slice(1).join('/'));
     if (!TY.d) { main.innerHTML = '<div class="empty">Loading…</div>'; TY.load(); return; }
-    if (k === 'l') return list(a); if (k === 'i') return line(a); if (k === 'm') return mats(a); if (k === 'mi') return matItem(a);
-    if (k === 'mrf') return mrf(a); if (k === 'ctq') return ctq(); if (k === 'tp') return typs(); if (k === 'd') return daily(); return home(); };
-  function teamBox(t) { const I = TY.I.filter(x => x.team === t); if (!I.length) return '';
-    const byU = {}; I.forEach(x => { const u = x.unit || '-'; byU[u] = byU[u] || [0, 0]; byU[u][0] += x.qty; byU[u][1] += total(x); });
-    const dn = I.filter(x => stOf(x) === 'Completed').length;
-    return `<button class="li" onclick="go('#/ty/l/${t}')"><div class="m"><div class="t" style="color:${TEAM[t][1]}">${TEAM[t][0]} · ${dn}/${I.length} ${L('lines done', 'строк')}</div><div class="s">${Object.entries(byU).map(([u, v]) => `${nf(v[1])} / ${nf(v[0])} ${esc(u)} · ${L('left', 'осталось')} ${nf(v[0] - v[1])}`).join('<br>')}</div></div><span class="chev">›</span></button>`; }
-  function home() { const d = TY.d; setHead(L('Tray G2-B1301FX0', 'Лотки G2-B1301FX0'), `${L('data', 'данные')} ${d.date} · ATHP-SF + EMSV-SF`);
-    const c = k => TY.M.filter(m => m.st === k).length; const st = TY.st();
-    const pend = st.e.filter(x => !x.sent).length;
-    main.innerHTML = '<div data-nt>' + `<div style="background:linear-gradient(135deg,#0b6e6e,#13959a);color:#fff;border-radius:12px;padding:12px 14px;margin-bottom:8px"><div style="font-size:17px;font-weight:700">🧱 ${L('Cable tray installation · G2-B1301FX0', 'Монтаж кабельных лотков · G2-B1301FX0')}</div><div style="font-size:12px;opacity:.9">${esc(L(d.note, 'Письмо руководителя 16.11.2026: сначала лотки и опорные профили, день + ночь; бригада A – лотки на готовые опоры, бригада B – изготовление и монтаж опор.'))}</div><div style="font-size:11px;opacity:.8;margin-top:4px">${d.scope.map(esc).join(' · ')}</div></div>
-     <div class="sect">${L('Progress by team (IWP + site entry)', 'Прогресс по бригадам (IWP + ввод)')}</div><div class="list">${['A', 'B', 'C'].map(teamBox).join('')}</div>
-     <div class="sect">${L('Material', 'Материалы')}</div><div class="list">
-      <button class="li" onclick="go('#/ty/m/mrf')"><div class="m"><div class="t">📦 ${L('New MRF – stock available', 'Новый MRF – склад есть')} · ${c('mrf')} + ${L('part', 'частично')} ${c('part')}</div><div class="s">${L('raise now – stock is shared with other titles', 'оформить сейчас – склад общий')}</div></div><span class="chev">›</span></button>
-      <button class="li" onclick="go('#/ty/ctq')"><div class="m"><div class="t">⚠️ ${L('No free stock – CTQ to client', 'Нет на складе – CTQ заказчику')} · ${c('ctq') + c('part')}</div><div class="s">${L('do not plan these fronts until delivery is confirmed', 'не планировать до подтверждения поставки')}</div></div><span class="chev">›</span></button>
-      <button class="li" onclick="go('#/ty/m/')"><div class="m"><div class="t">🗂 ${L('All tray material', 'Все материалы лотков')} · ${TY.M.length}</div><div class="s">${L('required (SF) · MRF · warehouse · status', 'потребность · MRF · склад · статус')}</div></div><span class="chev">›</span></button>
-      <button class="li" onclick="go('#/ty/mrf')"><div class="m"><div class="t">📝 ${L('MRF drafts by material', 'Проекты MRF по материалам')}</div><div class="s">${[...new Set(TY.M.filter(m => m.newmrf > 0).map(m => m.sheet))].join(' · ')}</div></div><span class="chev">›</span></button></div>
-     <div class="sect">${L('Site', 'Площадка')}</div><div class="list">
-      <button class="li" onclick="go('#/ty/d')"><div class="m"><div class="t">✍️ ${L('Daily entry / report', 'Ежедневный ввод / отчёт')} · ${st.e.length} ${L('entries', 'записей')}${pend ? ` · <b style="color:#c55a11">${pend} ${L('not sent', 'не отправлено')}</b>` : ''}</div><div class="s">${L('qty per access ID, day / night shift, men', 'объём по access ID, смена, люди')}</div></div><span class="chev">›</span></button>
-      <button class="li" onclick="go('#/ty/tp')"><div class="m"><div class="t">📐 ${L('Typicals to follow', 'Типовые узлы')}</div><div class="s">GLE-(G0-Z00000X0)-EL-ZX-002 rev 04 · ${L('referenced on the routing drawings', 'ссылки на чертежах трасс')}</div></div><span class="chev">›</span></button></div>` + '</div>'; }
+    const W = '<div data-nt>', E = '</div>';
+    const R = {l: list, i: line, m: mats, mi: matItem, ctq, tp: typs, d: daily, r: reports, rp: repPage, dw: dwgs}[k];
+    const h = R ? R(a) : home(); if (typeof h === 'string') main.innerHTML = W + h + E; };
+  const T2 = (h, b, n, p, cls, sty) => `<button class="tile ${cls || ''}" style="${sty || ''}" onclick="${h.startsWith('#') ? `go('${h}')` : h}"><b>${b}</b><div><span class="n">${n}</span>${p != null ? `<div class="pc">${p}%</div><div class="pbar"><i style="width:${p}%"></i></div>` : ''}</div></button>`;
+  function teamStat(t) { const I = TY.I.filter(x => !t || x.team === t); return {n: I.length, d: I.filter(x => stOf(x) === 'Completed').length, ip: I.filter(x => stOf(x) === 'In progress').length}; }
+  function wtStat(k) { const I = TY.I.filter(x => x.wt === k); return {q: I.reduce((a, x) => a + x.qty, 0), f: I.reduce((a, x) => a + Math.min(total(x), x.qty), 0), u: (I[0] || {}).unit || '', n: I.length}; }
+  // ---------- main menu ----------
+  function home() { const d = TY.d; setHead(L('Tray G2-B1301FX0', 'Лотки G2-B1301FX0') + ' · GPP E&I', `v${typeof APPV !== 'undefined' ? APPV : ''} · ${L('data', 'данные')} ${d.date} · ATHP-SF + EMSV-SF`);
+    const st = TY.st(); const pend = st.e.filter(e => !e.sent).length; const all = teamStat(); const c = k => TY.M.filter(m => m.st === k).length;
+    const s1 = wtStat('straight'), s2 = wtStat('profile');
+    return `${TY.mine() && typeof projBar === 'function' ? projBar() : ''}
+     <div style="background:linear-gradient(135deg,#0b6e6e,#13959a);color:#fff;border-radius:12px;padding:12px 14px;margin-bottom:8px"><div style="font-size:17px;font-weight:700">🧱 ${L('Cable tray installation · G2-B1301FX0', 'Монтаж кабельных лотков · G2-B1301FX0')}</div><div style="font-size:12px;opacity:.92">${L('Demethanizer Area, Train 2 · two teams, day + night · cable trays and support profiles first', 'Деметанизация, линия 2 · две бригады, день + ночь · сначала лотки и профили опор')}</div></div>
+     <div class="kpi"><div><b>${all.n}</b><span>${L('IWP lines', 'строк IWP')}</span></div><div><b style="color:var(--ok)">${pc(all.d, all.n)}%</b><span>${L('lines done', 'выполнено')}</span></div><div><b>${pc(s1.f, s1.q)}%</b><span>${L('straight tray', 'прямые лотки')}</span></div><div><b>${pc(s2.f, s2.q)}%</b><span>${L('profiles', 'профили')}</span></div></div>
+     <button class="tile main" style="width:100%;min-height:auto;margin-bottom:4px;background:${pend ? '#c55a11' : 'var(--pri)'};border-color:${pend ? '#c55a11' : 'var(--pri)'}" onclick="TY.report()"><b>📤 ${L('Send report to Paul', 'Отправить отчёт Паулю')} · ${pend} ${L('new tray progress lines', 'новых строк прогресса')}</b><span class="n">👷 ${esc(who() || L('tap to set your name', 'укажите имя'))} · ${L('MAX progress group', 'группа прогресса MAX')}</span></button>
+     <div class="sect">🏗️ ${L('Construction', 'Монтаж')}</div><div class="grid">
+      ${['A', 'B', 'C'].map(t => { const s = teamStat(t); return T2('#/ty/l/' + t, `${TEAM[t][0]}`, `${s.d}/${s.n} ${L('lines done', 'выполнено')} · ${s.ip} ${L('in progress', 'в работе')}`, pc(s.d, s.n), 'main'); }).join('')}
+      ${T2('#/ty/l/', L('All IWP lines · search', 'Все строки IWP · поиск'), `${all.n} ${L('access IDs', 'access ID')}`)}
+      ${T2('#/ty/d', L('✍️ Daily entry list', '✍️ Ежедневные записи'), `${st.e.length} ${L('entries', 'записей')} · ${pend} ${L('not sent', 'не отправлено')}`)}</div>
+     <div class="sect">📤 ${L('Reports', 'Отчёты')}</div><div class="grid">
+      ${T2('#/ty/rp/day', L('📅 Daily report', '📅 Дневной отчёт'), L('pick a date · all lines · men per team', 'дата · все строки · люди по бригадам'), null, 'main')}
+      ${T2('#/ty/rp/week', L('🗓 Weekly report', '🗓 Недельный отчёт'), L('7 days · qty by work type and team', '7 дней · объём по видам работ'), null, 'main')}
+      ${T2('#/ty/rp/status', L('📊 Progress status', '📊 Статус прогресса'), L('by team · work type · drawing', 'по бригадам · видам работ · чертежам'), null, 'main')}
+      ${T2('#/ty/rp/mat', L('📦 Material & MRF report', '📦 Материалы и MRF'), `${c('mrf') + c('part')} MRF · ${c('ctq') + c('nodel')} CTQ`, null, 'main')}
+      ${T2('#/ty/rp/ctq', L('⚠️ CTQ material report', '⚠️ CTQ по материалам'), L('no free stock – for the client', 'нет на складе – для заказчика'))}
+      ${T2('TY.csv()', L('⬇ Excel export (CSV)', '⬇ Экспорт в Excel (CSV)'), L('for the Daily Entry sheet', 'для листа Daily Entry'))}
+      ${T2('#/ty/rp/last', L('↩ Last report sent', '↩ Последний отчёт'), st.lastT ? esc(st.lastT) : L('none yet', 'ещё нет'))}</div>
+     <div class="sect">📦 ${L('Materials', 'Материалы')}</div><div class="grid">
+      ${T2('#/ty/m/mrf', L('📝 MRF ready – stock OK', '📝 MRF готов – склад есть'), `${c('mrf')} + ${c('part')} ${L('part', 'частично')}`, null, 'main')}
+      ${T2('#/ty/ctq', L('⚠️ No stock – CTQ', '⚠️ Нет на складе – CTQ'), `${c('ctq') + c('nodel') + c('part')} ${L('items', 'позиций')}`, null, 'main')}
+      ${T2('#/ty/m/rec', L('✅ Received on MRF', '✅ Получено по MRF'), `${TY.M.filter(m => m.rec).length} ${L('items · who / when', 'позиций · кто / когда')}`)}
+      ${T2('#/ty/m/', L('🗂 All tray material', '🗂 Все материалы'), `${TY.M.length} ${L('idents · SF vs stock', 'идентов · SF и склад')}`)}</div>
+     <div class="sect">📐 ${L('Documents', 'Документы')}</div><div class="grid">
+      ${T2('#/ty/tp', L('📐 Typicals to follow', '📐 Типовые узлы'), 'GLE-(G0-Z00000X0)-EL-ZX-002 rev 04')}
+      ${T2('#/ty/dw', L('📄 Scope drawings', '📄 Чертежи объёма'), (d.scope || []).length + ' ' + L('documents', 'документов'))}</div>
+     <div class="sect">🏭 ${L('Whole title G2-B1301FX0', 'Весь титул G2-B1301FX0')}</div><div class="grid">
+      ${T2('#/axh', L('Cables · IWP · punch list (all disciplines)', 'Кабели · IWP · панч-лист (все)'), L('client master punch list 14.11.2026', 'мастер панч-лист 14.11.2026'))}</div>
+     <div class="foot">${esc(d.note || '')}<br>${L('MRF forms (signatures, gate pass, IWP request for Burak): ', 'Формы MRF: ')}${esc(d.mrffile || '')}</div>`; }
+  // ---------- lists ----------
   function list(f) { const [t, q0] = String(f || '').split('|'); setHead(t ? TEAM[t][0] : L('IWP lines', 'Строки IWP'), 'G2-B1301FX0');
     let I = TY.I.filter(x => !t || x.team === t); const q = (q0 || '').toLowerCase();
-    if (q) I = I.filter(x => (x.acc + ' ' + x.tag + ' ' + x.map + ' ' + x.dwg).toLowerCase().includes(q));
-    I = I.slice().sort((a, b) => ({'In progress': 0, 'Not started': 1, 'Waiting supports': 2, Completed: 3}[stOf(a)] - {'In progress': 0, 'Not started': 1, 'Waiting supports': 2, Completed: 3}[stOf(b)]) || a.map.localeCompare(b.map));
-    main.innerHTML = '<div data-nt>' + `<input class="search" style="width:100%;margin-bottom:8px" placeholder="${L('search access ID / item', 'поиск access ID / позиции')}" value="${esc(q0 || '')}" onchange="go('#/ty/l/'+enc('${t || ''}|'+this.value))">
-     <div class="list">${I.map(x => `<button class="li" onclick="go('#/ty/i/${enc(x.acc)}')"><div class="m"><div class="t">${esc(x.tag)}</div><div class="s">ID ${esc(x.acc)} · ${esc(x.map)} · ${nf(total(x))}/${nf(x.qty)} ${esc(x.unit)} · ${esc(x.typ.join(', '))}</div></div><span class="badge ${STC[stOf(x)]}" data-nt>${esc(stOf(x))}</span><span class="chev">›</span></button>`).join('') || '<div class="empty">–</div>'}</div>` + '</div>'; }
+    if (q) I = I.filter(x => (x.acc + ' ' + x.tag + ' ' + x.en + ' ' + x.ru + ' ' + x.tr + ' ' + x.dwg + ' ' + x.iwp).toLowerCase().includes(q));
+    const O = {'In progress': 0, 'Not started': 1, 'Waiting supports': 2, Completed: 3};
+    I = I.slice().sort((a, b) => O[stOf(a)] - O[stOf(b)] || a.wt.localeCompare(b.wt) || a.tag.localeCompare(b.tag));
+    return `<input class="search" style="width:100%;margin-bottom:8px" placeholder="${L('search access ID / item / drawing', 'поиск access ID / позиции / чертежа')}" value="${esc(q0 || '')}" onchange="go('#/ty/l/'+enc('${t || ''}|'+this.value))">
+     <div class="list">${I.map(x => `<button class="li" onclick="go('#/ty/i/${enc(x.acc)}')"><div class="m"><div class="t">${comp3(x)}</div><div class="s">ID ${esc(x.acc)} · IWP -${esc(x.iwp.split('-').pop())} · ${nf(total(x))}/${nf(x.qty)} ${esc(x.unit)} · ${esc(x.typ.join(', '))}</div></div><span class="badge ${STC[stOf(x)]}">${STL[stOf(x)]}</span><span class="chev">›</span></button>`).join('') || '<div class="empty">' + L('Nothing found', 'Ничего не найдено') + '</div>'}</div>`; }
   function line(acc) { const x = TY.by[acc]; if (!x) return home(); const st = TY.st(); setHead('ID ' + acc, x.tag);
     const T = TY.d.typ; const sup = st.sup[acc] || '';
-    main.innerHTML = '<div data-nt>' + `<div class="card"><div class="h3">${esc(x.tag)}</div><div class="kv"><b>${L('Team', 'Бригада')}</b> ${TEAM[x.team][0]}<br><b>IWP</b> ${esc(x.iwp)}<br><b>${L('Item', 'Тип')}</b> ${esc(x.map)} · BoQ ${esc(x.boq)}<br><b>${L('Drawing', 'Чертёж')}</b> ${esc(x.dwg)} rev ${esc(x.rev)}<br>
-      <b>${L('Planned', 'План')}</b> ${nf(x.qty)} ${esc(x.unit)} · <b>${L('IWP done', 'По IWP')}</b> ${nf(x.fact)} · <b>${L('Site entry', 'Ввод')}</b> ${nf(doneSite(acc))} · <b>${L('Left', 'Осталось')}</b> ${nf(rem(x))}<br><b>${L('Responsible (IWP)', 'Ответственный')}</b> ${esc(x.resp)} ${x.comp ? '· ' + esc(x.comp) : ''}</div></div>
-     <div class="sect">📐 ${L('Typical to follow', 'Типовой узел')}</div><div class="card">${x.typ.map(k => `<div style="margin-bottom:6px"><b>GLE-(G0-Z00000X0)-EL-${esc(k)}</b><br>${esc((T[k] || ['', ''])[RU ? 1 : 0] || (T[k] || [''])[0])}</div>`).join('')}<div style="font-size:12px;color:var(--mut)">${x.onref ? L('This sheet is referenced on the routing drawing.', 'Лист указан на чертеже трассы.') : L('Chosen by item type – check the section / detail on the routing drawing before installation.', 'Выбран по типу – проверить разрез / узел на чертеже трассы.')}</div></div>
-     ${x.team === 'A' ? `<div class="sect">${L('Supports at this front ready?', 'Опоры на этом участке готовы?')}</div><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><button class="tile ${sup === 'Y' ? 'main' : ''}" style="min-height:auto" onclick="TY.sup('${esc(acc)}','Y')"><b>✅ ${L('Yes – Team A', 'Да – бригада A')}</b></button><button class="tile ${sup === 'N' ? 'main' : ''}" style="min-height:auto" onclick="TY.sup('${esc(acc)}','N')"><b>⛔ ${L('No – Team B first', 'Нет – сначала бригада B')}</b></button></div>` : ''}
-     <div class="sect">${L('Add progress', 'Добавить объём')}</div><div class="card"><div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px"><input id="tyq" type="number" step="any" placeholder="${L('qty', 'объём')} (${esc(x.unit)})"><select id="tys"><option value="D">${L('Day', 'День')}</option><option value="N">${L('Night', 'Ночь')}</option></select><input id="tym" type="number" placeholder="${L('men', 'чел.')}"></div><input id="tyr" style="width:100%;margin-top:6px" placeholder="${L('remark / delay reason', 'примечание / причина')}"><button class="tile main" style="min-height:auto;width:100%;margin-top:6px" onclick="TY.add('${esc(acc)}')"><b>➕ ${L('Save', 'Сохранить')}</b></button></div>
-     ${st.e.filter(e => e.acc === acc).map(e => `<div class="li"><div class="m"><div class="t">${esc(e.d)} · ${e.s === 'N' ? L('night', 'ночь') : L('day', 'день')} · ${nf(e.q)} ${esc(x.unit)}${e.m ? ' · ' + e.m + ' ' + L('men', 'чел.') : ''}</div><div class="s">${esc(e.r || '')}${e.sent ? ' · ✔ ' + L('sent', 'отправлено') : ''}</div></div></div>`).join('')}` + '</div>'; }
-  TY.sup = function (acc, v) { const st = TY.st(); st.sup[acc] = v; TY.save(); line(acc); };
-  TY.add = function (acc) { const q = Number(document.getElementById('tyq').value); if (!(q > 0)) { if (window.toast) toast(L('Enter a quantity', 'Введите объём')); return; }
-    const st = TY.st(); st.e.push({acc, d: today(), q, s: document.getElementById('tys').value, m: Number(document.getElementById('tym').value) || 0, r: document.getElementById('tyr').value.trim(), sent: 0}); TY.save(); line(acc); };
-  function daily() { const st = TY.st(); setHead(L('Daily entry / report', 'Ежедневный ввод / отчёт'), 'G2-B1301FX0');
-    const pend = st.e.filter(e => !e.sent);
-    const txt = ['G2-B1301FX0 tray – ' + today(), ...pend.map(e => { const x = TY.by[e.acc] || {}; return `ID ${e.acc} · ${x.tag || ''} · ${e.s === 'N' ? 'night' : 'day'} · ${nf(e.q)} ${x.unit || ''}${e.m ? ' · ' + e.m + ' men' : ''}${e.r ? ' · ' + e.r : ''}`; })].join('\n');
-    main.innerHTML = '<div data-nt>' + `<div class="card"><div class="kv">${L('Add progress from the IWP line page (tap a line in the team list).', 'Ввод объёма – на странице строки IWP.')}</div></div>
-     <div class="sect">${L('Not sent', 'Не отправлено')} · ${pend.length}</div><textarea id="rtx" style="width:100% + '</div>';height:180px">${esc(txt)}</textarea>
-     <button class="tile main" style="min-height:auto;width:100%;margin-top:6px" onclick="TY.send()"><b>📤 ${L('Copy report and mark as sent', 'Скопировать отчёт и отметить')}</b></button>
-     <div class="sect">${L('All entries', 'Все записи')} · ${st.e.length}</div><div class="list">${st.e.slice().reverse().map(e => { const x = TY.by[e.acc] || {}; return `<button class="li" onclick="go('#/ty/i/${enc(e.acc)}')"><div class="m"><div class="t">${esc(e.d)} · ID ${esc(e.acc)} · ${nf(e.q)} ${esc(x.unit || '')}</div><div class="s">${esc(x.tag || '')} ${e.sent ? '· ✔' : ''}</div></div></button>`; }).join('') || '<div class="empty">–</div>'}</div>`; }
-  TY.send = async function () { const t = document.getElementById('rtx').value; const ok = await copyText(t); const st = TY.st(); st.e.forEach(e => e.sent = 1); TY.save(); if (window.toast) toast(ok ? L('Copied – paste in MAX', 'Скопировано – вставьте в MAX') : L('Select the text and copy', 'Выделите и скопируйте')); daily(); };
+    return `<div class="card"><div class="h3">${esc(x.en)}</div><div style="font-size:13px">${esc(x.ru)}<br>${esc(x.tr)}</div><div style="font-size:11px;color:var(--mut);margin:4px 0">IWP tag: ${esc(x.tag)}</div>
+      <div class="kv"><b>${L('Team', 'Бригада')}</b> ${TEAM[x.team][0]}<br><b>IWP</b> ${esc(x.iwp)}<br><b>${L('Item', 'Тип')}</b> ${esc(x.map)} · BoQ ${esc(x.boq)}<br><b>${L('Drawing', 'Чертёж')}</b> ${esc(x.dwg)} rev ${esc(x.rev)}<br>
+      <b>${L('Planned', 'План')}</b> ${nf(x.qty)} ${esc(x.unit)} · <b>${L('IWP done', 'По IWP')}</b> ${nf(x.fact)} · <b>${L('Site entry', 'Ввод')}</b> ${nf(doneSite(acc))} · <b>${L('Left', 'Осталось')}</b> ${nf(rem(x))}<br><b>${L('Responsible (IWP)', 'Ответственный')}</b> ${esc(x.resp)}</div></div>
+     <div class="sect">📐 ${L('Typical to follow', 'Типовой узел')}</div><div class="card">${x.typ.map(k => `<div style="margin-bottom:6px"><b>GLE-(G0-Z00000X0)-EL-${esc(k)}</b><br>${esc((T[k] || ['', ''])[RU ? 1 : 0] || (T[k] || ['', ''])[1] || '')}</div>`).join('')}<div style="font-size:12px;color:var(--mut)">${x.onref ? L('This sheet is referenced on the routing drawing.', 'Лист указан на чертеже трассы.') : L('Selected by item type – confirm on the routing drawing.', 'Выбран по типу – проверить на чертеже трассы.')}</div></div>
+     ${x.team === 'A' ? `<div class="sect">${L('Supports at this front ready?', 'Опоры на этом участке готовы?')}</div><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><button class="tile ${sup === 'Y' ? 'main' : ''}" style="min-height:auto" onclick="TY.sup('${esc(acc)}','Y')"><b>✅ ${L('Yes – Team A can work', 'Да – бригада A работает')}</b></button><button class="tile ${sup === 'N' ? 'main' : ''}" style="min-height:auto" onclick="TY.sup('${esc(acc)}','N')"><b>⏳ ${L('No – wait for Team B', 'Нет – ждём бригаду B')}</b></button></div>` : ''}
+     <div class="sect">${L('Add progress', 'Добавить объём')}</div><div class="card"><div style="display:grid;grid-template-columns:1fr 1fr;gap:6px"><input id="tyq" class="fin" type="number" step="any" inputmode="decimal" placeholder="${L('qty', 'объём')} (${esc(x.unit)}) – ${L('left', 'осталось')} ${nf(rem(x))}"><input id="tydt" class="fin" type="date" value="${iso(Date.now())}">
+      <select id="tys" class="fin"><option value="D">${L('Day shift', 'Дневная смена')}</option><option value="N">${L('Night shift', 'Ночная смена')}</option></select><input id="tym" class="fin" type="number" inputmode="numeric" placeholder="${L('men', 'чел.')}"></div>
+      <input id="tyr" class="fin" placeholder="${L('remark / hold point (optional)', 'примечание (необязательно)')}"><button class="tile main" style="min-height:auto;width:100%" onclick="TY.add('${esc(acc)}')"><b>${L('Save', 'Сохранить')}</b><span class="n">👷 ${esc(who() || L('set your name first', 'сначала имя'))}</span></button></div>
+     ${st.e.filter(e => e.acc === acc).map(e => `<div class="li"><div class="m"><div class="t">${ds(e.t)} · ${e.s === 'N' ? L('night', 'ночь') : L('day', 'день')} · ${nf(e.q)} ${esc(x.unit)}${e.m ? ' · ' + e.m + ' ' + L('men', 'чел.') : ''}</div><div class="s">${esc(e.by || '')}${e.r ? ' · ' + esc(e.r) : ''}${e.sent ? ' · ✔ ' + L('sent', 'отправлено') : ''}</div></div>${e.sent ? '' : `<span class="tg" style="padding:8px 10px" onclick="TY.del(${e.t})">✕</span>`}</div>`).join('')}`; }
+  TY.sup = function (acc, v) { const st = TY.st(); st.sup[acc] = v; TY.save(); route(); };
+  TY.add = function (acc) { if (!who()) return askPName(`TY.add('${acc}')`); const q = Number(document.getElementById('tyq').value); if (!(q > 0)) { if (window.toast) toast(L('Enter a quantity', 'Введите объём')); return; }
+    const x = TY.by[acc]; if (x && total(x) + q > x.qty * 1.0001 && !confirm(L('This is more than the BoQ quantity left. Save anyway?', 'Больше остатка по BoQ. Сохранить?'))) return;
+    const d = isoTs(document.getElementById('tydt').value); const st = TY.st(); let t = d; while (st.e.some(e => e.t === t)) t++;
+    st.e.push({acc, t, d: ds(d), q, s: document.getElementById('tys').value, m: Number(document.getElementById('tym').value) || 0, r: document.getElementById('tyr').value.trim(), by: who(), sent: 0});
+    TY.save(); if (window.toast) toast(L('Saved', 'Сохранено')); route(); };
+  TY.del = function (t) { const st = TY.st(); const i = st.e.findIndex(e => e.t === t && !e.sent); if (i < 0) return; if (!confirm(L('Delete this entry?', 'Удалить запись?'))) return; st.e.splice(i, 1); TY.save(); route(); };
+  function daily() { const st = TY.st(); setHead(L('Daily entries', 'Ежедневные записи'), 'G2-B1301FX0');
+    return `<div class="card"><div class="kv">${L('Add progress on the IWP line page (team list → access ID). Unsent entries can be deleted with ✕.', 'Объём вводится на странице строки IWP. Неотправленную запись можно удалить ✕.')}</div></div>
+     <button class="tile main" style="min-height:auto;width:100%;margin-bottom:8px" onclick="TY.report()"><b>📤 ${L('Send report to Paul', 'Отправить отчёт Паулю')} · ${st.e.filter(e => !e.sent).length}</b><span class="n">${L('MAX progress group', 'группа прогресса MAX')}</span></button>
+     <div class="list">${st.e.slice().sort((a, b) => b.t - a.t).map(e => { const x = TY.by[e.acc] || {}; return `<button class="li" onclick="go('#/ty/i/${enc(e.acc)}')"><div class="m"><div class="t">${ds(e.t)} · ${e.s === 'N' ? L('night', 'ночь') : L('day', 'день')} · ID ${esc(e.acc)} · ${nf(e.q)} ${esc(x.unit || '')}${e.m ? ' · ' + e.m + ' ' + L('men', 'чел.') : ''}</div><div class="s">${esc(x.en ? comp(x) : '')} · ${esc(e.by || '')}${e.sent ? ' · ✔ ' + L('sent', 'отправлено') : ' · <b style="color:#c55a11">' + L('not sent', 'не отправлено') + '</b>'}</div></div><span class="chev">›</span></button>`; }).join('') || '<div class="empty">' + L('No entries yet', 'Записей нет') + '</div>'}</div>`; }
+  // ---------- reports ----------
+  const ln = e => { const x = TY.by[e.acc] || {}; return [e.acc, nf(e.q).replace(/ /g, ''), x.unit || '', ds(e.t), e.s === 'N' ? 'Night/Ночь' : 'Day/День', e.m || '', x.en || '', x.ru || '', e.by || '', e.r || ''].join('\t'); };
+  const HDR = ['Access ID', 'Qty', 'Unit', 'Date', 'Shift', 'Men', 'Component', 'Компонент', 'By', 'Remark'].join('\t');
+  function progText(E) { const by = [...new Set(E.map(e => e.by).filter(Boolean))].join(', ') || who();
+    return `Reported by / Отчёт: ${by} · ${nowS()}\nG2-B1301FX0 cable tray progress – RHI (${E.length} lines) / Прогресс монтажа лотков\n${HDR}\n` + E.map(ln).join('\n'); }
+  TY.report = function () { if (!who()) return askPName('TY.report()'); const st = TY.st(); const E = st.e.filter(e => !e.sent).sort((a, b) => a.t - b.t);
+    if (!E.length) return modalP(`<div class="h3">${L('Nothing new to report', 'Нет новых строк')}</div><p style="font-size:14px">${L('All entries are already sent.', 'Все записи уже отправлены.')}</p>${st.last ? `<button class="tile" style="width:100%;min-height:auto" onclick="closeP();go('#/ty/rp/last')">${L('Show last sent report again', 'Показать последний отчёт')}</button>` : ''}<button class="tile" style="width:100%;min-height:auto;margin-top:8px" onclick="closeP()">${L('Close', 'Закрыть')}</button>`);
+    TY.REP = {text: progText(E), E}; repModal(L('Progress report → MAX progress group', 'Отчёт о прогрессе → группа MAX'), true); };
+  function repModal(title, mark) {
+    modalP(`<div class="h3">${title}</div><textarea id="rtx" class="fin" style="height:200px;font:12px monospace;white-space:pre" readonly>${esc(TY.REP.text)}</textarea>
+     <button class="tile main" style="width:100%;min-height:auto;margin-bottom:8px" onclick="TY.sendRep(${mark ? 1 : 0})"><b>📤 ${L('Send report to Paul', 'Отправить Паулю')}</b><span class="n">${L('copies the text and opens the MAX group – then paste & send', 'копирует текст и открывает группу MAX – вставьте и отправьте')}</span></button>
+     <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><button class="tile" style="min-height:auto" onclick="copyText(TY.REP.text).then(ok=>toast(ok?'${L('Copied for Paul', 'Скопировано')}':'${L('Select the text and copy', 'Выделите и скопируйте')}'))"><b>📋 ${L('Copy', 'Копировать')}</b></button>
+     <button class="tile" style="min-height:auto" onclick="TY.shareRep(${mark ? 1 : 0})"><b>↗ ${L('Share…', 'Поделиться…')}</b></button></div>
+     ${mark ? `<div style="font-size:12px;color:var(--mut);margin-top:8px">${L('After you open the group, the lines are marked as sent and will not be sent again.', 'После открытия группы строки отмечаются как отправленные.')}</div>` : ''}`); }
+  function markSent() { const R = TY.REP; if (!R || !R.E || !R.E.length) return; const now = Date.now(); const st = TY.st(); R.E.forEach(e => e.sent = now); st.last = R.text; st.lastT = nowS(); TY.save(); R.E = []; }
+  TY.sendRep = async function (mark) { const ok = await copyText(TY.REP.text); const url = typeof maxTo === 'function' ? maxTo(MAX_PROG, TY.REP.text) : MAX_PROG; if (mark) markSent();
+    toast(ok ? L('Copied ✓ – in MAX press and hold, Paste, Send', 'Скопировано ✓ – в MAX вставьте и отправьте') : L('Copy the text, then paste in MAX', 'Скопируйте текст и вставьте в MAX')); setTimeout(() => { window.location.href = url; }, 600); closeP(); route(); };
+  TY.shareRep = function (mark) { if (navigator.share) navigator.share({text: TY.REP.text}).then(() => { if (mark) markSent(); closeP(); route(); }).catch(() => {}); else copyText(TY.REP.text).then(() => toast(L('Copied', 'Скопировано'))); };
+  function reports() { return home(); }
+  function repBox(text, title) { TY.REP = {text, E: []};
+    return `<textarea id="rtx" class="fin" style="height:300px;font:12px monospace;white-space:pre" readonly>${esc(text)}</textarea>
+     <button class="tile main" style="width:100%;min-height:auto;margin-bottom:8px" onclick="TY.sendRep(0)"><b>📤 ${L('Send to Paul', 'Отправить Паулю')}</b><span class="n">${L('copies the text and opens the MAX progress group', 'копирует текст и открывает группу MAX')}</span></button>
+     <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><button class="tile" style="min-height:auto" onclick="copyText(TY.REP.text).then(ok=>toast(ok?'${L('Copied', 'Скопировано')}':'${L('Select the text and copy', 'Выделите и скопируйте')}'))"><b>📋 ${L('Copy', 'Копировать')}</b></button><button class="tile" style="min-height:auto" onclick="TY.shareRep(0)"><b>↗ ${L('Share…', 'Поделиться…')}</b></button></div>`; }
+  TY.rd = function (k, v) { TY['_' + k] = v; route(); };
+  function repPage(k) { const st = TY.st(); const E = st.e;
+    if (k === 'last') { setHead(L('Last report sent', 'Последний отчёт'), st.lastT || ''); return st.last ? repBox(st.last) : '<div class="empty">' + L('No report sent yet', 'Отчётов ещё нет') + '</div>'; }
+    if (k === 'day') { const day = TY._day || iso(Date.now()); const dd = ds(isoTs(day)); setHead(L('Daily report', 'Дневной отчёт'), dd);
+      const D = E.filter(e => ds(e.t) === dd).sort((a, b) => (a.s > b.s) - (a.s < b.s) || a.t - b.t);
+      const men = s => D.filter(e => e.s === s).reduce((a, e) => a + (e.m || 0), 0);
+      const tm = t => D.filter(e => (TY.by[e.acc] || {}).team === t);
+      let txt = `G2-B1301FX0 cable tray – daily report / Дневной отчёт / Günlük rapor · ${dd}\nRHI (Rencons) · ${L('by', 'от')} ${who()} · ${nowS()}\n`;
+      txt += `Lines / Строк: ${D.length} · Men day / Люди день: ${men('D')} · Men night / Люди ночь: ${men('N')}\n`;
+      ['A', 'B', 'C'].forEach(t => { const X = tm(t); if (X.length) txt += `\n${TEAM[t][2]} – ${X.length} lines, ${X.reduce((a, e) => a + (e.m || 0), 0)} men\n` + X.map(e => { const x = TY.by[e.acc] || {}; return `  ${e.s === 'N' ? 'N' : 'D'} · ID ${e.acc} · ${nf(e.q)} ${x.unit || ''} · ${x.en || ''} / ${x.ru || ''}${e.r ? ' · ' + e.r : ''}`; }).join('\n') + '\n'; });
+      if (!D.length) txt += '\n' + L('No entries on this date.', 'Нет записей за эту дату.');
+      return `<div class="card"><input class="fin" type="date" value="${day}" onchange="TY.rd('day',this.value)"></div>` + repBox(txt); }
+    if (k === 'week') { const end = TY._wend || iso(Date.now()); const e1 = isoTs(end) + 12 * 3600e3, s1 = e1 - 7 * 86400e3; setHead(L('Weekly report', 'Недельный отчёт'), ds(s1 + 3600e3) + ' – ' + ds(e1 - 3600e3));
+      const W = E.filter(e => e.t > s1 && e.t <= e1); const by = {}; W.forEach(e => { const x = TY.by[e.acc] || {}; const kk = (x.wt || '?') + '|' + (x.unit || ''); by[kk] = by[kk] || {q: 0, n: 0}; by[kk].q += e.q; by[kk].n++; });
+      let txt = `G2-B1301FX0 cable tray – weekly report / Недельный отчёт / Haftalık rapor\n${ds(s1 + 3600e3)} – ${ds(e1 - 3600e3)} · RHI (Rencons) · ${who()}\n\nWork type / Вид работ\tQty\tUnit\tLines\tTotal done / BoQ\n`;
+      Object.keys(WT).forEach(w => { const S = wtStat(w); const U = Object.entries(by).filter(([kk]) => kk.startsWith(w + '|')); const q = U.reduce((a, [, v]) => a + v.q, 0), n = U.reduce((a, [, v]) => a + v.n, 0);
+        if (S.n) txt += `${WT[w][1]}\t${nf(q)}\t${S.u}\t${n}\t${nf(S.f)} / ${nf(S.q)} (${pc(S.f, S.q)}%)\n`; });
+      txt += `\nTeam / Бригада\tLines\tMen-shifts\n` + ['A', 'B', 'C'].map(t => { const X = W.filter(e => (TY.by[e.acc] || {}).team === t); return `${TEAM[t][2]}\t${X.length}\t${X.reduce((a, e) => a + (e.m || 0), 0)}`; }).join('\n');
+      return `<div class="card"><div class="kv">${L('Week ending', 'Неделя по')}</div><input class="fin" type="date" value="${end}" onchange="TY.rd('wend',this.value)"></div>` + repBox(txt); }
+    if (k === 'status') { setHead(L('Progress status', 'Статус прогресса'), 'G2-B1301FX0'); const a = teamStat();
+      let txt = `G2-B1301FX0 cable tray – progress status / Статус прогресса / İlerleme durumu · ${nowS()}\nIWP lines / Строк IWP: ${a.d}/${a.n} completed, ${a.ip} in progress\n\nTeam / Бригада\tDone\tIn progress\tLines\n`;
+      txt += ['A', 'B', 'C'].map(t => { const s = teamStat(t); return `${TEAM[t][2]}\t${s.d}\t${s.ip}\t${s.n}`; }).join('\n');
+      txt += `\n\nWork type / Вид работ\tDone\tBoQ\tUnit\t%\n` + Object.keys(WT).map(w => { const S = wtStat(w); return S.n ? `${WT[w][1]}\t${nf(S.f)}\t${nf(S.q)}\t${S.u}\t${pc(S.f, S.q)}%` : ''; }).filter(Boolean).join('\n');
+      txt += `\n\nDrawing / Чертёж\tDone lines\tLines\n` + [...new Set(TY.I.map(x => x.dwg))].map(dw => { const X = TY.I.filter(x => x.dwg === dw); return `${dw}\t${X.filter(x => stOf(x) === 'Completed').length}\t${X.length}`; }).join('\n');
+      const wait = TY.I.filter(x => stOf(x) === 'Waiting supports'); if (wait.length) txt += `\n\nWaiting supports / Ждут опоры: ${wait.length} – ` + wait.map(x => x.acc).join(', ');
+      return repBox(txt); }
+    if (k === 'mat') { setHead(L('Material & MRF report', 'Материалы и MRF'), TY.d.date); const c = s => TY.M.filter(m => m.st === s);
+      let txt = `G2-B1301FX0 cable tray – material & MRF status / Материалы и MRF / Malzeme ve MRF · ${TY.d.date}\nSource: EP-3/EP-12 13.11.2026, RHI MRF follow-up, warehouse issue records\n`;
+      txt += `MRF ready (stock OK) / MRF готов: ${c('mrf').length} · part / частично: ${c('part').length} · no stock CTQ / нет на складе: ${c('ctq').length + c('nodel').length} · received / получено: ${c('covered').length}\n\nMRF ready / MRF готов:\n`;
+      txt += c('mrf').concat(c('part')).map(m => `  ${m.ident} · ${nf(m.newmrf)} ${m.whu}${m.short > 0 ? ' (short ' + nf(m.short) + ')' : ''} · ${m.en || m.ru}`).join('\n');
+      const R = TY.M.filter(m => m.rec); if (R.length) txt += `\n\nReceived on MRF / Получено по MRF:\n` + R.map(m => `  ${m.ident} · ${m.rec}`).join('\n');
+      return repBox(txt); }
+    if (k === 'ctq') { setHead(L('CTQ material report', 'CTQ по материалам'), TY.d.date); const M = TY.M.filter(m => ['ctq', 'nodel', 'part', 'len'].includes(m.st));
+      let txt = `G2-B1301FX0 cable tray – material without free stock / Материалы без свободного остатка / Serbest stok olmayan malzemeler\nRHI (Rencons) · ${TY.d.date} · ${M.length} items\n\nIdent\tStill needed (SF) / Требуется\tShort / Дефицит\tDescription (EN / RU)\n`;
+      txt += M.map(m => `${m.ident}\t${nf(m.need)} ${m.unit}\t${m.st === 'part' ? nf(m.short) + ' ' + m.whu : nf(m.need) + ' ' + m.unit}\t${m.en || '-'} / ${m.ru}`).join('\n');
+      return repBox(txt); }
+    return home(); }
+  TY.csv = function () { const st = TY.st(); const q = v => '"' + String(v == null ? '' : v).replace(/"/g, '""') + '"';
+    const rows = [['Date', 'Shift', 'Team', 'Access ID', 'Component (EN / RU / TR)', 'Unit', 'Qty done', 'Men', 'Supervisor / by', 'Remarks', 'Sent']];
+    st.e.slice().sort((a, b) => a.t - b.t).forEach(e => { const x = TY.by[e.acc] || {}; rows.push([ds(e.t), e.s === 'N' ? 'Night' : 'Day', (TEAM[x.team] || [])[2] || '', e.acc, [x.en, x.ru, x.tr].filter(Boolean).join(' / '), x.unit || '', e.q, e.m || '', e.by || '', e.r || '', e.sent ? ds(e.sent) : '']); });
+    const blob = new Blob(['﻿' + rows.map(r => r.map(q).join(';')).join('\r\n')], {type: 'text/csv;charset=utf-8'});
+    const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'G2-B1301FX0_tray_entries_' + iso(Date.now()) + '.csv'; document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1500);
+    if (window.toast) toast(L('Excel file saved – paste the rows into the Daily Entry sheet', 'Файл сохранён – вставьте строки в лист Daily Entry')); };
+  // ---------- material ----------
   function mats(f) { setHead(L('Tray material', 'Материалы лотков'), 'SF · MRF · ' + L('warehouse', 'склад'));
-    let M = TY.M; if (f === 'mrf') M = M.filter(m => m.st === 'mrf' || m.st === 'part');
+    let M = TY.M; if (f === 'mrf') M = M.filter(m => m.st === 'mrf' || m.st === 'part'); if (f === 'rec') M = M.filter(m => m.rec);
     const cats = [...new Set(M.map(m => m.cat))];
-    main.innerHTML = '<div data-nt>' + cats.map(c => `<div class="sect">${esc(c)}</div><div class="list">${M.filter(m => m.cat === c).map(m => `<button class="li" onclick="go('#/ty/mi/${enc(m.ident)}')"><div class="m"><div class="t">${esc(m.ident)} · ${esc(m.desc.slice(0, 70))}</div><div class="s">${L('need', 'нужно')} ${nf(m.req)} ${esc(m.unit)} · MRF ${nf(m.mrfq)} · ${L('free stock', 'свободно')} ${nf(m.avail)} · ${L('new MRF', 'новый MRF')} ${nf(m.newmrf)}</div></div><span class="badge ${MST[m.st][1]}" data-nt>${MST[m.st][0]}</span></button>`).join('')}</div>`).join('') + '</div>'; }
+    return cats.map(c => `<div class="sect">${esc(c)}</div><div class="list">${M.filter(m => m.cat === c).map(m => `<button class="li" onclick="go('#/ty/mi/${enc(m.ident)}')"><div class="m"><div class="t">${esc(m.ident)} · ${esc((RU ? m.ru : (m.en || m.ru)).slice(0, 80))}</div><div class="s">${f === 'rec' ? esc(m.rec) : `${L('need', 'нужно')} ${nf(m.need)} ${esc(m.unit)} · ${L('free stock', 'свободно')} ${nf(m.avail)} ${esc(m.whu)} · ${L('new MRF', 'новый MRF')} ${nf(m.newmrf)} ${esc(m.whu)}`}</div></div><span class="badge ${MST[m.st][1]}">${MST[m.st][0]}</span></button>`).join('')}</div>`).join('') || '<div class="empty">' + L('Nothing here', 'Пусто') + '</div>'; }
   function matItem(id) { const m = TY.M.find(z => z.ident === id); if (!m) return mats(); setHead(m.ident, m.cat);
-    main.innerHTML = '<div data-nt>' + `<div class="card"><div class="h3">${esc(m.desc)}</div><div class="kv"><b>${L('Warehouse name', 'На складе')}</b> ${esc(m.wh || '—')}<br><b>SF</b> ${esc(m.pos)}<br><b>${L('Required', 'Требуется')}</b> ${nf(m.req)} ${esc(m.unit)}<br><b>${L('Already on MRF', 'Уже по MRF')}</b> ${nf(m.mrfq)} ${esc(m.mrfno)}<br><b>${L('Warehouse stock / reserved / free', 'Склад / резерв / свободно')}</b> ${nf(m.stock)} / ${nf(m.res)} / ${nf(m.avail)}<br><b>${L('New MRF now', 'Новый MRF сейчас')}</b> ${nf(m.newmrf)} · <b>${L('Short after MRF', 'Дефицит')}</b> ${nf(m.short)}<br><span class="badge ${MST[m.st][1]}" data-nt>${MST[m.st][0]}</span></div><div style="font-size:12px;color:var(--mut);margin-top:6px">${L('Warehouse stock is for the whole project. Check the warehouse item matches the SF size before issue.', 'Склад общий для проекта. Проверить соответствие размера по SF.')}</div></div>` + '</div>'; }
-  function mrf(sh) { const S = [...new Set(TY.M.filter(m => m.newmrf > 0).map(m => m.sheet))]; setHead(L('MRF drafts', 'Проекты MRF'), 'G2-B1301FX0');
-    if (!sh) { main.innerHTML = '<div data-nt>' + `<div class="list">${S.map(s => { const M = TY.M.filter(m => m.sheet === s && m.newmrf > 0) + '</div>'; return `<button class="li" onclick="go('#/ty/mrf/${enc(s)}')"><div class="m"><div class="t">${esc(s)} · ${M.length} ${L('lines', 'строк')}</div><div class="s">${esc(M[0].cat)}</div></div><span class="chev">›</span></button>`; }).join('')}</div><div class="card"><div class="kv">${L('MRF No. and date are left blank. IWP only from the IWP list (drawing + BoQ); if missing, message Burak Karatas. Full forms are in the Excel follow-up.', 'Номер и дата MRF – пусто. IWP – только по списку IWP; если нет – сообщить Burak Karatas. Полные формы – в Excel.')}</div></div>`; return; }
-    const M = TY.M.filter(m => m.sheet === sh && m.newmrf > 0);
-    main.innerHTML = '<div data-nt>' + `<div class="list">${M.map((m, i) => `<div class="li"><div class="m"><div class="t">${i + 1}. ${esc(m.ident)} · <b>${nf(m.newmrf)} ${esc(m.unit)}</b></div><div class="s">${esc(m.desc)}<br>${esc(m.pos)}</div></div></div>`).join('')}</div>` + '</div>'; }
-  function ctq() { setHead(L('Material CTQ', 'CTQ по материалам'), L('no free stock', 'нет на складе'));
-    const M = TY.M.filter(m => m.st === 'ctq' || m.st === 'part');
-    main.innerHTML = '<div data-nt>' + `<div class="card"><div class="kv">${L('Items where the follow-up files show no free stock for the SF quantity. Ask the client for delivery date / supply. Not for MRF until stock exists.', 'Позиции без свободного остатка. Запросить у заказчика срок поставки. В MRF – только при наличии на складе.')}</div></div><div class="list">${M.map(m => `<button class="li" onclick="go('#/ty/mi/${enc(m.ident)}')"><div class="m"><div class="t">${esc(m.ident)} · ${L('missing', 'не хватает')} ${nf(m.short)} ${esc(m.unit)}</div><div class="s">${esc(m.desc.slice(0, 90))}</div></div><span class="chev">›</span></button>`).join('')}</div>` + '</div>'; }
+    return `<div class="card"><div class="h3">${esc(m.ident)}</div><div style="font-size:13px"><b>RU</b> ${esc(m.ru)}<br><b>EN</b> ${esc(m.en || '-')}<br><b>TR</b> ${esc(m.tr || '-')}</div>
+     <div class="kv" style="margin-top:6px"><b>SF</b> ${esc(m.dwg)}<br><b>${L('SF quantity', 'По SF')}</b> ${nf(m.req)} ${esc(m.unit)} · <b>${L('received earlier', 'получено')}</b> ${nf(m.done)} · <b>${L('still needed', 'ещё нужно')}</b> ${nf(m.need)}<br>
+     <b>${L('Free stock (General/RHI)', 'Свободный остаток')}</b> ${nf(m.avail)} ${esc(m.whu)}<br><b>${L('New MRF', 'Новый MRF')}</b> ${nf(m.newmrf)} ${esc(m.whu)} · <b>${L('Short → CTQ', 'Дефицит → CTQ')}</b> ${nf(m.short)} ${esc(m.whu)}<br>
+     ${m.rec ? `<b>${L('Received on MRF (No / qty / by / date)', 'Получено по MRF')}</b> ${esc(m.rec)}<br>` : ''}<span class="badge ${MST[m.st][1]}">${MST[m.st][0]}</span></div>
+     <div style="font-size:12px;color:var(--mut);margin-top:6px">${L('Warehouse stock is shared with other titles. MRF forms with gate pass are in the MRF Excel.', 'Склад общий для проекта. Формы MRF с пропуском – в Excel.')}</div></div>`; }
+  function ctq() { setHead(L('No stock – CTQ', 'Нет на складе – CTQ'), L('for the client', 'для заказчика')); const M = TY.M.filter(m => ['ctq', 'nodel', 'part', 'len'].includes(m.st));
+    return `<button class="tile main" style="width:100%;min-height:auto;margin-bottom:8px" onclick="go('#/ty/rp/ctq')"><b>📤 ${L('CTQ material report', 'Отчёт CTQ по материалам')}</b><span class="n">${M.length} ${L('items', 'позиций')}</span></button>
+     <div class="list">${M.map(m => `<button class="li" onclick="go('#/ty/mi/${enc(m.ident)}')"><div class="m"><div class="t">${esc(m.ident)} · ${L('short', 'не хватает')} ${nf(m.st === 'part' ? m.short : m.need)} ${esc(m.st === 'part' ? m.whu : m.unit)}</div><div class="s">${esc((RU ? m.ru : (m.en || m.ru)).slice(0, 90))}</div></div><span class="badge ${MST[m.st][1]}">${MST[m.st][0]}</span></button>`).join('')}</div>`; }
   function typs() { setHead(L('Typicals to follow', 'Типовые узлы'), 'EL-ZX-002 rev 04'); const T = TY.d.typ; const R = TY.d.refs;
-    const used = {}; TY.I.forEach(x => x.typ.forEach(k => { used[k] = used[k] || 0; used[k]++; }));
-    main.innerHTML = '<div data-nt>' + `<div class="sect">${L('Used in this work (IWP lines)', 'Используются (строк IWP)')}</div><div class="list">${Object.keys(used).sort().map(k => `<div class="li"><div class="m"><div class="t">GLE-(G0-Z00000X0)-EL-${esc(k)} · ${used[k]}</div><div class="s">${esc((T[k] || ['', ''])[0])}<br>${esc((T[k] || ['', ''])[1])}</div></div></div>`).join('')}</div>
-     ${Object.entries(R).map(([f, v]) => `<div class="sect">${L('Referenced on', 'Указаны на')} ${esc(v[0])}</div><div class="card"><div class="kv">${v[1].map(z => esc(z[0]) + ' (' + z[1] + ')').join(' · ')}</div></div>`).join('')}` + '</div>'; }
+    const used = {}; TY.I.forEach(x => x.typ.forEach(k => { used[k] = (used[k] || 0) + 1; }));
+    return `<div class="sect">${L('Used in this work (IWP lines)', 'Используются (строк IWP)')}</div><div class="list">${Object.keys(used).sort().map(k => `<div class="li"><div class="m"><div class="t">GLE-(G0-Z00000X0)-EL-${esc(k)} · ${used[k]}</div><div class="s">${esc((T[k] || ['', ''])[0])}<br>${esc((T[k] || ['', ''])[1])}</div></div></div>`).join('')}</div>
+     ${Object.entries(R || {}).map(([f, v]) => `<div class="sect">${L('Referenced on', 'Указаны на')} ${esc(v[0])}</div><div class="card"><div class="kv">${v[1].map(z => esc(z[0]) + ' (' + z[1] + ')').join(' · ')}</div></div>`).join('')}`; }
+  function dwgs() { setHead(L('Scope drawings', 'Чертежи объёма'), 'G2-B1301FX0');
+    return `<div class="list">${(TY.d.scope || []).map(s => `<div class="li"><div class="m"><div class="t">${esc(Array.isArray(s) ? s[0] : s)}</div><div class="s">${esc(Array.isArray(s) ? s.slice(1).join(' · ') : '')}</div></div></div>`).join('') || '<div class="empty">—</div>'}</div>
+     <div class="card"><div class="kv">${L('Typicals: GLE-(G0-Z00000X0)-EL-ZX-002 rev 04 (trays), ZX-001 (metal hose). PDFs are in the drawings register.', 'Типовые: GLE-(G0-Z00000X0)-EL-ZX-002 ред. 04, ZX-001. PDF – в реестре чертежей.')}</div></div>`; }
   TY.load();
 })();

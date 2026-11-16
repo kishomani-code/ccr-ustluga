@@ -124,7 +124,7 @@
       }).join('');
     }).join(''); lang = ru();
     sb.innerHTML = '<div class="v5brand"><img src="icon-192.png" alt=""><div><b>GPP E&amp;I</b><span>Ust-Luga · Rencons · ' + L('Engineering', 'Инжиниринг') + '</span></div></div>'
-      + '<div class="v5prj">' + ['CCR', '1801', 'D48', '8810'].map(function (k) { return '<button class="' + (k === prj ? 'on' : '') + '" onclick="' + (k === prj ? 'v5drawer(false)' : 'typeof projSwitch===\'function\'?projSwitch(\'' + k + '\'):window.__pick&&__pick(\'' + k + '\')') + '">' + k + '</button>'; }).join('') + '</div>'
+      + '<div class="v5prj">' + ['CCR', '1801', 'D48', '8810', 'G2-B1301FX0'].map(function (k) { return '<button class="' + (k === prj ? 'on' : '') + '" onclick="' + (k === prj ? 'v5drawer(false)' : 'typeof projSwitch===\'function\'?projSwitch(\'' + k + '\'):window.__pick&&__pick(\'' + k + '\')') + '">' + (k === 'G2-B1301FX0' ? 'Tray' : k) + '</button>'; }).join('') + '</div>'
       + '<nav class="v5nav">' + nav + '</nav>'
       + '<div class="v5note">' + L('Commissioning execution is client scope – RHI scope is construction.', 'Пусконаладка – объём заказчика, объём РХИ – строительство.') + '</div>'
       + '<div class="v5ft"><button class="v5ib" id="v5th" onclick="v5toggleTheme()"></button></div>'; setT(document.documentElement.getAttribute('data-theme')); active(); };
