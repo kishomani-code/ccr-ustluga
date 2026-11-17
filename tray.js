@@ -18,7 +18,7 @@
     const h = location.hash.replace(/^#\/?/, '').replace(/[?&]p=[^&]*$/i, '');
     if (first && (/^ty(\/|$)/.test(h) || (h === '' && TY.mine())) && typeof route === 'function') { try { route(); } catch (e) {} } }
   TY.load = function () { cget('tray.json').then(d => { if (d) set(d); return net('tray.json'); }).then(d => { if (d && (!TY.d || d.ver !== TY.d.ver)) set(d); }).catch(() => {}); };
-  TY.mine = () => typeof PRJ !== 'undefined' && PRJ === 'G2-B1301FX0';
+  TY.mine = () => false;   // v4.76 tray is a section of the G2 scope menu (g2.js), not its own project
   // ---------- site entries (this phone) ----------
   TY.st = function () { if (TY._s) return TY._s; let s = null; try { s = JSON.parse(localStorage.getItem(KEY) || 'null'); } catch (e) {} TY._s = s && s.e ? s : {e: [], sup: {}};
     TY._s.e.forEach(e => { if (!e.t) { const p = String(e.d || '').split('.'); e.t = p.length === 3 ? new Date(+p[2], +p[1] - 1, +p[0], 12).getTime() : Date.now(); } if (e.sent === 1) e.sent = e.t; }); return TY._s; };
@@ -49,7 +49,8 @@
   TY.sum = function () { if (!TY.d) return L('loading…', 'загрузка…'); const I = TY.I; const dn = I.filter(x => stOf(x) === 'Completed').length;
     const c = k => TY.M.filter(m => m.st === k).length; const pend = TY.st().e.filter(e => !e.sent).length;
     return `${dn}/${I.length} ${L('IWP lines done', 'строк IWP выполнено')} · MRF ${c('mrf') + c('part')} · CTQ ${c('ctq') + c('nodel')}${pend ? ' · ' + pend + ' ' + L('not sent', 'не отправлено') : ''}`; };
-  TY.tile = function () { if (TY.mine()) return '';
+  TY.tile = function () { return '';   // v4.76 tray card removed from project homes – open via G2 menu
+    if (TY.mine()) return '';
     if (!TY.d) return `<button class="tile main" style="min-height:auto;width:100%;margin-bottom:8px;background:#0b6e6e;border-color:#0b6e6e;color:#fff" onclick="go('#/ty')"><b>🧱 ${L('TRAY INSTALLATION – G2-B1301FX0', 'МОНТАЖ ЛОТКОВ – G2-B1301FX0')}</b><span class="n" style="color:#d8f0f0">${L('loading…', 'загрузка…')}</span></button>`;
     const pend = TY.st().e.filter(e => !e.sent).length; const bar = (lab, d, n, col) => `<div style="display:flex;align-items:center;gap:6px;font-size:12px;margin-top:4px"><span style="width:92px;white-space:nowrap;overflow:hidden">${lab}</span><div style="flex:1;height:7px;background:rgba(255,255,255,.25);border-radius:4px"><div style="width:${pc(d, n)}%;height:7px;background:${col};border-radius:4px"></div></div><span style="width:62px;text-align:right">${d}/${n}</span></div>`;
     const B = (h, txt, bg) => `<button onclick="event.stopPropagation();${h}" style="flex:1;border:0;border-radius:8px;padding:9px 4px;font:600 12px inherit;color:#fff;background:${bg}">${txt}</button>`;
@@ -97,7 +98,7 @@
       ${T2('#/ty/tp', L('📐 Typicals to follow', '📐 Типовые узлы'), 'GLE-(G0-Z00000X0)-EL-ZX-002 rev 04')}
       ${T2('#/ty/dw/', L('📄 Drawings register (Drive)', '📄 Реестр чертежей (Drive)'), (d.dwgs || []).filter(x => x[4]).length + ' ' + L('current · tap to open PDF', 'действующих · открыть PDF'), null, 'main')}</div>
      <div class="sect">🏭 ${L('Whole title G2-B1301FX0', 'Весь титул G2-B1301FX0')}</div><div class="grid">
-      ${T2('#/axh', L('Cables · IWP · punch list (all disciplines)', 'Кабели · IWP · панч-лист (все)'), L('client master punch list 14.11.2026', 'мастер панч-лист 14.11.2026'))}</div>
+      ${T2('#/', L('🏭 Back to G2 scope menu', '🏭 Назад в меню G2'), L('all 6 titles', 'все 6 титулов'), null, 'main')}${T2('#/axh', L('Cables · IWP · punch list (all disciplines)', 'Кабели · IWP · панч-лист (все)'), L('client master punch list 14.11.2026', 'мастер панч-лист 14.11.2026'))}</div>
      <div class="foot">${esc(d.note || '')}<br>${L('MRF forms (signatures, gate pass, IWP request for Burak): ', 'Формы MRF: ')}${esc(d.mrffile || '')}</div>`; }
   // ---------- lists ----------
   function list(f) { const [t, q0] = String(f || '').split('|'); setHead(t ? TEAM[t][0] : L('IWP lines', 'Строки IWP'), 'G2-B1301FX0');
