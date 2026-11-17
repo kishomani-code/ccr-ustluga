@@ -87,7 +87,7 @@
     ['Engineering', 'Инжиниринг', [['#/ctq', 'tq', 'CTQ register', 'Реестр CTQ'], ['#/ntq', 'help', 'Need TQs', 'Нужны TQ'], ['#/dg', 'file', 'Drawings', 'Чертежи'], ['#/ps', 'book', 'Procedures & specifications', 'Процедуры и спецификации'], ['#/bd', 'net', 'System block diagrams', 'Структурные схемы'], ['#/kn', 'book', 'Engineering knowledge', 'Инженерные знания'], ['#/ug', 'msg', 'Comments for site team', 'Комментарии для участка'], ['#/lt', 'shield', 'LOTO', 'LOTO']]],
     ['Commissioning (client scope)', 'Пусконаладка (объём заказчика)', [['#/lc', 'flask', 'Loop check', 'Проверка контуров'], ['#/ga', 'phone', 'Gazprom commissioning contacts', 'Контакты ПНР Газпром']]],
     ['Progress', 'Прогресс', [['#/dp', 'pen', 'Daily progress entry', 'Ввод прогресса'], ['#/rb', 'users', 'Reported by', 'Кто отчитался'], ['#/ir', 'tag', 'Request IWP ID', 'Запрос IWP ID'], ['#/nt', 'note', 'Site notes', 'Заметки']]],
-    ['Areas', 'Зоны', [['#/oa', 'map', 'Other area', 'Другие зоны'], ['#/cc', 'snow', 'Cold cables', 'Холодные кабели'], ['#/ty', 'map', 'Tray G2-B1301FX0', 'Лотки G2-B1301FX0']]],
+    ['Areas', 'Зоны', [['#/oa', 'map', 'Other area', 'Другие зоны'], ['#/cc', 'snow', 'Cold cables', 'Холодные кабели'], ['#/g2', 'map', 'G2 scope (Train 2)', 'Объём G2 (линия 2)'], ['#/ty', 'map', 'Tray G2-B1301FX0', 'Лотки G2-B1301FX0']]],
     ['Management', 'Управление', [['mg', 'chart', 'Manager dashboard', 'Панель менеджера'], ['ow', 'key', 'Owner menu', 'Меню владельца'], ['mc', 'menu', 'Overall dashboard & settings', 'Общая панель и настройки']]]
   ];
   window.v5nav = function (h) {
@@ -124,7 +124,7 @@
       }).join('');
     }).join(''); lang = ru();
     sb.innerHTML = '<div class="v5brand"><img src="icon-192.png" alt=""><div><b>GPP E&amp;I</b><span>Ust-Luga · Rencons · ' + L('Engineering', 'Инжиниринг') + '</span></div></div>'
-      + '<div class="v5prj">' + ['CCR', '1801', 'D48', '8810', 'G2-B1301FX0'].map(function (k) { return '<button class="' + (k === prj ? 'on' : '') + '" onclick="' + (k === prj ? 'v5drawer(false)' : 'typeof projSwitch===\'function\'?projSwitch(\'' + k + '\'):window.__pick&&__pick(\'' + k + '\')') + '">' + (k === 'G2-B1301FX0' ? 'Tray' : k) + '</button>'; }).join('') + '</div>'
+      + '<div class="v5prj">' + ['CCR', '1801', 'D48', '8810', 'G2-B1301FX0'].map(function (k) { return '<button class="' + (k === prj ? 'on' : '') + '" onclick="' + (k === prj ? 'v5drawer(false)' : 'typeof projSwitch===\'function\'?projSwitch(\'' + k + '\'):window.__pick&&__pick(\'' + k + '\')') + '">' + (k === 'G2-B1301FX0' ? 'G2' : k) + '</button>'; }).join('') + '</div>'
       + '<nav class="v5nav">' + nav + '</nav>'
       + '<div class="v5note">' + L('Commissioning execution is client scope – RHI scope is construction.', 'Пусконаладка – объём заказчика, объём РХИ – строительство.') + '</div>'
       + '<div class="v5ft"><button class="v5ib" id="v5th" onclick="v5toggleTheme()"></button></div>'; setT(document.documentElement.getAttribute('data-theme')); active(); };

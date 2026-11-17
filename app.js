@@ -158,7 +158,7 @@ function setHead(t, s) { document.getElementById('ttl').textContent = t; documen
 function route() {
   const h = location.hash.replace(/^#\//, '').replace(/[?&]p=(ccr|d48|cold)$/i, ''); const [k, ...rest] = h.split('/'); const a = dec(rest.join('/'));
   window.scrollTo(0, 0);
-  if (!k) return (PRJ === 'G2-B1301FX0' && window.TY) ? TY.route([]) : home();   // v4.73 tray scope has its own main menu
+  if (!k) return (PRJ === 'G2-B1301FX0' && window.G2) ? G2.route([]) : home();   // v4.76 G2 scope (6 titles) – one common main menu (tray is a section inside)
   if (k === 'axh') return home();   // v4.73 whole title G2-B1301FX0 (cables, IWP, punch)
   if (k === 'oa' && window.OA) return OA.route(rest);   // v4.3 OTHER AREA
   if (k === 'cc' && window.OA) return OA.route(rest, true);   // v4.3 COLD CABLES
@@ -170,6 +170,7 @@ function route() {
   if (k === 'ir') { if (window.IR) return IR.route(rest); main.innerHTML = '<div class="empty">Loading…</div>'; return; }   // v4.38 request IWP ID (iwpreq.js)
   if (k === 'ps') { if (window.PS) return PS.route(rest); main.innerHTML = '<div class="empty">Loading…</div>'; return; }   // v4.40 procedures & specifications (ps.js)
   if (k === 'kn') { if (window.KN) return KN.route(rest); main.innerHTML = '<div class="empty">Loading…</div>'; return; }   // v4.37 engineering knowledge (know.js)
+  if (k === 'g2') { if (window.G2) return G2.route(rest); main.innerHTML = '<div class="empty">Loading…</div>'; return; }   // v4.76 G2 scope menu (g2.js + g2.json)
   if (k === 'ty') { if (window.TY) return TY.route(rest); main.innerHTML = '<div class="empty">Loading…</div>'; return; }   // v4.72 tray installation G2-B1301FX0 (tray.js + tray.json)
   if (k === 'mp') { if (window.MP) return MP.route(rest); main.innerHTML = '<div class="empty">Loading…</div>'; return; }   // v4.69 manpower plan day by day (mp.js)
   if (k === 'rw') { if (window.RW) return RW.route(rest); main.innerHTML = '<div class="empty">Loading…</div>'; return; }   // v4.68 remaining works – manpower (rw.js)
@@ -229,7 +230,7 @@ function route() {
 }
 // --- views
 function home() {
-  if (PRJ === 'G2-B1301FX0' && window.TY && !/^#\/axh/.test(location.hash)) return TY.route([]);   // v4.73 tray main menu
+  if (PRJ === 'G2-B1301FX0' && window.G2 && !/^#\/axh/.test(location.hash)) return G2.route([]);   // v4.76 G2 scope main menu
   setHead((PRJ === 'COLD' ? 'Cold cables' : PRJ) + ' · GPP E&I', `v${APPV} · data ${D.meta.date} · ${PRJN.b} / ${PRJN.a}`); qbox.value = '';
   const all = gstat(I), cc = C.filter(c => cst(c).ok).length;
   const tile = (g, cls) => { const s = gstat(I.filter(x => x.g === g)); return `<button class="tile ${cls || ''}" onclick="go('#/a/${enc(g)}')"><b>${esc(g)}</b><div><div class="row"><span class="n">${s.d}/${s.n} lines${s.u === 'lines' ? (() => { const m = I.filter(x => x.g === g && x.u === 'm'); return m.length ? ' · ' + fmtn(m.reduce((a, x) => a + x.f, 0)) + ' / ' + fmtn(m.reduce((a, x) => a + x.q, 0)) + ' m' : ''; })() : ' · ' + fmtn(s.f) + ' / ' + fmtn(s.q) + ' ' + s.u}</span></div><div class="pc">${s.pc}%</div><div class="pbar"><i style="width:${s.pc}%"></i></div></div></button>`; };
@@ -237,7 +238,7 @@ function home() {
   const pend = progLines(true).length, ppend = punchLines(true).length; const icd = ICX.filter(c => cst(c).ok).length, ist_ = gstat(INST);
   const T2 = (h, b, n, pc, cls) => `<button class="tile ${cls || ''}" onclick="go('${h}')"><b>${b}</b><div><span class="n">${n}</span>${pc != null ? `<div class="pc">${pc}%</div><div class="pbar"><i style="width:${pc}%"></i></div>` : ''}</div></button>`;
   const r = PU.filter(p => p.rhi), o = r.filter(p => p.st === 'Open').length, oCl = r.filter(p => !p.int && p.st === 'Open').length, oIn = r.filter(p => p.int && p.st === 'Open').length;
-  main.innerHTML = `${projBar()}<div id="tytile">${window.TY ? TY.tile() : ''}</div>${D.__fb ? `<div class="card" style="border-left:5px solid #e0a100;background:#fff8e6;font-size:13px"><b>⚠ Showing last good data (${esc(D.meta.date)})</b><div style="margin-top:4px">Today's automatic update${D.__fb.date && D.__fb.date !== '?' ? ' (' + esc(D.__fb.date) + ')' : ''} has a different file format, so the app is using the last good data. All screens work normally.</div></div>` : ''}<div class="kpi"><div><b>${all.n}</b><span>IWP lines</span></div><div><b style="color:var(--ok)">${(all.n ? Math.round(100 * all.d / all.n) : 0)}%</b><span>lines done</span></div><div><b>${cc}/${C.length}</b><span>cables complete</span></div></div>
+  main.innerHTML = `${projBar()}<div id="tytile"></div>${D.__fb ? `<div class="card" style="border-left:5px solid #e0a100;background:#fff8e6;font-size:13px"><b>⚠ Showing last good data (${esc(D.meta.date)})</b><div style="margin-top:4px">Today's automatic update${D.__fb.date && D.__fb.date !== '?' ? ' (' + esc(D.__fb.date) + ')' : ''} has a different file format, so the app is using the last good data. All screens work normally.</div></div>` : ''}<div class="kpi"><div><b>${all.n}</b><span>IWP lines</span></div><div><b style="color:var(--ok)">${(all.n ? Math.round(100 * all.d / all.n) : 0)}%</b><span>lines done</span></div><div><b>${cc}/${C.length}</b><span>cables complete</span></div></div>
    ${S2.owner ? (() => { const n = alCount(); return `<button class="tile main" style="width:100%;min-height:auto;margin-bottom:8px;background:${n ? '#b42318' : '#2b2f36'};border-color:${n ? '#b42318' : '#2b2f36'}" onclick="go('#/al')"><b>🔔 Alerts from site · ${n} new</b><span class="n" style="color:#f3d6d2">issues · permits · revisions · TQ</span></button>`; })() : ''}
    <button class="tile main" style="width:100%;min-height:auto;margin-bottom:4px;background:${pend ? '#c55a11' : 'var(--pri)'};border-color:${pend ? '#c55a11' : 'var(--pri)'}" onclick="openReport('prog')"><b>📤 Send report to Paul · ${pend} new progress lines</b><span class="n">👷 ${esc(PS_.name || 'tap to set your name')} · ${PRJ === 'COLD' ? 'MAX → Sri ' + REC.tel : 'MAX progress group'}</span></button>
    <button class="tile main" style="width:100%;min-height:auto;margin-bottom:4px;background:${ppend ? '#7b3fb3' : '#0b6e6e'};border-color:${ppend ? '#7b3fb3' : '#0b6e6e'};color:#fff" onclick="openReport('punch')"><b>📤 Send punch report to Paul · ${ppend} new punch checks</b><span class="n" style="color:#fff">👷 ${esc(PS_.name || 'tap to set your name')} · ${PRJ === 'COLD' ? 'MAX → Sri ' + REC.tel : 'MAX punch group'}</span></button>
@@ -796,7 +797,7 @@ function ownPunch() { const d = VS.OW.d; const one = {}; (S2.rx || []).filter(r 
   copyText(Object.values(one).map(r => [r.no, r.v === 'F' ? 'Fixed' : 'Not fixed', d.split('-').reverse().join('.'), r.tag, r.by].join('\t')).join('\n')).then(() => toast('Punch list copied')); }
 
 // ======== v3.2 modules ========
-const APPV = '4.75';
+const APPV = '4.76';
 const shortT = t => String(t || '').replace(/^G0-D(18|48)10BX0-/, '').replace(/^G0-D(18|48)01FX0-/, 'FX0-');
 const SYSN = {'EL-ESPS': ['Substation 10/0.4 kV & power supply', 'Подстанция 10/0,4 кВ'], 'EL-EMSV': ['Power installation (boards, UPS, motors)', 'Силовое электрооборудование'], 'EL-ESBZ': ['Power supply from utility substation', 'Электроснабжение от ПС'], 'EL-ELOV': ['Indoor lighting', 'Внутреннее освещение'], 'EL-EG02': ['Earthing & lightning protection', 'Заземление и молниезащита'], 'EL-EG01': ['Area earthing', 'Заземление площадки'], 'EH-EOES': ['Electric heating', 'Электрообогрев'], 'EH-AEOG': ['Heat tracing', 'Электрообогрев (кабель)'], 'EH-EOBK': ['Electric heating (other)', 'Электрообогрев'],
   'IN-DCS': ['Distributed Control System (DCS)', 'РСУ'], 'IN-ESD': ['Emergency Shutdown (ESD)', 'ПАЗ'], 'IN-SPAP': ['Fire alarm & fire fighting control (AFA&FFS)', 'АСПС и ПТ'], 'IN-GDSS': ['Gas detection', 'Контроль загазованности'], 'IN-ASUE': ['Utilities control system', 'АСУ ЭО (утилиты)'], 'IN-ASUS': ['Power supply control system', 'АСУ ЭС'], 'IN-ASKU': ['Utility metering (AUMS)', 'АСКУ ЭР'], 'IN-MAEC': ['Rotating equipment monitoring (CMS)', 'МСО и ВО'], 'IN-MFMS': ['Material flow metering (MFMS)', 'СУМП'], 'IN-AKVS': ['Emission monitoring (CEMS)', 'АКВС'], 'IN-INTS': ['Operator training simulator', 'Тренажёр оператора'], 'IN-INSS': ['Information security', 'СОИБ'], 'IN-AOVK': ['HVAC automation', 'Автоматизация ОВиК'], 'IN-AKMP': ['Analyzer system', 'Анализаторы'],
@@ -1477,7 +1478,7 @@ var NTQS = {}; try { NTQS = JSON.parse(localStorage.getItem(PRJ.toLowerCase() + 
 function ntqSave() { try { localStorage.setItem(PRJ.toLowerCase() + '_ntq_v1', JSON.stringify(NTQS)); } catch (err) {} }
 const sevC = s => s === 'High' ? 'b-no' : s === 'Medium' ? 'b-part' : 'b-na';
 function projBar() { const o = PRJ === 'D48' ? 'CCR' : 'D48';
-  return `<div style="display:flex;gap:6px;margin-bottom:9px">${['CCR', '1801', 'D48', '8810', 'G2-B1301FX0'].map(k => `<button class="chip ${k === PRJ ? 'on' : ''}" style="flex:1;padding:10px 4px;font-size:14px;font-weight:700" onclick="${k === PRJ ? '' : `projSwitch('${k}')`}">${k === 'CCR' ? '🏢 CCR' : k === '1801' ? '🌳 1801' : k === '8810' ? '🚒 8810' : k === 'G2-B1301FX0' ? '🧱 Tray' : '⚡ D48'}</button>`).join('')}</div>`; }
+  return `<div style="display:flex;gap:6px;margin-bottom:9px">${['CCR', '1801', 'D48', '8810', 'G2-B1301FX0'].map(k => `<button class="chip ${k === PRJ ? 'on' : ''}" style="flex:1;padding:10px 4px;font-size:14px;font-weight:700" onclick="${k === PRJ ? '' : `projSwitch('${k}')`}">${k === 'CCR' ? '🏢 CCR' : k === '1801' ? '🌳 1801' : k === '8810' ? '🚒 8810' : k === 'G2-B1301FX0' ? '🏭 G2' : '⚡ D48'}</button>`).join('')}</div>`; }
 function projSwitch(k) { try { sessionStorage.setItem('proj', k); localStorage.setItem('proj_last', k); } catch (err) {} location.hash = ''; location.reload(); }
 function engTiles() { const T2 = (h, b, n, cls) => `<button class="tile ${cls || ''}" onclick="go('${h}')"><b>${b}</b><div><span class="n">${n}</span></div></button>`;
   const op = NTQ.filter(x => !(NTQS[x.id] && NTQS[x.id].st === 'raised')).length; const m = E.mct || {};
