@@ -155,4 +155,4 @@ jobs:
           git config user.email ccr-auto-update@users.noreply.github.com
           git add -A input data.json data_1801.json data_8810.json data_d48.json data_cold.json rfi_ccr.json rfi_d48.json rfi_cold.json rfi_1801.json rfi_8810.json ak.json ncr.json mat.json areas ax scope.json week.json sw.js tracker/data.json tq/data.json
           git commit -m "Automatic data update" || echo "nothing to commit"
-          git push
+          for i in 1 2 3; do git pull --rebase -X theirs origin main && git push && break; sleep 5; done
