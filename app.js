@@ -170,6 +170,7 @@ function route() {
   if (k === 'ir') { if (window.IR) return IR.route(rest); main.innerHTML = '<div class="empty">Loading…</div>'; return; }   // v4.38 request IWP ID (iwpreq.js)
   if (k === 'ps') { if (window.PS) return PS.route(rest); main.innerHTML = '<div class="empty">Loading…</div>'; return; }   // v4.40 procedures & specifications (ps.js)
   if (k === 'kn') { if (window.KN) return KN.route(rest); main.innerHTML = '<div class="empty">Loading…</div>'; return; }   // v4.37 engineering knowledge (know.js)
+  if (k === 'qc') { if (window.QC) return QC.route(rest); main.innerHTML = '<div class="empty">Loading…</div>'; return; }   // v4.87 QC team menu (qc.js + qc.json)
   if (k === 'g2') { if (window.G2) return G2.route(rest); main.innerHTML = '<div class="empty">Loading…</div>'; return; }   // v4.76 G2 scope menu (g2.js + g2.json)
   if (k === 'ty') { if (window.TY) return TY.route(rest); main.innerHTML = '<div class="empty">Loading…</div>'; return; }   // v4.72 tray installation G2-B1301FX0 (tray.js + tray.json)
   if (k === 'mp') { if (window.MP) return MP.route(rest); main.innerHTML = '<div class="empty">Loading…</div>'; return; }   // v4.69 manpower plan day by day (mp.js)
@@ -797,7 +798,7 @@ function ownPunch() { const d = VS.OW.d; const one = {}; (S2.rx || []).filter(r 
   copyText(Object.values(one).map(r => [r.no, r.v === 'F' ? 'Fixed' : 'Not fixed', d.split('-').reverse().join('.'), r.tag, r.by].join('\t')).join('\n')).then(() => toast('Punch list copied')); }
 
 // ======== v3.2 modules ========
-const APPV = '4.86';
+const APPV = '4.87';
 const shortT = t => String(t || '').replace(/^G0-D(18|48)10BX0-/, '').replace(/^G0-D(18|48)01FX0-/, 'FX0-');
 const SYSN = {'EL-ESPS': ['Substation 10/0.4 kV & power supply', 'Подстанция 10/0,4 кВ'], 'EL-EMSV': ['Power installation (boards, UPS, motors)', 'Силовое электрооборудование'], 'EL-ESBZ': ['Power supply from utility substation', 'Электроснабжение от ПС'], 'EL-ELOV': ['Indoor lighting', 'Внутреннее освещение'], 'EL-EG02': ['Earthing & lightning protection', 'Заземление и молниезащита'], 'EL-EG01': ['Area earthing', 'Заземление площадки'], 'EH-EOES': ['Electric heating', 'Электрообогрев'], 'EH-AEOG': ['Heat tracing', 'Электрообогрев (кабель)'], 'EH-EOBK': ['Electric heating (other)', 'Электрообогрев'],
   'IN-DCS': ['Distributed Control System (DCS)', 'РСУ'], 'IN-ESD': ['Emergency Shutdown (ESD)', 'ПАЗ'], 'IN-SPAP': ['Fire alarm & fire fighting control (AFA&FFS)', 'АСПС и ПТ'], 'IN-GDSS': ['Gas detection', 'Контроль загазованности'], 'IN-ASUE': ['Utilities control system', 'АСУ ЭО (утилиты)'], 'IN-ASUS': ['Power supply control system', 'АСУ ЭС'], 'IN-ASKU': ['Utility metering (AUMS)', 'АСКУ ЭР'], 'IN-MAEC': ['Rotating equipment monitoring (CMS)', 'МСО и ВО'], 'IN-MFMS': ['Material flow metering (MFMS)', 'СУМП'], 'IN-AKVS': ['Emission monitoring (CEMS)', 'АКВС'], 'IN-INTS': ['Operator training simulator', 'Тренажёр оператора'], 'IN-INSS': ['Information security', 'СОИБ'], 'IN-AOVK': ['HVAC automation', 'Автоматизация ОВиК'], 'IN-AKMP': ['Analyzer system', 'Анализаторы'],

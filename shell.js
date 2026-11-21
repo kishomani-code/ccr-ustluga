@@ -88,6 +88,7 @@
     ['Commissioning (client scope)', 'Пусконаладка (объём заказчика)', [['#/lc', 'flask', 'Loop check', 'Проверка контуров'], ['#/ga', 'phone', 'Gazprom commissioning contacts', 'Контакты ПНР Газпром']]],
     ['Progress', 'Прогресс', [['#/dp', 'pen', 'Daily progress entry', 'Ввод прогресса'], ['#/rb', 'users', 'Reported by', 'Кто отчитался'], ['#/ir', 'tag', 'Request IWP ID', 'Запрос IWP ID'], ['#/nt', 'note', 'Site notes', 'Заметки']]],
     ['Areas', 'Зоны', [['#/oa', 'map', 'Other area', 'Другие зоны'], ['#/cc', 'snow', 'Cold cables', 'Холодные кабели'], ['#/g2', 'map', 'G2 scope (Train 2)', 'Объём G2 (линия 2)'], ['#/ty', 'map', 'Tray G2-B1301FX0', 'Лотки G2-B1301FX0']]],
+    ['QC team', 'Отдел QC', [['#/qc', 'shield', 'QC team menu', 'Меню отдела QC'], ['#/qc/l/close', 'tag', 'RHI punch – can be closed', 'Замечания РХИ – можно закрыть'], ['#/qc/r', 'book', 'Rules for closing punches', 'Правила закрытия замечаний']]],
     ['Management', 'Управление', [['mg', 'chart', 'Manager dashboard', 'Панель менеджера'], ['ow', 'key', 'Owner menu', 'Меню владельца'], ['mc', 'menu', 'Overall dashboard & settings', 'Общая панель и настройки']]]
   ];
   window.v5nav = function (h) {
