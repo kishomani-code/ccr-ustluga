@@ -80,7 +80,7 @@ select,.inp{width:100%;border:1.5px solid var(--line);border-radius:10px;padding
 </head>
 <body>
 <header>
-  <h1 id="ttl">Калькулятор лотков<small id="sub">DKC · склад 20.11.2026 · офлайн</small></h1>
+  <h1 id="ttl">Калькулятор лотков<small id="sub">DKC · офлайн · для информации</small></h1>
   <button class="hb" id="lang">EN</button>
   <button class="hb" id="lb">📋<b id="lc">0</b></button>
 </header>
@@ -124,8 +124,8 @@ select,.inp{width:100%;border:1.5px solid var(--line);border-radius:10px;padding
 <div class="toast" id="toast"></div>
 <script>
 const T={
-ru:{s1:'1. Тип лотка',s2:'2. Размер (по складу DKC)',s3:'3. Длина трассы, м',s4:'4. Что ещё нужно',s5:'5. Углы, тройники, крышки на углы',cov:'Крышка',sep:'Перегородка',sup:'Опоры (консоли)',sepn:'высота перегородки · сколько рядов',step:'шаг опор, м',ends:'доп. опор',addf:'+ Добавить угол / тройник',clr:'0',copy:'Копировать',add:'Добавить в список',list:'Общий список материалов',csv:'Скачать Excel (CSV)',clear:'Очистить',done:'Готово',find:'Поиск: размер или код DKC',perf:'Перфорир.',solid:'Сплошной',ladder:'Лестничный',main:'Основной материал',acc:'Метизы и комплектующие (по комплекту DKC)',stock:'Склад 20.11',none:'нет на складе',pcs:'шт',tr:'лотков',per:'на 1',from:'по поставкам DKC',kit:'крепёж в комплекте',empty:'Выберите тип и размер лотка',added:'Добавлено в список',copied:'Скопировано',nolist:'Список пуст',ttl:'Калькулятор лотков',sub:'DKC · склад 20.11.2026 · офлайн',src:'Комплектующие посчитаны по фактическим поставкам DKC в журнале склада (EP-3 / EP-12, 20.11.2026). Перед заявкой сверяйте с SF чертежом.',nofit:'Нет углов этого размера',cnt:'шт',m:'м',total:'Итого строк'},
-en:{s1:'1. Tray type',s2:'2. Size (DKC, from warehouse)',s3:'3. Route length, m',s4:'4. What else is needed',s5:'5. Bends, tees, fitting covers',cov:'Cover',sep:'Separator',sup:'Supports (consoles)',sepn:'separator height · number of rows',step:'support spacing, m',ends:'extra supports',addf:'+ Add bend / tee',clr:'0',copy:'Copy',add:'Add to list',list:'Total material list',csv:'Download Excel (CSV)',clear:'Clear',done:'Done',find:'Search: size or DKC code',perf:'Perforated',solid:'Solid',ladder:'Ladder',main:'Main material',acc:'Screws, nuts, fittings (DKC kit)',stock:'Stock 20.11',none:'no stock',pcs:'pcs',tr:'trays',per:'per 1',from:'from DKC deliveries',kit:'fixings in the kit',empty:'Choose tray type and size',added:'Added to list',copied:'Copied',nolist:'List is empty',ttl:'Tray calculator',sub:'DKC · warehouse 20.11.2026 · offline',src:'Accessories are counted from real DKC kit deliveries in the warehouse log (EP-3 / EP-12, 20.11.2026). Check with the SF drawing before the MRF.',nofit:'No fittings of this size',cnt:'pcs',m:'m',total:'Lines'}};
+ru:{s1:'1. Тип лотка',s2:'2. Размер (DKC)',s3:'3. Длина трассы, м',s4:'4. Что ещё нужно',s5:'5. Углы, тройники, крышки на углы',cov:'Крышка',sep:'Перегородка',sup:'Опоры (консоли)',sepn:'высота перегородки · сколько рядов',step:'шаг опор, м',ends:'доп. опор',addf:'+ Добавить угол / тройник',clr:'0',copy:'Копировать',add:'Добавить в список',list:'Общий список материалов',csv:'Скачать Excel (CSV)',clear:'Очистить',done:'Готово',find:'Поиск: размер или код DKC',perf:'Перфорир.',solid:'Сплошной',ladder:'Лестничный',main:'Основной материал',acc:'Метизы и комплектующие (по комплекту DKC)',stock:'Склад 20.11',none:'нет на складе',pcs:'шт',tr:'лотков',per:'на 1',from:'по поставкам DKC',kit:'крепёж в комплекте',empty:'Выберите тип и размер лотка',added:'Добавлено в список',copied:'Скопировано',nolist:'Список пуст',ttl:'Калькулятор лотков',sub:'DKC · офлайн · для информации',src:'Только для информации. Комплектующие посчитаны по комплектам поставки DKC. Перед заявкой сверяйте с SF чертежом.',nofit:'Нет углов этого размера',cnt:'шт',m:'м',total:'Итого строк'},
+en:{s1:'1. Tray type',s2:'2. Size (DKC)',s3:'3. Route length, m',s4:'4. What else is needed',s5:'5. Bends, tees, fitting covers',cov:'Cover',sep:'Separator',sup:'Supports (consoles)',sepn:'separator height · number of rows',step:'support spacing, m',ends:'extra supports',addf:'+ Add bend / tee',clr:'0',copy:'Copy',add:'Add to list',list:'Total material list',csv:'Download Excel (CSV)',clear:'Clear',done:'Done',find:'Search: size or DKC code',perf:'Perforated',solid:'Solid',ladder:'Ladder',main:'Main material',acc:'Screws, nuts, fittings (DKC kit)',stock:'Stock 20.11',none:'no stock',pcs:'pcs',tr:'trays',per:'per 1',from:'from DKC deliveries',kit:'fixings in the kit',empty:'Choose tray type and size',added:'Added to list',copied:'Copied',nolist:'List is empty',ttl:'Tray calculator',sub:'DKC · offline · for information',src:'For information only. Accessories are counted from DKC delivery kits. Check with the SF drawing before any MRF.',nofit:'No fittings of this size',cnt:'pcs',m:'m',total:'Lines'}};
 let L=localStorage.getItem('tc_lang')||'ru'; const t=k=>T[L][k]||k;
 let D=null, S={k:'perf',c:null,list:[]}; try{S.list=JSON.parse(localStorage.getItem('tc_list')||'[]')}catch(e){}
 const FITQ={}; const $=id=>document.getElementById(id);
@@ -137,24 +137,24 @@ function i18n(){document.documentElement.lang=L;$('lang').textContent=L==='ru'?'
 const ICON={perf:'<svg viewBox="0 0 40 22"><path d="M3 2v17h34V2" fill="none" stroke="currentColor" stroke-width="3"/><g fill="currentColor"><rect x="9" y="12" width="4" height="3"/><rect x="18" y="12" width="4" height="3"/><rect x="27" y="12" width="4" height="3"/></g></svg>',
 solid:'<svg viewBox="0 0 40 22"><path d="M3 2v17h34V2" fill="none" stroke="currentColor" stroke-width="3"/></svg>',
 ladder:'<svg viewBox="0 0 40 22"><path d="M2 4h36M2 18h36" stroke="currentColor" stroke-width="3"/><path d="M8 4v14M16 4v14M24 4v14M32 4v14" stroke="currentColor" stroke-width="2.2"/></svg>'};
-function stockDot(f,need){return f==null?'':'<span class="dot '+(f<=0?'r':(need&&f<need?'y':'g'))+'"></span>'}
+function stockDot(){return ''}
 function trays(){return D.items.filter(x=>x.k===S.k&&x.lab)}
 function renderTypes(){$('types').innerHTML=['perf','solid','ladder'].map(k=>'<button data-k="'+k+'" class="'+(S.k===k?'on':'')+'">'+ICON[k]+t(k)+'</button>').join('');}
 function renderSizes(){const q=$('q').value.trim().toLowerCase().replace(/x/g,'×');
- const L1=trays().filter(x=>!q||(x.lab+' '+x.c).toLowerCase().includes(q)).sort((a,b)=>a.W-b.W||a.H-b.H||(b.f-a.f));
+ const L1=trays().filter(x=>!q||(x.lab+' '+x.c).toLowerCase().includes(q)).sort((a,b)=>a.W-b.W||a.H-b.H||(a.L||0)-(b.L||0));
  if(S.c&&!L1.some(x=>x.c===S.c)&&!q) S.c=null;
  $('sizes').innerHTML=L1.map(x=>'<button class="chip'+(S.c===x.c?' on':'')+'" data-c="'+x.c+'"><b>'+x.lab+(x.L?' · '+x.L/1000+' '+t('m'):'')+'</b><span>'+stockDot(x.f)+x.c+'</span></button>').join('')||'<div class="muted">–</div>';}
 function cur(){return D.items.find(x=>x.c===S.c)}
 function fillOpts(){const it=cur(); if(!it){['cv','sp','co'].forEach(i=>$(i).innerHTML='');return;}
  const keep=(id,arr,lab)=>{const v=$(id).value;$(id).innerHTML=arr.map(x=>'<option value="'+x.c+'">'+lab(x)+'</option>').join('');if(arr.some(x=>x.c===v))$(id).value=v;};
  const covs=D.items.filter(x=>x.k==='cover'&&x.W===it.W&&(S.k==='ladder'?/фиксатор/i.test(x.d):!/фиксатор/i.test(x.d))).sort((a,b)=>(b.L===it.L)-(a.L===it.L)||b.f-a.f);
- keep('cv',covs,x=>x.c+' · '+(x.L?x.L/1000+' '+t('m')+' · ':'')+t('stock')+' '+fmt(x.f)+' '+x.u);
+ keep('cv',covs,x=>x.c+' · '+(x.L?x.L/1000+' '+t('m')+' · ':'')+x.u);
  const seps=D.items.filter(x=>x.k==='sep'&&x.L&&x.H&&x.H<=it.H).sort((a,b)=>b.H-a.H||b.f-a.f);
- keep('sp',seps,x=>'H'+x.H+' · '+x.c+' · '+fmt(x.f)+' '+x.u);
- const cons=D.items.filter(x=>x.k==='console'&&x.W&&x.W>=it.W).sort((a,b)=>(/потолоч/i.test(a.d)-/потолоч/i.test(b.d))||a.W-b.W||b.f-a.f);
- keep('co',cons,x=>x.W+' мм · '+x.c+' · '+t('stock')+' '+fmt(x.f));}
+ keep('sp',seps,x=>'H'+x.H+' · '+x.c);
+ const cons=D.items.filter(x=>x.k==='console'&&x.W&&x.W>=it.W).sort((a,b)=>{const r=x=>/одиночн/i.test(x.d)?0:/усиленн/i.test(x.d)?1:/потолоч/i.test(x.d)?3:2;return r(a)-r(b)||a.W-b.W||b.f-a.f});
+ keep('co',cons,x=>x.W+' мм · '+x.c);}
 function line(x,qty,unit,why,acc){return {c:x.c,d:x.d,id:(x.id||[]).slice(0,3),q:qty,u:unit,why,acc:!!acc,f:x.f};}
-function kitLines(x,n,out){(x.acc||[]).forEach(a=>{const pp=Math.abs(a.p-Math.round(a.p))<0.03?Math.round(a.p):a.p;const q=Math.ceil(pp*n-1e-9);if(q>0)out.push(line(a,q,a.u||'pcs',fmt(pp)+' '+t('per')+' '+x.c+' × '+n+(a.n?' · '+t('from')+' ('+a.n+')':''),true));});}
+function kitLines(x,n,out){(x.acc||[]).forEach(a=>{const pp=Math.abs(a.p-Math.round(a.p))<0.03?Math.round(a.p):a.p;const q=Math.ceil(pp*n-1e-9);if(q>0)out.push(line(a,q,a.u||'pcs',fmt(pp)+' '+t('per')+' '+x.c+' × '+n,true));});}
 function calc(){const it=cur(),m=parseFloat($('m').value)||0;const out=[];
  if(!it||m<=0) return out;
  const Lm=(it.L||3000)/1000,n=Math.ceil(m/Lm-1e-9);
@@ -166,13 +166,13 @@ function calc(){const it=cur(),m=parseFloat($('m').value)||0;const out=[];
  Object.entries(FITQ).forEach(([c,q])=>{if(q>0){const f=D.items.find(x=>x.c===c);if(f){out.push(line(f,q,t('pcs'),f.fix?t('kit'):''));kitLines(f,q,out);}}});
  // merge same code
  const M=new Map();out.forEach(o=>{const k=o.c+'|'+o.u;if(M.has(k)){const p=M.get(k);p.q+=o.q;p.why+=' + '+o.why;}else M.set(k,{...o});});return [...M.values()];}
-function itemHtml(o){return '<div class="it'+(o.acc?' acc':'')+'"><div class="ds">'+sd(o.d)+'</div><div class="q">'+fmt(o.q)+'<small>'+o.u+'</small></div><div class="meta"><span class="code">'+o.c+'</span>'+(o.id.length?'<span>'+o.id.join(', ')+'</span>':'')+(o.f!=null?'<span>'+stockDot(o.f,o.q)+t('stock')+': '+(o.f>0?fmt(o.f):t('none'))+'</span>':'')+'</div>'+(o.why?'<div class="why">'+o.why+'</div>':'')+'</div>';}
+function itemHtml(o){return '<div class="it'+(o.acc?' acc':'')+'"><div class="ds">'+sd(o.d)+'</div><div class="q">'+fmt(o.q)+'<small>'+o.u+'</small></div><div class="meta"><span class="code">'+o.c+'</span>'+(o.id.length?'<span>'+o.id.join(', ')+'</span>':'')+'</div>'+(o.why?'<div class="why">'+o.why+'</div>':'')+'</div>';}
 function render(){fillOpts();renderFits();const R=calc();
  $('res').innerHTML=R.length?'<h3>'+t('main')+'</h3>'+R.filter(o=>!o.acc).map(itemHtml).join('')+(R.some(o=>o.acc)?'<h3>'+t('acc')+'</h3>'+R.filter(o=>o.acc).map(itemHtml).join(''):''):'<div class="empty">'+t('empty')+'</div>';
  $('lc').textContent=S.list.length;}
 function fitCands(){const it=cur();if(!it)return[];const q=$('fq').value.trim().toLowerCase();
  return D.items.filter(x=>['bend','tee','cross','reduc','cover_fit'].includes(x.k)&&(x.lab===it.lab||(x.W===it.W&&(x.k==='cover_fit'||!x.lab))) && (!q||(x.c+' '+x.d).toLowerCase().includes(q))).sort((a,b)=>a.k.localeCompare(b.k)||b.f-a.f).slice(0,80);}
-function fitRow(x){const q=FITQ[x.c]||0;return '<div class="fit"><div><div class="ds" style="font-size:13px">'+sd(x.d)+'</div><div class="meta muted"><span class="code">'+x.c+'</span> '+stockDot(x.f,q)+fmt(x.f)+'</div></div><div class="st"><button data-f="'+x.c+'" data-d="-1">−</button><b>'+q+'</b><button data-f="'+x.c+'" data-d="1">+</button></div></div>';}
+function fitRow(x){const q=FITQ[x.c]||0;return '<div class="fit"><div><div class="ds" style="font-size:13px">'+sd(x.d)+'</div><div class="meta muted"><span class="code">'+x.c+'</span> '+''+'</div></div><div class="st"><button data-f="'+x.c+'" data-d="-1">−</button><b>'+q+'</b><button data-f="'+x.c+'" data-d="1">+</button></div></div>';}
 function renderFits(){const sel=Object.keys(FITQ).filter(c=>FITQ[c]>0).map(c=>D.items.find(x=>x.c===c)).filter(Boolean);$('fits').innerHTML=sel.map(fitRow).join('');}
 function renderFL(){const c=fitCands();$('fl').innerHTML=c.length?c.map(fitRow).join(''):'<div class="empty">'+t('nofit')+'</div>';}
 function txt(R,title){return (title?title+'\n':'')+R.map((o,i)=>(i+1)+'. '+sd(o.d)+' | '+o.c+(o.id.length?' | '+o.id[0]:'')+' | '+fmt(o.q)+' '+o.u).join('\n');}
@@ -201,7 +201,7 @@ $('lb').onclick=()=>{renderList();$('ml').classList.add('on');};
 $('lcp').onclick=()=>{if(S.list.length)copy(txt(agg(),t('list')));};
 $('lclr').onclick=()=>{S.list=[];save();renderList();render();};
 $('lcsv').onclick=()=>{if(!S.list.length)return;const A=agg();const esc=v=>'"'+String(v==null?'':v).replace(/"/g,'""')+'"';
- const rows=[['No','Description (warehouse log)','DKC code','Ident','Qty','Unit','Stock 20.11']].concat(A.map((o,i)=>[i+1,o.d,o.c,o.id.join(' '),o.q,o.u,o.f]));
+ const rows=[['No','Description','DKC code','Ident','Qty','Unit']].concat(A.map((o,i)=>[i+1,o.d,o.c,o.id.join(' '),o.q,o.u]));
  const csv='﻿'+rows.map(r=>r.map(esc).join(';')).join('\r\n');const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));a.download='tray_materials.csv';a.click();};
 i18n();renderTypes();
 fetch('data.json').then(r=>r.json()).then(d=>{D=d;renderSizes();render();});
