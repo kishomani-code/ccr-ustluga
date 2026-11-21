@@ -1,39 +1,31 @@
-Last update: 20.11.2026 19:21 MSK
+Last update: 21.11.2026 18:00 MSK
+Master_Punch_List_21.11.2026.xlsx
 Md_Cable_Tracker_L3.xlsb
-EI_Internal_Punch_register_.xlsx
-Cable_RAWP_Inspection_Progress_R74.xlsb
-532RHI-QA-RGS-006_NCR_Register_20.11.2026_Rev01.xlsb
-Master_Punch_List_20.11.2026.xlsx
 Md_EL_IWP_Status.xlsb
-EI_Equipment_Control_R57.xlsb
 ===== CCR =====
 site: ccr ('G0-D1810BX0', 'G0-D1801FX0')
 carry-forward source: data.json (data 20.11.2026)
 iwp    : Md_EL_IWP_Status.xlsb
 cables : Md_Cable_Tracker_L3.xlsb
-rhi    : EI_Internal_Punch_register_.xlsx
-master : Master_Punch_List_20.11.2026.xlsx
-equip  : EI_Equipment_Control_R57.xlsb
-rawp   : Cable_RAWP_Inspection_Progress_R74.xlsb
+rhi    : -- not found, carried forward
+master : Master_Punch_List_21.11.2026.xlsx
+equip  : -- not found, carried forward
+rawp   : -- not found, carried forward
 docs   : -- not found, carried forward
 ptq    : -- not found, carried forward
 ctq    : -- not found, carried forward
-  read Md_EL_IWP_Status.xlsb [EL_IWP_Status]: 250678 rows, 97s
-  read Md_Cable_Tracker_L3.xlsb [Единый кабельный журнал]: 59555 rows, 33s
-  read EI_Internal_Punch_register_.xlsx [Punch_List]: 10101 rows, 5s
-  read Master_Punch_List_20.11.2026.xlsx [Log of Mechanical Progress]: 76204 rows, 14s
-  read EI_Equipment_Control_R57.xlsb [E&I_Equipment]: 39953 rows, 43s
-  read Cable_RAWP_Inspection_Progress_R74.xlsb [Cable_list]: 22321 rows, 4s
+  read Md_EL_IWP_Status.xlsb [EL_IWP_Status]: 252108 rows, 52s
+  read Md_Cable_Tracker_L3.xlsb [Единый кабельный журнал]: 59555 rows, 18s
+  read Master_Punch_List_21.11.2026.xlsx [Log of Mechanical Progress]: 76204 rows, 9s
 other-area cables with IWP Access ID from another title: 92
-note: equipment control: 1795 CCR RFI records, 1795 IWP items got RFI status in notes
 note: cable tracker: 4230 cables updated, 0 new cables added (From/To kept for existing)
-note: RAWP: 2915 cables got laying/termination RFI info
+note: RAWP: 0 cables got laying/termination RFI info
 note: panels: 0 new cable links
-note: punch: 8778 master (client) rows + 1793 RHI internal rows
+note: punch: 8778 master (client) rows + 1793 RHI internal rows (RHI kept from app)
 note: standard references removed from text: 425
 
 section        base   new   diff
-items         13560  13632    +72
+items         13560  13634    +74
 cables         4171   4285   +114
 panels          415    415     +0
 punch.rows     8130  10571  +2441
@@ -48,36 +40,32 @@ tq.ctq           45     53     +8
 tq.ptq          287    287     +0
 rv                7      7     +0
 
-OK: wrote data.json (13,316,267 bytes), meta {'date': '20.11.2026', 'src': 'IWP status · Md cable tracker · RHI internal punch · Master punch 20.11.2026 · E&I equipment control R57 · Cable RAWP R74 · Documents register · TQ register 23.10.2026 · CTQ register', 'ver': '2026-11-20-1525'}
+OK: wrote data.json (13,192,346 bytes), meta {'date': '21.11.2026', 'src': 'IWP status · Md cable tracker · Master punch 21.11.2026 · RHI internal punch · E&I equipment control R57 · Cable RAWP R74 · Documents register · TQ register 23.10.2026 · CTQ register', 'ver': '2026-11-21-1435'}
 ===== D48 =====
 site: d48 ('G0-D4810BX0', 'G0-D4801FX0')
 carry-forward source: data_d48.json (data 20.11.2026)
 iwp    : Md_EL_IWP_Status.xlsb
 cables : Md_Cable_Tracker_L3.xlsb
-rhi    : EI_Internal_Punch_register_.xlsx
-master : Master_Punch_List_20.11.2026.xlsx
-equip  : EI_Equipment_Control_R57.xlsb
-rawp   : Cable_RAWP_Inspection_Progress_R74.xlsb
+rhi    : -- not found, carried forward
+master : Master_Punch_List_21.11.2026.xlsx
+equip  : -- not found, carried forward
+rawp   : -- not found, carried forward
 docs   : -- not found, carried forward
 ptq    : -- not found, carried forward
 ctq    : -- not found, carried forward
-  read Md_EL_IWP_Status.xlsb [EL_IWP_Status]: 250678 rows, 98s
-  read Md_Cable_Tracker_L3.xlsb [Единый кабельный журнал]: 59555 rows, 34s
-  read EI_Internal_Punch_register_.xlsx [Punch_List]: 10101 rows, 5s
-  read Master_Punch_List_20.11.2026.xlsx [Log of Mechanical Progress]: 76204 rows, 15s
-  read EI_Equipment_Control_R57.xlsb [E&I_Equipment]: 39953 rows, 44s
-  read Cable_RAWP_Inspection_Progress_R74.xlsb [Cable_list]: 22321 rows, 4s
+  read Md_EL_IWP_Status.xlsb [EL_IWP_Status]: 252108 rows, 53s
+  read Md_Cable_Tracker_L3.xlsb [Единый кабельный журнал]: 59555 rows, 18s
+  read Master_Punch_List_21.11.2026.xlsx [Log of Mechanical Progress]: 76204 rows, 9s
 other-area cables with IWP Access ID from another title: 1104
-note: equipment control: 1560 CCR RFI records, 1560 IWP items got RFI status in notes
 note: cable tracker: 3454 cables updated, 0 new cables added (From/To kept for existing)
-note: RAWP: 2391 cables got laying/termination RFI info
+note: RAWP: 0 cables got laying/termination RFI info
 note: panels: 0 new cable links
-note: punch: 4317 master (client) rows + 1247 RHI internal rows
+note: punch: 4317 master (client) rows + 1247 RHI internal rows (RHI kept from app)
 note: block diagrams: 22 systems
 note: standard references removed from text: 3
 
 section        base   new   diff
-items             0   7167  +7167
+items             0   7155  +7155
 cables            0   3461  +3461
 panels            0    978   +978
 punch.rows        0   5564  +5564
@@ -92,31 +80,27 @@ tq.ctq            0     14    +14
 tq.ptq            0    281   +281
 rv                0      0     +0
 
-OK: wrote data_d48.json (8,332,960 bytes), meta {'date': '20.11.2026', 'src': 'IWP status · Md cable tracker · RHI internal punch · Master punch 20.11.2026 · E&I equipment control R57 · Cable RAWP R74 · Documents register · TQ register 23.10.2026', 'ver': '2026-11-20-1528'}
+OK: wrote data_d48.json (8,218,660 bytes), meta {'date': '21.11.2026', 'src': 'IWP status · Md cable tracker · Master punch 21.11.2026 · RHI internal punch · E&I equipment control R57 · Cable RAWP R74 · Documents register · TQ register 23.10.2026', 'ver': '2026-11-21-1437'}
 ===== 1801 =====
 site: 1801 ('G0-D1801FX0',)
 carry-forward source: data_1801.json (data 20.11.2026)
 iwp    : Md_EL_IWP_Status.xlsb
 cables : Md_Cable_Tracker_L3.xlsb
-rhi    : EI_Internal_Punch_register_.xlsx
-master : Master_Punch_List_20.11.2026.xlsx
-equip  : EI_Equipment_Control_R57.xlsb
-rawp   : Cable_RAWP_Inspection_Progress_R74.xlsb
+rhi    : -- not found, carried forward
+master : Master_Punch_List_21.11.2026.xlsx
+equip  : -- not found, carried forward
+rawp   : -- not found, carried forward
 docs   : -- not found, carried forward
 ptq    : -- not found, carried forward
 ctq    : -- not found, carried forward
-  read Md_EL_IWP_Status.xlsb [EL_IWP_Status]: 250678 rows, 98s
-  read Md_Cable_Tracker_L3.xlsb [Единый кабельный журнал]: 59555 rows, 34s
-  read EI_Internal_Punch_register_.xlsx [Punch_List]: 10101 rows, 5s
-  read Master_Punch_List_20.11.2026.xlsx [Log of Mechanical Progress]: 76204 rows, 14s
-  read EI_Equipment_Control_R57.xlsb [E&I_Equipment]: 39953 rows, 44s
-  read Cable_RAWP_Inspection_Progress_R74.xlsb [Cable_list]: 22321 rows, 4s
+  read Md_EL_IWP_Status.xlsb [EL_IWP_Status]: 252108 rows, 53s
+  read Md_Cable_Tracker_L3.xlsb [Единый кабельный журнал]: 59555 rows, 18s
+  read Master_Punch_List_21.11.2026.xlsx [Log of Mechanical Progress]: 76204 rows, 10s
 other-area cables with IWP Access ID from another title: 3
-note: equipment control: 612 CCR RFI records, 612 IWP items got RFI status in notes
 note: cable tracker: 614 cables updated, 0 new cables added (From/To kept for existing)
-note: RAWP: 192 cables got laying/termination RFI info
+note: RAWP: 0 cables got laying/termination RFI info
 note: panels: 0 new cable links
-note: punch: 636 master (client) rows + 270 RHI internal rows
+note: punch: 636 master (client) rows + 270 RHI internal rows (RHI kept from app)
 note: block diagrams: 2 systems
 note: standard references removed from text: 3
 
@@ -136,36 +120,32 @@ tq.ctq            0      0     +0
 tq.ptq            0      0     +0
 rv                0      0     +0
 
-OK: wrote data_1801.json (1,326,182 bytes), meta {'date': '20.11.2026', 'src': 'IWP status · Md cable tracker · RHI internal punch · Master punch 20.11.2026 · E&I equipment control R57 · Cable RAWP R74 · Documents register', 'ver': '2026-11-20-1532'}
+OK: wrote data_1801.json (1,281,868 bytes), meta {'date': '21.11.2026', 'src': 'IWP status · Md cable tracker · Master punch 21.11.2026 · RHI internal punch · E&I equipment control R57 · Cable RAWP R74 · Documents register', 'ver': '2026-11-21-1438'}
 ===== 8810 =====
 site: 8810 ('G0-D8810BX0', 'G0-D8801FX0')
 carry-forward source: data_8810.json (data 20.11.2026)
 iwp    : Md_EL_IWP_Status.xlsb
 cables : Md_Cable_Tracker_L3.xlsb
-rhi    : EI_Internal_Punch_register_.xlsx
-master : Master_Punch_List_20.11.2026.xlsx
-equip  : EI_Equipment_Control_R57.xlsb
-rawp   : Cable_RAWP_Inspection_Progress_R74.xlsb
+rhi    : -- not found, carried forward
+master : Master_Punch_List_21.11.2026.xlsx
+equip  : -- not found, carried forward
+rawp   : -- not found, carried forward
 docs   : -- not found, carried forward
 ptq    : -- not found, carried forward
 ctq    : -- not found, carried forward
-  read Md_EL_IWP_Status.xlsb [EL_IWP_Status]: 250678 rows, 98s
-  read Md_Cable_Tracker_L3.xlsb [Единый кабельный журнал]: 59555 rows, 34s
-  read EI_Internal_Punch_register_.xlsx [Punch_List]: 10101 rows, 5s
-  read Master_Punch_List_20.11.2026.xlsx [Log of Mechanical Progress]: 76204 rows, 15s
-  read EI_Equipment_Control_R57.xlsb [E&I_Equipment]: 39953 rows, 43s
-  read Cable_RAWP_Inspection_Progress_R74.xlsb [Cable_list]: 22321 rows, 4s
+  read Md_EL_IWP_Status.xlsb [EL_IWP_Status]: 252108 rows, 52s
+  read Md_Cable_Tracker_L3.xlsb [Единый кабельный журнал]: 59555 rows, 18s
+  read Master_Punch_List_21.11.2026.xlsx [Log of Mechanical Progress]: 76204 rows, 10s
 other-area cables with IWP Access ID from another title: 144
-note: equipment control: 170 CCR RFI records, 198 IWP items got RFI status in notes
 note: cable tracker: 605 cables updated, 0 new cables added (From/To kept for existing)
-note: RAWP: 585 cables got laying/termination RFI info
+note: RAWP: 0 cables got laying/termination RFI info
 note: panels: 0 new cable links
-note: punch: 1198 master (client) rows + 341 RHI internal rows
+note: punch: 1198 master (client) rows + 341 RHI internal rows (RHI kept from app)
 note: block diagrams: 14 systems
 note: standard references removed from text: 0
 
 section        base   new   diff
-items             0   1873  +1873
+items             0   1875  +1875
 cables            0    605   +605
 panels            0    163   +163
 punch.rows        0   1539  +1539
@@ -180,36 +160,32 @@ tq.ctq            0      0     +0
 tq.ptq            0      0     +0
 rv                0      0     +0
 
-OK: wrote data_8810.json (1,577,055 bytes), meta {'date': '20.11.2026', 'src': 'IWP status · Md cable tracker · RHI internal punch · Master punch 20.11.2026 · E&I equipment control R57 · Cable RAWP R74 · Documents register', 'ver': '2026-11-20-1535'}
+OK: wrote data_8810.json (1,564,110 bytes), meta {'date': '21.11.2026', 'src': 'IWP status · Md cable tracker · Master punch 21.11.2026 · RHI internal punch · E&I equipment control R57 · Cable RAWP R74 · Documents register', 'ver': '2026-11-21-1439'}
 ===== COLD =====
 site: cold ('G0-A10200X0', 'G0-D10250X0', 'G1-A30210X0')
 carry-forward source: data_cold.json (data 20.11.2026)
 iwp    : Md_EL_IWP_Status.xlsb
 cables : Md_Cable_Tracker_L3.xlsb
-rhi    : EI_Internal_Punch_register_.xlsx
-master : Master_Punch_List_20.11.2026.xlsx
-equip  : EI_Equipment_Control_R57.xlsb
-rawp   : Cable_RAWP_Inspection_Progress_R74.xlsb
+rhi    : -- not found, carried forward
+master : Master_Punch_List_21.11.2026.xlsx
+equip  : -- not found, carried forward
+rawp   : -- not found, carried forward
 docs   : -- not found, carried forward
 ptq    : -- not found, carried forward
 ctq    : -- not found, carried forward
-  read Md_EL_IWP_Status.xlsb [EL_IWP_Status]: 250678 rows, 97s
-  read Md_Cable_Tracker_L3.xlsb [Единый кабельный журнал]: 59555 rows, 34s
-  read EI_Internal_Punch_register_.xlsx [Punch_List]: 10101 rows, 5s
-  read Master_Punch_List_20.11.2026.xlsx [Log of Mechanical Progress]: 76204 rows, 14s
-  read EI_Equipment_Control_R57.xlsb [E&I_Equipment]: 39953 rows, 44s
-  read Cable_RAWP_Inspection_Progress_R74.xlsb [Cable_list]: 22321 rows, 4s
+  read Md_EL_IWP_Status.xlsb [EL_IWP_Status]: 252108 rows, 53s
+  read Md_Cable_Tracker_L3.xlsb [Единый кабельный журнал]: 59555 rows, 18s
+  read Master_Punch_List_21.11.2026.xlsx [Log of Mechanical Progress]: 76204 rows, 10s
 other-area cables with IWP Access ID from another title: 0
-note: equipment control: 103 CCR RFI records, 103 IWP items got RFI status in notes
 note: cable tracker: 9803 cables updated, 0 new cables added (From/To kept for existing)
 note: RAWP: 0 cables got laying/termination RFI info
 note: panels: 0 new cable links
-note: punch: 0 master (client) rows + 111 RHI internal rows
+note: punch: 0 master (client) rows + 111 RHI internal rows (RHI kept from app)
 note: block diagrams: 2 systems
 note: standard references removed from text: 0
 
 section        base   new   diff
-items             0  27187 +27187
+items             0  27180 +27180
 cables            0   9803  +9803
 panels            0   1569  +1569
 punch.rows        0    111   +111
@@ -224,64 +200,61 @@ tq.ctq            0      0     +0
 tq.ptq            0      0     +0
 rv                0      0     +0
 
-OK: wrote data_cold.json (10,384,381 bytes), meta {'date': '20.11.2026', 'src': 'IWP status · Md cable tracker · RHI internal punch · Master punch 20.11.2026 · E&I equipment control R57 · Cable RAWP R74 · Documents register', 'ver': '2026-11-20-1538'}
+OK: wrote data_cold.json (10,468,443 bytes), meta {'date': '21.11.2026', 'src': 'IWP status · Md cable tracker · Master punch 21.11.2026 · RHI internal punch · E&I equipment control R57 · Cable RAWP R74 · Documents register', 'ver': '2026-11-21-1441'}
 ===== AREAS =====
 iwp      input/Md_EL_IWP_Status.xlsb
 cables   input/Md_Cable_Tracker_L3.xlsb
-rhi      input/EI_Internal_Punch_register_.xlsx
-master   input/Master_Punch_List_20.11.2026.xlsx
-  read Md_EL_IWP_Status.xlsb [EL_IWP_Status]: 250679 rows, 98s
-  read Md_Cable_Tracker_L3.xlsb [Единый кабельный журнал]: 59555 rows, 34s
-  read EI_Internal_Punch_register_.xlsx [Punch_List]: 1047152 rows, 4s
-  read Master_Punch_List_20.11.2026.xlsx [Log of Mechanical Progress]: 76204 rows, 13s
-166 areas · 50467 cables · 250558 IWP lines · 48495 client punch (RHI) · 9621 RHI punch · 5066 drums · 88.9 MB
+rhi      -- not found --
+master   input/Master_Punch_List_21.11.2026.xlsx
+  read Md_EL_IWP_Status.xlsb [EL_IWP_Status]: 252109 rows, 53s
+  read Md_Cable_Tracker_L3.xlsb [Единый кабельный журнал]: 59555 rows, 19s
+  read Master_Punch_List_21.11.2026.xlsx [Log of Mechanical Progress]: 76204 rows, 10s
+166 areas · 50467 cables · 251930 IWP lines · 48495 client punch (RHI) · 0 RHI punch · 5066 drums · 86.3 MB
 ===== OTHER AREA PROJECTS =====
 ===== G0-A10110X0
-OK: wrote /home/runner/work/ccr-ustluga/ccr-ustluga/ax/G0-A10110X0.json (120,217 bytes), meta {'date': '20.11.2026', 'src': 'IWP status · Md cable tracker · RHI internal punch · Master punch 20.11.2026 · E&I equipment control R57 · Cable RAWP R74', 'ver': '2026-11-20-1544'}
+OK: wrote /home/runner/work/ccr-ustluga/ccr-ustluga/ax/G0-A10110X0.json (116,313 bytes), meta {'date': '21.11.2026', 'src': 'IWP status · Md cable tracker · Master punch 21.11.2026', 'ver': '2026-11-21-1444'}
 ===== G0-A10120X0
-OK: wrote /home/runner/work/ccr-ustluga/ccr-ustluga/ax/G0-A10120X0.json (403,138 bytes), meta {'date': '20.11.2026', 'src': 'IWP status · Md cable tracker · RHI internal punch · Master punch 20.11.2026 · E&I equipment control R57 · Cable RAWP R74', 'ver': '2026-11-20-1548'}
+OK: wrote /home/runner/work/ccr-ustluga/ccr-ustluga/ax/G0-A10120X0.json (341,827 bytes), meta {'date': '21.11.2026', 'src': 'IWP status · Md cable tracker · Master punch 21.11.2026', 'ver': '2026-11-21-1445'}
 ===== G0-A10130X0
-OK: wrote /home/runner/work/ccr-ustluga/ccr-ustluga/ax/G0-A10130X0.json (65,305 bytes), meta {'date': '20.11.2026', 'src': 'IWP status · Md cable tracker · RHI internal punch · Master punch 20.11.2026 · E&I equipment control R57 · Cable RAWP R74', 'ver': '2026-11-20-1551'}
+OK: wrote /home/runner/work/ccr-ustluga/ccr-ustluga/ax/G0-A10130X0.json (62,541 bytes), meta {'date': '21.11.2026', 'src': 'IWP status · Md cable tracker · Master punch 21.11.2026', 'ver': '2026-11-21-1446'}
 ===== G0-A10150X0
-OK: wrote /home/runner/work/ccr-ustluga/ccr-ustluga/ax/G0-A10150X0.json (82,165 bytes), meta {'date': '20.11.2026', 'src': 'IWP status · Md cable tracker · RHI internal punch · Master punch 20.11.2026 · E&I equipment control R57 · Cable RAWP R74', 'ver': '2026-11-20-1554'}
+OK: wrote /home/runner/work/ccr-ustluga/ccr-ustluga/ax/G0-A10150X0.json (81,488 bytes), meta {'date': '21.11.2026', 'src': 'IWP status · Md cable tracker · Master punch 21.11.2026', 'ver': '2026-11-21-1448'}
 ===== G0-A10300X0
-OK: wrote /home/runner/work/ccr-ustluga/ccr-ustluga/ax/G0-A10300X0.json (908,704 bytes), meta {'date': '20.11.2026', 'src': 'IWP status · Md cable tracker · RHI internal punch · Master punch 20.11.2026 · E&I equipment control R57 · Cable RAWP R74', 'ver': '2026-11-20-1558'}
+OK: wrote /home/runner/work/ccr-ustluga/ccr-ustluga/ax/G0-A10300X0.json (680,359 bytes), meta {'date': '21.11.2026', 'src': 'IWP status · Md cable tracker · Master punch 21.11.2026', 'ver': '2026-11-21-1449'}
 ===== G0-A10920X0
-OK: wrote /home/runner/work/ccr-ustluga/ccr-ustluga/ax/G0-A10920X0.json (138,327 bytes), meta {'date': '20.11.2026', 'src': 'IWP status · Md cable tracker · RHI internal punch · Master punch 20.11.2026 · E&I equipment control R57 · Cable RAWP R74', 'ver': '2026-11-20-1601'}
+OK: wrote /home/runner/work/ccr-ustluga/ccr-ustluga/ax/G0-A10920X0.json (124,959 bytes), meta {'date': '21.11.2026', 'src': 'IWP status · Md cable tracker · Master punch 21.11.2026', 'ver': '2026-11-21-1451'}
 ===== G0-A10930X0
-OK: wrote /home/runner/work/ccr-ustluga/ccr-ustluga/ax/G0-A10930X0.json (787,259 bytes), meta {'date': '20.11.2026', 'src': 'IWP status · Md cable tracker · RHI internal punch · Master punch 20.11.2026 · E&I equipment control R57 · Cable RAWP R74', 'ver': '2026-11-20-1605'}
+OK: wrote /home/runner/work/ccr-ustluga/ccr-ustluga/ax/G0-A10930X0.json (601,759 bytes), meta {'date': '21.11.2026', 'src': 'IWP status · Md cable tracker · Master punch 21.11.2026', 'ver': '2026-11-21-1452'}
 ===== G0-D8810RX0
-OK: wrote /home/runner/work/ccr-ustluga/ccr-ustluga/ax/G0-D8810RX0.json (193,828 bytes), meta {'date': '20.11.2026', 'src': 'IWP status · Md cable tracker · RHI internal punch · Master punch 20.11.2026 · E&I equipment control R57 · Cable RAWP R74', 'ver': '2026-11-20-1608'}
+OK: wrote /home/runner/work/ccr-ustluga/ccr-ustluga/ax/G0-D8810RX0.json (162,704 bytes), meta {'date': '21.11.2026', 'src': 'IWP status · Md cable tracker · Master punch 21.11.2026', 'ver': '2026-11-21-1454'}
 ===== G0-Z00300X0
-OK: wrote /home/runner/work/ccr-ustluga/ccr-ustluga/ax/G0-Z00300X0.json (164,481 bytes), meta {'date': '20.11.2026', 'src': 'IWP status · Md cable tracker · RHI internal punch · Master punch 20.11.2026 · E&I equipment control R57 · Cable RAWP R74', 'ver': '2026-11-20-1611'}
+OK: wrote /home/runner/work/ccr-ustluga/ccr-ustluga/ax/G0-Z00300X0.json (148,102 bytes), meta {'date': '21.11.2026', 'src': 'IWP status · Md cable tracker · Master punch 21.11.2026', 'ver': '2026-11-21-1455'}
 ===== G0-Z00730X0
-OK: wrote /home/runner/work/ccr-ustluga/ccr-ustluga/ax/G0-Z00730X0.json (548,045 bytes), meta {'date': '20.11.2026', 'src': 'IWP status · Md cable tracker · RHI internal punch · Master punch 20.11.2026 · E&I equipment control R57 · Cable RAWP R74', 'ver': '2026-11-20-1615'}
+OK: wrote /home/runner/work/ccr-ustluga/ccr-ustluga/ax/G0-Z00730X0.json (532,305 bytes), meta {'date': '21.11.2026', 'src': 'IWP status · Md cable tracker · Master punch 21.11.2026', 'ver': '2026-11-21-1457'}
 OTHER AREA projects built: 10 ['G0-A10110X0', 'G0-A10120X0', 'G0-A10130X0', 'G0-A10150X0', 'G0-A10300X0', 'G0-A10920X0', 'G0-A10930X0', 'G0-D8810RX0', 'G0-Z00300X0', 'G0-Z00730X0']
 scope: 2860 cables with ALP YILMAZ -> scope.json {'G0-D1810BX0': 1163, 'G0-D4810BX0': 753, 'G0-D1801FX0': 527, 'G0-D8810BX0': 195, 'G0-D4801FX0': 140, 'G0-D8880FX0': 52, 'G0-D8810RX0': 26, 'G0-A10920X0': 10}
-week: IWP daily columns 02.11.2026 … 06.12.2026, 6338 lines with reported quantity, last entry 19.11.2026
+week: IWP daily columns 02.11.2026 … 06.12.2026, 6627 lines with reported quantity, last entry 20.11.2026
 week: no cable tray physical progress file in input - tray part unchanged
-week -> week.json 243485 bytes
+week -> week.json 253291 bytes
 ===== RFI / SUBSYSTEMS =====
 IWP status: Md_EL_IWP_Status.xlsb
-RAWP: Cable_RAWP_Inspection_Progress_R74.xlsb
-Equipment: EI_Equipment_Control_R57.xlsb
-  read Md_EL_IWP_Status.xlsb [EL_IWP_Status]: 250678 rows, 97s
-  read Cable_RAWP_Inspection_Progress_R74.xlsb [Cable_list]: 22321 rows, 4s
-  read EI_Equipment_Control_R57.xlsb [E&I_Equipment]: 39953 rows, 43s
-  read Md_Cable_Tracker_L3.xlsb [Единый кабельный журнал]: 59555 rows, 33s
-ccr: 0 cables with RHI RFI in tracker · 96 subsystems · 9565 IWP lines · 3890 cables with RFI · 4439 equipment rows -> ./rfi_ccr.json (2,024,805 bytes)
-d48: 16 cables with RHI RFI in tracker · 184 subsystems · 4748 IWP lines · 3255 cables with RFI · 1746 equipment rows -> ./rfi_d48.json (1,263,071 bytes)
-cold: 0 cables with RHI RFI in tracker · 58 subsystems · 25618 IWP lines · 1928 cables with RFI · 2234 equipment rows -> ./rfi_cold.json (1,065,428 bytes)
-1801: 0 cables with RHI RFI in tracker · 12 subsystems · 2232 IWP lines · 428 cables with RFI · 1070 equipment rows -> ./rfi_1801.json (349,125 bytes)
-8810: 0 cables with RHI RFI in tracker · 41 subsystems · 998 IWP lines · 638 cables with RFI · 367 equipment rows -> ./rfi_8810.json (265,436 bytes)
+RAWP: None
+Equipment: None
+  read Md_EL_IWP_Status.xlsb [EL_IWP_Status]: 252108 rows, 52s
+  read Md_Cable_Tracker_L3.xlsb [Единый кабельный журнал]: 59555 rows, 18s
+ccr: 0 cables with RHI RFI in tracker · 97 subsystems · 9577 IWP lines · 3890 cables with RFI · 4439 equipment rows -> ./rfi_ccr.json (2,024,640 bytes)
+d48: 16 cables with RHI RFI in tracker · 184 subsystems · 4737 IWP lines · 3255 cables with RFI · 1746 equipment rows -> ./rfi_d48.json (1,261,904 bytes)
+cold: 0 cables with RHI RFI in tracker · 58 subsystems · 25664 IWP lines · 1928 cables with RFI · 2234 equipment rows -> ./rfi_cold.json (1,065,713 bytes)
+1801: 0 cables with RHI RFI in tracker · 13 subsystems · 2243 IWP lines · 428 cables with RFI · 1070 equipment rows -> ./rfi_1801.json (349,201 bytes)
+8810: 0 cables with RHI RFI in tracker · 41 subsystems · 998 IWP lines · 638 cables with RFI · 367 equipment rows -> ./rfi_8810.json (265,224 bytes)
 ===== CABLE TRACKER APP =====
-  read Md_Cable_Tracker_L3.xlsb [Единый кабельный журнал]: 59555 rows, 42s
-tracker app: 59548 cables, 5131 drums -> tracker/data.json (13,836,569 bytes, gzip 1,097,337)
+  read Md_Cable_Tracker_L3.xlsb [Единый кабельный журнал]: 59555 rows, 17s
+tracker app: 59548 cables, 5131 drums -> tracker/data.json (13,838,226 bytes, gzip 1,097,644)
 ===== TQ APP =====
 no TQ register in input - TQ app data unchanged
 ===== ALEKSY PUNCH FOLLOW-UP =====
 Aleksy punch file: not found – ak.json kept, reported list refreshed
 ===== NCR REGISTER =====
-NCR register 532RHI-QA-RGS-006_NCR_Register_20.11.2026_Rev01.xlsb: 359 NCR in our titles · 60 open · 29 open E&I -> ncr.json
+no NCR register in input - ncr.json unchanged
 ===== MATERIALS FOLLOW-UP (stock / MRF) =====
 no Materials FollowUp in input - mat.json unchanged
