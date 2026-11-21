@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0f3d3a">
+<title>QC Inspection</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<style>
+:root{--pri:#0f3d3a;--pri2:#16615c;--acc:#f5b400;--bg:#f2f5f4;--card:#fff;--ink:#14201f;--mut:#5b6b69;--line:#dbe3e1;--ok:#1e8e3e;--bad:#c62828;--na:#7a8786;--chip:#e9f0ee}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif}
+header{position:sticky;top:0;z-index:5;background:var(--pri);color:#fff;padding:10px 16px;display:flex;align-items:center;gap:8px;box-shadow:0 2px 6px rgba(0,0,0,.2)}
+header h1{font-size:17px;margin:0;flex:1;font-weight:700}
+header small{display:block;font-weight:400;opacity:.75;font-size:11px}
+.hb{background:rgba(255,255,255,.15);color:#fff;border:0;border-radius:10px;padding:8px 11px;font-weight:600;font-size:13px}
+main{max-width:760px;margin:0 auto;padding:12px 16px 120px}
+.card{background:var(--card);border-radius:14px;padding:14px;margin-bottom:12px;box-shadow:0 1px 3px rgba(0,0,0,.07)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+.type{border:0;background:var(--card);border-radius:14px;padding:14px 10px;text-align:center;box-shadow:0 1px 3px rgba(0,0,0,.08);font-weight:650;color:var(--ink);font-size:14px}
+.type i{display:block;font-style:normal;font-size:30px;margin-bottom:6px}
+.type small{display:block;color:var(--mut);font-weight:400;font-size:11.5px;margin-top:3px}
+h2{font-size:15px;margin:4px 0 10px;color:var(--pri2);text-transform:uppercase;letter-spacing:.4px}
+label.f{display:block;font-size:12px;color:var(--mut);font-weight:600;margin-top:8px}
+.inp{width:100%;border:1.5px solid var(--line);border-radius:10px;padding:10px;font-size:15px;background:#fff;color:var(--ink);margin-top:3px}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.sec{margin:14px 0 6px;font-weight:750;color:var(--pri2);font-size:13px;text-transform:uppercase;letter-spacing:.4px}
+.it{border:1px solid var(--line);border-radius:12px;padding:10px;margin-bottom:8px;background:#fff}
+.it.ok{border-color:#9fd3ad;background:#f3fbf5}.it.bad{border-color:#f0a6a6;background:#fff5f5}.it.na{background:#f6f7f7}
+.it .tx{font-size:14px;overflow-wrap:anywhere}
+.it .rf{font-size:11px;color:var(--mut);margin-top:2px}
+.btns{display:grid;grid-template-columns:1fr 1fr .8fr auto;gap:6px;margin-top:8px}
+.btns button{border:1.5px solid var(--line);background:#fff;border-radius:10px;padding:9px 0;font-weight:700;font-size:14px;color:var(--ink)}
+.btns .b1.on{background:var(--ok);border-color:var(--ok);color:#fff}
+.btns .b2.on{background:var(--bad);border-color:var(--bad);color:#fff}
+.btns .b3.on{background:var(--na);border-color:var(--na);color:#fff}
+.btns .cam{padding:9px 12px}
+.cm{display:none;margin-top:6px}.it.bad .cm,.it.hascm .cm{display:block}
+.ph{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
+.ph img{width:64px;height:64px;object-fit:cover;border-radius:8px;border:1px solid var(--line)}
+.bar{position:fixed;left:0;right:0;bottom:0;background:#fff;border-top:1px solid var(--line);padding:10px 16px calc(10px + env(safe-area-inset-bottom));display:flex;gap:8px;z-index:6;justify-content:center;align-items:center}
+.bar button{flex:1;max-width:220px;border:0;border-radius:12px;padding:13px 6px;font-weight:700;font-size:14px}
+.p{background:var(--acc);color:#1b1b1b}.s{background:var(--pri);color:#fff}.t{background:var(--chip);color:var(--pri)}
+.prog{flex:1.3;max-width:220px;font-size:12px;color:var(--mut)}
+.prog div{height:8px;background:var(--chip);border-radius:8px;overflow:hidden;margin-top:3px}
+.prog div i{display:block;height:100%;background:var(--ok)}
+.rec{display:grid;grid-template-columns:1fr auto;gap:4px;border-bottom:1px solid var(--line);padding:10px 0;cursor:pointer}
+.st{font-size:11.5px;font-weight:700;border-radius:20px;padding:3px 9px;align-self:center}
+.st.A{background:#dcf2e2;color:var(--ok)}.st.R{background:#fde2e2;color:var(--bad)}.st.O{background:#fff1c7;color:#8a6200}
+.muted{color:var(--mut);font-size:12px}
+.empty{text-align:center;color:var(--mut);padding:24px}
+.toast{position:fixed;left:50%;bottom:90px;transform:translateX(-50%);background:var(--ink);color:#fff;padding:9px 16px;border-radius:20px;font-size:13px;opacity:0;transition:.2s;pointer-events:none;z-index:10}
+.toast.on{opacity:1}
+/* report */
+.rep table{width:100%;border-collapse:collapse;font-size:12.5px}
+.rep th,.rep td{border:1px solid #b9c4c2;padding:5px 6px;vertical-align:top;text-align:left}
+.rep th{background:#e6eeec}
+.rep .r-ok{color:var(--ok);font-weight:700}.rep .r-bad{color:var(--bad);font-weight:700}.rep .r-na{color:var(--na)}
+.rep .hd td{border:0;padding:2px 0}
+.sig{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:26px;font-size:12.5px}
+.sig div{border-top:1px solid #555;padding-top:4px}
+.note{font-size:11.5px;color:var(--mut);margin-top:8px}
+@media print{header,.bar,.noprint{display:none!important}main{padding:0;max-width:none}.card{box-shadow:none;padding:0}body{background:#fff}.rep img{width:110px;height:110px}}
+</style>
+</head>
+<body>
+<header><h1 id="ttl">QC Inspection<small id="sub">E&I · offline</small></h1><button class="hb" id="lang">RU</button><button class="hb" id="home">🏠</button><button class="hb" id="list">📂</button></header>
+<main id="main"></main>
+<div class="bar" id="bar" style="display:none"></div>
+<div class="toast" id="toast"></div>
+<input type="file" accept="image/*" capture="environment" id="cam" style="display:none">
+<script src="checklists.js"></script>
+<script>
+const T={en:{ttl:'QC Inspection',sub:'E&I · offline · by project method statements',choose:'Choose inspection type',saved:'Saved inspections',none:'No inspections yet',tag:'Tag / number (JB, JP, cable, tray …)',area:'Title / area',dwg:'Drawing No. / rev',loc:'Location / room / elevation',insp:'QC inspector',date:'Date',start:'Start checklist',need:'Enter the tag / number',ok:'OK',bad:'Not OK',na:'N/A',cm:'Comment / what is wrong',prog:'checked',save:'Save',rep:'Report',back:'Back',saved1:'Saved',acc:'ACCEPTED',rej:'NOT ACCEPTED',open:'IN PROGRESS',summary:'Result',share:'Share / copy',print:'Print / PDF',csv:'Export all (Excel CSV)',del:'Delete',delq:'Delete this inspection?',item:'Check point',res:'Result',ref:'Reference',remark:'Remark',qcsig:'QC inspector (name, signature)',consig:'Construction (name, signature)',edit:'Continue / edit',photos:'Photos',note:'Check points follow the project method statements MS 120.001 / 120.006 / 120.007 / 120.008 / 120.009 (GSP-(G0-Z00000X0)-CT-MC). Approved drawings (DWG), ITP and vendor manual always govern. Internal RHI QC record – not client acceptance.',left:'not checked',type:'Type',search:'Search tag …',copied:'Copied'},
+ru:{ttl:'QC инспекция',sub:'ЭМР · офлайн · по технологическим картам',choose:'Выберите вид проверки',saved:'Сохранённые проверки',none:'Пока нет проверок',tag:'Тег / номер (JB, JP, кабель, лоток …)',area:'Титул / зона',dwg:'Чертёж / ревизия',loc:'Место / помещение / отметка',insp:'Инспектор QC',date:'Дата',start:'Начать проверку',need:'Введите тег / номер',ok:'Да',bad:'Нет',na:'Н/П',cm:'Комментарий / что не так',prog:'проверено',save:'Сохранить',rep:'Отчёт',back:'Назад',saved1:'Сохранено',acc:'ПРИНЯТО',rej:'НЕ ПРИНЯТО',open:'В РАБОТЕ',summary:'Итог',share:'Поделиться / копировать',print:'Печать / PDF',csv:'Выгрузить всё (Excel CSV)',del:'Удалить',delq:'Удалить эту проверку?',item:'Пункт проверки',res:'Результат',ref:'Ссылка',remark:'Замечание',qcsig:'Инспектор QC (ФИО, подпись)',consig:'Строительство (ФИО, подпись)',edit:'Продолжить / изменить',photos:'Фото',note:'Пункты проверки по технологическим картам МС 120.001 / 120.006 / 120.007 / 120.008 / 120.009 (GSP-(G0-Z00000X0)-CT-MC). Рабочая документация (DWG), ПКК и инструкции завода имеют приоритет. Внутренняя запись QC РХИ – не приёмка заказчика.',left:'не проверено',type:'Вид',search:'Поиск по тегу …',copied:'Скопировано'}};
+let L='en';try{L=localStorage.getItem('qi_lang')||'en'}catch(e){}
+const t=k=>T[L][k]||k, $=id=>document.getElementById(id), esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function toast(s){const e=$('toast');e.textContent=s;e.classList.add('on');setTimeout(()=>e.classList.remove('on'),1400)}
+// ---- storage (IndexedDB, falls back to memory)
+let DB=null;const MEM=new Map();
+function dbOpen(){return new Promise(r=>{try{const q=indexedDB.open('qcinspect',1);q.onupgradeneeded=()=>q.result.createObjectStore('insp',{keyPath:'id'});q.onsuccess=()=>{DB=q.result;r()};q.onerror=()=>r()}catch(e){r()}})}
+function dbAll(){return new Promise(r=>{if(!DB)return r([...MEM.values()]);const o=[];const c=DB.transaction('insp').objectStore('insp').openCursor();c.onsuccess=e=>{const x=e.target.result;if(x){o.push(x.value);x.continue()}else r(o)};c.onerror=()=>r(o)})}
+function dbPut(v){return new Promise(r=>{if(!DB){MEM.set(v.id,v);return r()}const tx=DB.transaction('insp','readwrite');tx.objectStore('insp').put(v);tx.oncomplete=()=>r();tx.onerror=()=>{MEM.set(v.id,v);r()}})}
+function dbDel(id){return new Promise(r=>{if(!DB){MEM.delete(id);return r()}const tx=DB.transaction('insp','readwrite');tx.objectStore('insp').delete(id);tx.oncomplete=()=>r();tx.onerror=()=>r()})}
+// ---- helpers
+let CUR=null; // current inspection
+const items=k=>{const o=[];QCL[k].sec.forEach((s,si)=>s[2].forEach((it,ii)=>o.push({key:si+'.'+ii,s,it})));return o};
+const nm=k=>QCL[k][L]||QCL[k].en;
+function status(x){const I=items(x.type),n=I.length,r=x.r||{};let done=0,bad=0;I.forEach(i=>{const v=r[i.key]&&r[i.key].v;if(v)done++;if(v==='bad')bad++});return {n,done,bad,st:bad?'R':(done===n?'A':'O')}}
+const stTxt=s=>({A:t('acc'),R:t('rej'),O:t('open')}[s]);
+const today=()=>{const d=new Date();return String(d.getDate()).padStart(2,'0')+'.'+String(d.getMonth()+1).padStart(2,'0')+'.'+d.getFullYear()};
+function i18n(){document.documentElement.lang=L;$('lang').textContent=L==='en'?'RU':'EN';$('ttl').firstChild.textContent=t('ttl');$('sub').textContent=t('sub')}
+// ---- views
+function vHome(){CUR=null;$('bar').style.display='none';
+ $('main').innerHTML='<h2>'+t('choose')+'</h2><div class="grid">'+Object.keys(QCL).map(k=>'<button class="type" data-new="'+k+'"><i>'+QCL[k].icon+'</i>'+esc(nm(k))+'<small>'+items(k).length+' ✓</small></button>').join('')+'</div><div class="note" style="margin-top:14px">'+t('note')+'</div>';}
+function vHead(k){let who='';try{who=localStorage.getItem('qi_who')||''}catch(e){}
+ $('bar').style.display='none';
+ $('main').innerHTML='<div class="card"><h2>'+QCL[k].icon+' '+esc(nm(k))+'</h2>'+
+ '<label class="f">'+t('tag')+' *</label><input class="inp" id="h_tag" autocomplete="off">'+
+ '<div class="row2"><div><label class="f">'+t('area')+'</label><input class="inp" id="h_area" placeholder="G0-D1810BX0"></div><div><label class="f">'+t('date')+'</label><input class="inp" id="h_date" value="'+today()+'"></div></div>'+
+ '<label class="f">'+t('dwg')+'</label><input class="inp" id="h_dwg">'+
+ '<label class="f">'+t('loc')+'</label><input class="inp" id="h_loc">'+
+ '<label class="f">'+t('insp')+'</label><input class="inp" id="h_who" value="'+esc(who)+'">'+
+ '<button class="s" style="width:100%;border:0;border-radius:12px;padding:14px;margin-top:14px;font-weight:700;font-size:15px" id="h_go" data-k="'+k+'">'+t('start')+' →</button></div>';
+ $('h_tag').focus();}
+function startNew(k){const tag=$('h_tag').value.trim();if(!tag){toast(t('need'));return}
+ const who=$('h_who').value.trim();try{localStorage.setItem('qi_who',who)}catch(e){}
+ CUR={id:Date.now().toString(36)+Math.random().toString(36).slice(2,6),type:k,tag,area:$('h_area').value.trim(),dwg:$('h_dwg').value.trim(),loc:$('h_loc').value.trim(),who,date:$('h_date').value.trim(),r:{},ts:Date.now()};
+ dbPut(CUR);vCheck();}
+function itemHtml(i){const r=(CUR.r[i.key])||{},v=r.v||'';const txt=L==='ru'?i.it[1]:i.it[0];
+ return '<div class="it '+(v||'')+(r.c?' hascm':'')+'" id="it_'+i.key.replace('.','_')+'"><div class="tx">'+esc(txt)+'</div><div class="rf">'+esc(i.it[2])+(L==='ru'?' · '+esc(i.it[0]):'')+'</div>'+
+ '<div class="btns"><button class="b1'+(v==='ok'?' on':'')+'" data-v="ok" data-i="'+i.key+'">✓ '+t('ok')+'</button><button class="b2'+(v==='bad'?' on':'')+'" data-v="bad" data-i="'+i.key+'">✗ '+t('bad')+'</button><button class="b3'+(v==='na'?' on':'')+'" data-v="na" data-i="'+i.key+'">'+t('na')+'</button><button class="cam" data-cam="'+i.key+'">📷</button></div>'+
+ '<div class="cm"><input class="inp" data-cm="'+i.key+'" placeholder="'+t('cm')+'" value="'+esc(r.c||'')+'"></div>'+
+ '<div class="ph">'+(r.p||[]).map((p,j)=>'<img src="'+p+'" data-pi="'+i.key+'|'+j+'">').join('')+'</div></div>';}
+function vCheck(){const k=CUR.type;let h='<div class="card"><b style="font-size:17px">'+QCL[k].icon+' '+esc(CUR.tag)+'</b><div class="muted">'+esc(nm(k))+' · '+esc([CUR.area,CUR.dwg,CUR.loc].filter(Boolean).join(' · '))+'</div></div>';
+ QCL[k].sec.forEach((s,si)=>{h+='<div class="sec">'+esc(L==='ru'?s[1]:s[0])+'</div>';s[2].forEach((it,ii)=>{h+=itemHtml({key:si+'.'+ii,s,it})})});
+ $('main').innerHTML=h;bar();window.scrollTo(0,0);}
+function bar(){const s=status(CUR);$('bar').style.display='flex';
+ $('bar').innerHTML='<div class="prog">'+s.done+'/'+s.n+' '+t('prog')+(s.bad?' · <b style="color:var(--bad)">✗ '+s.bad+'</b>':'')+'<div><i style="width:'+Math.round(100*s.done/s.n)+'%"></i></div></div><button class="t" id="b_save">'+t('save')+'</button><button class="p" id="b_rep">'+t('rep')+'</button>';}
+function setV(key,v){const r=CUR.r[key]||(CUR.r[key]={});r.v=r.v===v?'':v;CUR.ts=Date.now();dbPut(CUR);
+ const it=items(CUR.type).find(x=>x.key===key);const el=$('it_'+key.replace('.','_'));const n=document.createElement('div');n.innerHTML=itemHtml(it);el.replaceWith(n.firstChild);bar();
+ if(r.v==='bad'){const c=document.querySelector('[data-cm="'+key+'"]');if(c)c.focus()}}
+function vReport(x){CUR=x;const s=status(x);const I=items(x.type);
+ let h='<div class="card rep"><table class="hd"><tr><td><b style="font-size:16px">QC INSPECTION REPORT / АКТ ПРОВЕРКИ QC</b><br>'+esc(QCL[x.type].en)+' / '+esc(QCL[x.type].ru)+'</td><td style="text-align:right"><span class="st '+s.st+'" style="font-size:14px">'+stTxt(s.st)+'</span></td></tr></table>'+
+ '<table style="margin:10px 0"><tr><th>'+t('tag')+'</th><td><b>'+esc(x.tag)+'</b></td><th>'+t('date')+'</th><td>'+esc(x.date)+'</td></tr><tr><th>'+t('area')+'</th><td>'+esc(x.area)+'</td><th>'+t('dwg')+'</th><td>'+esc(x.dwg)+'</td></tr><tr><th>'+t('loc')+'</th><td>'+esc(x.loc)+'</td><th>'+t('insp')+'</th><td>'+esc(x.who)+'</td></tr></table>'+
+ '<div class="muted" style="margin-bottom:6px">'+t('summary')+': ✓ '+I.filter(i=>(x.r[i.key]||{}).v==='ok').length+' · ✗ '+s.bad+' · '+t('na')+' '+I.filter(i=>(x.r[i.key]||{}).v==='na').length+' · '+t('left')+' '+(s.n-s.done)+'</div>'+
+ '<table><tr><th>#</th><th>'+t('item')+'</th><th>'+t('res')+'</th><th>'+t('ref')+'</th><th>'+t('remark')+'</th></tr>';
+ let n=0,curs=-1;I.forEach(i=>{const si=+i.key.split('.')[0];if(si!==curs){curs=si;h+='<tr><th colspan="5">'+esc(i.s[0])+' / '+esc(i.s[1])+'</th></tr>'}n++;const r=x.r[i.key]||{};
+  h+='<tr><td>'+n+'</td><td>'+esc(i.it[0])+'<br><span class="muted">'+esc(i.it[1])+'</span></td><td class="'+(r.v==='ok'?'r-ok':r.v==='bad'?'r-bad':'r-na')+'">'+(r.v==='ok'?'✓ OK':r.v==='bad'?'✗ NOT OK':r.v==='na'?'N/A':'–')+'</td><td>'+esc(i.it[2])+'</td><td>'+esc(r.c||'')+((r.p||[]).length?'<div class="ph">'+r.p.map(p=>'<img src="'+p+'">').join('')+'</div>':'')+'</td></tr>'});
+ h+='</table><div class="sig"><div>'+t('qcsig')+'<br>'+esc(x.who)+'</div><div>'+t('consig')+'</div></div><div class="note">'+t('note')+'</div></div>'+
+ '<div class="noprint" style="display:grid;gap:8px"><button class="s" style="border:0;border-radius:12px;padding:13px;font-weight:700" id="r_print">🖨 '+t('print')+'</button><button class="t" style="border:0;border-radius:12px;padding:13px;font-weight:700" id="r_share">↗ '+t('share')+'</button><button class="t" style="border:0;border-radius:12px;padding:13px;font-weight:700" id="r_edit">✎ '+t('edit')+'</button><button class="t" style="border:0;border-radius:12px;padding:13px;font-weight:700;color:var(--bad)" id="r_del">'+t('del')+'</button></div>';
+ $('bar').style.display='none';$('main').innerHTML=h;window.scrollTo(0,0);}
+function shareText(x){const s=status(x),I=items(x.type);const bad=I.filter(i=>(x.r[i.key]||{}).v==='bad');
+ return 'QC '+QCL[x.type].en+' – '+x.tag+' ('+x.date+')\n'+[x.area,x.dwg,x.loc].filter(Boolean).join(' · ')+'\n'+t('summary')+': '+stTxt(s.st)+' – '+s.done+'/'+s.n+' '+t('prog')+(bad.length?'\n✗ '+bad.map(i=>(L==='ru'?i.it[1]:i.it[0])+((x.r[i.key].c)?' – '+x.r[i.key].c:'')).join('\n✗ '):'')+'\n'+t('insp')+': '+(x.who||'');}
+async function vList(){$('bar').style.display='none';CUR=null;const A=(await dbAll()).sort((a,b)=>b.ts-a.ts);
+ $('main').innerHTML='<div class="card"><h2>'+t('saved')+' ('+A.length+')</h2><input class="inp" id="q" placeholder="'+t('search')+'"><div id="ls"></div><button class="p" style="width:100%;border:0;border-radius:12px;padding:13px;margin-top:12px;font-weight:700" id="csv">⬇ '+t('csv')+'</button></div>';
+ const draw=()=>{const q=$('q').value.trim().toLowerCase();const B=A.filter(x=>!q||(x.tag+' '+x.area+' '+x.dwg).toLowerCase().includes(q));
+  $('ls').innerHTML=B.length?B.map(x=>{const s=status(x);return '<div class="rec" data-open="'+x.id+'"><div><b>'+QCL[x.type].icon+' '+esc(x.tag)+'</b><div class="muted">'+esc(nm(x.type))+' · '+esc(x.date)+(x.area?' · '+esc(x.area):'')+'</div></div><span class="st '+s.st+'">'+stTxt(s.st)+' '+s.done+'/'+s.n+'</span></div>'}).join(''):'<div class="empty">'+t('none')+'</div>';};
+ $('q').oninput=draw;draw();
+ $('csv').onclick=()=>{const rows=[['Date','Type','Tag','Title/area','Drawing','Location','Inspector','Status','Section','Check point','Проверка','Result','Reference','Remark']];
+  A.forEach(x=>{const s=status(x);items(x.type).forEach(i=>{const r=x.r[i.key]||{};rows.push([x.date,QCL[x.type].en,x.tag,x.area,x.dwg,x.loc,x.who,stTxt(s.st),i.s[0],i.it[0],i.it[1],r.v==='ok'?'OK':r.v==='bad'?'NOT OK':r.v==='na'?'N/A':'',i.it[2],r.c||''])})});
+  const csv='﻿'+rows.map(r=>r.map(v=>'"'+String(v==null?'':v).replace(/"/g,'""')+'"').join(';')).join('\r\n');
+  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));a.download='QC_inspections_'+today().replace(/\./g,'-')+'.csv';a.click();};}
+// ---- photo
+let camKey=null;
+$('cam').onchange=e=>{const f=e.target.files[0];e.target.value='';if(!f||!CUR||!camKey)return;const img=new Image();img.onload=()=>{const m=1024,sc=Math.min(1,m/Math.max(img.width,img.height));const c=document.createElement('canvas');c.width=img.width*sc;c.height=img.height*sc;c.getContext('2d').drawImage(img,0,0,c.width,c.height);
+ const r=CUR.r[camKey]||(CUR.r[camKey]={});(r.p=r.p||[]).push(c.toDataURL('image/jpeg',.6));CUR.ts=Date.now();dbPut(CUR);const it=items(CUR.type).find(x=>x.key===camKey);const el=$('it_'+camKey.replace('.','_'));const n=document.createElement('div');n.innerHTML=itemHtml(it);el.replaceWith(n.firstChild);URL.revokeObjectURL(img.src)};img.src=URL.createObjectURL(f);};
+// ---- events
+document.addEventListener('click',async e=>{const b=e.target.closest('button,[data-open],img[data-pi]');if(!b)return;
+ if(b.dataset.new)vHead(b.dataset.new);
+ else if(b.id==='h_go')startNew(b.dataset.k);
+ else if(b.dataset.v)setV(b.dataset.i,b.dataset.v);
+ else if(b.dataset.cam){camKey=b.dataset.cam;$('cam').click();}
+ else if(b.dataset.pi){const [k,j]=b.dataset.pi.split('|');if(confirm(t('del')+' 📷?')){CUR.r[k].p.splice(+j,1);dbPut(CUR);vCheck();}}
+ else if(b.id==='b_save'){await dbPut(CUR);toast(t('saved1'));}
+ else if(b.id==='b_rep'){await dbPut(CUR);vReport(CUR);}
+ else if(b.dataset.open){const x=(await dbAll()).find(y=>y.id===b.dataset.open);if(x)vReport(x);}
+ else if(b.id==='r_print')window.print();
+ else if(b.id==='r_edit')vCheck();
+ else if(b.id==='r_del'){if(confirm(t('delq'))){await dbDel(CUR.id);vList();}}
+ else if(b.id==='r_share'){const s=shareText(CUR);if(navigator.share){navigator.share({text:s}).catch(()=>{})}else{try{await navigator.clipboard.writeText(s);toast(t('copied'))}catch(_){prompt('',s)}}}
+});
+document.addEventListener('input',e=>{const k=e.target.dataset&&e.target.dataset.cm;if(k&&CUR){(CUR.r[k]||(CUR.r[k]={})).c=e.target.value;CUR.ts=Date.now();clearTimeout(window._sv);window._sv=setTimeout(()=>dbPut(CUR),400)}});
+$('home').onclick=vHome;$('list').onclick=vList;
+$('lang').onclick=()=>{L=L==='en'?'ru':'en';try{localStorage.setItem('qi_lang',L)}catch(e){}i18n();if(CUR&&$('bar').style.display!=='none')vCheck();else if(CUR)vReport(CUR);else vHome();};
+i18n();dbOpen().then(vHome);
+if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js');
+</script>
+</body>
+</html>
