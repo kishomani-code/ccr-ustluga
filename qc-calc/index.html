@@ -1,0 +1,350 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#023362">
+<title>QC Inspection Calculator</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<style>
+:root{--bg:#f3f5fb;--card:#fff;--ink:#141b2d;--mut:#667089;--line:rgba(20,30,60,.10);--pri:#023362;--pri2:#0a2350;--vio:#6a4cff;
+ --grad:linear-gradient(135deg,#023362 0%,#2a2f8f 55%,#6a4cff 100%);--ok:#1e8a4c;--okbg:#e3f5ea;--bad:#c62828;--badbg:#fde7e7;--warn:#b7791f;--warnbg:#fff4d6;--na:#7a8494;--nabg:#eef0f4;
+ --sh:0 1px 2px rgba(16,24,40,.05),0 8px 24px -12px rgba(16,24,40,.18);--r:16px}
+:root[data-theme=dark]{--bg:#0a0f1e;--card:#151c31;--ink:#e7eaf3;--mut:#97a0b8;--line:rgba(160,175,220,.14);--pri:#8fb0ff;--okbg:rgba(30,138,76,.2);--badbg:rgba(198,40,40,.22);--warnbg:rgba(224,161,0,.18);--nabg:#1d2540;color-scheme:dark}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.45 Inter,system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif}
+body{background:radial-gradient(1100px 520px at 100% -10%,rgba(106,76,255,.10),transparent 60%),radial-gradient(900px 480px at -10% 0,rgba(2,51,98,.08),transparent 60%),var(--bg);min-height:100vh}
+header{position:sticky;top:0;z-index:20;background:rgba(255,255,255,.86);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-bottom:1px solid var(--line);padding:10px 14px}
+:root[data-theme=dark] header{background:rgba(18,24,44,.88)}
+.hrow{display:flex;align-items:center;gap:10px;max-width:1240px;margin:0 auto}
+.logo{width:38px;height:38px;border-radius:11px;background:var(--grad);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:16px;box-shadow:0 4px 14px -6px rgba(2,51,98,.6);flex:none;cursor:pointer}
+.ttl{flex:1;min-width:0}.ttl b{display:block;font-size:16px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.ttl span{font-size:12px;color:var(--mut)}
+.ib{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:11px;height:36px;min-width:36px;padding:0 10px;font-weight:600;font-size:13px;cursor:pointer;box-shadow:var(--sh)}
+.ib.on{background:var(--grad);color:#fff;border-color:transparent}
+.prj{display:flex;gap:6px;max-width:1240px;margin:8px auto 0;overflow-x:auto}
+.srch{max-width:1240px;margin:8px auto 0;position:relative}
+.srch input{width:100%;height:44px;border-radius:14px;border:1px solid var(--line);background:var(--card);color:var(--ink);padding:0 40px 0 14px;font-size:14px;box-shadow:var(--sh)}
+.srch input:focus{outline:0;border-color:rgba(106,76,255,.55);box-shadow:0 0 0 4px rgba(106,76,255,.14)}
+.srch .x{position:absolute;right:8px;top:8px;border:0;background:none;font-size:20px;color:var(--mut);cursor:pointer}
+.hint{font-size:11.5px;color:var(--mut);max-width:1240px;margin:5px auto 0}
+.hint i{font-style:normal;background:var(--nabg);border-radius:6px;padding:1px 6px;margin:0 2px;cursor:pointer;white-space:nowrap}
+main{max-width:1240px;margin:0 auto;padding:14px 14px 90px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--sh);padding:14px;margin-bottom:12px}
+.sect{display:flex;align-items:center;gap:8px;font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--mut);margin:18px 2px 10px;font-weight:700}
+.sect:after{content:'';flex:1;height:1px;background:linear-gradient(90deg,var(--line),transparent)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px}
+.kpi{border-radius:var(--r);padding:14px;background:var(--card);border:1px solid var(--line);box-shadow:var(--sh)}
+.kpi b{display:block;font-size:26px;font-weight:700;font-variant-numeric:tabular-nums}.kpi span{font-size:12.5px;color:var(--mut)}
+.kpi.g{background:var(--grad);color:#fff;border:0}.kpi.g span{color:rgba(255,255,255,.85)}
+.kpi.ok b{color:var(--ok)}.kpi.bad b{color:var(--bad)}.kpi.warn b{color:var(--warn)}
+.tile{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:13px;box-shadow:var(--sh);cursor:pointer;text-align:left;color:var(--ink);transition:transform .18s,box-shadow .18s;font:inherit}
+.tile:hover{transform:translateY(-2px);box-shadow:0 16px 34px -16px rgba(40,30,120,.35)}
+.tile b{display:block;font-size:14.5px;font-weight:650}.tile small{display:block;color:var(--mut);font-size:12.5px;margin:2px 0 8px;min-height:18px}
+.pbar{height:7px;background:rgba(120,130,160,.18);border-radius:8px;overflow:hidden;display:flex}.pbar i{display:block;height:100%}
+.pbar .a{background:linear-gradient(90deg,#1e8a4c,#3ccf7e)}.pbar .c{background:#f0b54a}.pbar .r{background:#e5534b}
+.leg{display:flex;gap:10px;flex-wrap:wrap;font-size:12px;color:var(--mut);margin-top:6px}.leg b{font-weight:700;color:var(--ink)}
+.crumb{font-size:12.5px;color:var(--mut);margin-bottom:8px}.crumb a{color:var(--vio);cursor:pointer;text-decoration:none;font-weight:600}
+h2{font-size:18px;margin:0 0 4px}h3{font-size:14.5px;margin:0 0 8px;color:var(--pri)}
+.mut{color:var(--mut)}.small{font-size:12.5px}
+.badge{display:inline-block;border-radius:999px;padding:2px 9px;font-size:11.5px;font-weight:700;white-space:nowrap}
+.b-ok{background:var(--okbg);color:var(--ok)}.b-bad{background:var(--badbg);color:var(--bad)}.b-warn{background:var(--warnbg);color:var(--warn)}.b-na{background:var(--nabg);color:var(--na)}.b-vio{background:rgba(106,76,255,.12);color:var(--vio)}
+.kv{display:grid;grid-template-columns:150px 1fr;gap:4px 12px;font-size:13px}.kv div:nth-child(odd){color:var(--mut)}
+.tw{overflow:auto;max-height:70vh;border:1px solid var(--line);border-radius:12px}
+table.t{border-collapse:separate;border-spacing:0;width:100%;font-size:12.5px}
+table.t th{position:sticky;top:0;background:var(--pri);color:#fff;font-weight:600;text-align:left;padding:7px 8px;white-space:nowrap;z-index:2}
+:root[data-theme=dark] table.t th{background:#22305c}
+table.t td{padding:6px 8px;border-bottom:1px solid var(--line);vertical-align:top}
+table.t tr.cl{cursor:pointer}table.t tr.cl:hover td{background:rgba(106,76,255,.06)}
+th .fb{border:0;background:rgba(255,255,255,.18);color:#fff;border-radius:6px;margin-left:4px;cursor:pointer;font-size:11px;padding:1px 5px}
+th .fb.act{background:#f5b400;color:#141b2d}
+.pop{position:fixed;z-index:50;background:var(--card);border:1px solid var(--line);border-radius:12px;box-shadow:0 18px 40px -12px rgba(0,0,0,.35);width:290px;max-width:92vw;padding:10px;color:var(--ink)}
+.pop input[type=text]{width:100%;height:34px;border:1px solid var(--line);border-radius:9px;padding:0 9px;background:var(--bg);color:var(--ink)}
+.pop .vl{max-height:260px;overflow:auto;margin:8px 0;border:1px solid var(--line);border-radius:9px;padding:4px 6px}
+.pop label{display:flex;gap:6px;align-items:flex-start;font-size:12.5px;padding:3px 0;cursor:pointer}
+.pop .row{display:flex;gap:6px}.pop .row button{flex:1}
+.btn{border:0;border-radius:11px;padding:9px 13px;font-weight:650;font-size:13px;cursor:pointer;background:var(--nabg);color:var(--ink)}
+.btn.p{background:var(--grad);color:#fff}.btn.g{background:var(--ok);color:#fff}.btn.r{background:var(--bad);color:#fff}.btn.y{background:#e0a100;color:#fff}
+.chk{border:1px solid var(--line);border-radius:12px;margin-bottom:8px;overflow:hidden}
+.chk .sh{background:linear-gradient(90deg,rgba(2,51,98,.08),transparent);padding:8px 10px;font-weight:700;font-size:13px;display:flex;justify-content:space-between;gap:8px}
+.ci{display:grid;grid-template-columns:1fr auto;gap:6px 10px;padding:9px 10px;border-top:1px solid var(--line)}
+.ci .q{font-size:13px}.ci .q small{display:block;color:var(--mut);font-size:12px}
+.std{display:inline-block;margin-top:3px;font-size:11px;background:rgba(106,76,255,.10);color:var(--vio);border-radius:6px;padding:1px 6px;margin-right:4px}
+.ms{display:inline-block;margin-top:3px;font-size:11px;background:var(--nabg);color:var(--na);border-radius:6px;padding:1px 6px}
+.tri{display:flex;gap:4px}.tri button{border:1px solid var(--line);background:var(--card);border-radius:9px;min-width:40px;height:34px;font-weight:700;cursor:pointer;color:var(--ink)}
+.tri .s1{background:var(--ok);color:#fff;border-color:var(--ok)}.tri .s2{background:var(--bad);color:#fff;border-color:var(--bad)}.tri .s3{background:var(--na);color:#fff;border-color:var(--na)}
+.cm{grid-column:1/-1}.cm input{width:100%;height:32px;border:1px solid var(--line);border-radius:8px;padding:0 8px;background:var(--bg);color:var(--ink);font-size:12.5px}
+.qcs{display:flex;flex-wrap:wrap;gap:4px;margin-top:4px}.qcs button{border:1px dashed var(--line);background:none;color:var(--mut);border-radius:8px;font-size:11px;padding:2px 6px;cursor:pointer}
+.qcs button.on{border-style:solid;border-color:var(--bad);color:var(--bad);background:var(--badbg)}
+.meter{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.ring{width:64px;height:64px;border-radius:50%;display:grid;place-items:center;font-weight:800;font-size:15px}
+.fin{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}
+.fin button{padding:12px 6px;border-radius:12px;border:2px solid var(--line);background:var(--card);font-weight:700;cursor:pointer;color:var(--ink);font-size:13px}
+.fin .A.on{background:var(--ok);color:#fff;border-color:var(--ok)}.fin .C.on{background:#e0a100;color:#fff;border-color:#e0a100}.fin .R.on{background:var(--bad);color:#fff;border-color:var(--bad)}
+.in{height:36px;border:1px solid var(--line);border-radius:9px;padding:0 9px;background:var(--bg);color:var(--ink);font-size:13px}
+.toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);background:#141b2d;color:#fff;padding:10px 16px;border-radius:12px;font-size:13px;z-index:99;box-shadow:0 10px 30px -10px rgba(0,0,0,.5)}
+.foot{font-size:11.5px;color:var(--mut);margin-top:16px}
+.empty{padding:30px;text-align:center;color:var(--mut)}
+@media(max-width:640px){.kv{grid-template-columns:110px 1fr}.fin{grid-template-columns:1fr}.ttl span{display:none}}
+</style>
+</head>
+<body>
+<header>
+ <div class="hrow">
+  <div class="logo" onclick="go('')">QC</div>
+  <div class="ttl"><b id="t1">QC Inspection Calculator</b><span id="t2">Ust-Luga GPP · RHI E&amp;I · system → subsystem → device → cables → earthing → result</span></div>
+  <button class="ib" id="lng" onclick="setLang()">RU</button>
+  <button class="ib" onclick="dark()">◐</button>
+  <a class="ib" href="../" style="display:inline-flex;align-items:center;text-decoration:none" title="CCR app">⌂</a>
+ </div>
+ <div class="prj" id="prj"></div>
+ <div class="srch"><input id="q" autocomplete="off" oninput="onQ()" placeholder="Search: device tag, cable tag, ident, panel, subsystem, drawing, RFI No, punch No, description …"><button class="x" onclick="clrQ()">×</button></div>
+ <div class="hint" id="hint"></div>
+</header>
+<main id="m"><div class="empty">Loading…</div></main>
+<script src="../qc-inspect/checklists.js"></script>
+<script src="../xl.js"></script>
+<script>
+'use strict';
+const $=s=>document.querySelector(s), esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const N=s=>String(s==null?'':s).toLowerCase().replace(/ё/g,'е').replace(/\s+/g,' ').trim();
+let LANG=(()=>{try{return localStorage.getItem('qcc_lang')||'en'}catch(e){return 'en'}})();
+const L=(en,ru)=>LANG==='ru'?(ru||en):en, LB=(en,ru)=>LANG==='ru'?`${ru||en}`:`${en}`;
+let META=null, PRJ=(()=>{try{return localStorage.getItem('qcc_prj')||'CCR'}catch(e){return 'CCR'}})(), DB={}, D=null;
+function st(k,v){try{if(v===undefined)return JSON.parse(localStorage.getItem(k)||'null');localStorage.setItem(k,JSON.stringify(v))}catch(e){return null}}
+function toast(t){const d=document.createElement('div');d.className='toast';d.textContent=t;document.body.appendChild(d);setTimeout(()=>d.remove(),2600)}
+
+/* ---------- kinds, standards, quick comments ---------- */
+const KIND={jb:['Junction box','Соединительная коробка','🧰'],panel:['Panel / cabinet','Шкаф / панель','🗄️'],inst:['Field device / instrument','Полевой прибор','📟'],light:['Lighting','Освещение','💡'],mct:['MCT / transit','MCT / проходка','🧱'],earth:['Earthing','Заземление','⏚']};
+// General standards (GOST / SP). Project specification and approved drawings govern; check the edition in force.
+const S={ex:'ГОСТ IEC 60079-14-2013',exm:'ГОСТ 31610.0-2014',ip:'ГОСТ 14254-2015 (IP)',earth:'ГОСТ Р 50571.5.54-2013',es:'ГОСТ 12.1.030-81',conn:'ГОСТ 10434-82',mark:'ГОСТ 33542-2015',
+ test:'ГОСТ Р 50571.16-2019',fire:'ГОСТ 31565-2012',bend:'ГОСТ 31996-2012',wir:'ГОСТ Р 50571.5.52-2011',sp76:'СП 76.13330.2016',sp77:'СП 77.13330.2016',tray:'ГОСТ Р 52868-2007',
+ mct:'ГОСТ Р 53310-2009',fa:'ГОСТ Р 59638-2021',fa2:'СП 484.1311500.2020',light:'СП 52.13330.2016',panel:'ГОСТ IEC 61439-1-2013',cond:'ГОСТ IEC 61386-1-2014',doc:'РД 11-02-2006'};
+function stdFor(kind,sec,it,dev){const s=(sec+' '+it).toLowerCase(), R=new Set();
+ if(/explos|\bex\b|ex-|ex /.test(s)){R.add(S.ex);R.add(S.exm)}
+ if(/certific|passport|document|drawing|receiv/.test(s))R.add(S.doc);
+ if(/\bip\b|ip6|gasket|seal|ingress|cover|plug/.test(s))R.add(S.ip);
+ if(/earth|\bpe\b|bond|screen|armour|потенциал|заземл/.test(s)){R.add(S.earth);R.add(S.es)}
+ if(/terminal|core|ferrule|lug|connect|tight|torque|clamp/.test(s))R.add(S.conn);
+ if(/mark|tag|label|nameplate|ferrule/.test(s))R.add(S.mark);
+ if(/gland|entr/.test(s))R.add(S.ex);
+ if(/bend/.test(s))R.add(S.bend);
+ if(/insulation|megger|\btest|continuity|ir /.test(s))R.add(S.test);
+ if(/fire|flame|frls|seal/.test(s)&&kind!=='inst')R.add(S.fire);
+ const K={jb:[S.sp77],panel:[S.panel,S.sp76],inst:[S.sp77],light:[S.light,S.sp76],mct:[S.mct,S.sp76],earth:[S.earth,S.sp76],cable:[S.sp76,S.wir],term:[S.conn,S.mark],tray:[S.tray,S.sp76],conduit:[S.cond,S.sp76]}[kind]||[S.sp76];
+ K.forEach(x=>R.add(x));
+ if(kind==='inst'&&dev&&/извещ|detector|оповещ|пожар|fire/i.test(dev[1]+' '+dev[2])){R.add(S.fa);R.add(S.fa2)}
+ return [...R].slice(0,4);}
+const QCM=[['Cable tag missing','Отсутствует бирка кабеля'],['Core marking missing','Отсутствует маркировка жил'],['Gland not tight','Кабельный ввод не затянут'],['Unused entry not plugged','Неиспользуемый ввод не заглушен'],
+ ['Earthing not connected','Заземление не подключено'],['Earth conductor size not as per drawing','Сечение заземляющего проводника не по проекту'],['Screen not earthed','Экран не заземлён'],['Terminal loose','Ослаблен зажим'],
+ ['Bending radius not kept','Не соблюдён радиус изгиба'],['Cable not fixed','Кабель не закреплён'],['Damaged','Повреждение'],['Nameplate / tag plate missing','Отсутствует табличка'],
+ ['Not as per drawing','Не соответствует чертежу'],['Ex marking / certificate missing','Нет маркировки / сертификата Ex'],['MCT / penetration not sealed','Проходка не загерметизирована'],['Tray cover missing','Отсутствует крышка лотка'],['Cleaning required','Требуется очистка']];
+const CAB_CK=[['Cable laid and fixed as per route / drawing','Кабель проложен и закреплён по трассе / чертежу','cable'],['Cable tag fitted both ends','Бирки установлены с обоих концов','term'],
+ ['Gland / entry correct and tight (both ends)','Кабельный ввод подобран и затянут (оба конца)','term'],['FROM end terminated as per diagram','Конец «ОТ» подключён по схеме','term'],
+ ['TO end terminated as per diagram','Конец «ДО» подключён по схеме','term'],['Screen / armour earthed as per drawing','Экран / броня заземлены по чертежу','term'],['Insulation resistance test record','Протокол измерения сопротивления изоляции','cable']];
+const EARTH_SEC=['Equipment earthing','Заземление оборудования',[['Earth conductor connected to device earth stud / PE bar','Заземляющий проводник подключён к болту заземления / шине PE','DWG'],
+ ['Conductor size and type as per drawing; lug crimped','Сечение и марка по чертежу; наконечник опрессован','DWG'],['Connection to earth grid / earth bar visible and tight','Подключение к контуру / шине заземления видно и затянуто','MS 120.001'],['Earth marking (yellow-green) fitted','Маркировка заземления (жёлто-зелёная) выполнена','MS 120.001']]];
+function secsOf(kind){const Q=window.QCL||{}; const base=(Q[kind]||Q.inst||{sec:[]}).sec.slice(); if(!base.some(s=>/earth/i.test(s[0])))base.push(EARTH_SEC); return base;}
+
+/* ---------- data ---------- */
+async function boot(){ try{ META=await (await fetch('qcc_meta.json',{cache:'no-cache'})).json(); }catch(e){ $('#m').innerHTML='<div class="empty">Data not found (qcc_meta.json)</div>'; return; }
+ if(!META.P.includes(PRJ))PRJ=META.P[0]; await load(PRJ); hdr(); window.onhashchange=route; route(); }
+async function load(p){ if(!DB[p]){ $('#m').innerHTML='<div class="empty">Loading '+esc(p)+'…</div>'; const j=await (await fetch('qcc_'+p+'.json')).json();
+  j.D.forEach((d,i)=>{ d.i=i; d.sysN=(META.SYS[d[4]]||[d[4],d[4]]); d._n=N([d[0],d[1],d[2],d[4],d.sysN.join(' '),d[5],d[6],d[7],d[8],d[9],d[12].join(' '),d[13].map(x=>x[0]+' '+x[2]+' '+x[3]).join(' '),d[14].map(c=>j.C[c]&&[j.C[c][0],j.C[c][11],j.C[c][5],j.C[c][12],j.C[c][13]].join(' ')).join(' ')].join(' ')); });
+  j.C.forEach(c=>{ c._n=N(c.slice(0,16).join(' ')); }); j.CD={}; j.D.forEach(d=>d[14].forEach(ci=>(j.CD[ci]=j.CD[ci]||[]).push(d.i))); DB[p]=j; } D=DB[p]; }
+function hdr(){ $('#lng').textContent=LANG==='ru'?'EN':'RU'; $('#t1').textContent=L('QC Inspection Calculator','Калькулятор QC-инспекции');
+ $('#t2').textContent=L('Ust-Luga GPP · RHI E&I · system → subsystem → device → cables → earthing → result','Усть-Луга ГПЗ · РХИ Э&КИП · система → подсистема → оборудование → кабели → заземление → результат');
+ $('#prj').innerHTML=META.P.map(p=>`<button class="ib ${p===PRJ?'on':''}" onclick="setPrj('${p}')">${p}</button>`).join('')+`<span class="mut small" style="align-self:center;margin-left:6px">${L('data','данные')} ${esc(D.date||META.ver)}</span>`;
+ $('#q').placeholder=L('Search: device tag, cable tag, ident, panel, subsystem, drawing, RFI No, punch No, description …','Поиск: тег оборудования, кабеля, идент, шкаф, подсистема, чертёж, № ЗПИ, № замечания, описание …');
+ $('#hint').innerHTML=L('Examples: ','Примеры: ')+['JB-559','G0-80-PSGN-001','ECBCU00352','JL-PD-1001','GMR14738','ЗПИ-C-G0-D1801FX0','PSGN-001','извещатель','35652','JB28-04P10J'].map(x=>`<i onclick="ex('${x}')">${x}</i>`).join(' ')+' · '+L('several words = all must match','несколько слов = все должны совпасть'); }
+async function setPrj(p){ PRJ=p; st('qcc_prj',p); try{localStorage.setItem('qcc_prj',p)}catch(e){} await load(p); hdr(); go(''); route(); }
+function setLang(){ LANG=LANG==='ru'?'en':'ru'; try{localStorage.setItem('qcc_lang',LANG)}catch(e){} hdr(); route(); }
+function dark(){ const r=document.documentElement; r.dataset.theme=r.dataset.theme==='dark'?'':'dark'; }
+function go(h){ location.hash=h; }
+function ex(x){ $('#q').value=x; onQ(); }
+function clrQ(){ $('#q').value=''; onQ(); }
+let qT=null; function onQ(){ clearTimeout(qT); qT=setTimeout(()=>{ const v=$('#q').value.trim(); if(v){ if(location.hash.slice(1)!=='s') history.replaceState(null,'','#s'); route(); } else if(location.hash==='#s') go(''); },180); }
+
+/* ---------- inspection store ---------- */
+const KEY=t=>'qcc:'+PRJ+':'+t; const getI=t=>st(KEY(t))||null; const putI=(t,o)=>{ o.upd=new Date().toISOString(); st(KEY(t),o); };
+function allI(p){ const R=[]; try{ for(let i=0;i<localStorage.length;i++){ const k=localStorage.key(i); if(k.startsWith('qcc:'+(p||PRJ)+':')) R.push([k.split(':').slice(2).join(':'),JSON.parse(localStorage.getItem(k))]); } }catch(e){} return R; }
+const RES={A:['Accepted','Принято','b-ok'],C:['Accepted with comments','Принято с замечаниями','b-warn'],R:['Rejected','Отклонено','b-bad']};
+function resB(t){ const i=getI(t); if(!i||!i.res) return i&&Object.keys(i.c||{}).length?`<span class="badge b-vio">${L('In progress','В работе')}</span>`:`<span class="badge b-na">${L('Not inspected','Не проверено')}</span>`; const r=RES[i.res]; return `<span class="badge ${r[2]}">${L(r[0],r[1])}</span>`; }
+const rqB=d=>{ const s=d[12][1]||''; if(!d[12].length) return `<span class="badge b-na">${L('No RFI','Нет ЗПИ')}</span>`; const c=/^Accepted$/.test(s)?'b-ok':/comment/i.test(s)?'b-warn':/Reject/i.test(s)?'b-bad':'b-na'; return `<span class="badge ${c}">${esc(s||'—')}</span>`; };
+const openP=d=>d[13].filter(x=>!/closed|закрыт/i.test(x[4])).length;
+
+/* ---------- Excel-like table ---------- */
+const TS={}; // table state: {id:{f:{col:Set}, s:[col,dir], n:limit}}
+function table(id,cols,rows,onclick){ const S0=TS[id]=TS[id]||{f:{},s:null,n:300};
+ let R=rows.filter(r=>cols.every((c,ci)=>!S0.f[ci]||S0.f[ci].has(String(c.v(r)))));
+ if(S0.s){ const [ci,dir]=S0.s; R=R.slice().sort((a,b)=>{ const x=cols[ci].v(a),y=cols[ci].v(b); return (typeof x==='number'&&typeof y==='number'?x-y:String(x).localeCompare(String(y),'ru',{numeric:true}))*dir; }); }
+ window['_rows_'+id]=rows; window['_cols_'+id]=cols; window['_shown_'+id]=R;
+ const h=cols.map((c,ci)=>`<th>${esc(c.h)}<button class="fb ${S0.f[ci]?'act':''}" onclick="event.stopPropagation();fpop('${id}',${ci},this)">▾</button></th>`).join('');
+ const b=R.slice(0,S0.n).map(r=>`<tr class="cl" onclick="${onclick(r)}">${cols.map(c=>`<td>${c.h2?c.h2(r):esc(c.v(r))}</td>`).join('')}</tr>`).join('');
+ const act=Object.keys(S0.f).length;
+ return `<div class="small mut" style="margin:6px 2px">${R.length} ${L('of','из')} ${rows.length} ${L('rows','строк')}${act?` · <a style="color:var(--vio);cursor:pointer" onclick="TS['${id}'].f={};route()">${L('clear all filters','сбросить фильтры')}</a>`:''}</div>
+  <div class="tw"><table class="t"><thead><tr>${h}</tr></thead><tbody>${b||`<tr><td colspan="${cols.length}" class="empty">${L('No rows','Нет строк')}</td></tr>`}</tbody></table></div>
+  ${R.length>S0.n?`<div style="text-align:center;margin:8px"><button class="btn" onclick="TS['${id}'].n+=500;route()">${L('Show more','Показать ещё')} (${R.length-S0.n})</button></div>`:''}`; }
+function fpop(id,ci,btn){ closePop(); const S0=TS[id], rows=window['_rows_'+id], c=window['_cols_'+id][ci];
+ const others=rows.filter(r=>window['_cols_'+id].every((cc,k)=>k===ci||!S0.f[k]||S0.f[k].has(String(cc.v(r)))));
+ const cnt={}; others.forEach(r=>{ const v=String(c.v(r)); cnt[v]=(cnt[v]||0)+1; }); const vals=Object.keys(cnt).sort((a,b)=>a.localeCompare(b,'ru',{numeric:true}));
+ const sel=S0.f[ci]?new Set(S0.f[ci]):new Set(vals); window._fp={id,ci,vals,sel,cnt};
+ const p=document.createElement('div'); p.className='pop'; p.id='pop'; const r=btn.getBoundingClientRect(); p.style.left=Math.max(6,Math.min(r.left-120,innerWidth-300))+'px'; p.style.top=Math.min(r.bottom+6,innerHeight-420)+'px';
+ p.innerHTML=`<div class="row" style="margin-bottom:6px"><button class="btn" onclick="fsort(1)">A→Z</button><button class="btn" onclick="fsort(-1)">Z→A</button></div>
+  <input type="text" placeholder="${L('Search values','Поиск значений')}" oninput="flist(this.value)"><div class="vl" id="fvl"></div>
+  <div class="row"><button class="btn" onclick="fclear()">${L('Clear','Сбросить')}</button><button class="btn p" onclick="fok()">OK</button></div>`;
+ document.body.appendChild(p); flist(''); setTimeout(()=>document.addEventListener('click',outPop),0); }
+function flist(q){ const F=window._fp, nq=N(q), L2=F.vals.filter(v=>!nq||N(v).includes(nq)); F.vis=L2;
+ $('#fvl').innerHTML=`<label><input type="checkbox" ${L2.every(v=>F.sel.has(v))?'checked':''} onchange="fall(this.checked)"> <b>(${L('Select all','Выделить все')})</b></label>`+L2.slice(0,800).map((v,i)=>`<label><input type="checkbox" ${F.sel.has(v)?'checked':''} onchange="ftog(${F.vals.indexOf(v)},this.checked)"> <span>${esc(v||L('(Blanks)','(Пустые)'))} <span class="mut">(${F.cnt[v]})</span></span></label>`).join(''); }
+function ftog(i,on){ const F=window._fp; on?F.sel.add(F.vals[i]):F.sel.delete(F.vals[i]); }
+function fall(on){ const F=window._fp; F.vis.forEach(v=>on?F.sel.add(v):F.sel.delete(v)); flist(document.querySelector('#pop input[type=text]').value); }
+function fok(){ const F=window._fp, S0=TS[F.id]; if(F.sel.size===F.vals.length) delete S0.f[F.ci]; else S0.f[F.ci]=new Set(F.sel); closePop(); route(); }
+function fclear(){ const F=window._fp; delete TS[F.id].f[F.ci]; closePop(); route(); }
+function fsort(dir){ const F=window._fp; TS[F.id].s=[F.ci,dir]; closePop(); route(); }
+function closePop(){ const p=$('#pop'); if(p)p.remove(); document.removeEventListener('click',outPop); }
+function outPop(e){ const p=$('#pop'); if(p&&!p.contains(e.target)) closePop(); }
+
+/* ---------- pages ---------- */
+function route(){ closePop(); const h=decodeURIComponent(location.hash.slice(1)); const [k,...a]=h.split('|'); const m=$('#m');
+ m.innerHTML = k==='s'?search():k==='y'?sysPage(a[0]):k==='u'?subPage(a[0],a[1]):k==='d'?devPage(+a[0]):k==='c'?cabPage(+a[0]):k==='r'?register():k==='a'?allDev():home(); window.scrollTo(0,0); }
+function stats(L0){ let A=0,C=0,R=0,P=0; L0.forEach(d=>{ const i=getI(d[0]); if(!i)return; if(i.res==='A')A++; else if(i.res==='C')C++; else if(i.res==='R')R++; else if(Object.keys(i.c||{}).length)P++; }); return {n:L0.length,A,C,R,P,done:A+C+R}; }
+const bar=s=>{ const n=s.n||1; return `<div class="pbar"><i class="a" style="width:${s.A/n*100}%"></i><i class="c" style="width:${s.C/n*100}%"></i><i class="r" style="width:${s.R/n*100}%"></i></div>`; };
+function home(){ const s=stats(D.D), rq=D.D.filter(d=>/^Accepted/.test(d[12][1]||'')).length, op=D.D.reduce((n,d)=>n+openP(d),0);
+ const sys={}; D.D.forEach(d=>(sys[d[4]]=sys[d[4]]||[]).push(d));
+ return `<div class="grid">
+  <div class="kpi g"><b>${s.n}</b><span>${L('Devices / equipment','Оборудование')} · ${PRJ}</span></div>
+  <div class="kpi"><b>${s.done}</b><span>${L('Inspected (this phone)','Проверено (на этом устройстве)')} · ${Math.round(s.done/(s.n||1)*100)}%</span></div>
+  <div class="kpi ok"><b>${s.A}</b><span>${L('Accepted','Принято')}</span></div>
+  <div class="kpi warn"><b>${s.C}</b><span>${L('Accepted with comments','С замечаниями')}</span></div>
+  <div class="kpi bad"><b>${s.R}</b><span>${L('Rejected','Отклонено')}</span></div>
+  <div class="kpi"><b>${rq}</b><span>${L('RHI QC RFI accepted (equipment control)','ЗПИ РХИ приняты (equipment control)')}</span></div>
+  <div class="kpi bad"><b>${op}</b><span>${L('Client QC open punches on these tags','Открытые замечания заказчика')}</span></div>
+  <div class="kpi"><b>${D.C.length}</b><span>${L('Cables in cable list','Кабелей в журнале')}</span></div></div>
+ <div class="sect">${L('1 · Choose system','1 · Выберите систему')}</div>
+ <div class="grid">${Object.entries(sys).sort((a,b)=>b[1].length-a[1].length).map(([k,L0])=>{ const s2=stats(L0), nm=META.SYS[k]; return `<button class="tile" onclick="go('y|${esc(k)}')"><b>${esc(k)}</b><small>${esc(nm?L(nm[0],nm[1]):L('System code','Код системы'))}</small>${bar(s2)}<div class="leg"><span><b>${L0.length}</b> ${L('devices','ед.')}</span><span><b>${s2.done}</b> ${L('inspected','проверено')}</span>${s2.R?`<span style="color:var(--bad)"><b>${s2.R}</b> ${L('rejected','откл.')}</span>`:''}</div></button>`; }).join('')}</div>
+ <div class="sect">${L('Registers and export','Реестры и выгрузка')}</div>
+ <div class="grid"><button class="tile" onclick="go('a')"><b>📋 ${L('All devices – filter like Excel','Всё оборудование – фильтр как в Excel')}</b><small>${D.D.length} ${L('rows','строк')}</small></button>
+  <button class="tile" onclick="go('r')"><b>✅ ${L('Inspection register','Реестр инспекций')}</b><small>${allI().length} ${L('saved on this phone','сохранено')}</small></button>
+  <button class="tile" onclick="xport(true)"><b>⬇ ${L('Excel – internal (with GOST)','Excel – внутренний (с ГОСТ)')}</b><small>${L('all checks, EN + RU','все проверки, EN + RU')}</small></button>
+  <button class="tile" onclick="xport(false)"><b>⬇ ${L('Excel – for client (no standard numbers)','Excel – для заказчика (без номеров стандартов)')}</b><small>${L('comments EN + RU','замечания EN + RU')}</small></button>
+  <button class="tile" onclick="backup()"><b>💾 ${L('Backup inspections','Резервная копия')}</b><small>.json</small></button>
+  <label class="tile"><b>♻ ${L('Restore backup','Восстановить')}</b><small>.json</small><input type="file" accept=".json" style="display:none" onchange="restore(this.files[0])"></label></div>
+ <div class="foot">${L('Data: IWP status (client subsystem), E&I equipment control + cable RAWP inspection (RHI QC), master punch list QC comments (client QC), cable tracker. Inspections are saved on this phone – use Backup to move them. Standard references are general GOST / SP; the project specification and approved drawings govern.','Данные: статус IWP (подсистема), equipment control и RAWP (QC РХИ), замечания QC мастер-листа (заказчик), кабельный журнал. Результаты сохраняются на этом устройстве. Ссылки на ГОСТ / СП – общие; приоритет у проектной документации.')}</div>`; }
+function devCols(){ return [
+ {h:L('Tag','Тег'),v:d=>d[0],h2:d=>`<b>${esc(d[0])}</b>`},{h:L('Description','Описание'),v:d=>LANG==='ru'?(d[1]||d[2]):(d[2]||d[1])},
+ {h:L('Type','Тип'),v:d=>L(KIND[d[3]][0],KIND[d[3]][1])},{h:L('System','Система'),v:d=>d[4]},{h:L('Subsystem','Подсистема'),v:d=>d[5]||L('(not in IWP)','(нет в IWP)')},
+ {h:L('Cables','Кабели'),v:d=>d[14].length},{h:L('Installed (IWP)','Смонтировано (IWP)'),v:d=>d[10]?(d[11]>=d[10]?L('Yes','Да'):L('No','Нет')):'—'},
+ {h:L('RHI QC (RFI)','QC РХИ (ЗПИ)'),v:d=>d[12][1]||(d[12].length?'—':L('No RFI','Нет ЗПИ')),h2:rqB},
+ {h:L('Client QC open','Замечания заказчика'),v:d=>openP(d)},{h:L('My result','Мой результат'),v:d=>{const i=getI(d[0]);return i&&i.res?L(RES[i.res][0],RES[i.res][1]):L('Not inspected','Не проверено')},h2:d=>resB(d[0])}]; }
+function sysPage(k){ const L0=D.D.filter(d=>d[4]===k), nm=META.SYS[k], sub={};
+ L0.forEach(d=>{ const key=d[5]||('DWG '+d[8]); (sub[key]=sub[key]||[]).push(d); });
+ return `<div class="crumb"><a onclick="go('')">${PRJ}</a> › ${esc(k)}</div><h2>${esc(k)} – ${esc(nm?L(nm[0],nm[1]):'')}</h2>
+  <div class="sect">${L('2 · Choose subsystem','2 · Выберите подсистему')}</div>
+  <div class="grid">${Object.entries(sub).sort().map(([s,LL])=>{ const s2=stats(LL), d0=LL[0]; return `<button class="tile" onclick="go('u|${encodeURIComponent(k)}|${encodeURIComponent(s)}')"><b>${esc(s)}</b><small>${esc(s.startsWith('DWG ')?L('Subsystem not given in IWP – grouped by drawing','Подсистема не указана в IWP – по чертежу'):L(d0[6],d0[7])||'')}</small>${bar(s2)}<div class="leg"><span><b>${LL.length}</b> ${L('devices','ед.')}</span><span><b>${s2.done}</b> ${L('inspected','проверено')}</span></div></button>`; }).join('')}</div>`; }
+function subPage(k,s){ const L0=D.D.filter(d=>d[4]===k&&((d[5]||('DWG '+d[8]))===s)), d0=L0[0]||[];
+ return `<div class="crumb"><a onclick="go('')">${PRJ}</a> › <a onclick="go('y|${esc(k)}')">${esc(k)}</a> › ${esc(s)}</div><h2>${esc(s)}</h2><div class="mut small">${esc(L(d0[6],d0[7])||'')}</div>
+  <div class="sect">${L('3 · Choose device / equipment','3 · Выберите оборудование')}</div>${table('sub',devCols(),L0,d=>`go('d|${d.i}')`)}`; }
+function allDev(){ return `<div class="crumb"><a onclick="go('')">${PRJ}</a> › ${L('All devices','Всё оборудование')}</div><h2>${L('All devices / equipment','Всё оборудование')}</h2>
+  <div class="mut small">${L('Use ▾ on any column: tick values, search values, sort A→Z – same as Excel filter.','Используйте ▾ в столбце: отметьте значения, поиск, сортировка – как фильтр Excel.')}</div>${table('all',devCols(),D.D,d=>`go('d|${d.i}')`)}`; }
+function search(){ const q=$('#q').value.trim(), toks=N(q).split(' ').filter(Boolean); if(!toks.length) return home();
+ const dv=D.D.filter(d=>toks.every(t=>d._n.includes(t))), cb=D.C.map((c,i)=>[c,i]).filter(([c])=>toks.every(t=>c._n.includes(t)));
+ return `<h2>${L('Search','Поиск')}: “${esc(q)}”</h2><div class="sect">${L('Devices / equipment','Оборудование')} (${dv.length})</div>${table('sd',devCols(),dv,d=>`go('d|${d.i}')`)}
+  <div class="sect">${L('Cables','Кабели')} (${cb.length})</div>${table('sc',cabCols(),cb,([c,i])=>`go('c|${i}')`)}`; }
+function cabCols(){ return [{h:L('Cable tag','Тег кабеля'),v:([c])=>c[0],h2:([c])=>`<b>${esc(c[0])}</b>`},{h:L('From','Откуда'),v:([c])=>c[1]},{h:L('To','Куда'),v:([c])=>c[2]},
+ {h:L('Type','Марка'),v:([c])=>c[3]},{h:L('Length','Длина'),v:([c])=>c[4]},{h:L('Ident','Идент'),v:([c])=>c[11]},{h:L('Drum','Барабан'),v:([c])=>c[5]},
+ {h:L('Pulled','Проложен'),v:([c])=>c[6]},{h:L('Terminated','Расключён'),v:([c])=>c[8]},{h:L('RAWP laying RFI','ЗПИ прокладки'),v:([c])=>c[12]},{h:L('RAWP term. RFI','ЗПИ расключения'),v:([c])=>c[13]}]; }
+function cabPage(i){ const c=D.C[i]; if(!c) return home(); const devs=(D.CD[i]||[]).map(k=>D.D[k]);
+ return `<div class="crumb"><a onclick="go('')">${PRJ}</a> › ${L('Cable','Кабель')}</div><h2>${esc(c[0])}</h2><div class="card"><div class="kv">
+  ${[[L('From','Откуда'),c[1]],[L('To','Куда'),c[2]],[L('Type / size','Марка / сечение'),c[3]],[L('Length, m','Длина, м'),c[4]],[L('Ident','Идент'),c[11]],[L('Drum','Барабан'),c[5]],[L('Pulling','Прокладка'),c[6]+' '+(c[7]||'')],[L('Termination','Расключение'),c[8]+' '+[c[9],c[10]].filter(Boolean).join(' / ')],[L('RAWP laying RFI','ЗПИ прокладки'),c[12]],[L('RAWP termination RFI','ЗПИ расключения'),c[13]],[L('Drawing','Чертёж'),c[14]],[L('TQS','TQS'),c[15]]].filter(x=>x[1]).map(([a,b])=>`<div>${esc(a)}</div><div>${esc(b)}</div>`).join('')}</div></div>
+  <div class="sect">${L('Connected devices – inspect from here','Подключённое оборудование')}</div>${devs.length?table('cd',devCols(),devs,d=>`go('d|${d.i}')`):`<div class="card mut">${L('No device of this list found on this cable (panel / other area).','Оборудование не найдено (шкаф / другая зона).')}</div>`}`; }
+
+/* ---------- device inspection (the calculator) ---------- */
+let CUR=null;
+function devPage(i){ const d=D.D[i]; if(!d) return home(); CUR=d; const I=getI(d[0])||{c:{},k:{},n:{},qc:{},res:'',who:st('qcc_who')||'',dt:''}; I.c=I.c||{};I.k=I.k||{};I.n=I.n||{};I.qc=I.qc||{}; window._I=I;
+ const secs=secsOf(d[3]), cabs=d[14].map(ci=>[D.C[ci],ci]);
+ const cl=cabs.map(([c,ci])=>{ const pulled=/^Complet/i.test(c[6]), term=/^Complet/i.test(c[8]); return `<tr><td><a style="color:var(--vio);cursor:pointer;font-weight:700" onclick="go('c|${ci}')">${esc(c[0])}</a><div class="mut">${esc(c[3])} · ${esc(c[4]||'')} m · ${L('drum','бар.')} ${esc(c[5]||'—')}${c[11]?' · '+esc(c[11]):''}</div></td>
+  <td class="small">${esc(c[1])}</td><td class="small">${esc(c[2])}</td><td>${pulled?'<span class="badge b-ok">✓</span>':'<span class="badge b-bad">✗</span>'} <span class="small mut">${esc(c[7]||'')}</span></td>
+  <td>${term?'<span class="badge b-ok">✓ 2/2</span>':`<span class="badge b-warn">${esc(c[8]||'—')}</span>`}<div class="small mut">${esc([c[9],c[10]].filter(Boolean).join(' / '))}</div></td><td class="small">${esc(c[12]||'—')}<br>${esc(c[13]||'')}</td></tr>`; }).join('');
+ const qc=d[13].map(x=>`<tr><td><b>${esc(x[0])}</b> <span class="badge ${/closed/i.test(x[4])?'b-ok':'b-bad'}">${esc(x[4])}</span> <span class="badge b-vio">${esc(x[1])}</span></td><td class="small">${esc(x[3])}<div class="mut">${esc(x[2])}</div></td><td class="small">${esc(x[5])}${x[6]?' → '+esc(x[6]):''}</td></tr>`).join('');
+ let h=`<div class="crumb"><a onclick="go('')">${PRJ}</a> › <a onclick="go('y|${esc(d[4])}')">${esc(d[4])}</a> › <a onclick="go('u|${encodeURIComponent(d[4])}|${encodeURIComponent(d[5]||('DWG '+d[8]))}')">${esc(d[5]||('DWG '+d[8]))}</a> › ${esc(d[0])}</div>
+ <div class="card" style="background:var(--grad);color:#fff;border:0"><div style="display:flex;gap:10px;align-items:center"><div style="font-size:30px">${KIND[d[3]][2]}</div><div style="flex:1;min-width:0"><h2 style="color:#fff">${esc(d[0])}</h2><div style="opacity:.9">${esc(d[1])}</div><div style="opacity:.75;font-size:12.5px">${esc(d[2])}</div></div><div id="ring"></div></div></div>
+ <div class="card"><h3>${L('Device / equipment details','Данные оборудования')}</h3><div class="kv">
+  ${[[L('Type','Тип'),L(KIND[d[3]][0],KIND[d[3]][1])+' · '+d[9]],[L('System','Система'),d[4]+' – '+(META.SYS[d[4]]?L(META.SYS[d[4]][0],META.SYS[d[4]][1]):'')],[L('Subsystem','Подсистема'),(d[5]||L('not given in IWP','не указана в IWP'))+(d[6]?' – '+L(d[6],d[7]):'')],[L('Drawing','Чертёж'),d[8]],
+    [L('Installed (IWP)','Смонтировано (IWP)'),d[10]?`${d[11]} / ${d[10]}`:'—'],[L('IWP access ID','Access ID IWP'),d[15]],[L('RHI QC – equipment RFI','QC РХИ – ЗПИ оборудования'),d[12].length?`${d[12][0]} · ${d[12][1]||'—'} · ${d[12][2]||''}`:L('No RFI in equipment control','Нет ЗПИ в equipment control')],
+    [L('Client QC punches','Замечания заказчика'),`${d[13].length} (${openP(d)} ${L('open','открыто')})`]].map(([a,b])=>`<div>${esc(a)}</div><div>${esc(b)}</div>`).join('')}</div></div>
+ <div class="card"><h3>${L('Cables connected','Подключённые кабели')} (${cabs.length})</h3>${cabs.length?`<div class="tw" style="max-height:none"><table class="t"><thead><tr><th>${L('Cable','Кабель')}</th><th>${L('From','Откуда')}</th><th>${L('To','Куда')}</th><th>${L('Pulled','Проложен')}</th><th>${L('Terminated','Расключён')}</th><th>${L('RAWP RFI (RHI QC)','ЗПИ RAWP')}</th></tr></thead><tbody>${cl}</tbody></table></div>`:`<div class="mut small">${L('No cable in the cable list is linked to this tag (loop / bus cable or vendor cable). Check the drawing.','В кабельном журнале нет кабеля с этим тегом (шлейф / вендор). Проверьте чертёж.')}</div>`}</div>
+ ${qc?`<div class="card"><h3>${L('Client QC comments (master punch list)','Замечания QC заказчика (мастер-лист)')}</h3><div class="tw" style="max-height:none"><table class="t"><thead><tr><th>${L('Punch','Замечание')}</th><th>${L('Description','Описание')}</th><th>${L('Issued → closed','Выдано → закрыто')}</th></tr></thead><tbody>${qc}</tbody></table></div></div>`:''}
+ <div class="sect">${L('4 · Tick each check point','4 · Отметьте каждый пункт')}</div>
+ <div class="card"><div class="small mut" style="margin-bottom:8px">✓ = ${L('OK','соответствует')} · ✗ = ${L('not OK (add comment)','не соответствует (добавьте замечание)')} · N/A = ${L('not applicable','не применимо')} · <span class="std">ГОСТ / СП</span> ${L('general standard','общий стандарт')} · <span class="ms">MS / DWG</span> ${L('project method statement / drawing','технологическая карта / чертёж')}</div>`;
+ secs.forEach((s,si)=>{ h+=`<div class="chk"><div class="sh"><span>${esc(L(s[0],s[1]))}</span><span class="mut small" id="sc${si}"></span></div>`+s[2].map((it,ii)=>row('s'+si+'_'+ii,it[0],it[1],it[2],stdFor(d[3],s[0],it[0],d))).join('')+'</div>'; });
+ cabs.forEach(([c,ci],k)=>{ h+=`<div class="chk"><div class="sh"><span>🔌 ${L('Cable','Кабель')} ${esc(c[0])}</span><span class="mut small">${esc(c[3])}</span></div>`+CAB_CK.map((it,ii)=>row('c'+ci+'_'+ii,it[0],it[1],'MS 120.008 / 120.009',stdFor(it[2],'',it[0],d))).join('')+'</div>'; });
+ h+=`</div><div class="sect">${L('5 · Result','5 · Результат')}</div><div class="card"><div class="meter" id="meter"></div>
+  <div class="fin">${Object.entries(RES).map(([k,r])=>`<button class="${k} ${I.res===k?'on':''}" onclick="setRes('${k}')">${k==='A'?'✓ ':k==='C'?'✎ ':'✗ '}${L(r[0],r[1])}</button>`).join('')}</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px"><input class="in" placeholder="${L('Inspector name','Инспектор')}" value="${esc(I.who||'')}" oninput="_I.who=this.value;st('qcc_who',this.value);sv()"><input class="in" placeholder="${L('Overall comment','Общий комментарий')}" value="${esc(I.note||'')}" oninput="_I.note=this.value;sv()"></div>
+  <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px"><button class="btn p" onclick="xportOne()">⬇ ${L('Excel – this device','Excel – это оборудование')}</button><button class="btn" onclick="allOK()">✓ ${L('Set all unanswered = OK','Все неотмеченные = ✓')}</button><button class="btn" onclick="resetI()">↺ ${L('Reset','Сбросить')}</button>
+  <button class="btn" onclick="nextDev(1)">${L('Next device','Следующее')} →</button></div></div>`;
+ setTimeout(meter,0); return h; }
+function row(id,en,ru,ms,std){ const I=window._I, v=I.c[id]||0, qs=I.qc[id]||[];
+ return `<div class="ci" id="r_${id}"><div class="q">${esc(L(en,ru))}<small>${esc(LANG==='ru'?en:ru)}</small>${std.map(x=>`<span class="std">${esc(x)}</span>`).join('')}<span class="ms">${esc(ms)}</span></div>
+  <div class="tri"><button class="${v===1?'s1':''}" onclick="ck('${id}',1)">✓</button><button class="${v===2?'s2':''}" onclick="ck('${id}',2)">✗</button><button class="${v===3?'s3':''}" onclick="ck('${id}',3)">N/A</button></div>
+  ${v===2||I.n[id]||qs.length?`<div class="cm"><div class="qcs">${QCM.map((q,qi)=>`<button class="${qs.includes(qi)?'on':''}" onclick="qtog('${id}',${qi})">${esc(L(q[0],q[1]))}</button>`).join('')}</div><input placeholder="${L('Comment (free text)','Замечание (текст)')}" value="${esc(I.n[id]||'')}" oninput="_I.n['${id}']=this.value;sv()"></div>`:''}</div>`; }
+function ck(id,v){ const I=window._I; I.c[id]=I.c[id]===v?0:v; sv(); rr(id); }
+function rr(id){ const el=document.getElementById('r_'+id); const parts=id.split('_');
+ const d=CUR; let en,ru,ms,std; if(id[0]==='s'){ const s=secsOf(d[3])[+parts[0].slice(1)], it=s[2][+parts[1]]; en=it[0];ru=it[1];ms=it[2];std=stdFor(d[3],s[0],it[0],d); } else { const it=CAB_CK[+parts[1]]; en=it[0];ru=it[1];ms='MS 120.008 / 120.009';std=stdFor(it[2],'',it[0],d); }
+ el.outerHTML=row(id,en,ru,ms,std); meter(); }
+function qtog(id,qi){ const I=window._I, a=I.qc[id]=I.qc[id]||[]; const k=a.indexOf(qi); k<0?a.push(qi):a.splice(k,1); sv(); rr(id); }
+function ids(){ const d=CUR, R=[]; secsOf(d[3]).forEach((s,si)=>s[2].forEach((it,ii)=>R.push('s'+si+'_'+ii))); d[14].forEach(ci=>CAB_CK.forEach((it,ii)=>R.push('c'+ci+'_'+ii))); return R; }
+function meter(){ const I=window._I, A=ids(); const ok=A.filter(x=>I.c[x]===1).length, bad=A.filter(x=>I.c[x]===2).length, na=A.filter(x=>I.c[x]===3).length, n=A.length, ans=ok+bad+na, pc=Math.round(ans/(n||1)*100);
+ const sug=ans<n?L('Not finished','Не завершено'):bad?L('Suggested: Rejected or Accepted with comments','Рекомендуется: отклонить или принять с замечаниями'):L('Suggested: Accepted','Рекомендуется: принять');
+ const col=bad?'#c62828':ans<n?'#e0a100':'#1e8a4c';
+ const m=document.getElementById('meter'); if(m) m.innerHTML=`<div class="ring" style="background:conic-gradient(${col} ${pc*3.6}deg,rgba(120,130,160,.18) 0);"><div style="background:var(--card);width:50px;height:50px;border-radius:50%;display:grid;place-items:center">${pc}%</div></div>
+  <div><b>${ans} / ${n}</b> ${L('checked','проверено')} · <span style="color:var(--ok)">✓ ${ok}</span> · <span style="color:var(--bad)">✗ ${bad}</span> · N/A ${na}<div class="small" style="color:${col};font-weight:700">${sug}</div></div>`;
+ const r=document.getElementById('ring'); if(r) r.innerHTML=`<div class="ring" style="background:conic-gradient(#fff ${pc*3.6}deg,rgba(255,255,255,.25) 0)"><div style="background:#2a2f8f;width:50px;height:50px;border-radius:50%;display:grid;place-items:center;color:#fff">${pc}%</div></div>`;
+ secsOf(CUR[3]).forEach((s,si)=>{ const e=document.getElementById('sc'+si); if(e){ const k=s[2].map((it,ii)=>I.c['s'+si+'_'+ii]||0); e.textContent=k.filter(Boolean).length+'/'+k.length+(k.includes(2)?' · ✗':''); } }); }
+function sv(){ const I=window._I; putI(CUR[0],I); }
+function setRes(k){ const I=window._I, A=ids(), bad=A.some(x=>I.c[x]===2), un=A.filter(x=>!I.c[x]).length;
+ if(k==='A'&&bad&&!confirm(L('Some points are ✗ – accept anyway?','Есть пункты ✗ – всё равно принять?'))) return;
+ if(un&&!confirm(L(un+' points not answered – save result anyway?','Не отмечено пунктов: '+un+' – сохранить?'))) return;
+ I.res=I.res===k?'':k; I.dt=new Date().toLocaleDateString('ru-RU'); sv(); route(); toast(L('Saved','Сохранено')); }
+function allOK(){ const I=window._I; ids().forEach(x=>{ if(!I.c[x]) I.c[x]=1; }); sv(); route(); }
+function resetI(){ if(!confirm(L('Clear this inspection?','Очистить инспекцию?')))return; try{localStorage.removeItem(KEY(CUR[0]))}catch(e){} route(); }
+function nextDev(dir){ const L0=window._shown_sub||window._shown_all||D.D; const k=L0.indexOf(CUR); const n=L0[k+dir]||D.D[CUR.i+dir]; if(n) go('d|'+n.i); }
+
+/* ---------- register + export ---------- */
+function register(){ const R=allI().map(([t,i])=>[D.D.find(d=>d[0]===t),i]).filter(x=>x[0]);
+ const cols=[{h:L('Tag','Тег'),v:([d])=>d[0],h2:([d])=>`<b>${esc(d[0])}</b>`},{h:L('System','Система'),v:([d])=>d[4]},{h:L('Subsystem','Подсистема'),v:([d])=>d[5]||'—'},{h:L('Description','Описание'),v:([d])=>L(d[2],d[1])},
+  {h:L('Result','Результат'),v:([d,i])=>i.res?L(RES[i.res][0],RES[i.res][1]):L('In progress','В работе'),h2:([d])=>resB(d[0])},{h:L('✗ points','Пункты ✗'),v:([d,i])=>Object.values(i.c||{}).filter(v=>v===2).length},
+  {h:L('Inspector','Инспектор'),v:([d,i])=>i.who||''},{h:L('Date','Дата'),v:([d,i])=>i.dt||(i.upd||'').slice(0,10)}];
+ return `<div class="crumb"><a onclick="go('')">${PRJ}</a> › ${L('Inspection register','Реестр инспекций')}</div><h2>${L('Inspection register','Реестр инспекций')} – ${PRJ}</h2>
+  <div style="display:flex;gap:8px;flex-wrap:wrap;margin:8px 0"><button class="btn p" onclick="xport(true)">⬇ ${L('Excel – internal (with GOST)','Excel – внутренний (с ГОСТ)')}</button><button class="btn" onclick="xport(false)">⬇ ${L('Excel – for client','Excel – для заказчика')}</button></div>
+  ${table('reg',cols,R,([d])=>`go('d|${d.i}')`)}`; }
+function linesOf(d,I,withStd){ const out=[]; const base=[PRJ,d[4],d[5]||'',d[6]||'',d[7]||'',d[0],d[1],d[2],d[8]];
+ const res=I.res?RES[I.res]:['Not finished','Не завершено'], R2=v=>v===1?['OK','Соответствует']:v===2?['NOT OK','Не соответствует']:v===3?['N/A','Не применимо']:['Not checked','Не проверено'];
+ const add=(secE,secR,en,ru,ms,std,id)=>{ const v=I.c[id]||0, r=R2(v), qc=(I.qc[id]||[]).map(k=>QCM[k]); const cE=[...qc.map(q=>q[0]),I.n[id]||''].filter(Boolean).join('; '), cR=[...qc.map(q=>q[1]),I.n[id]||''].filter(Boolean).join('; ');
+  out.push([...base,secE,secR,en,ru,...(withStd?[std.join('; '),ms]:[]),r[0],r[1],cE,cR,res[0],res[1],I.who||'',I.dt||'',I.note||'']); };
+ secsOf(d[3]).forEach((s,si)=>s[2].forEach((it,ii)=>add(s[0],s[1],it[0],it[1],it[2],stdFor(d[3],s[0],it[0],d),'s'+si+'_'+ii)));
+ d[14].forEach(ci=>{ const c=D.C[ci]; if(!c)return; CAB_CK.forEach((it,ii)=>add('Cable '+c[0]+' ('+c[3]+')','Кабель '+c[0]+' ('+c[3]+')',it[0],it[1],'MS 120.008 / 120.009',stdFor(it[2],'',it[0],d),'c'+ci+'_'+ii)); });
+ return out; }
+function sheets(list,withStd){ const H=['Project / Проект','System / Система','Subsystem / Подсистема','Subsystem name (EN)','Наименование подсистемы','Tag / Тег','Description (RU) / Описание','Description (EN)','Drawing / Чертёж','Section (EN)','Раздел (RU)','Check point (EN)','Пункт проверки (RU)',...(withStd?['Standard (GOST / SP) / Стандарт','Method statement / Технолог. карта']:[]),'Result (EN)','Результат (RU)','Comment (EN)','Замечание (RU)','Overall result (EN)','Общий результат (RU)','Inspector / Инспектор','Date / Дата','Overall comment / Общий комментарий'];
+ const all=[], com=[], sum=[]; list.forEach(([d,I])=>{ const ls=linesOf(d,I,withStd); all.push(...ls); ls.forEach(l=>{ const ri=withStd?15:13; if(l[ri]==='NOT OK'||l[ri+2]) com.push(l); });
+  const A=Object.values(I.c||{}); sum.push([PRJ,d[4],d[5]||'',d[0],d[1],d[2],d[14].length,A.filter(v=>v===1).length,A.filter(v=>v===2).length,A.filter(v=>v===3).length,I.res?RES[I.res][0]:'Not finished',I.res?RES[I.res][1]:'Не завершено',I.who||'',I.dt||'',d[12][0]||'',d[12][1]||'',openP(d)]); });
+ const wd=H.map((h,i)=>i<5?14:i<9?24:i<13?34:20);
+ const SH=['Project / Проект','System / Система','Subsystem / Подсистема','Tag / Тег','Description (RU)','Description (EN)','Cables / Кабели','OK','NOT OK','N/A','Result (EN)','Результат (RU)','Inspector / Инспектор','Date / Дата','RHI QC RFI / ЗПИ РХИ','RHI QC status','Client QC open / Открытые замечания'];
+ const fills=(rows,ri)=>{ const f={}; rows.forEach((r,k)=>{ const v=r[ri]; f[(k+1)+','+ri]=v==='OK'?'g':v==='NOT OK'?'r':v==='N/A'?'c':''; f[(k+1)+','+(ri+1)]=f[(k+1)+','+ri]; }); return f; };
+ const ri=withStd?15:13;
+ return [{name:'Summary',rows:[SH,...sum],widths:SH.map(()=>18),bold:[0],freeze:1,filter:'A1:Q'+(sum.length+1)},
+  {name:'Comments – NOT OK',rows:[H,...com],widths:wd,bold:[0],freeze:1,filter:'A1:'+String.fromCharCode(64+H.length)+(com.length+1),fills:fills(com,ri)},
+  {name:'All check points',rows:[H,...all],widths:wd,bold:[0],freeze:1,filter:'A1:'+String.fromCharCode(64+H.length)+(all.length+1),fills:fills(all,ri)}]; }
+function dl(name,sh){ try{ const b=XL.make(sh); const a=document.createElement('a'); a.href=URL.createObjectURL(b); a.download=name; document.body.appendChild(a); a.click(); setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1500); toast('Excel: '+name); }catch(e){ toast('Export failed: '+e.message); } }
+const fday=()=>new Date().toLocaleDateString('ru-RU');
+function xport(withStd){ const list=allI().map(([t,i])=>[D.D.find(d=>d[0]===t),i]).filter(x=>x[0]); if(!list.length) return toast(L('No inspections saved yet','Нет сохранённых инспекций'));
+ dl(`QC_inspection_${PRJ}_${withStd?'internal':'client'}_${fday()}.xlsx`,sheets(list,withStd)); }
+function xportOne(){ dl(`QC_${CUR[0]}_${fday()}.xlsx`,sheets([[CUR,window._I]],true)); }
+function backup(){ const o={}; META.P.forEach(p=>allI(p).forEach(([t,i])=>o[p+':'+t]=i)); const b=new Blob([JSON.stringify(o)],{type:'application/json'}); const a=document.createElement('a'); a.href=URL.createObjectURL(b); a.download='QC_inspections_backup_'+fday()+'.json'; a.click(); }
+function restore(f){ if(!f)return; const r=new FileReader(); r.onload=()=>{ try{ const o=JSON.parse(r.result); let n=0; Object.entries(o).forEach(([k,v])=>{ localStorage.setItem('qcc:'+k,JSON.stringify(v)); n++; }); toast(L('Restored ','Восстановлено ')+n); route(); }catch(e){ toast('Bad file'); } }; r.readAsText(f); }
+if('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(()=>{});
+boot();
+</script>
+</body>
+</html>

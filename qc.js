@@ -80,7 +80,8 @@
       ${T2('#/qc/l/q', L('🔎 All open QC comments · search', '🔎 Все открытые замечания QC · поиск'), `${O.length} ${L('open', 'открыто')}`)}
       ${T2('#/qc/l/' + enc('q||||A'), L('🅰️ Open category A', '🅰️ Открытые категории A'), `${nA} ${L('block the handover', 'мешают сдаче')}`)}
       ${T2('#/qc/l/' + enc('q||||all'), L('🗂 All QC comments (open + closed)', '🗂 Все замечания QC (открытые + закрытые)'), `${Q.length}`)}
-      ${T2('#/qc/r', L('📚 Rules for closing punches', '📚 Правила закрытия замечаний'), L('what we agreed', 'что согласовано'))}</div>
+      ${T2('#/qc/r', L('📚 Rules for closing punches', '📚 Правила закрытия замечаний'), L('what we agreed', 'что согласовано'))}
+      <button class="tile main" onclick="location.href='qc-calc/'"><b>🧮 ${L('QC inspection calculator', 'Калькулятор QC-инспекции')}</b><div><span class="n">${L('system → subsystem → device → cables → earthing → accept / reject · EN + RU export', 'система → подсистема → оборудование → кабели → заземление → принять / отклонить')}</span></div></button></div>
      <div class="sect">⬇ ${L('Excel – master punch list format', 'Excel – формат мастер-листа')}</div><div class="grid">
       <button class="tile main" onclick="QC.xls('open')"><b>⬇ ${L('Open QC comments', 'Открытые замечания QC')}</b><div><span class="n">${O.length} ${L('lines', 'строк')}</span></div></button>
       <button class="tile" onclick="QC.xls('can')"><b>⬇ ${L('Can be closed now – all lists', 'Можно закрыть – все списки')}</b><div><span class="n">${can.reduce((n, k) => n + X[k].length, 0)} ${L('lines · one sheet per list', 'строк · лист на каждый список')}</span></div></button></div>
