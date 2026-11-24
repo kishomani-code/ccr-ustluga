@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Kolam animation</title>
+<style>
+  html,body{margin:0;height:100%;background:#4c5450;font-family:system-ui,Arial,sans-serif;color:#f1ecf4}
+  body{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;
+       background:radial-gradient(circle at 40% 35%,#6b736d 0%,#535b56 45%,#3f4642 100%)}
+  h1{font-size:20px;font-weight:600;margin:8px 0 0;letter-spacing:.5px}
+  svg{width:min(94vw,78vh);height:min(94vw,78vh);touch-action:manipulation}
+  .bar{display:flex;gap:10px;margin-bottom:10px}
+  button{font-size:16px;padding:10px 18px;border-radius:22px;border:1px solid #d9cfe0;background:rgba(255,255,255,.08);color:#f1ecf4}
+  button:active{background:rgba(255,255,255,.25)}
+  path,circle{fill:none;stroke:#f3e9f6;stroke-width:3.2;stroke-linecap:round;stroke-linejoin:round}
+</style>
+</head>
+<body>
+<h1>கோலம் · Kolam</h1>
+<svg id="k" viewBox="-260 -260 520 520" aria-label="Kolam drawing animation">
+  <defs>
+    <filter id="chalk" x="-10%" y="-10%" width="120%" height="120%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" seed="4" result="n"/>
+      <feDisplacementMap in="SourceGraphic" in2="n" scale="2.6"/>
+    </filter>
+  </defs>
+  <g id="g" filter="url(#chalk)"></g>
+</svg>
+<div class="bar">
+  <button id="again">▶ Draw again</button>
+  <button id="speed">Speed: normal</button>
+</div>
+<script>
+const g=document.getElementById('g'), NS='http://www.w3.org/2000/svg';
+const P=(r,a)=>[r*Math.cos(a*Math.PI/180), r*Math.sin(a*Math.PI/180)];
+const f=n=>n.toFixed(1);
+const shapes=[];           // {d, t} t = relative time weight
+const R=105;
+// two triangles of the star
+for(const s of [-90,90]){
+  const p=[0,1,2].map(i=>P(R,s+120*i));
+  shapes.push('M'+p.map(q=>f(q[0])+' '+f(q[1])).join(' L')+' Z');
+}
+// petal (nested tear-drops) at angle a
+function petal(a,len,wid){
+  const out=[], b=P(R,a), u=P(1,a), v=P(1,a+90);
+  const pt=(x,y)=>f(b[0]+u[0]*x+v[0]*y)+' '+f(b[1]+u[1]*x+v[1]*y);
+  for(const k of [1,0.7,0.4]){
+    const L=len*k, w=wid*k;
+    out.push(`M${pt(0,0)} C${pt(L*0.35,-w*1.5)} ${pt(L*1.02,-w*1.25)} ${pt(L,0)} C${pt(L*1.02,w*1.25)} ${pt(L*0.35,w*1.5)} ${pt(0,0)}`);
+  }
+  return out;
+}
+// spiral with centre c, turning from outside in
+function spiral(c,r0,turns,start,dir){
+  let d='';const n=turns*40;
+  for(let i=0;i<=n;i++){
+    const t=i/n, r=r0*(1-t*0.9), ang=start+dir*360*turns*t;
+    const x=c[0]+r*Math.cos(ang*Math.PI/180), y=c[1]+r*Math.sin(ang*Math.PI/180);
+    d+=(i?'L':'M')+f(x)+' '+f(y)+' ';
+  }
+  return d;
+}
+for(let i=0;i<6;i++){
+  const a=-90+60*i;
+  if(i%2===0){                       // petal with a curl on top
+    petal(a,96,30).forEach(d=>shapes.push(d));
+    shapes.push(spiral(P(R+96+22,a+6),22,2.2,a+200,1));
+  }else{                             // rose (round spiral) at the point
+    shapes.push(spiral(P(R+38,a),38,3.2,a+180,-1));
+    shapes.push(spiral(P(R+86,a-16),20,2,a+150,1));
+  }
+}
+// small dot in the centre
+shapes.push('M-4 0 A4 4 0 1 1 4 0 A4 4 0 1 1 -4 0');
+
+let speed=1, timers=[];
+function draw(){
+  timers.forEach(clearTimeout); timers=[]; g.innerHTML='';
+  let t=300;
+  shapes.forEach(d=>{
+    const p=document.createElementNS(NS,'path'); p.setAttribute('d',d); g.appendChild(p);
+    const L=p.getTotalLength(); p.style.strokeDasharray=L; p.style.strokeDashoffset=L;
+    const dur=Math.max(350,L*5.5)/speed;
+    timers.push(setTimeout(()=>{p.style.transition=`stroke-dashoffset ${dur}ms linear`; p.style.strokeDashoffset=0;},t));
+    t+=dur+120/speed;
+  });
+  timers.push(setTimeout(draw,t+3500));     // loop
+}
+document.getElementById('again').onclick=draw;
+document.getElementById('speed').onclick=e=>{
+  speed=speed===1?2:speed===2?0.5:1;
+  e.target.textContent='Speed: '+(speed===1?'normal':speed===2?'fast':'slow'); draw();
+};
+draw();
+</script>
+</body>
+</html>
