@@ -57,7 +57,7 @@
   // ---------- routing ----------
   G2.route = function (rest) { const k = rest[0] || '', a = dec(rest.slice(1).join('/'));
     if (!G2.d) { main.innerHTML = '<div class="empty">Loading…</div>'; G2.load(); return; }
-    const R = {t: title, l: list, i: line, dw: dwgs, d: daily, rp: repPage, c: catPage, m: matPage, q: ctqPage, g: gpPage, mg: mgPage}[k];
+    const R = {t: title, l: list, i: line, dw: dwgs, d: daily, rp: repPage, c: catPage, m: matPage, q: ctqPage, g: gpPage, mg: mgPage, mn: mnPage}[k];
     const h = R ? R(a) : home(); if (typeof h === 'string') main.innerHTML = '<div data-nt>' + h + '</div>'; };
   // ---------- main menu ----------
   function home() { const d = G2.d; setHead(L('G2 scope · Train 2', 'G2 · линия 2') + ' · GPP E&I', `v${typeof APPV !== 'undefined' ? APPV : ''} · IWP ${d.iwpdate} · MDR ${d.date}`);
@@ -97,6 +97,7 @@
       ${T2('#/g2/dw/', L('📄 Drawings register · all titles', '📄 Реестр чертежей · все титулы'), `${Dh} ${L('in hand', 'есть')} · ${Dn} ${L('not in hand', 'нет')}`, pc(Dh, G2.D.length), 'main')}
       ${T2('#/g2/dw/' + enc('!miss'), L('⚠️ Drawings we still need', '⚠️ Нужные чертежи – нет'), `${Dm} ${L('must-have not in hand · send PDF', 'обязательных нет · прислать PDF')}`, null, '', Dm ? 'border-color:#b42318' : '')}</div>
      <div class="sect">📈 ${L('Progress', 'Прогресс')}</div><div class="grid">
+      ${(() => { const O = MN_mnOpen(); return T2('#/g2/mn', L('🗒 Daily meeting notes', '🗒 Протоколы совещаний'), `${O.length} ${L('open points', 'открытых пунктов')} · ${O.filter(({p}) => MN_late(p)).length} ${L('late', 'просрочено')} · ${L('answer + responsible', 'ответ + ответственный')}`, null, 'main', 'background:#1f3864;border-color:#1f3864;color:#fff'); })()}
       ${T2('#/g2/rp/status', L('📊 Progress status', '📊 Статус прогресса'), L('by title and work type', 'по титулам и видам работ'), null, 'main')}
       ${T2('#/g2/rp/day', L('📅 Daily report', '📅 Дневной отчёт'), L('entries of a date', 'записи за дату'))}
       ${T2('#/g2/rp/last', L('↩ Last report sent', '↩ Последний отчёт'), G2.st().lastT ? esc(G2.st().lastT) : L('none yet', 'ещё нет'))}</div>
@@ -166,6 +167,94 @@
      <div class="sect">🧩 ${L('Systems (drawing set) – project / fact / remaining / %', 'Системы (комплект чертежей)')}</div>${qtyTb(X, sysOf, k => `<b>${esc(k)}</b>`, k => '#/g2/l/' + enc(t + '|||' + k), L('System', 'Система'))}
      <div class="sect">📅 ${L('December plan – going or not', 'План декабря – идёт или нет')}</div>${decTb(X, x => x.g, g => `${CAT[cat(g)][0]} ${esc(grp(g))}`)}
      <div class="sect">🧾 MRF</div><div class="card">${M.length ? ml('A', L('Approved – collect from warehouse', 'Одобрено – забрать со склада')) + ml('R', L('Sent – waiting answer', 'Поданы – ждём ответа')) + ml('G', L('Ready – give MRF No / send', 'Готовы – дать № / подать')) + ml('X', L('Do not request', 'Не подавать')) : `<div class="s2">${L('No MRF for this title', 'Нет MRF по титулу')}</div>`}</div>`; }
+  // ---------- v4.92 G2 daily meeting notes: points with answer, responsible, due date, status (saved on this phone) ----------
+  const MN_MNK = 'g2_mn_v1', MN_MNP = ['Asru', 'Batuhan', 'Oguzhan Atmaca', 'Alp Yilmaz', 'Oguzhan Cankaya (warehouse)', 'Burak Bostanoglu', 'Ese Coskun', 'Paul', 'Mustafa', 'John (field instruments)'];
+  G2.mn = function () { if (G2._mn) return G2._mn; let s = null; try { s = JSON.parse(localStorage.getItem(MN_MNK) || 'null'); } catch (e) {} return G2._mn = s && s.m ? s : {m: []}; };
+  G2.mnSave = function () { try { localStorage.setItem(MN_MNK, JSON.stringify(G2._mn)); } catch (e) {} };
+  const MN_MST = {O: ['Open', 'Открыто', 'b-no'], P: ['In progress', 'В работе', 'b-na'], D: ['Done', 'Выполнено', 'b-ok']};
+  const MN_MTY = ['Daily site meeting', 'Managers meeting', 'Client meeting', 'Warehouse / material meeting', 'Safety meeting'];
+  const MN_mnFind = id => G2.mn().m.find(x => x.id === id);
+  const MN_uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+  const MN_mnOpen = () => { const R = []; G2.mn().m.forEach(m => m.P.forEach(p => { if (p.st !== 'D' && !p.cf) R.push({m, p}); })); return R; };
+  const MN_late = p => p.due && p.st !== 'D' && p.due < todayISO();
+  G2.mnNew = function () { const st = G2.mn(), id = MN_uid(), last = st.m.slice().sort((a, b) => (b.dt + b.tm).localeCompare(a.dt + a.tm))[0];
+    const m = {id, dt: todayISO(), tm: (() => { const t = new Date(); return p2(t.getHours()) + ':' + p2(t.getMinutes()); })(), typ: last ? last.typ : MN_MTY[0], att: last ? last.att : '', by: who(), notes: '', P: []};
+    // open points of earlier meetings come forward, so nothing is lost
+    MN_mnOpen().forEach(({m: om, p}) => { m.P.push(Object.assign({}, p, {id: MN_uid(), from: ds(isoTs(om.dt))})); p.cf = id; });
+    st.m.push(m); G2.mnSave(); go('#/g2/mn/' + enc(id)); };
+  G2.mnSet = function (id, pid, k, v) { const m = MN_mnFind(id); if (!m) return; if (pid) { const p = m.P.find(x => x.id === pid); if (!p) return; p[k] = v; if (k === 'st' && v === 'D') p.done = todayISO(); } else m[k] = v; G2.mnSave(); if (k === 'st' || k === 'dt' || k === 'typ') route(); };
+  G2.mnAdd = function (id, txt, t) { const m = MN_mnFind(id); if (!m) return; m.P.push({id: MN_uid(), t: t || '', txt: txt || '', ans: '', resp: '', due: '', st: 'O'}); G2.mnSave(); route(); setTimeout(() => { const e = document.querySelectorAll('.mnp textarea.mntx'); if (e.length && !txt) e[e.length - 1].focus(); }, 80); };
+  G2.mnDel = function (id, pid) { const m = MN_mnFind(id); if (!m) return; if (pid) { if (!confirm(L('Delete this point?', 'Удалить пункт?'))) return; m.P = m.P.filter(x => x.id !== pid); }
+    else { if (!confirm(L('Delete this whole meeting note?', 'Удалить весь протокол?'))) return; G2.mn().m = G2.mn().m.filter(x => x !== m); G2.mn().m.forEach(x => x.P.forEach(p => { if (p.cf === id) delete p.cf; })); G2.mnSave(); return go('#/g2/mn'); }
+    G2.mnSave(); route(); };
+  // suggested points from the follow-up data: December plan behind, MRFs to send, blocked lines, missing drawings
+  G2.mnAuto = function (id) { const m = MN_mnFind(id); if (!m) return; const I = G2.I, have = new Set(m.P.map(p => p.txt)); let n = 0; const add = (t, x) => { if (!have.has(x)) { m.P.push({id: MN_uid(), t, txt: x, ans: '', resp: ((G2.d.dec || {}).resp || {})[t] || '', due: '', st: 'O', auto: 1}); n++; } };
+    Object.keys(G2.d.titles).forEach(t => { const X = I.filter(x => x.t === t), a = agg(X), s = decSt(a);
+      if (a.pl && /behind|отстав/i.test(s[0])) add(t, `December plan behind – ${nf(a.pd)} of ${nf(a.pl)} done. Recovery plan?`);
+      const B = X.filter(x => x.blk && stOf(x) !== 'D'); if (B.length) add(t, `${B.length} lines blocked (${B.filter(x => x.blk === 'Material').length} material, ${B.filter(x => x.blk === 'MRF').length} MRF) – action?`);
+      const D = G2.D.filter(x => x.t === t && x.st !== 'have' && x.need !== 'Useful').length; if (D) add(t, `${D} drawings still not in hand – who sends them?`); });
+    const M = (G2.MR && G2.MR.M) || [], nm = x => x.no || x.s;
+    [...new Set(M.map(x => x.to))].forEach(t => { const Y = M.filter(x => x.to === t), G = Y.filter(x => x.g === 'G' && x.L.length), R = Y.filter(x => x.g === 'R');
+      if (G.length) add(t, `MRF ready to send (${G.length}): ${G.map(nm).join(', ')} – give MRF No and send`);
+      if (R.length) add(t, `MRF waiting answer (${R.length}): ${R.map(nm).join(', ')} – follow up with warehouse`); });
+    G2.mnSave(); toast(n + ' ' + L('points added', 'пунктов добавлено')); route(); };
+  const MN_mnText = m => { const ln = [`G2 meeting notes / Протокол совещания G2 · ${m.typ} · ${ds(isoTs(m.dt))} ${m.tm || ''}`];
+    if (m.att) ln.push(`Attendees / Участники: ${m.att}`); if (m.notes) ln.push(`Notes / Заметки: ${m.notes}`); ln.push('');
+    m.P.forEach((p, i) => { ln.push(`${i + 1}. ${p.t ? '[' + p.t + '] ' : ''}${p.txt}`); if (p.ans) ln.push(`   Answer / Ответ: ${p.ans}`); ln.push(`   Responsible / Ответственный: ${p.resp || '–'} · Due / Срок: ${p.due ? isoRU(p.due) : '–'} · ${MN_MST[p.st || 'O'][0]} / ${MN_MST[p.st || 'O'][1]}${p.from ? ' · from ' + p.from : ''}`); });
+    ln.push('', `By / Составил: ${m.by || who() || '–'}`); return ln.join('\n'); };
+  const MN_mnRows = M => { const R = [['Meeting date', 'Time', 'Meeting', 'No', 'Title', 'Point / Вопрос', 'Answer / Ответ', 'Responsible / Ответственный', 'Due date / Срок', 'Status / Статус', 'From meeting', 'Done on', 'Attendees']];
+    M.forEach(m => m.P.forEach((p, i) => R.push([isoRU(m.dt), m.tm || '', m.typ, i + 1, p.t || '', p.txt, p.ans || '', p.resp || '', p.due ? isoRU(p.due) : '', MN_MST[p.st || 'O'][0], p.from || '', p.done ? isoRU(p.done) : '', m.att || '']))); return R; };
+  G2.mnXl = function (id) { if (typeof XL === 'undefined') return; const M = id ? [MN_mnFind(id)] : G2.mn().m.slice().sort((a, b) => (a.dt + a.tm).localeCompare(b.dt + b.tm));
+    const sh = [{name: 'Meeting points', rows: MN_mnRows(M), widths: [12, 7, 22, 5, 14, 60, 50, 24, 12, 12, 12, 12, 30], bold: [0], freeze: 1}];
+    if (!id) { const O = [['Title', 'Point / Вопрос', 'Answer / Ответ', 'Responsible / Ответственный', 'Due date / Срок', 'Status / Статус', 'Raised on', 'Late']]; MN_mnOpen().forEach(({m, p}) => O.push([p.t || '', p.txt, p.ans || '', p.resp || '', p.due ? isoRU(p.due) : '', MN_MST[p.st || 'O'][0], p.from || isoRU(m.dt), MN_late(p) ? 'LATE' : ''])); sh.unshift({name: 'Open points', rows: O, widths: [14, 60, 50, 24, 12, 12, 12, 8], bold: [0], freeze: 1}); }
+    XL.save(id ? `G2_meeting_${isoRU(M[0].dt)}.xlsx` : `G2_meeting_notes_all_${isoRU(todayISO())}.xlsx`, sh); };
+  G2.mnPrint = function (id) { const m = MN_mnFind(id); if (!m) return; const fr = document.createElement('iframe'); fr.style.cssText = 'position:fixed;right:0;bottom:0;width:0;height:0;border:0'; document.body.appendChild(fr);
+    const td = 'border:1px solid #999;padding:4px 6px;vertical-align:top;font-size:11px';
+    const d = fr.contentWindow.document; d.open(); d.write(`<!doctype html><html><head><meta charset="utf-8"><title>G2 meeting ${isoRU(m.dt)}</title><style>@page{size:A4 landscape;margin:12mm}body{font-family:Arial,sans-serif}table{border-collapse:collapse;width:100%}th{background:#1f3864;color:#fff;${td}}</style></head><body>
+      <div style="display:flex;justify-content:space-between;align-items:flex-end;border-bottom:2px solid #1f3864;padding-bottom:6px;margin-bottom:8px"><div><b style="font-size:16px">RENCONS · G2 (Train 2) E&I – ${esc(m.typ)}</b><div style="font-size:12px">Протокол совещания / Meeting notes</div></div><div style="font-size:12px;text-align:right">${isoRU(m.dt)} ${esc(m.tm || '')}<br>${L('By', 'Составил')}: ${esc(m.by || who() || '')}</div></div>
+      ${m.att ? `<div style="font-size:12px;margin-bottom:4px"><b>Attendees / Участники:</b> ${esc(m.att)}</div>` : ''}${m.notes ? `<div style="font-size:12px;margin-bottom:6px"><b>Notes / Заметки:</b> ${esc(m.notes)}</div>` : ''}
+      <table><tr><th>№</th><th>Title</th><th>Point / Вопрос</th><th>Answer / Ответ</th><th>Responsible / Ответственный</th><th>Due / Срок</th><th>Status</th></tr>
+      ${m.P.map((p, i) => `<tr><td style="${td}">${i + 1}</td><td style="${td};white-space:nowrap">${esc(p.t || '')}</td><td style="${td}">${esc(p.txt)}${p.from ? `<div style="color:#777;font-size:10px">from ${esc(p.from)}</div>` : ''}</td><td style="${td}">${esc(p.ans || '')}</td><td style="${td}">${esc(p.resp || '')}</td><td style="${td};white-space:nowrap;${MN_late(p) ? 'color:#b42318;font-weight:700' : ''}">${p.due ? isoRU(p.due) : ''}</td><td style="${td}">${MN_MST[p.st || 'O'][0]}</td></tr>`).join('')}</table></body></html>`); d.close();
+    setTimeout(() => { try { fr.contentWindow.focus(); fr.contentWindow.print(); } catch (e) {} setTimeout(() => fr.remove(), 60000); }, 300); };
+  G2.mnShare = function (id) { const m = MN_mnFind(id); if (!m) return; G2.REP = {text: MN_mnText(m), E: [], TE: []}; if (navigator.share) navigator.share({text: G2.REP.text}).catch(() => {}); else copyText(G2.REP.text).then(() => toast(L('Copied', 'Скопировано'))); };
+  G2.mnMax = function (id) { const m = MN_mnFind(id); if (!m) return; G2.REP = {text: MN_mnText(m), E: [], TE: []}; G2.sendRep(0); };
+  G2.mnF = function (k, v) { G2['_mn' + k] = v; route(); };
+  const MN_pcard = (p, extra) => { const s = MN_MST[p.st || 'O']; return `<div class="li" style="display:block"><div class="t">${p.t ? `<b>${esc(p.t)}</b> · ` : ''}${esc(p.txt)}</div>${p.ans ? `<div class="s">💬 ${esc(p.ans)}</div>` : ''}<div class="s">👤 ${esc(p.resp || L('no one yet', 'не назначен'))} · 📅 <span style="${MN_late(p) ? 'color:var(--bad);font-weight:700' : ''}">${p.due ? isoRU(p.due) + (MN_late(p) ? ' ' + L('LATE', 'ПРОСРОЧЕНО') : '') : '–'}</span> · <span class="badge ${s[2]}">${L(s[0], s[1])}</span>${extra || ''}</div></div>`; };
+  function mnPage(f) { const st = G2.mn(), id = f ? decodeURIComponent(f) : '';
+    if (id && id !== 'open') { const m = MN_mnFind(id); if (!m) return mnPage(''); setHead(L('Meeting notes', 'Протокол'), isoRU(m.dt) + ' · ' + m.typ); const T = Object.keys(G2.d.titles);
+      const inp = 'class="fin" style="margin:0"', o = m.P.filter(p => p.st !== 'D').length;
+      return `<div class="card"><div style="display:grid;grid-template-columns:1fr 90px;gap:6px"><input type="date" ${inp} value="${m.dt}" onchange="G2.mnSet('${id}','','dt',this.value)"><input type="time" ${inp} value="${esc(m.tm || '')}" onchange="G2.mnSet('${id}','','tm',this.value)"></div>
+        <select ${inp} style="margin-top:6px" onchange="G2.mnSet('${id}','','typ',this.value)">${MN_MTY.map(t => `<option ${t === m.typ ? 'selected' : ''}>${t}</option>`).join('')}</select>
+        <input ${inp} style="margin-top:6px" placeholder="${L('Attendees (names, comma)', 'Участники (через запятую)')}" value="${esc(m.att || '')}" oninput="G2.mnSet('${id}','','att',this.value)">
+        <textarea ${inp} style="margin-top:6px;height:54px" placeholder="${L('General notes (optional)', 'Общие заметки')}" oninput="G2.mnSet('${id}','','notes',this.value)">${esc(m.notes || '')}</textarea></div>
+       <div class="sect">📝 ${L('Points', 'Пункты')} · ${m.P.length} · ${o} ${L('open', 'открыто')}</div>
+       <datalist id="mnpp">${[...new Set(MN_MNP.concat(st.m.flatMap(x => x.P.map(p => p.resp)).filter(Boolean)))].map(n => `<option value="${esc(n)}">`).join('')}</datalist>
+       ${m.P.map((p, i) => `<div class="card mnp" style="border-left:5px solid ${p.st === 'D' ? 'var(--ok)' : MN_late(p) ? 'var(--bad)' : p.st === 'P' ? 'var(--warn)' : '#9aa5b1'}">
+         <div style="display:flex;gap:6px;align-items:center;margin-bottom:4px"><b style="min-width:22px">${i + 1}.</b><select ${inp} style="margin:0;flex:1" onchange="G2.mnSet('${id}','${p.id}','t',this.value)"><option value="">${L('– title / general –', '– титул / общее –')}</option>${T.map(t => `<option ${t === p.t ? 'selected' : ''}>${t}</option>`).join('')}</select><button class="tile" style="min-height:auto;padding:6px 10px;width:auto" onclick="G2.mnDel('${id}','${p.id}')">✕</button></div>
+         ${p.from ? `<div style="font-size:11px;color:var(--mut);margin:0 0 4px 28px">↪ ${L('open point from', 'открытый пункт от')} ${esc(p.from)}</div>` : ''}
+         <textarea class="fin mntx" style="margin:0 0 6px;height:52px" placeholder="${L('Point / question / problem', 'Вопрос / проблема')}" oninput="G2.mnSet('${id}','${p.id}','txt',this.value)">${esc(p.txt)}</textarea>
+         <textarea class="fin" style="margin:0 0 6px;height:52px;background:#f3f9f1" placeholder="${L('Answer / decision / action', 'Ответ / решение / действие')}" oninput="G2.mnSet('${id}','${p.id}','ans',this.value)">${esc(p.ans || '')}</textarea>
+         <div style="display:grid;grid-template-columns:1.4fr 1fr;gap:6px"><input ${inp} list="mnpp" placeholder="👤 ${L('Responsible', 'Ответственный')}" value="${esc(p.resp || '')}" oninput="G2.mnSet('${id}','${p.id}','resp',this.value)"><input type="date" ${inp} title="${L('Due date', 'Срок')}" value="${p.due || ''}" onchange="G2.mnSet('${id}','${p.id}','due',this.value)"></div>
+         <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:6px">${Object.keys(MN_MST).map(k => `<button class="tile ${p.st === k || (!p.st && k === 'O') ? 'main' : ''}" style="min-height:auto;padding:6px" onclick="G2.mnSet('${id}','${p.id}','st','${k}')"><b style="font-size:12px">${L(MN_MST[k][0], MN_MST[k][1])}</b></button>`).join('')}</div></div>`).join('') || `<div class="empty">${L('No points yet – add one, or add suggested points', 'Пунктов нет – добавьте или возьмите предложенные')}</div>`}
+       <div class="grid" style="margin-top:6px"><button class="tile main" onclick="G2.mnAdd('${id}')"><b>➕ ${L('Add point', 'Добавить пункт')}</b></button><button class="tile" onclick="G2.mnAuto('${id}')"><b>💡 ${L('Suggested points', 'Предложенные пункты')}</b><span class="n">${L('Dec. plan behind · MRF · blocked · drawings', 'план · MRF · блок · чертежи')}</span></button></div>
+       <div class="sect">📤 ${L('Send / export', 'Отправить / экспорт')}</div><div class="grid">
+        <button class="tile main" onclick="G2.mnMax('${id}')"><b>📤 ${L('Send to G2 MAX group', 'В группу G2 MAX')}</b><span class="n">${L('copies the text and opens MAX', 'копирует и открывает MAX')}</span></button>
+        <button class="tile" onclick="G2.mnShare('${id}')"><b>↗ ${L('Share text…', 'Поделиться…')}</b></button>
+        <button class="tile" onclick="G2.mnXl('${id}')"><b>⬇ Excel</b><span class="n">${L('this meeting', 'это совещание')}</span></button>
+        <button class="tile" onclick="G2.mnPrint('${id}')"><b>🖨 ${L('Print / PDF', 'Печать / PDF')}</b><span class="n">A4</span></button>
+        <button class="tile" style="border-color:#b42318" onclick="G2.mnDel('${id}')"><b>🗑 ${L('Delete meeting', 'Удалить протокол')}</b></button></div>`; }
+    // list page: open points (by responsible / title) + meetings
+    setHead(L('Daily meeting notes', 'Протоколы совещаний'), 'G2'); const O = MN_mnOpen(), rf = G2._mnr || '', tf = G2._mnt || '';
+    const OF = O.filter(({p}) => (!rf || (p.resp || '–') === rf) && (!tf || (p.t || '–') === tf)), RS = [...new Set(O.map(({p}) => p.resp || '–'))].sort(), TS = [...new Set(O.map(({p}) => p.t || '–'))].sort();
+    const ML = st.m.slice().sort((a, b) => (b.dt + b.tm).localeCompare(a.dt + a.tm));
+    return `<button class="tile main" style="width:100%;min-height:auto;margin-bottom:8px" onclick="G2.mnNew()"><b>➕ ${L('New meeting note', 'Новый протокол')}</b><span class="n">${L('open points of earlier meetings come forward automatically', 'открытые пункты прошлых совещаний переносятся автоматически')}</span></button>
+      <div class="kpi"><div><b>${O.length}</b><span>${L('open points', 'открыто')}</span></div><div style="${O.filter(({p}) => MN_late(p)).length ? 'border-color:var(--bad)' : ''}"><b>${O.filter(({p}) => MN_late(p)).length}</b><span>${L('late', 'просрочено')}</span></div><div><b>${O.filter(({p}) => !p.resp).length}</b><span>${L('no responsible', 'без ответств.')}</span></div><div><b>${st.m.length}</b><span>${L('meetings', 'совещаний')}</span></div></div>
+      <div class="sect">⏳ ${L('Open points – who must answer', 'Открытые пункты – кто отвечает')}</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px"><select class="fin" style="margin:0" onchange="G2.mnF('r',this.value)"><option value="">👤 ${L('all responsible', 'все ответственные')}</option>${RS.map(r => `<option ${r === rf ? 'selected' : ''}>${esc(r)}</option>`).join('')}</select><select class="fin" style="margin:0" onchange="G2.mnF('t',this.value)"><option value="">🏗️ ${L('all titles', 'все титулы')}</option>${TS.map(r => `<option ${r === tf ? 'selected' : ''}>${esc(r)}</option>`).join('')}</select></div>
+      <div class="list" style="margin-top:6px">${OF.sort((a, b) => (MN_late(b.p) - MN_late(a.p)) || (a.p.due || '9').localeCompare(b.p.due || '9')).map(({m, p}) => `<div onclick="go('#/g2/mn/${enc(m.id)}')" style="cursor:pointer">${MN_pcard(p, ` · ${isoRU(m.dt)}`)}</div>`).join('') || `<div class="empty">${L('No open points', 'Открытых пунктов нет')}</div>`}</div>
+      <div class="sect">🗓 ${L('Meetings', 'Совещания')}</div><div class="list">${ML.map(m => { const o = m.P.filter(p => p.st !== 'D').length; return `<button class="li" onclick="go('#/g2/mn/${enc(m.id)}')"><div class="m"><div class="t">${isoRU(m.dt)} ${esc(m.tm || '')} · ${esc(m.typ)}</div><div class="s">${m.P.length} ${L('points', 'пунктов')} · ${o} ${L('open', 'открыто')}${m.att ? ' · ' + esc(m.att) : ''}</div></div><span class="chev">›</span></button>`; }).join('') || `<div class="empty">${L('No meeting notes yet', 'Протоколов ещё нет')}</div>`}</div>
+      ${st.m.length ? `<button class="tile" style="width:100%;min-height:auto;margin-top:8px" onclick="G2.mnXl('')"><b>⬇ ${L('Excel – all meetings + open points', 'Excel – все совещания + открытые пункты')}</b></button>` : ''}
+      <div class="foot">${L('Notes are saved on this phone. Send them to the MAX group or export Excel so the team and the manager have them.', 'Протоколы хранятся на этом телефоне. Отправьте в группу MAX или выгрузите Excel.')}</div>`; }
   // ---------- lists ----------
   // filter string: title|group|drawing|q|cat  (rhi only unless q given)
   function list(f) { const [t, g, w, q0, k, fx] = String(f || '').split('|'); setHead(t || L('IWP lines', 'Строки IWP'), g ? grp(g) : w ? w : 'G2');
